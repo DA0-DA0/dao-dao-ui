@@ -1,6 +1,6 @@
 # Mint
 
-Mint new governance tokens.
+Mint new governance tokens for the dao-voting-native-staked module.
 
 ## Bulk import format
 
@@ -15,7 +15,6 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "to": "<RECIPIENT ADDRESS>",
   "amount": "<AMOUNT>"
 }
 ```

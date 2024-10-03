@@ -82,7 +82,7 @@ export class ManageMembersAction extends ActionBase<ManageMembersData> {
   async setup() {
     this.cw4GroupAddress = await this.options.queryClient.fetchQuery(
       daoVotingCw4Queries.groupContract(this.options.queryClient, {
-        chainId: this.votingModule.dao.chainId,
+        chainId: this.votingModule.chainId,
         contractAddress: this.votingModule.address,
       })
     )

@@ -37,7 +37,7 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export class MintAction extends ActionBase<MintData> {
+export class DaoVotingNativeStakedMintAction extends ActionBase<MintData> {
   public readonly key = ActionKey.Mint
   public readonly Component = Component
 

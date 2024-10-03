@@ -59,7 +59,7 @@ export type VotingModuleAdapter = {
 export interface IVotingModuleAdapterOptions {
   chainId: string
   coreAddress: string
-  votingModuleAddress: string
+  votingModule: IVotingModuleBase
 }
 
 export interface IVotingModuleAdapterContext {

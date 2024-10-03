@@ -94,7 +94,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
     }
 
     return secretDaoVotingCw4Queries.votingPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         auth: { permit },
@@ -130,7 +130,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingCw4Queries.totalPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -142,7 +142,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
     return (
       await this.queryClient.fetchQuery(
         secretDaoVotingCw4Queries.groupContract({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.address,
         })
       )
@@ -153,7 +153,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
     return (
       await this.queryClient.fetchQuery(
         secretCw4GroupQueries.hooks({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: await this.getHookCaller(),
         })
       )

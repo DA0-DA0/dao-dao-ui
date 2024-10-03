@@ -10,6 +10,7 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
@@ -17,7 +18,7 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, votingModule } = useVotingModuleAdapterOptions()
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
@@ -35,8 +36,11 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const loadingMembers = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
       chainId,
-      contractAddress: votingModuleAddress,
-      formula: 'daoVotingTokenStaked/topStakers',
+      contractAddress: votingModule.address,
+      formula:
+        votingModule instanceof TokenStakedVotingModule
+          ? 'daoVotingTokenStaked/topStakers'
+          : 'daoVotingNativeStaked/topStakers',
       noFallback: true,
     })
   )

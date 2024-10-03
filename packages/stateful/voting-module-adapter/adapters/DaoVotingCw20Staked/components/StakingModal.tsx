@@ -67,7 +67,7 @@ const InnerStakingModal = ({
     stakingContractAddress,
     unstakingDuration,
     refreshTotals,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     refreshClaims,
   } = useStakingInfo({
@@ -279,7 +279,7 @@ const InnerStakingModal = ({
         break
       }
       case StakingMode.Claim: {
-        if (sumClaimsAvailable === 0) {
+        if (sumClaimsAvailable.isZero()) {
           toast.error(t('error.noClaimsAvailable'))
           return
         }
@@ -307,11 +307,11 @@ const InnerStakingModal = ({
 
           toast.success(
             t('success.claimedTokens', {
-              amount: HugeDecimal.from(
-                sumClaimsAvailable || 0
-              ).toInternationalizedHumanReadableString({
-                decimals: governanceToken.decimals,
-              }),
+              amount: sumClaimsAvailable.toInternationalizedHumanReadableString(
+                {
+                  decimals: governanceToken.decimals,
+                }
+              ),
               tokenSymbol: governanceToken.symbol,
             })
           )
@@ -335,26 +335,12 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={HugeDecimal.from(sumClaimsAvailable || 0)}
+      claimableTokens={sumClaimsAvailable}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
-      loadingStakableTokens={
-        !loadingUnstakedBalance || loadingUnstakedBalance.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: HugeDecimal.from(loadingUnstakedBalance.data),
-            }
-      }
-      loadingUnstakableTokens={
-        !loadingWalletStakedValue || loadingWalletStakedValue.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: HugeDecimal.from(loadingWalletStakedValue.data),
-            }
-      }
+      loadingStakableTokens={loadingUnstakedBalance ?? { loading: true }}
+      loadingUnstakableTokens={loadingWalletStakedValue}
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={maxDeposit ? HugeDecimal.from(maxDeposit) : undefined}

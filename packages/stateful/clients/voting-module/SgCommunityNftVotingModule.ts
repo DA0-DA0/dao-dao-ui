@@ -38,7 +38,7 @@ export class SgCommunityNftVotingModule extends VotingModuleBase<CwDao> {
     return daoVotingSgCommunityNftQueries.votingPowerAtHeight(
       this.queryClient,
       {
-        chainId: this.dao.chainId,
+        chainId: this.chainId,
         contractAddress: this.address,
         args: {
           address,
@@ -52,7 +52,7 @@ export class SgCommunityNftVotingModule extends VotingModuleBase<CwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return daoVotingSgCommunityNftQueries.totalPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -68,7 +68,7 @@ export class SgCommunityNftVotingModule extends VotingModuleBase<CwDao> {
     return (
       await this.queryClient.fetchQuery(
         daoVotingSgCommunityNftQueries.hooks(this.queryClient, {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })
       )

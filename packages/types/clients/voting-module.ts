@@ -15,6 +15,11 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
   dao: Dao
 
   /**
+   * Chain ID of the voting module.
+   */
+  chainId: string
+
+  /**
    * Address of the voting module.
    */
   address: string

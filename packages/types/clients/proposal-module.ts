@@ -26,6 +26,11 @@ export interface IProposalModuleBase<
   info: ProposalModuleInfo
 
   /**
+   * Chain ID of the proposal module.
+   */
+  chainId: string
+
+  /**
    * Contract address.
    */
   address: string

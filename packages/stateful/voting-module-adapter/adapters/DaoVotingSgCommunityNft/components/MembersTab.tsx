@@ -15,13 +15,13 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     daoVotingSgCommunityNftExtraQueries.allVoters(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     }),
     (data) =>
       data?.map(

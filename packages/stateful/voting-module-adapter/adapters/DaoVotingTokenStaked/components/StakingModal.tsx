@@ -45,7 +45,7 @@ const InnerStakingModal = ({
     isWalletConnected,
     refreshBalances,
   } = useWallet()
-  const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { coreAddress, votingModule } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -56,7 +56,7 @@ const InnerStakingModal = ({
   const {
     unstakingDuration,
     refreshTotals,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     refreshClaims,
   } = useStakingInfo({
@@ -67,15 +67,15 @@ const InnerStakingModal = ({
   const [amount, setAmount] = useState(HugeDecimal.zero)
 
   const doStake = DaoVotingTokenStakedHooks.useStake({
-    contractAddress: votingModuleAddress,
+    contractAddress: votingModule.address,
     sender: walletAddress ?? '',
   })
   const doUnstake = DaoVotingTokenStakedHooks.useUnstake({
-    contractAddress: votingModuleAddress,
+    contractAddress: votingModule.address,
     sender: walletAddress ?? '',
   })
   const doClaim = DaoVotingTokenStakedHooks.useClaim({
-    contractAddress: votingModuleAddress,
+    contractAddress: votingModule.address,
     sender: walletAddress ?? '',
   })
 
@@ -174,7 +174,7 @@ const InnerStakingModal = ({
         break
       }
       case StakingMode.Claim: {
-        if (sumClaimsAvailable === 0) {
+        if (sumClaimsAvailable.isZero()) {
           toast.error(t('error.noClaimsAvailable'))
           return
         }
@@ -194,11 +194,11 @@ const InnerStakingModal = ({
 
           toast.success(
             t('success.claimedTokens', {
-              amount: HugeDecimal.from(
-                sumClaimsAvailable || 0
-              ).toInternationalizedHumanReadableString({
-                decimals: governanceToken.decimals,
-              }),
+              amount: sumClaimsAvailable.toInternationalizedHumanReadableString(
+                {
+                  decimals: governanceToken.decimals,
+                }
+              ),
               tokenSymbol: governanceToken.symbol,
             })
           )
@@ -222,7 +222,7 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={HugeDecimal.from(sumClaimsAvailable || 0)}
+      claimableTokens={sumClaimsAvailable}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}

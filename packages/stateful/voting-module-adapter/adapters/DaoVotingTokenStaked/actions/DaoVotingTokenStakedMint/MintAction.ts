@@ -20,7 +20,7 @@ import { MintData } from './MintComponent'
 /**
  * A mint action for tokenfactory tokens.
  */
-export class MintAction extends ActionBase<MintData> {
+export class DaoVotingTokenStakedMintAction extends ActionBase<MintData> {
   public readonly key = ActionKey.Mint
   public readonly Component = Component
 

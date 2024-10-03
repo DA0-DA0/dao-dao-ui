@@ -79,7 +79,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     }
 
     return daoVotingOnftStakedQueries.votingPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         address,
@@ -92,7 +92,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return daoVotingOnftStakedQueries.totalPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -106,34 +106,34 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
         'onftStakedVotingModule',
         'governanceToken',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
       queryFn: async () => {
         const { onft_collection_id } = await this.queryClient.fetchQuery(
           daoVotingOnftStakedQueries.config(this.queryClient, {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
         const { symbol, previewUri } = await this.queryClient.fetchQuery(
           omniflixQueries.onftCollectionInfo({
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             id: onft_collection_id,
           })
         )
 
         return {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           type: TokenType.Onft,
           denomOrAddress: onft_collection_id,
           symbol,
           decimals: 0,
           imageUrl: previewUri,
           source: {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             type: TokenType.Onft,
             denomOrAddress: onft_collection_id,
           },
@@ -150,7 +150,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     return (
       await this.queryClient.fetchQuery(
         daoVotingOnftStakedQueries.hooks(this.queryClient, {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })
       )

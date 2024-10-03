@@ -121,7 +121,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
   async setup() {
     const config = await this.options.queryClient.fetchQuery(
       cwProposalSingleV1Queries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
     )
@@ -129,7 +129,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
           tokenQueries.info(this.options.queryClient, {
-            chainId: this.proposalModule.dao.chainId,
+            chainId: this.proposalModule.chainId,
             type: TokenType.Cw20,
             denomOrAddress: config.deposit_info.token,
           })
@@ -168,7 +168,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
 
   async encode(data: UpdateProposalConfigData): Promise<UnifiedCosmosMsg> {
     return makeExecuteSmartContractMessage({
-      chainId: this.proposalModule.dao.chainId,
+      chainId: this.proposalModule.chainId,
       contractAddress: this.proposalModule.address,
       sender: this.options.address,
       msg: {
@@ -246,7 +246,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
           },
         },
       }) &&
-      chainId === this.proposalModule.dao.chainId &&
+      chainId === this.proposalModule.chainId &&
       decodedMessage.wasm.execute.contract_addr === this.proposalModule.address
     )
   }

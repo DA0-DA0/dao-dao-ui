@@ -17,14 +17,14 @@ import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
   const { governanceToken } = useGovernanceTokenInfo()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       formula: 'daoVotingCw20Staked/topStakers',
       noFallback: true,
     }),

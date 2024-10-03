@@ -234,7 +234,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -258,7 +258,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -345,7 +345,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId: number
   }): FetchQueryOptions<ProposalResponse> {
     return daoProposalMultipleQueries.proposal(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -367,7 +367,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     voter?: string
   }): FetchQueryOptions<VoteResponse> {
     return daoProposalMultipleQueries.getVote(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -394,21 +394,21 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
   getProposalCountQuery(): FetchQueryOptions<number> {
     return daoProposalMultipleQueries.proposalCount(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.info.address,
     })
   }
 
   getDaoAddressQuery(): FetchQueryOptions<string> {
     return daoProposalMultipleQueries.dao(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
   getConfigQuery(): FetchQueryOptions<Config> {
     return daoProposalMultipleQueries.config(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
@@ -419,7 +419,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         'multipleChoiceProposalModule',
         'depositInfo',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -428,7 +428,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           const { deposit_info: depositInfo } =
             await this.queryClient.fetchQuery(
               daoPreProposeMultipleQueries.config(this.queryClient, {
-                chainId: this.dao.chainId,
+                chainId: this.chainId,
                 contractAddress: this.prePropose.address,
               })
             )

@@ -6,6 +6,7 @@ import { indexerQueries } from '@dao-dao/state/query'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import {
   ButtonLink,
   DaoMemberCard,
@@ -17,15 +18,18 @@ import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
   const { governanceToken } = useGovernanceTokenInfo()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
-      formula: 'daoVotingTokenStaked/topStakers',
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
+      formula:
+        votingModule instanceof TokenStakedVotingModule
+          ? 'daoVotingTokenStaked/topStakers'
+          : 'daoVotingNativeStaked/topStakers',
       noFallback: true,
     }),
     (data) =>

@@ -18,7 +18,7 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
   const { totalVotingWeight } = useMembership()
 
   const { unstakingDuration } = useStakingInfo()
@@ -31,8 +31,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       formula: 'daoVotingCw20Staked/topStakers',
       noFallback: true,
     })
@@ -40,7 +40,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
 
   return [
     // Can't view members on Secret Network.
-    ...(isSecretNetwork(chainId)
+    ...(isSecretNetwork(votingModule.chainId)
       ? []
       : [
           {

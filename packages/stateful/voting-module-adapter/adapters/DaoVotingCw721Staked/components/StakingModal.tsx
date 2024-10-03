@@ -1,19 +1,14 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  DaoVotingCw721StakedSelectors,
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  ModalLoader,
-  SegmentedControls,
-  useCachedLoadable,
-} from '@dao-dao/stateless'
+import { ModalLoader, SegmentedControls } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
@@ -82,24 +77,9 @@ const InnerStakingModal = ({
   })
 
   const hasStake =
-    loadingWalletStakedValue !== undefined &&
+    loadingWalletStakedValue &&
     !loadingWalletStakedValue.loading &&
-    loadingWalletStakedValue.data > 0
-
-  const walletStakedBalanceLoadable = useCachedLoadable(
-    walletAddress
-      ? DaoVotingCw721StakedSelectors.votingPowerAtHeightSelector({
-          chainId,
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-  const walletStakedBalance =
-    walletStakedBalanceLoadable.state === 'hasValue' &&
-    walletStakedBalanceLoadable.contents
-      ? Number(walletStakedBalanceLoadable.contents.power)
-      : undefined
+    loadingWalletStakedValue.data.isPositive()
 
   const doStakeMultiple = Cw721BaseHooks.useSendNftMultiple({
     contractAddress: collectionAddress,
@@ -163,11 +143,6 @@ const InnerStakingModal = ({
         break
       }
       case StakingMode.Unstake: {
-        if (walletStakedBalance === undefined) {
-          toast.error(t('error.loadingData'))
-          return
-        }
-
         setStakingLoading(true)
 
         try {

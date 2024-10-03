@@ -1,6 +1,6 @@
 # Mint
 
-Mint new governance tokens.
+Mint new governance tokens for the dao-voting-token-staked module.
 
 ## Bulk import format
 

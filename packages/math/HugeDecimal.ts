@@ -262,14 +262,15 @@ export class HugeDecimal {
    * @returns an internationalized human-readable string
    */
   toInternationalizedHumanReadableString({
-    decimals,
+    decimals = 0,
     showFullAmount = true,
     minDecimals = 0,
   }: {
     /**
-     * The number of decimals used to make this number human-readable.
+     * The number of decimals used to make this number human-readable. Defaults
+     * to 0.
      */
-    decimals: number
+    decimals?: number
     /**
      * Whether or not to show the full amount. Large numbers will be abbreviated
      * if this is false. Defaults to true.
@@ -280,7 +281,7 @@ export class HugeDecimal {
      * number of non-zero decimal places less than or equal to `decimals`.
      */
     minDecimals?: number
-  }): string {
+  } = {}): string {
     // Get the decimal separator for the current locale.
     const decimalSeparator = (1.1).toLocaleString()[1]
 

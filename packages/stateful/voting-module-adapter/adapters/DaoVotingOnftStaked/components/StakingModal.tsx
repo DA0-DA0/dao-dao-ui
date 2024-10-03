@@ -84,7 +84,7 @@ const InnerStakingModal = ({
   const hasStake =
     loadingWalletStakedValue !== undefined &&
     !loadingWalletStakedValue.loading &&
-    loadingWalletStakedValue.data > 0
+    loadingWalletStakedValue.data.isPositive()
 
   const walletStakedBalanceLoading = useQueryLoadingDataWithError(
     dao.votingModule.getVotingPowerQuery(walletAddress)

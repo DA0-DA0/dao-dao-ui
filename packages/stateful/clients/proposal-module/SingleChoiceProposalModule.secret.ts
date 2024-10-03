@@ -202,7 +202,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         isPreProposeApprovalProposal
           ? Number(
               findWasmAttributeValue(
-                this.dao.chainId,
+                this.chainId,
                 events,
                 this.prePropose.address,
                 'id'
@@ -210,7 +210,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
             )
           : Number(
               findWasmAttributeValue(
-                this.dao.chainId,
+                this.chainId,
                 events,
                 this.address,
                 'proposal_id'
@@ -234,7 +234,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -339,7 +339,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     proposalId: number
   }): FetchQueryOptions<ProposalResponse> {
     return secretDaoProposalSingleQueries.proposal({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -362,7 +362,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   }): FetchQueryOptions<VoteResponse> {
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalSingleQueries.getVote({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.info.address,
       // Force type-cast since the query won't be enabled until this is set.
       // This allows us to pass an undefined `voter` argument in order to
@@ -401,14 +401,14 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
 
   getProposalCountQuery(): FetchQueryOptions<number> {
     return secretDaoProposalSingleQueries.proposalCount({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
   getConfigQuery(): FetchQueryOptions<Config> {
     return secretDaoProposalSingleQueries.config({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
@@ -419,7 +419,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         'secretSingleChoiceProposalModule',
         'depositInfo',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -428,7 +428,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
           const { deposit_info: depositInfo } =
             await this.queryClient.fetchQuery(
               secretDaoPreProposeSingleQueries.config({
-                chainId: this.dao.chainId,
+                chainId: this.chainId,
                 contractAddress: this.prePropose.address,
               })
             )

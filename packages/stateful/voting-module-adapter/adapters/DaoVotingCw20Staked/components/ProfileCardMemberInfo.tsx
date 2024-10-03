@@ -64,7 +64,7 @@ export const ProfileCardMemberInfo = ({
     refreshTotals,
     claimsPending,
     claimsAvailable,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     loadingTotalStakedValue,
     refreshClaims,
@@ -111,7 +111,7 @@ export const ProfileCardMemberInfo = ({
     if (!isWalletConnected) {
       return toast.error(t('error.logInToContinue'))
     }
-    if (!sumClaimsAvailable) {
+    if (sumClaimsAvailable.isZero()) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -136,9 +136,7 @@ export const ProfileCardMemberInfo = ({
 
       toast.success(
         t('success.claimedTokens', {
-          amount: HugeDecimal.from(
-            sumClaimsAvailable
-          ).toInternationalizedHumanReadableString({
+          amount: sumClaimsAvailable.toInternationalizedHumanReadableString({
             decimals: governanceToken.decimals,
           }),
           tokenSymbol: governanceToken.symbol,
@@ -228,8 +226,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: HugeDecimal.from(loadingWalletStakedValue.data),
-                    unstaked: HugeDecimal.from(loadingUnstakedBalance.data),
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
                   },
                 ],
               }
@@ -242,10 +240,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

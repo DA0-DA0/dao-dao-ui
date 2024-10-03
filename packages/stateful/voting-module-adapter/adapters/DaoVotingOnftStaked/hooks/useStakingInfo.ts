@@ -2,6 +2,7 @@ import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   blockHeightSelector,
   contractQueries,
@@ -24,7 +25,6 @@ import {
   useQueryLoadingDataWithError,
 } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 
@@ -35,23 +35,21 @@ export const useStakingInfo = ({
   fetchWalletUnstakedNfts = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { dao } = useDaoContext()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const { address: walletAddress } = useWallet({
-    chainId,
-  })
-
+  const { address: walletAddress } = useWallet()
   const { collectionAddress } = useGovernanceCollectionInfo()
-
   const queryClient = useQueryClient()
+
+  const { votingModule } = dao
+
   const [stakingContractVersion, unstakingDuration] = useSuspenseQueries({
     queries: [
       contractQueries.info(queryClient, {
-        chainId,
-        address: votingModuleAddress,
+        chainId: votingModule.chainId,
+        address: votingModule.address,
       }),
       daoVotingOnftStakedQueries.config(queryClient, {
-        chainId,
-        contractAddress: votingModuleAddress,
+        chainId: votingModule.chainId,
+        contractAddress: votingModule.address,
       }),
     ],
     combine: ([
@@ -86,7 +84,7 @@ export const useStakingInfo = ({
     })
     queryClient.invalidateQueries({
       queryKey: omniflixQueries.onftCollectionSupply({
-        chainId,
+        chainId: votingModule.chainId,
         id: collectionAddress,
       }).queryKey,
     })
@@ -95,7 +93,7 @@ export const useStakingInfo = ({
         'omniflix',
         'paginatedOnfts',
         {
-          chainId,
+          chainId: votingModule.chainId,
           id: collectionAddress,
         },
       ],
@@ -105,7 +103,7 @@ export const useStakingInfo = ({
         'omniflix',
         'allOnfts',
         {
-          chainId,
+          chainId: votingModule.chainId,
           id: collectionAddress,
         },
       ],
@@ -115,8 +113,8 @@ export const useStakingInfo = ({
         'indexer',
         'query',
         {
-          chainId,
-          contractAddress: votingModuleAddress,
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           formula: 'daoVotingOnftStaked/topStakers',
         },
       ],
@@ -128,8 +126,8 @@ export const useStakingInfo = ({
         'indexer',
         'query',
         {
-          chainId,
-          contractAddress: votingModuleAddress,
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           formula: 'daoVotingOnftStaked/stakedNfts',
           args: {
             address: walletAddress,
@@ -140,20 +138,19 @@ export const useStakingInfo = ({
     // Then invalidate contract query that uses indexer query.
     queryClient.invalidateQueries({
       queryKey: daoVotingOnftStakedQueryKeys.stakedNfts(
-        chainId,
-        votingModuleAddress,
+        votingModule.chainId,
+        votingModule.address,
         {
           address: walletAddress,
         }
       ),
     })
   }, [
-    chainId,
+    votingModule,
     dao,
     collectionAddress,
     queryClient,
     setRefreshDaoVotingPower,
-    votingModuleAddress,
     walletAddress,
   ])
 
@@ -163,7 +160,7 @@ export const useStakingInfo = ({
   const blockHeightLoadable = useCachedLoadable(
     fetchClaims
       ? blockHeightSelector({
-          chainId,
+          chainId: votingModule.chainId,
         })
       : undefined
   )
@@ -177,8 +174,8 @@ export const useStakingInfo = ({
         'indexer',
         'query',
         {
-          chainId,
-          contractAddress: votingModuleAddress,
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           formula: 'daoVotingOnftStaked/nftClaims',
           args: {
             address: walletAddress,
@@ -189,19 +186,19 @@ export const useStakingInfo = ({
     // Then invalidate contract query that uses indexer query.
     queryClient.invalidateQueries({
       queryKey: daoVotingOnftStakedQueryKeys.nftClaims(
-        chainId,
-        votingModuleAddress,
+        votingModule.chainId,
+        votingModule.address,
         {
           address: walletAddress,
         }
       ),
     })
-  }, [chainId, queryClient, votingModuleAddress, walletAddress])
+  }, [votingModule, queryClient, walletAddress])
 
   const loadingClaims = useQueryLoadingData(
     daoVotingOnftStakedQueries.nftClaims(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       args: {
         address: walletAddress || '',
       },
@@ -226,7 +223,7 @@ export const useStakingInfo = ({
   const claimsAvailable = blockHeight
     ? nftClaims?.filter((c) => claimAvailable(c, blockHeight))
     : undefined
-  const sumClaimsAvailable = claimsAvailable?.length
+  const sumClaimsAvailable = HugeDecimal.from(claimsAvailable?.length || 0)
 
   // Total staked value
   const loadingTotalStakedValue = useQueryLoadingDataWithError({
@@ -237,8 +234,8 @@ export const useStakingInfo = ({
   // Wallet staked value
   const loadingWalletStakedNftIds = useQueryLoadingDataWithError(
     daoVotingOnftStakedQueries.stakedNfts(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       args: {
         address: walletAddress ?? '',
       },
@@ -253,7 +250,7 @@ export const useStakingInfo = ({
       ? waitForAll(
           loadingWalletStakedNftIds.data.map((tokenId) =>
             nftCardInfoSelector({
-              chainId,
+              chainId: votingModule.chainId,
               collection: collectionAddress,
               tokenId,
             })
@@ -264,7 +261,7 @@ export const useStakingInfo = ({
 
   const loadingWalletUnstakedOnfts = useQueryLoadingDataWithError({
     ...omniflixQueries.allOnfts(queryClient, {
-      chainId,
+      chainId: votingModule.chainId,
       id: collectionAddress,
       owner: walletAddress ?? '',
     }),
@@ -276,7 +273,7 @@ export const useStakingInfo = ({
       ? waitForAll(
           loadingWalletUnstakedOnfts.data.map(({ id }) =>
             nftCardInfoSelector({
-              chainId,
+              chainId: votingModule.chainId,
               collection: collectionAddress,
               tokenId: id,
             })
@@ -287,7 +284,7 @@ export const useStakingInfo = ({
 
   return {
     stakingContractVersion,
-    stakingContractAddress: votingModuleAddress,
+    stakingContractAddress: votingModule.address,
     unstakingDuration,
     refreshTotals,
     /// Optional
@@ -309,7 +306,7 @@ export const useStakingInfo = ({
         ? { loading: true }
         : {
             loading: false,
-            data: Number(loadingTotalStakedValue.data.power),
+            data: HugeDecimal.from(loadingTotalStakedValue.data.power),
           },
     // Wallet staked value
     loadingWalletStakedValue:
@@ -319,7 +316,7 @@ export const useStakingInfo = ({
         ? { loading: true }
         : {
             loading: false,
-            data: loadingWalletStakedNftIds.data.length,
+            data: HugeDecimal.from(loadingWalletStakedNftIds.data.length),
           },
     loadingWalletStakedNfts,
     loadingWalletUnstakedNfts,

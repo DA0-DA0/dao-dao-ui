@@ -1,17 +1,18 @@
-import { constSelector, useRecoilValue, waitForAll } from 'recoil'
+import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
+import { constSelector } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
-  DaoVotingCw20StakedSelectors,
-  genericTokenSelector,
+  cw20BaseQueries,
+  daoVotingCw20StakedQueries,
+  tokenQueries,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useDaoContext } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
@@ -22,39 +23,38 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+  const { dao } = useDaoContext()
   const { address: walletAddress } = useWallet()
-  const { chainId, coreAddress, votingModuleAddress } =
-    useVotingModuleAdapterOptions()
+  const queryClient = useQueryClient()
 
-  const [stakingContractAddress, governanceTokenAddress] = useRecoilValue(
-    waitForAll([
-      DaoVotingCw20StakedSelectors.stakingContractSelector({
-        chainId,
-        contractAddress: votingModuleAddress,
-        params: [],
-      }),
-      DaoVotingCw20StakedSelectors.tokenContractSelector({
-        chainId,
-        contractAddress: votingModuleAddress,
-        params: [],
-      }),
-    ])
-  )
+  const [{ data: stakingContractAddress }, { data: governanceTokenAddress }] =
+    useSuspenseQueries({
+      queries: [
+        daoVotingCw20StakedQueries.stakingContract(queryClient, {
+          chainId: dao.chainId,
+          contractAddress: dao.votingModule.address,
+        }),
+        daoVotingCw20StakedQueries.tokenContract(queryClient, {
+          chainId: dao.chainId,
+          contractAddress: dao.votingModule.address,
+        }),
+      ],
+    })
 
-  const [governanceToken, cw20TokenInfo] = useRecoilValue(
-    waitForAll([
-      genericTokenSelector({
-        chainId,
-        type: TokenType.Cw20,
-        denomOrAddress: governanceTokenAddress,
-      }),
-      Cw20BaseSelectors.tokenInfoSelector({
-        chainId,
-        contractAddress: governanceTokenAddress,
-        params: [],
-      }),
-    ])
-  )
+  const [{ data: governanceToken }, { data: cw20TokenInfo }] =
+    useSuspenseQueries({
+      queries: [
+        tokenQueries.info(queryClient, {
+          chainId: dao.chainId,
+          type: TokenType.Cw20,
+          denomOrAddress: governanceTokenAddress,
+        }),
+        cw20BaseQueries.tokenInfo(queryClient, {
+          chainId: dao.chainId,
+          contractAddress: governanceTokenAddress,
+        }),
+      ],
+    })
 
   /// Optional
 
@@ -62,7 +62,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
         })
@@ -74,9 +74,9 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: governanceTokenAddress,
-          params: [{ address: coreAddress }],
+          params: [{ address: dao.coreAddress }],
         })
       : constSelector(undefined),
     undefined
@@ -86,8 +86,8 @@ export const useGovernanceTokenInfo = ({
   const loadingPrice = useCachedLoading(
     fetchUsdcPrice
       ? usdPriceSelector({
+          chainId: dao.chainId,
           type: TokenType.Cw20,
-          chainId,
           denomOrAddress: governanceTokenAddress,
         })
       : constSelector(undefined),
@@ -96,9 +96,7 @@ export const useGovernanceTokenInfo = ({
 
   return {
     governanceToken,
-    supply: HugeDecimal.from(cw20TokenInfo.total_supply).toHumanReadableNumber(
-      governanceToken.decimals
-    ),
+    supply: HugeDecimal.from(cw20TokenInfo.total_supply),
     stakingContractAddress,
     /// Optional
     // Wallet balance
@@ -108,7 +106,7 @@ export const useGovernanceTokenInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data.balance),
+          data: HugeDecimal.from(loadingWalletBalance.data.balance),
         },
     // Treasury balance
     loadingTreasuryBalance: loadingTreasuryBalance.loading
@@ -117,7 +115,7 @@ export const useGovernanceTokenInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingTreasuryBalance.data.balance),
+          data: HugeDecimal.from(loadingTreasuryBalance.data.balance),
         },
     // Price
     loadingPrice: loadingPrice.loading

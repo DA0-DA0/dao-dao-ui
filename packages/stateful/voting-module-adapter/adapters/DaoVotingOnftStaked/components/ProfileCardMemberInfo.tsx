@@ -181,8 +181,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token,
-                    staked: HugeDecimal.from(loadingWalletStakedValue.data),
-                    unstaked: HugeDecimal.from(loadingUnstakedBalance.data),
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
                   },
                 ],
               }
@@ -195,10 +195,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

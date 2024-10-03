@@ -35,7 +35,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
 
   const config = useCachedLoadingWithError(
     DaoProposalSingleCommonSelectors.configSelector({
-      chainId: proposalModule.dao.chainId,
+      chainId: proposalModule.chainId,
       contractAddress: proposalModule.address,
     })
   )
@@ -45,7 +45,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       ? undefined
       : !depositInfo.errored && depositInfo.data
       ? genericTokenSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           type:
             'native' in depositInfo.data.denom
               ? TokenType.Native
@@ -73,7 +73,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       : config.errored || !('veto' in config.data) || !config.data.veto
       ? constSelector(undefined)
       : Cw1WhitelistSelectors.adminsIfCw1Whitelist({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           contractAddress: config.data.veto.vetoer,
         })
   )

@@ -174,7 +174,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
     }
 
     return secretDaoVotingSnip20StakedQueries.votingPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         auth: { permit },
@@ -210,7 +210,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingSnip20StakedQueries.totalPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -224,7 +224,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
         'snip20StakedVotingModule',
         'governanceToken',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -232,14 +232,14 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
         const { addr: governanceTokenAddress } =
           await this.queryClient.fetchQuery(
             secretDaoVotingSnip20StakedQueries.tokenContract({
-              chainId: this.dao.chainId,
+              chainId: this.chainId,
               contractAddress: this.address,
             })
           )
 
         const token = await this.queryClient.fetchQuery(
           tokenQueries.info(this.queryClient, {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             type: TokenType.Cw20,
             denomOrAddress: governanceTokenAddress,
           })
@@ -254,7 +254,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
     return (
       await this.queryClient.fetchQuery(
         secretDaoVotingSnip20StakedQueries.stakingContract({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.address,
         })
       )
@@ -265,7 +265,7 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
     return (
       await this.queryClient.fetchQuery(
         snip20StakeQueries.getHooks({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: await this.getHookCaller(),
         })
       )

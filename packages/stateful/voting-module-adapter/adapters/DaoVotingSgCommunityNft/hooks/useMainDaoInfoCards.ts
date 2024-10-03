@@ -9,13 +9,13 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
 
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     daoVotingSgCommunityNftExtraQueries.allVoters(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     })
   )
 

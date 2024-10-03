@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Duration,
   DurationWithUnits,
@@ -30,11 +31,11 @@ export interface UseStakingInfoResponse {
   claims?: Claim[]
   claimsPending?: Claim[]
   claimsAvailable?: Claim[]
-  sumClaimsAvailable?: number
+  sumClaimsAvailable?: HugeDecimal
   // Total staked value
-  loadingTotalStakedValue?: LoadingData<number>
+  loadingTotalStakedValue?: LoadingData<HugeDecimal>
   // Wallet staked value
-  loadingWalletStakedValue?: LoadingData<number>
+  loadingWalletStakedValue?: LoadingData<HugeDecimal>
 }
 
 export type UseGovernanceTokenInfoOptions = {
@@ -55,7 +56,8 @@ export type UseGovernanceTokenInfoOptions = {
 export type UseGovernanceTokenInfoResponse = {
   /**
    * The token factory issuer contract address, if the governance token is a
-   * token factory denom and a token factory issuer contract exists.
+   * token factory denom and a token factory issuer contract exists. This will
+   * always be undefined for the deprecated dao-voting-native-staked module.
    */
   tokenFactoryIssuerAddress: string | undefined
   /**
@@ -65,7 +67,7 @@ export type UseGovernanceTokenInfoResponse = {
   /**
    * The supply of the governance token converted to the appropriate decimals.
    */
-  supply: number
+  supply: HugeDecimal
 
   // Optional, defined if options are set to true.
 
@@ -73,12 +75,12 @@ export type UseGovernanceTokenInfoResponse = {
    * Unstaked governance token balance. Only defined if a wallet is connected
    * and the option to fetch this is true.
    */
-  loadingWalletBalance?: LoadingData<number>
+  loadingWalletBalance?: LoadingData<HugeDecimal>
   /**
    * The treasury balance of the governance token. Only defined if the option to
    * fetch this is true.
    */
-  loadingTreasuryBalance?: LoadingData<number>
+  loadingTreasuryBalance?: LoadingData<HugeDecimal>
   /**
    * The price of the governance token. Only defined if the option to fetch this
    * is true.

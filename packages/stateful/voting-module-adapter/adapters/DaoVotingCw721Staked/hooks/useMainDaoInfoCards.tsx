@@ -17,7 +17,7 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
 
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
@@ -34,14 +34,14 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     daoVotingCw721StakedExtraQueries.topStakers(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     })
   )
 
   return [
     // Can't view members on Secret Network.
-    ...(isSecretNetwork(chainId)
+    ...(isSecretNetwork(votingModule.chainId)
       ? []
       : [
           {
@@ -72,7 +72,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       value: loadingTotalStakedValue.loading
         ? '...'
         : formatPercentOf100(
-            (loadingTotalStakedValue.data / totalSupply) * 100
+            loadingTotalStakedValue.data.div(totalSupply).times(100).toNumber()
           ),
     },
     {

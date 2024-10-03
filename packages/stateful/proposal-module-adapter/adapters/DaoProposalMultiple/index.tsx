@@ -52,7 +52,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   loadCommon: ({ proposalModule }) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
-      chainId: proposalModule.dao.chainId,
+      chainId: proposalModule.chainId,
       proposalModuleAddress: proposalModule.address,
       version: proposalModule.version,
       preProposeAddress: proposalModule.prePropose?.address ?? null,
@@ -84,19 +84,19 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       // Selectors
       selectors: {
         proposalCount: proposalCountSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           proposalModuleAddress: proposalModule.address,
         }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
-            chainId: proposalModule.dao.chainId,
+            chainId: proposalModule.chainId,
             proposalModuleAddress: proposalModule.address,
             proposalModulePrefix: proposalModule.prefix,
             ...props,
           }),
         depositInfo: depositInfoSelector,
         maxVotingPeriod: maxVotingPeriodSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           proposalModuleAddress: proposalModule.address,
         }),
       },

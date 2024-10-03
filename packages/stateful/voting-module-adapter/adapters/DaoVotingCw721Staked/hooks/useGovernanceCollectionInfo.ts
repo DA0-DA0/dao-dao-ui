@@ -1,14 +1,12 @@
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import {
-  CommonNftSelectors,
-  DaoVotingCw721StakedSelectors,
-} from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { HugeDecimal } from '@dao-dao/math'
+import { CommonNftSelectors, daoVotingCw721StakedQueries } from '@dao-dao/state'
+import { useCachedLoading, useDaoContext } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceCollectionInfoOptions,
   UseGovernanceCollectionInfoResponse,
@@ -18,30 +16,28 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
-  const { chainId, coreAddress, votingModuleAddress } =
-    useVotingModuleAdapterOptions()
-  const { address: walletAddress } = useWallet({
-    chainId,
-  })
+  const { dao } = useDaoContext()
+  const { address: walletAddress } = useWallet()
+  const queryClient = useQueryClient()
 
-  const { nft_address: collectionAddress } = useRecoilValue(
-    DaoVotingCw721StakedSelectors.configSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
+  const {
+    data: { nft_address: collectionAddress },
+  } = useSuspenseQuery(
+    daoVotingCw721StakedQueries.config(queryClient, {
+      chainId: dao.chainId,
+      contractAddress: dao.votingModule.address,
     })
   )
 
   const [contractInfo, tokenSupplyInfo] = useRecoilValue(
     waitForAll([
       CommonNftSelectors.contractInfoSelector({
-        chainId,
+        chainId: dao.chainId,
         contractAddress: collectionAddress,
         params: [],
       }),
-
       CommonNftSelectors.numTokensSelector({
-        chainId,
+        chainId: dao.chainId,
         contractAddress: collectionAddress,
         params: [],
       }),
@@ -54,7 +50,7 @@ export const useGovernanceCollectionInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: collectionAddress,
           owner: walletAddress,
         })
@@ -66,31 +62,31 @@ export const useGovernanceCollectionInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: collectionAddress,
-          owner: coreAddress,
+          owner: dao.coreAddress,
         })
       : constSelector(undefined),
     undefined
   )
 
   return {
-    stakingContractAddress: votingModuleAddress,
+    stakingContractAddress: dao.votingModule.address,
     collectionAddress,
     collectionInfo: {
       name: contractInfo.name,
       symbol: contractInfo.symbol,
-      totalSupply: tokenSupplyInfo.count,
+      totalSupply: HugeDecimal.from(tokenSupplyInfo.count),
     },
     token: {
-      chainId,
+      chainId: dao.chainId,
       type: TokenType.Cw721,
       denomOrAddress: collectionAddress,
       symbol: contractInfo.symbol,
       decimals: 0,
       imageUrl: undefined,
       source: {
-        chainId,
+        chainId: dao.chainId,
         type: TokenType.Cw721,
         denomOrAddress: collectionAddress,
       },
@@ -103,7 +99,7 @@ export const useGovernanceCollectionInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data.length),
+          data: HugeDecimal.from(loadingWalletBalance.data.length),
         },
     // Treasury balance
     loadingTreasuryBalance: loadingTreasuryBalance.loading
@@ -112,7 +108,7 @@ export const useGovernanceCollectionInfo = ({
       ? undefined
       : {
           loading: false,
-          data: loadingTreasuryBalance.data.length,
+          data: HugeDecimal.from(loadingTreasuryBalance.data.length),
         },
   }
 }

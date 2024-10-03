@@ -38,7 +38,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     // Invalidate indexer query first.
     queryClient.invalidateQueries({
       queryKey: indexerQueries.queryContract(queryClient, {
-        chainId: proposalModule.dao.chainId,
+        chainId: proposalModule.chainId,
         contractAddress: proposalModule.address,
         formula: 'daoProposalSingle/vote',
         args: {
@@ -65,7 +65,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     !isPreProposeApprovalProposal
       ? DaoProposalSingleCommonSelectors.proposalSelector({
           contractAddress: proposalModule.address,
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           params: [
             {
               proposalId: proposalNumber,
@@ -79,7 +79,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
   const loadingPreProposeApprovalProposal = useCachedLoading(
     isPreProposeApprovalProposal && proposalModule.prePropose
       ? DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           contractAddress: proposalModule.prePropose.address,
           params: [
             {

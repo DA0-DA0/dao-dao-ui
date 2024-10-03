@@ -1,18 +1,24 @@
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import { constSelector, useSetRecoilState } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20StakeSelectors,
-  DaoVotingCw20StakedSelectors,
   blockHeightSelector,
+  cw20StakeQueries,
+  daoVotingCw20StakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useDaoContext,
+} from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
@@ -20,25 +26,24 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
+  const { dao } = useDaoContext()
   const { address: walletAddress } = useWallet()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const queryClient = useQueryClient()
 
-  const stakingContractAddress = useRecoilValue(
-    DaoVotingCw20StakedSelectors.stakingContractSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
+  const { data: stakingContractAddress } = useSuspenseQuery(
+    daoVotingCw20StakedQueries.stakingContract(queryClient, {
+      chainId: dao.chainId,
+      contractAddress: dao.votingModule.address,
     })
   )
 
   const unstakingDuration =
-    useRecoilValue(
-      Cw20StakeSelectors.getConfigSelector({
-        chainId,
+    useSuspenseQuery(
+      cw20StakeQueries.getConfig(queryClient, {
+        chainId: dao.chainId,
         contractAddress: stakingContractAddress,
-        params: [],
       })
-    ).unstaking_duration ?? undefined
+    ).data.unstaking_duration ?? undefined
 
   const setRefreshTotalBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(undefined)
@@ -55,7 +60,7 @@ export const useStakingInfo = ({
   const blockHeightLoadable = useCachedLoadable(
     fetchClaims
       ? blockHeightSelector({
-          chainId,
+          chainId: dao.chainId,
         })
       : undefined
   )
@@ -73,7 +78,7 @@ export const useStakingInfo = ({
   const loadingClaims = useCachedLoading(
     fetchClaims && walletAddress
       ? Cw20StakeSelectors.claimsSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -93,15 +98,15 @@ export const useStakingInfo = ({
     ? claims?.filter((c) => claimAvailable(c, blockHeight))
     : undefined
   const sumClaimsAvailable = claimsAvailable?.reduce(
-    (p, c) => p + Number(c.amount),
-    0
+    (sum, c) => sum.plus(c.amount),
+    HugeDecimal.zero
   )
 
   // Total staked value
   const loadingTotalStakedValue = useCachedLoading(
     fetchTotalStakedValue
       ? Cw20StakeSelectors.totalValueSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: stakingContractAddress,
           params: [],
         })
@@ -113,7 +118,7 @@ export const useStakingInfo = ({
   const loadingWalletStakedValue = useCachedLoading(
     fetchWalletStakedValue && walletAddress
       ? Cw20StakeSelectors.stakedValueSelector({
-          chainId,
+          chainId: dao.chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -143,7 +148,7 @@ export const useStakingInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingTotalStakedValue.data.total),
+          data: HugeDecimal.from(loadingTotalStakedValue.data.total),
         },
     // Wallet staked value
     loadingWalletStakedValue: loadingWalletStakedValue.loading
@@ -152,7 +157,7 @@ export const useStakingInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletStakedValue.data.value),
+          data: HugeDecimal.from(loadingWalletStakedValue.data.value),
         },
   }
 }

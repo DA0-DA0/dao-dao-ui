@@ -37,14 +37,12 @@ export const ProfileCardMemberInfo = ({
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
   const {
     address: walletAddress,
     isWalletConnected,
     refreshBalances,
-  } = useWallet({
-    chainId,
-  })
+  } = useWallet()
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
@@ -60,7 +58,7 @@ export const ProfileCardMemberInfo = ({
     refreshTotals,
     claimsPending,
     claimsAvailable,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     loadingTotalStakedValue,
     refreshClaims,
@@ -71,7 +69,7 @@ export const ProfileCardMemberInfo = ({
   })
 
   const doClaim = DaoVotingTokenStakedHooks.useClaim({
-    contractAddress: votingModuleAddress,
+    contractAddress: votingModule.address,
     sender: walletAddress ?? '',
   })
 
@@ -80,7 +78,7 @@ export const ProfileCardMemberInfo = ({
     if (!isWalletConnected) {
       return toast.error(t('error.logInToContinue'))
     }
-    if (!sumClaimsAvailable) {
+    if (sumClaimsAvailable.isZero()) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -97,9 +95,7 @@ export const ProfileCardMemberInfo = ({
 
       toast.success(
         t('success.claimedTokens', {
-          amount: HugeDecimal.from(
-            sumClaimsAvailable
-          ).toInternationalizedHumanReadableString({
+          amount: sumClaimsAvailable.toInternationalizedHumanReadableString({
             decimals: governanceToken.decimals,
           }),
           tokenSymbol: governanceToken.symbol,
@@ -126,12 +122,12 @@ export const ProfileCardMemberInfo = ({
 
   const blockHeightLoadable = useCachedLoadable(
     blockHeightSelector({
-      chainId,
+      chainId: votingModule.chainId,
     })
   )
   const blocksPerYear = useRecoilValue(
     blocksPerYearSelector({
-      chainId,
+      chainId: votingModule.chainId,
     })
   )
 
@@ -180,8 +176,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: HugeDecimal.from(loadingWalletStakedValue.data),
-                    unstaked: HugeDecimal.from(loadingUnstakedBalance.data),
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
                   },
                 ],
               }
@@ -194,10 +190,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

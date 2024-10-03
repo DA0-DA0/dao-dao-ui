@@ -16,7 +16,7 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
 
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
@@ -33,8 +33,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     daoVotingOnftStakedExtraQueries.topStakers(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     })
   )
 
@@ -66,7 +66,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       value: loadingTotalStakedValue.loading
         ? '...'
         : formatPercentOf100(
-            (loadingTotalStakedValue.data / totalSupply) * 100
+            loadingTotalStakedValue.data.div(totalSupply).times(100).toNumber()
           ),
     },
     {

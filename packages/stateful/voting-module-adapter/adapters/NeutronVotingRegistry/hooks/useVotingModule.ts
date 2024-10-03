@@ -14,18 +14,18 @@ export type UseVotingModuleReturn = {
 }
 
 export const useVotingModule = (): UseVotingModuleReturn => {
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { votingModule } = useVotingModuleAdapterOptions()
 
   const queryClient = useQueryClient()
   const loadingVaults = useQueryLoadingDataWithError(
     neutronVotingRegistryExtraQueries.vaultsWithInfo(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     })
   )
 
   return {
-    votingRegistryAddress: votingModuleAddress,
+    votingRegistryAddress: votingModule.address,
     loadingVaults,
   }
 }

@@ -88,7 +88,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
     }
 
     return secretDaoVotingSnip721StakedQueries.votingPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         auth: { permit },
@@ -124,7 +124,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingSnip721StakedQueries.totalPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -138,7 +138,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
         'snip721StakedVotingModule',
         'governanceToken',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -146,26 +146,26 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
         const { nft_address: collectionAddress } =
           await this.queryClient.fetchQuery(
             secretDaoVotingSnip721StakedQueries.config({
-              chainId: this.dao.chainId,
+              chainId: this.chainId,
               contractAddress: this.address,
             })
           )
 
         const contractInfo = await this.queryClient.fetchQuery(
           cw721BaseQueries.contractInfo({
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             contractAddress: collectionAddress,
           })
         )
 
         return {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           type: TokenType.Cw721,
           denomOrAddress: collectionAddress,
           symbol: contractInfo.symbol,
           decimals: 0,
           source: {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             type: TokenType.Cw721,
             denomOrAddress: collectionAddress,
           },
@@ -182,7 +182,7 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
     return (
       await this.queryClient.fetchQuery(
         secretDaoVotingSnip721StakedQueries.hooks({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })
       )

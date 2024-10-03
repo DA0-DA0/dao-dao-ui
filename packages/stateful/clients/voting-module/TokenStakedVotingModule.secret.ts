@@ -87,7 +87,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
     }
 
     return secretDaoVotingTokenStakedQueries.votingPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         auth: { permit },
@@ -123,7 +123,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingTokenStakedQueries.totalPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -137,21 +137,21 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
         'secretTokenStakedVotingModule',
         'governanceToken',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
       queryFn: async () => {
         const { denom } = await this.queryClient.fetchQuery(
           secretDaoVotingTokenStakedQueries.denom({
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
         const token = await this.queryClient.fetchQuery(
           tokenQueries.info(this.queryClient, {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
           })
@@ -170,7 +170,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
     return (
       await this.queryClient.fetchQuery(
         secretDaoVotingTokenStakedQueries.getHooks({
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })
       )

@@ -294,7 +294,7 @@ export const ProposalList = ({
             newProposalInfos = newProposalInfos.filter(
               (info) =>
                 !(
-                  info.proposalModule.dao.chainId === ChainId.NeutronMainnet &&
+                  info.proposalModule.chainId === ChainId.NeutronMainnet &&
                   info.proposalModule.dao.coreAddress ===
                     NEUTRON_GOVERNANCE_DAO &&
                   (info.id === 'A47' || info.id === 'A48')

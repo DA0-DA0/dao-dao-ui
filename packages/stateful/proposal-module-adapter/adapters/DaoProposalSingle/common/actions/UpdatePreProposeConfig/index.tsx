@@ -164,7 +164,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
 
     const config = await this.options.queryClient.fetchQuery(
       daoPreProposeSingleQueries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.prePropose.address,
       })
     )
@@ -174,7 +174,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
           tokenQueries.info(this.options.queryClient, {
-            chainId: this.proposalModule.dao.chainId,
+            chainId: this.proposalModule.chainId,
             type:
               'native' in config.deposit_info.denom
                 ? TokenType.Native
@@ -214,7 +214,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
             amount: '1',
             type: 'native',
             denomOrAddress: getNativeTokenForChainId(
-              this.proposalModule.dao.chainId
+              this.proposalModule.chainId
             ).denomOrAddress,
             token: undefined,
             refundPolicy: DepositRefundPolicy.OnlyPassed,
@@ -308,7 +308,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.proposalModule.dao.chainId,
+      chainId: this.proposalModule.chainId,
       contractAddress: this.prePropose.address,
       sender: this.options.address,
       msg: updateConfigMessage,
@@ -333,7 +333,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
           },
         },
       }) &&
-      chainId === this.proposalModule.dao.chainId &&
+      chainId === this.proposalModule.chainId &&
       (await this.options.queryClient.fetchQuery(
         contractQueries.isContract(this.options.queryClient, {
           chainId,
