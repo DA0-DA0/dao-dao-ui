@@ -9,7 +9,7 @@ import {
   ProposalStatusAndInfoProps,
   Tooltip,
   useConfiguredChainContext,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -70,7 +70,7 @@ export const useProposalVetoState = ({
   const {
     chain: { chain_id: chainId },
   } = useConfiguredChainContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { address: walletAddress = '', getSigningClient } = useWallet()

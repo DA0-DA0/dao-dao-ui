@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
-  DaoInfo,
+  IDaoBase,
   StatefulProposalListProps,
 } from '@dao-dao/types'
 
@@ -13,13 +13,13 @@ import { useDaoNavHelpers, usePlatform } from '../../../hooks'
 import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
-  daoInfo: DaoInfo
+  dao: IDaoBase
   ProposalList: ComponentType<StatefulProposalListProps>
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProposalsTab = ({
-  daoInfo,
+  dao,
   ProposalList,
   ButtonLink,
 }: ProposalsTabProps) => {
@@ -35,14 +35,14 @@ export const ProposalsTab = ({
       if (((!isMac && event.ctrlKey) || event.metaKey) && event.shiftKey) {
         if (event.key === 'p') {
           event.preventDefault()
-          goToDaoProposal(daoInfo.coreAddress, 'create')
+          goToDaoProposal(dao.coreAddress, 'create')
         }
       }
     }
 
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [isMac, daoInfo.coreAddress, goToDaoProposal])
+  }, [isMac, dao.coreAddress, goToDaoProposal])
 
   return (
     <>
@@ -64,7 +64,7 @@ export const ProposalsTab = ({
         >
           <ButtonLink
             className="shrink-0"
-            href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
+            href={getDaoProposalPath(dao.coreAddress, 'create')}
           >
             <Add className="!h-4 !w-4" />
             <span className="hidden md:inline">{t('button.newProposal')}</span>

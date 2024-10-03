@@ -4,7 +4,7 @@ import { ComponentType } from 'react'
 import {
   ErrorPage,
   Loader,
-  useDaoContext,
+  useDao,
   useDaoNavHelpers,
   useUpdatingRef,
 } from '@dao-dao/stateless'
@@ -24,7 +24,7 @@ import { Submit } from './Submit'
 import { ViewSurveyPageProps } from './types'
 
 export const ViewSurvey = () => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { daoSubpathComponents } = useDaoNavHelpers()
 
   const { hexPublicKey } = useWallet({

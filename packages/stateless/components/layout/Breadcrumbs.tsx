@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { BreadcrumbsProps, DaoPageMode } from '@dao-dao/types'
 
-import { useDaoInfoContextIfAvailable } from '../../contexts'
+import { useDaoIfAvailable } from '../../contexts'
 import { useDaoNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
@@ -18,37 +18,38 @@ export const Breadcrumbs = ({
   override = false,
   homeTab,
   current,
-  daoInfo: _daoInfo,
+  dao: _dao,
   className,
 }: BreadcrumbsProps) => {
   const { t } = useTranslation()
-  // Allow using Breadcrumbs outside of DaoPageWrapper.
-  const daoInfo = useDaoInfoContextIfAvailable() || _daoInfo
   const { mode } = useAppContext()
   const { getDaoPath } = useDaoNavHelpers()
+
+  // Allow using Breadcrumbs outside of DaoPageWrapper.
+  const dao = useDaoIfAvailable() || _dao
 
   const [responsive, setResponsive] = useState(false)
 
   const crumbs =
     mode === DaoPageMode.Dapp
-      ? home || !daoInfo
+      ? home || !dao
         ? [{ href: '/', label: t('title.home') }]
         : [
             {
               href:
                 // Link to home tab if available.
-                getDaoPath(daoInfo.coreAddress, homeTab?.id),
-              label: daoInfo.name,
+                getDaoPath(dao.coreAddress, homeTab?.id),
+              label: dao.name,
             },
           ]
       : // SDA
-      home || !daoInfo
+      home || !dao
       ? []
       : [
           {
             href:
               // Link to home tab if available.
-              getDaoPath(daoInfo.coreAddress, homeTab?.id),
+              getDaoPath(dao.coreAddress, homeTab?.id),
             label: homeTab?.sdaLabel || t('title.home'),
           },
         ]

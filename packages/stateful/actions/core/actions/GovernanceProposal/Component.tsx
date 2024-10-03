@@ -22,7 +22,7 @@ import {
   TokenInput,
   useActionOptions,
   useChainContext,
-  useDaoInfoContextIfAvailable,
+  useDaoIfAvailable,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -110,7 +110,7 @@ export const GovernanceProposalComponent: ActionComponent<
   // Whether or not this action is being used directly on a governance page (as
   // opposed to in a DAO proposal).
   const onGovernancePage =
-    useDaoInfoContextIfAvailable()?.coreVersion === ContractVersion.Gov
+    useDaoIfAvailable()?.coreVersion === ContractVersion.Gov
 
   const {
     chainId,

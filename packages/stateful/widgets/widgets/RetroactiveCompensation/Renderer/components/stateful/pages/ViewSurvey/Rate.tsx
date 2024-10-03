@@ -8,12 +8,7 @@ import {
   cosmWasmClientForChainSelector,
   genericTokenWithUsdPriceSelector,
 } from '@dao-dao/state/recoil'
-import {
-  Loader,
-  useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { Loader, useCachedLoadable, useChain, useDao } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
@@ -41,7 +36,7 @@ import { ViewSurveyPageProps } from './types'
 export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const postRequest = usePostRequest()

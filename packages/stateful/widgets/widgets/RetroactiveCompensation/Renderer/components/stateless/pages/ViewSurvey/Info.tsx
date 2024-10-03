@@ -2,12 +2,7 @@ import { ArrowOutward, Download } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  Tooltip,
-  useDaoContext,
-  useDaoNavHelpers,
-} from '@dao-dao/stateless'
+import { Button, Tooltip, useDao, useDaoNavHelpers } from '@dao-dao/stateless'
 import { ButtonLinkProps, LoadingDataWithError } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
@@ -46,7 +41,7 @@ export const Info = ({
   ButtonLink,
 }: InfoProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
   return (

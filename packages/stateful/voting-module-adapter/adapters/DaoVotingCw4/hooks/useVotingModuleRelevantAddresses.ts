@@ -2,23 +2,21 @@ import { useTranslation } from 'react-i18next'
 
 import { VotingModuleRelevantAddress } from '@dao-dao/types'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useLoadingVotingModule } from './useLoadingVotingModule'
+import { useLoadingVotingModuleInfo } from './useLoadingVotingModuleInfo'
 
 export const useVotingModuleRelevantAddresses =
   (): VotingModuleRelevantAddress[] => {
     const { t } = useTranslation()
-    const { coreAddress } = useVotingModuleAdapterOptions()
-    const votingModule = useLoadingVotingModule(coreAddress)
+    const loadingInfo = useLoadingVotingModuleInfo()
 
     return [
       {
         label: t('info.groupAddress'),
-        address: votingModule.loading
+        address: loadingInfo.loading
           ? '...'
-          : votingModule.errored
+          : loadingInfo.errored
           ? '<error>'
-          : votingModule.data.cw4GroupAddress,
+          : loadingInfo.data.cw4GroupAddress,
       },
     ]
   }

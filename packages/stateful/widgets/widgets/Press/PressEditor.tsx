@@ -9,7 +9,7 @@ import {
   CopyableAddress,
   DaoSupportedChainPickerInput,
   useChain,
-  useDaoInfoContext,
+  useDao,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { ActionKey, ChainId, WidgetEditorProps } from '@dao-dao/types'
@@ -36,7 +36,10 @@ export const PressEditor = ({
     config: { polytone },
   } = useSupportedChainContext()
   const { chain_id: nativeChainId } = useChain()
-  const { name: daoName, polytoneProxies } = useDaoInfoContext()
+  const {
+    name: daoName,
+    info: { polytoneProxies },
+  } = useDao()
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')

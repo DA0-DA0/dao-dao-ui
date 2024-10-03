@@ -13,7 +13,7 @@ import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdaNavigationProps } from '@dao-dao/types/components/SdaNavigation'
 import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 import { IconButton, ThemeToggle } from '../icon_buttons'
@@ -53,7 +53,7 @@ export const SdaNavigation = ({
   LinkWrapper,
   SidebarWallet,
 }: SdaNavigationProps) => {
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDao()
   const { t } = useTranslation()
   const {
     getDaoPath,

@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
-import { useDaoContextIfAvailable } from '@dao-dao/stateless'
+import { useDaoIfAvailable } from '@dao-dao/stateless'
 import { DaoSource, IDaoBase } from '@dao-dao/types'
 
 import { getDao } from '../clients/dao'
@@ -28,7 +28,7 @@ export const useDaoClient = ({
   dao: daoSource,
 }: UseDaoClientOptions): UseDaoClientReturn => {
   const queryClient = useQueryClient()
-  const currentDao = useDaoContextIfAvailable()?.dao
+  const currentDao = useDaoIfAvailable()
 
   // Get DAO client. If matches current DAO context, use that one instead.
   const dao = useMemo(

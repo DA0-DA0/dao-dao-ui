@@ -9,12 +9,11 @@ import {
   nativeSupplySelector,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useVotingModule } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { TokenStakedVotingModule } from '../../../../clients'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
@@ -25,9 +24,9 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { chainId, coreAddress, votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet({
-    chainId,
+    chainId: votingModule.chainId,
   })
 
   const isTokenStaked = votingModule instanceof TokenStakedVotingModule
@@ -35,12 +34,12 @@ export const useGovernanceTokenInfo = ({
   const { denom } = useRecoilValue(
     isTokenStaked
       ? DaoVotingTokenStakedSelectors.denomSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: votingModule.address,
           params: [],
         })
       : DaoVotingNativeStakedSelectors.getConfigSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: votingModule.address,
           params: [],
         })
@@ -49,18 +48,18 @@ export const useGovernanceTokenInfo = ({
   const [governanceToken, supply, tokenFactoryIssuerAddress] = useRecoilValue(
     waitForAll([
       genericTokenSelector({
-        chainId,
+        chainId: votingModule.chainId,
         type: TokenType.Native,
         denomOrAddress: denom,
       }),
       nativeSupplySelector({
-        chainId,
+        chainId: votingModule.chainId,
         denom,
       }),
       isTokenStaked
         ? DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector(
             {
-              chainId,
+              chainId: votingModule.chainId,
               contractAddress: votingModule.address,
             }
           )
@@ -74,7 +73,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? nativeDenomBalanceSelector({
-          chainId,
+          chainId: votingModule.chainId,
           walletAddress,
           denom,
         })
@@ -86,8 +85,8 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? nativeDenomBalanceSelector({
-          chainId,
-          walletAddress: coreAddress,
+          chainId: votingModule.chainId,
+          walletAddress: votingModule.dao.coreAddress,
           denom,
         })
       : constSelector(undefined),
@@ -99,7 +98,7 @@ export const useGovernanceTokenInfo = ({
     fetchUsdcPrice
       ? usdPriceSelector({
           type: TokenType.Native,
-          chainId,
+          chainId: votingModule.chainId,
           denomOrAddress: denom,
         })
       : constSelector(undefined),

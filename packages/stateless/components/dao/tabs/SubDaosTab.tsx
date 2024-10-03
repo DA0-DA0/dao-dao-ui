@@ -11,7 +11,7 @@ import {
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../../contexts'
+import { useDao } from '../../../contexts'
 import { useDaoNavHelpers } from '../../../hooks'
 import { ErrorPage } from '../../error'
 import { GridCardContainer } from '../../GridCardContainer'
@@ -37,8 +37,12 @@ export const SubDaosTab = ({
   ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
-  const { coreAddress, coreVersion, name, supportedFeatures } =
-    useDaoInfoContext()
+  const {
+    coreAddress,
+    coreVersion,
+    name,
+    info: { supportedFeatures },
+  } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   const subDaosSupported =

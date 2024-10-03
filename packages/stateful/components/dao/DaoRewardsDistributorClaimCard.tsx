@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/state/query'
 import {
   DaoRewardsDistributorClaimCard as StatelessDaoRewardsDistributorClaimCard,
-  useDaoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { StatefulDaoRewardsDistributorClaimCardProps } from '@dao-dao/types'
 import { executeSmartContracts, processError } from '@dao-dao/utils'
@@ -20,7 +20,7 @@ export const DaoRewardsDistributorClaimCard = ({
   ...props
 }: StatefulDaoRewardsDistributorClaimCardProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { address, isWalletConnected, getSigningClient } = useWallet()
 
   const queryClient = useQueryClient()

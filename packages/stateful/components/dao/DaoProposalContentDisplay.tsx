@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import {
   ProposalContentDisplay,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -24,7 +24,7 @@ export type DaoProposalContentDisplayProps = {
 export const DaoProposalContentDisplay = ({
   proposalInfo,
 }: DaoProposalContentDisplayProps) => {
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const {
     id,

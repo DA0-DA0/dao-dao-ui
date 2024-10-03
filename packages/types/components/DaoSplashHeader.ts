@@ -1,12 +1,12 @@
 import { ComponentType } from 'react'
 
-import { DaoInfo } from '../dao'
+import { IDaoBase } from '../clients'
 import { ButtonLinkProps } from './Buttonifier'
 import { FollowState } from './DaoCard'
 import { LinkWrapperProps } from './LinkWrapper'
 
 export type DaoSplashHeaderProps = {
-  daoInfo: DaoInfo
+  dao: IDaoBase
   follow?: FollowState
   ButtonLink: ComponentType<ButtonLinkProps>
   LinkWrapper: ComponentType<LinkWrapperProps>

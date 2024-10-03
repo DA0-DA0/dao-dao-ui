@@ -2,14 +2,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { daoVotingSgCommunityNftExtraQueries } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(

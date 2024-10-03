@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react'
 
-import { useDaoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 import { IVotingModuleAdapterContext } from '@dao-dao/types'
 
 import { matchAndLoadAdapter } from '../core'
@@ -14,7 +14,7 @@ export const VotingModuleAdapterProvider = ({
 }: {
   children: ReactNode
 }) => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const [context] = useState<IVotingModuleAdapterContext>(() =>
     matchAndLoadAdapter(dao)
   )

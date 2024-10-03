@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { processMessage } from '@dao-dao/state'
 import {
   ActionsContext,
-  useDaoContext,
+  useDao,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
@@ -33,7 +33,7 @@ import {
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
   const chainContext = useSupportedChainContext()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const queryClient = useQueryClient()
 
   // Get the action category makers for a DAO from its various sources:

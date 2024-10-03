@@ -12,7 +12,7 @@ import { useRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
-import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
+import { useDao, useDaoNavHelpers } from '@dao-dao/stateless'
 import { AccountType, ContractVersion, Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
@@ -48,7 +48,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-    const { accounts, supportedFeatures } = useDaoInfoContext()
+    const {
+      info: { accounts, supportedFeatures },
+    } = useDao()
     const loadingTabs = useLoadingTabs()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =

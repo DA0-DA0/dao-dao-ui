@@ -18,7 +18,7 @@ import {
   ChainProvider,
   TokenCard as StatelessTokenCard,
   useCachedLoading,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -49,7 +49,7 @@ export const DaoTokenCard = ({
 
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
   const lazyInfo = useCachedLoading(

@@ -6,11 +6,11 @@ import {
 
 import { HugeDecimal } from '@dao-dao/math'
 import { daoVotingOnftStakedQueries, omniflixQueries } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceCollectionInfoOptions,
   UseGovernanceCollectionInfoResponse,
@@ -20,7 +20,7 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
-  const { coreAddress, votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet()
 
   const queryClient = useQueryClient()
@@ -73,7 +73,7 @@ export const useGovernanceCollectionInfo = ({
         ? {
             chainId: votingModule.chainId,
             id: onft_collection_id,
-            owner: coreAddress,
+            owner: votingModule.dao.coreAddress,
           }
         : undefined
     )

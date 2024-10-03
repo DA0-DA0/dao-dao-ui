@@ -21,7 +21,7 @@ import {
   TokenAmountDisplay,
   useChainContext,
   useConfiguredChainContext,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { processError, tokensEqual } from '@dao-dao/utils'
 
@@ -63,7 +63,7 @@ export const InnerDaoTxTreasuryHistory = ({
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
 
   // Initialization.
   const latestBlockHeight = useRecoilValue(

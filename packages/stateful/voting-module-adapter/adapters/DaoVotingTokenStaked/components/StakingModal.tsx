@@ -12,6 +12,7 @@ import {
 import {
   ModalLoader,
   StakingModal as StatelessStakingModal,
+  useVotingModule,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
@@ -22,7 +23,6 @@ import {
   useAwaitNextBlock,
   useWallet,
 } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
@@ -45,7 +45,7 @@ const InnerStakingModal = ({
     isWalletConnected,
     refreshBalances,
   } = useWallet()
-  const { coreAddress, votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -80,7 +80,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(coreAddress)
+    refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
   const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { AccountType, ChainPickerPopupProps } from '@dao-dao/types'
 import { getIbcTransferChainIdsForChain } from '@dao-dao/utils'
 
-import { useChainContext, useDaoInfoContextIfAvailable } from '../../contexts'
+import { useChainContext, useDaoIfAvailable } from '../../contexts'
 import { ChainPickerPopup } from '../popup'
 import { InputLabel } from './InputLabel'
 
@@ -77,13 +77,13 @@ export const DaoSupportedChainPickerInput = ({
     config,
   } = useChainContext()
   const { watch, setValue } = useFormContext()
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const dao = useDaoIfAvailable()
 
   const includeChainIds =
-    onlyDaoChainIds && daoInfo
+    onlyDaoChainIds && dao
       ? [
-          daoInfo.chainId,
-          ...daoInfo.accounts.flatMap(({ type, chainId }) =>
+          dao.chainId,
+          ...dao.accounts.flatMap(({ type, chainId }) =>
             accountTypes.includes(type as any) ? chainId : []
           ),
         ]

@@ -11,7 +11,7 @@ import {
   Modal,
   NoContent,
   Tooltip,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -48,7 +48,7 @@ export const TabRenderer = ({
   Trans,
 }: TabRendererProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
   const { address: walletAddress } = useWallet()
 

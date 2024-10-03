@@ -21,6 +21,7 @@ export const useDaoContext = () => {
 
 export const useDaoContextIfAvailable = () => useContext(DaoContext)
 
-export const useDaoInfoContext = () => useDaoContext().dao.info
-export const useDaoInfoContextIfAvailable = () =>
-  useDaoContextIfAvailable()?.dao.info
+export const useDao = () => useDaoContext().dao
+export const useDaoIfAvailable = () => useDaoContextIfAvailable()?.dao
+
+export const useVotingModule = () => useDao().votingModule

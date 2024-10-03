@@ -9,7 +9,7 @@ import {
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import { useCachedLoadable, useDao, useVotingModule } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -27,7 +27,6 @@ import {
   useWallet,
 } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
@@ -36,8 +35,8 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
-  const { votingModule } = useVotingModuleAdapterOptions()
+  const { name: daoName } = useDao()
+  const votingModule = useVotingModule()
   const {
     address: walletAddress,
     isWalletConnected,

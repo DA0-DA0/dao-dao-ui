@@ -95,7 +95,7 @@ export const getAccountChainId = ({
   accounts,
   address,
 }: {
-  accounts: Account[]
+  accounts: readonly Account[]
   address: string
 }): string | undefined =>
   accounts.find((account) => account.address === address)?.chainId

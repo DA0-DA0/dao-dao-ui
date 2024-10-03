@@ -21,7 +21,7 @@ import {
   ProposalNotFound,
   ProposalProps,
   ProposalVotesPrivate,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
@@ -47,7 +47,7 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
   const { address } = useWallet()
 
   const proposalModuleAdapterContext = useProposalModuleAdapterContext()
@@ -138,7 +138,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
           // Manually revalidate DAO static props.
           await fetch(
-            `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
+            `/api/revalidate?d=${dao.coreAddress}&p=${proposalInfo.id}`
           )
 
           // Refresh entire app since any DAO config may have changed.
@@ -235,7 +235,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             sdaLabel: t('title.proposals'),
           },
           current: `${t('title.proposal')} ${proposalInfo.id}`,
-          daoInfo,
+          dao,
         }}
         rightNode={
           canVote ? (
@@ -277,7 +277,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         VotesCast={
           isPreProposeApprovalProposal
             ? undefined
-            : isSecretNetwork(daoInfo.chainId)
+            : isSecretNetwork(dao.chainId)
             ? ProposalVotesPrivate
             : ProposalVotes
         }
@@ -328,7 +328,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 }
 
 export const DaoProposal = ({ proposalInfo }: DaoProposalProps) => {
-  const { coreAddress } = useDaoInfoContext()
+  const dao = useDao()
 
   return proposalInfo ? (
     <ProposalModuleAdapterProvider
@@ -336,7 +336,7 @@ export const DaoProposal = ({ proposalInfo }: DaoProposalProps) => {
         // Make sure to refresh when the DAO or proposal ID changes. In case we
         // redirect to a proposal in the same DAO, this is necessary to refresh
         // for some reason.
-        coreAddress + proposalInfo.id
+        dao.coreAddress + proposalInfo.id
       }
       proposalId={proposalInfo.id}
     >

@@ -3,7 +3,7 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { CommonNftSelectors, daoVotingCw721StakedQueries } from '@dao-dao/state'
-import { useCachedLoading, useDaoContext } from '@dao-dao/stateless'
+import { useCachedLoading, useDao } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
@@ -16,7 +16,7 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { address: walletAddress } = useWallet()
   const queryClient = useQueryClient()
 

@@ -7,7 +7,7 @@ import {
   cwVestingExtraQueries,
 } from '@dao-dao/state/query'
 import {
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
   useInitializedActionForKey,
 } from '@dao-dao/stateless'
@@ -33,7 +33,7 @@ import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 export const TabRenderer = ({
   variables: { factories, factory, oldFactories },
 }: WidgetRendererProps<VestingPaymentsWidgetData>) => {
-  const { chainId: defaultChainId, coreAddress, accounts } = useDaoInfoContext()
+  const { chainId: defaultChainId, coreAddress, accounts } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership()
 

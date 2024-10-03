@@ -3,7 +3,7 @@ import { unparse as jsonToCsv } from 'papaparse'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useChain, useDaoContext } from '@dao-dao/stateless'
+import { useChain, useDao } from '@dao-dao/stateless'
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../../../../components'
@@ -13,7 +13,7 @@ import { Info as StatelessInfo } from '../../../stateless/pages/ViewSurvey/Info'
 import { ViewSurveyPageProps } from './types'
 
 export const Info = ({ status, isMember }: ViewSurveyPageProps) => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { bech32_prefix: bech32Prefix } = useChain()
 
   const postRequest = usePostRequest()

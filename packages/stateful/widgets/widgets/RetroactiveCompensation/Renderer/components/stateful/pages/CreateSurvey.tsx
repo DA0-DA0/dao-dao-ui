@@ -10,7 +10,7 @@ import {
   Loader,
   useCachedLoading,
   useChain,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { TokenType, WidgetId } from '@dao-dao/types'
@@ -32,7 +32,7 @@ import { CreateSurvey as StatelessCreateSurvey } from '../../stateless/pages/Cre
 export const CreateSurvey = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
   const router = useRouter()
 

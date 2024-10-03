@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ProposalWalletVote,
   Tooltip,
-  useDaoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { LinkWrapperProps, WidgetId } from '@dao-dao/types'
@@ -51,7 +51,7 @@ export const SurveyRow = ({
   LinkWrapper,
 }: SurveyRowProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   // Display upcoming date first, then date when contributions close. Even

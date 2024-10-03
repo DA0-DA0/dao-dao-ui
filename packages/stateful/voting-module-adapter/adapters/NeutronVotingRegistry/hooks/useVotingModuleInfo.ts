@@ -1,20 +1,20 @@
 import { useQueryClient } from '@tanstack/react-query'
 
 import { neutronVotingRegistryExtraQueries } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/stateless'
 import { LoadingDataWithError, VotingVaultWithInfo } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export type LoadingVaults = LoadingDataWithError<VotingVaultWithInfo[]>
 
-export type UseVotingModuleReturn = {
+export type UseVotingModuleInfoReturn = {
   votingRegistryAddress: string
   loadingVaults: LoadingVaults
 }
 
-export const useVotingModule = (): UseVotingModuleReturn => {
-  const { votingModule } = useVotingModuleAdapterOptions()
+export const useVotingModuleInfo = (): UseVotingModuleInfoReturn => {
+  const votingModule = useVotingModule()
 
   const queryClient = useQueryClient()
   const loadingVaults = useQueryLoadingDataWithError(

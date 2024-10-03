@@ -11,12 +11,15 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { TokenStakedVotingModule } from '../../../../clients'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
@@ -24,7 +27,7 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet()
   const queryClient = useQueryClient()
 

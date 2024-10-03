@@ -101,9 +101,10 @@ view the voting configuration for each one:
 
 ```tsx
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
+import { useDao } from '@dao-dao/stateless'
 
 export const DaoInfo = () => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModules } = useDao()
 
   const components = useMemo(
     () =>

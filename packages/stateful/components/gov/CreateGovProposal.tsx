@@ -1,10 +1,7 @@
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  CreateProposal,
-  useDaoInfoContextIfAvailable,
-} from '@dao-dao/stateless'
+import { CreateProposal, useDaoIfAvailable } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
 
 import { GovActionsProvider } from '../../actions'
@@ -13,7 +10,7 @@ import { NewGovProposal } from './NewGovProposal'
 
 export const CreateGovProposal = () => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const dao = useDaoIfAvailable()
 
   const clearRef = useRef(() => {})
   const copyDraftLinkRef = useRef(async () => {})
@@ -27,7 +24,7 @@ export const CreateGovProposal = () => {
             sdaLabel: t('title.proposals'),
           },
           current: t('title.createProposal'),
-          daoInfo,
+          dao,
         }}
       />
 

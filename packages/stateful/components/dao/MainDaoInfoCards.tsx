@@ -8,7 +8,7 @@ import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
   useChain,
-  useDaoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
 import { formatDate, formatPercentOf100 } from '@dao-dao/utils'
@@ -39,7 +39,7 @@ const InnerMainDaoInfoCards = () => {
   const votingModuleCards = useMainDaoInfoCards()
   const tokenInfo = useDaoGovernanceToken()
 
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { activeThreshold, created, proposalModules } = dao.info
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {

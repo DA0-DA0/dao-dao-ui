@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { formatDate } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { DaoInfoCards } from './DaoInfoCards'
 
 /**
@@ -11,7 +11,7 @@ import { DaoInfoCards } from './DaoInfoCards'
  */
 export const MainDaoInfoCardsTokenLoader = () => {
   const { t } = useTranslation()
-  const { activeThreshold, created } = useDaoInfoContext()
+  const { activeThreshold, created } = useDao().info
 
   return (
     <DaoInfoCards

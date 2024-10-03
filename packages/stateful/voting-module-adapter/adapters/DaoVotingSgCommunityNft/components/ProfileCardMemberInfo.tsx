@@ -10,7 +10,7 @@ import {
   daoVotingSgCommunityNftQueries,
   indexerQueries,
 } from '@dao-dao/state/query'
-import { Button, useDaoContext } from '@dao-dao/stateless'
+import { Button, useDao } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   LoadingDataWithError,
@@ -33,7 +33,7 @@ export const ProfileCardMemberInfo = ({
   cantVoteOnProposal,
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const {
     address: walletAddress,
     isWalletConnected,

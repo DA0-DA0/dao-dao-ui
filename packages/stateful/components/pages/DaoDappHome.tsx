@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoDappTabbedHome,
   FollowingToggle,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -42,14 +42,14 @@ export const InnerDaoDappHome = ({
   ...props
 }: InnerDaoDappHomeProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
   const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
   const following = isFollowing({
-    chainId: daoInfo.chainId,
-    coreAddress: daoInfo.coreAddress,
+    chainId: dao.chainId,
+    coreAddress: dao.coreAddress,
   })
 
   // Just a type-check because some tabs are loaded at the beginning.
@@ -61,9 +61,9 @@ export const InnerDaoDappHome = ({
   // Pre-fetch tabs.
   useEffect(() => {
     tabs?.forEach((tab) => {
-      router.prefetch(getDaoPath(daoInfo.coreAddress, tab.id))
+      router.prefetch(getDaoPath(dao.coreAddress, tab.id))
     })
-  }, [daoInfo.coreAddress, getDaoPath, router, tabs])
+  }, [dao.coreAddress, getDaoPath, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
   const checkedSlug = useRef(false)
@@ -78,11 +78,11 @@ export const InnerDaoDappHome = ({
 
     // If no slug and on current DAO, redirect to first tab.
     if (slug.length === 0) {
-      router.replace(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
+      router.replace(getDaoPath(dao.coreAddress, firstTabId), undefined, {
         shallow: true,
       })
     }
-  }, [daoInfo.coreAddress, getDaoPath, router, slug.length, firstTabId])
+  }, [dao.coreAddress, getDaoPath, router, slug.length, firstTabId])
 
   const tabId =
     slug.length > 0 && tabs?.some(({ id }) => id === slug[0])
@@ -90,7 +90,7 @@ export const InnerDaoDappHome = ({
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.replace(getDaoPath(daoInfo.coreAddress, tabId), undefined, {
+    router.replace(getDaoPath(dao.coreAddress, tabId), undefined, {
       shallow: true,
     })
 
@@ -98,8 +98,8 @@ export const InnerDaoDappHome = ({
     following,
     onFollow: () =>
       (following ? setUnfollowing : setFollowing)({
-        chainId: daoInfo.chainId,
-        coreAddress: daoInfo.coreAddress,
+        chainId: dao.chainId,
+        coreAddress: dao.coreAddress,
       }),
     updatingFollowing,
   }
@@ -109,8 +109,8 @@ export const InnerDaoDappHome = ({
       <PageHeaderContent
         breadcrumbs={{
           home: true,
-          current: daoInfo.name,
-          daoInfo,
+          current: dao.name,
+          dao,
         }}
         rightNode={
           <>
@@ -118,7 +118,7 @@ export const InnerDaoDappHome = ({
             <ButtonLink
               className="hidden md:block"
               contentContainerClassName="text-text-body text-base !gap-1.5"
-              href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
+              href={getDaoProposalPath(dao.coreAddress, 'create')}
               variant="ghost"
             >
               <Add className="!h-5 !w-5 !text-icon-primary" />
@@ -158,10 +158,8 @@ export const DaoDappHome = () => {
     chainId,
     coreAddress,
     name,
-    contractAdmin,
-    supportedFeatures,
-    parentDao,
-  } = useDaoInfoContext()
+    info: { contractAdmin, supportedFeatures, parentDao },
+  } = useDao()
 
   const { isMember = false } = useMembership()
   // We won't use this value unless there's a parent, so the undefined DAO

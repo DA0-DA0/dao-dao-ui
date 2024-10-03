@@ -34,7 +34,7 @@ import {
   TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
-  useDaoInfoContextIfAvailable,
+  useDaoIfAvailable,
   useDaoNavHelpers,
   useSupportedChainContext,
   useThemeContext,
@@ -170,7 +170,7 @@ export const InnerCreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const dao = useDaoIfAvailable()
   const queryClient = useQueryClient()
 
   const chainContext = useSupportedChainContext()
@@ -977,7 +977,7 @@ export const InnerCreateDaoForm = ({
               }
             : undefined,
           current: makingSubDao ? t('title.newSubDao') : t('title.newDao'),
-          daoInfo,
+          dao,
         }}
         centerNode={
           !makingSubDao && (

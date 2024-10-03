@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { stakingLoadingAtom } from '@dao-dao/state'
-import {
-  ModalLoader,
-  SegmentedControls,
-  useDaoContext,
-} from '@dao-dao/stateless'
+import { ModalLoader, SegmentedControls, useDao } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
@@ -47,7 +43,7 @@ const InnerStakingModal = ({
   initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const {
     address: walletAddress,
     isWalletConnected,

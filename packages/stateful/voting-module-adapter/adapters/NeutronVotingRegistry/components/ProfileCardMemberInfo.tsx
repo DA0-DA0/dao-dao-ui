@@ -9,29 +9,26 @@ import {
   neutronVotingRegistryQueries,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadingWithError,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useCachedLoadingWithError, useDao } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 import { makeCombineQueryResultsIntoLoadingDataWithError } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
-import { useVotingModule } from '../hooks'
+import { useVotingModuleInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({
   maxGovernanceTokenDeposit,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { name: daoName, chainId } = useDaoInfoContext()
+  const { name: daoName, chainId } = useDao()
   const { address } = useWallet()
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  const { votingRegistryAddress, loadingVaults } = useVotingModule()
+  const { votingRegistryAddress, loadingVaults } = useVotingModuleInfo()
   const realVaults =
     loadingVaults.loading || loadingVaults.errored
       ? []

@@ -19,7 +19,7 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable } from '../../contexts'
+import { useDaoIfAvailable } from '../../contexts'
 import { useAddToken } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -48,7 +48,7 @@ export const TokenCard = ({
   // If in a DAO context, don't show the DAOs governed section if the only DAO
   // this token governs is the current DAO. See the comment where this is used
   // for more details.
-  const { coreAddress } = useDaoInfoContextIfAvailable() ?? {}
+  const { coreAddress } = useDaoIfAvailable() ?? {}
 
   const lazyStakes =
     lazyInfo.loading || !lazyInfo.data.stakingInfo

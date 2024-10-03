@@ -8,7 +8,11 @@ import {
   refreshWalletBalancesIdAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import { ModalLoader, SegmentedControls } from '@dao-dao/stateless'
+import {
+  ModalLoader,
+  SegmentedControls,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
@@ -24,7 +28,6 @@ import {
   useAwaitNextBlock,
   useWallet,
 } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
@@ -41,10 +44,8 @@ const InnerStakingModal = ({
   initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { chainId, coreAddress } = useVotingModuleAdapterOptions()
-  const { address: walletAddress, isWalletConnected } = useWallet({
-    chainId,
-  })
+  const votingModule = useVotingModule()
+  const { address: walletAddress, isWalletConnected } = useWallet()
 
   const setRefreshWalletNftsId = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletAddress)
@@ -91,7 +92,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(coreAddress)
+    refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
   const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
 
@@ -264,7 +265,7 @@ const InnerStakingModal = ({
       onNftClick={onNftClick}
       onSelectAll={onSelectAll}
       selectedKeys={currentTokenIds.map((tokenId) =>
-        getNftKey(chainId, collectionAddress, tokenId)
+        getNftKey(votingModule.chainId, collectionAddress, tokenId)
       )}
       unstakingDuration={unstakingDuration}
       visible={visible}

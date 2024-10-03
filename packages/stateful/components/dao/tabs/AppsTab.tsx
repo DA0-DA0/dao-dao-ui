@@ -27,7 +27,7 @@ import {
   AppsTab as StatelessAppsTab,
   StatusCard,
   useActionMatcher,
-  useDaoInfoContext,
+  useDao,
   useLoadingPromise,
 } from '@dao-dao/stateless'
 import {
@@ -75,10 +75,10 @@ export const AppsTab = () => {
     name,
     chainId: currentChainId,
     coreAddress,
-    polytoneProxies,
     proposalModules,
     accounts,
-  } = useDaoInfoContext()
+    info: { polytoneProxies },
+  } = useDao()
 
   // Select the single choice proposal module to use for proposals.
   const singleChoiceProposalModule = proposalModules.find(
@@ -396,7 +396,7 @@ const InnerActionMatcherAndProposer = ({
   actionKeysAndData,
 }: ActionMatcherAndProposerProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { connected, profile } = useProfile()
 
   const {

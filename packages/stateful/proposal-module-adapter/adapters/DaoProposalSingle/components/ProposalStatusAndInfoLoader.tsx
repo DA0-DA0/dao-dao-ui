@@ -11,7 +11,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/types'
@@ -22,7 +22,7 @@ export const ProposalStatusAndInfoLoader = (
   props: Pick<BaseProposalStatusAndInfoProps, 'inline'>
 ) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (

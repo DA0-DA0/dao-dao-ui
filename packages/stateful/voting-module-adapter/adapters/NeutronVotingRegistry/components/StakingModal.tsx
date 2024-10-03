@@ -17,6 +17,7 @@ import {
   ModalLoader,
   StakingModal as StatelessStakingModal,
   useCachedLoadingWithError,
+  useVotingModule,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
@@ -36,8 +37,7 @@ import {
   useAwaitNextBlock,
   useWallet,
 } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useVotingModule } from '../hooks'
+import { useVotingModuleInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader
@@ -54,9 +54,9 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address = '', isWalletConnected, refreshBalances } = useWallet()
-  const { coreAddress, chainId } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
-  const { loadingVaults } = useVotingModule()
+  const { loadingVaults } = useVotingModuleInfo()
   const realVaults =
     loadingVaults.loading || loadingVaults.errored
       ? []
@@ -75,7 +75,7 @@ const InnerStakingModal = ({
         ? []
         : realVaults.map(({ address: contractAddress }) =>
             neutronVaultQueries.bondingStatus({
-              chainId,
+              chainId: votingModule.chainId,
               contractAddress,
               args: {
                 address,
@@ -138,7 +138,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(coreAddress)
+    refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
   const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {

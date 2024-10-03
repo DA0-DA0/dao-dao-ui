@@ -11,11 +11,7 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useCachedLoading,
-  useDaoContext,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useCachedLoading, useDao } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
@@ -26,7 +22,7 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { address: walletAddress } = useWallet()
   const queryClient = useQueryClient()
 

@@ -32,7 +32,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     ...DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES,
   ],
 
-  load: ({ chainId, votingModule }) => ({
+  load: (votingModule) => ({
     // Hooks
     hooks: {
       useMainDaoInfoCards,
@@ -46,7 +46,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
       StakingModal,
 
       // Can't view members on Secret Network.
-      extraTabs: isSecretNetwork(chainId)
+      extraTabs: isSecretNetwork(votingModule.chainId)
         ? undefined
         : [
             {
@@ -63,8 +63,8 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     fields: {
       actions: {
         actions: [
-          ...(chainId === ChainId.BitsongMainnet ||
-          chainId === ChainId.BitsongTestnet
+          ...(votingModule.chainId === ChainId.BitsongMainnet ||
+          votingModule.chainId === ChainId.BitsongTestnet
             ? [BitSongFantokenMintAction]
             : [
                 votingModule instanceof TokenStakedVotingModule

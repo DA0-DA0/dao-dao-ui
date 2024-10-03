@@ -20,6 +20,7 @@ import {
   ModalLoader,
   StakingModal as StatelessStakingModal,
   useCachedLoadable,
+  useVotingModule,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps, StakingMode } from '@dao-dao/types'
 import { encodeJsonToBase64, processError } from '@dao-dao/utils'
@@ -32,7 +33,6 @@ import {
   useAwaitNextBlock,
   useWallet,
 } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
@@ -55,7 +55,7 @@ const InnerStakingModal = ({
     isWalletConnected,
     refreshBalances,
   } = useWallet()
-  const { chainId, coreAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -79,16 +79,16 @@ const InnerStakingModal = ({
     useRecoilValue(
       waitForAll([
         Cw20StakeSelectors.isOraichainProxySnapshotContractSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: stakingContractAddress,
         }),
         Cw20StakeSelectors.totalStakedAtHeightSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: stakingContractAddress,
           params: [{}],
         }),
         Cw20StakeSelectors.totalValueSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: stakingContractAddress,
           params: [],
         }),
@@ -98,7 +98,7 @@ const InnerStakingModal = ({
   const oraichainCw20StakingConfig = useRecoilValue(
     isOraichainCustomStaking
       ? Cw20StakeSelectors.oraichainProxySnapshotConfigSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: stakingContractAddress,
         })
       : constSelector(undefined)
@@ -114,7 +114,7 @@ const InnerStakingModal = ({
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
       ? Cw20StakeSelectors.stakedBalanceAtHeightSelector({
-          chainId,
+          chainId: votingModule.chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -146,7 +146,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(coreAddress)
+    refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
   const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {

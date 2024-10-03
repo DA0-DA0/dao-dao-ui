@@ -27,15 +27,15 @@ import {
   CreateProposal,
   PageLoader,
   ProposalModuleSelector,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
   DaoTabId,
+  IProposalModuleBase,
   ProposalDraft,
-  ProposalModuleInfo,
   ProposalPrefill,
 } from '@dao-dao/types'
 import {
@@ -58,11 +58,11 @@ import { SuspenseLoader } from '../SuspenseLoader'
 import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const CreateDaoProposal = () => {
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
   const [selectedProposalModule, setSelectedProposalModule] = useState(() => {
     // Ignore proposals with an approver pre-propose since those are
     // automatically managed by a pre-propose-approval contract in another DAO.
-    const validProposalModules = daoInfo.proposalModules.filter(
+    const validProposalModules = dao.proposalModules.filter(
       ({ prePropose }) =>
         prePropose?.contractName !== ContractName.PreProposeApprover
     )
@@ -85,9 +85,9 @@ export const CreateDaoProposal = () => {
     ({ snapshot }) =>
       async () =>
         setLatestProposalSave(
-          await snapshot.getPromise(latestProposalSaveAtom(daoInfo.coreAddress))
+          await snapshot.getPromise(latestProposalSaveAtom(dao.coreAddress))
         ),
-    [daoInfo.coreAddress]
+    [dao.coreAddress]
   )
   useEffect(() => {
     loadLatestProposalSave()
@@ -109,8 +109,8 @@ export const CreateDaoProposal = () => {
 }
 
 type InnerCreateDaoProposalProps = {
-  selectedProposalModule: ProposalModuleInfo
-  setSelectedProposalModule: Dispatch<SetStateAction<ProposalModuleInfo>>
+  selectedProposalModule: IProposalModuleBase
+  setSelectedProposalModule: Dispatch<SetStateAction<IProposalModuleBase>>
   latestProposalSave: any
 }
 
@@ -121,7 +121,7 @@ const InnerCreateDaoProposal = ({
 }: InnerCreateDaoProposalProps) => {
   const { t } = useTranslation()
   const { goToDaoProposal, router, getDaoProposalPath } = useDaoNavHelpers()
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
@@ -147,7 +147,7 @@ const InnerCreateDaoProposal = ({
   const { getValues, reset } = formMethods
 
   const setLatestProposalSave = useSetRecoilState(
-    latestProposalSaveAtom(daoInfo.coreAddress)
+    latestProposalSaveAtom(dao.coreAddress)
   )
 
   // Reset form to defaults and clear latest proposal save.
@@ -163,7 +163,7 @@ const InnerCreateDaoProposal = ({
   const loadPrefill = useCallback(
     ({ id, data }: ProposalPrefill<any>) => {
       // Attempt to find proposal module to prefill and set if found.
-      const matchingProposalModule = daoInfo.proposalModules.find(
+      const matchingProposalModule = dao.proposalModules.find(
         ({ contractName }) =>
           matchProposalModuleAdapter(contractName)?.id === id
       )
@@ -173,7 +173,7 @@ const InnerCreateDaoProposal = ({
         reset(data)
       }
     },
-    [daoInfo.proposalModules, reset, setSelectedProposalModule]
+    [dao.proposalModules, reset, setSelectedProposalModule]
   )
 
   // Prefill form with data from parameter once ready.
@@ -248,7 +248,7 @@ const InnerCreateDaoProposal = ({
   ])
 
   const [drafts, setDrafts] = useRecoilState(
-    proposalDraftsAtom(daoInfo.coreAddress)
+    proposalDraftsAtom(dao.coreAddress)
   )
   const [draftIndex, setDraftIndex] = useState<number>()
   const draft =
@@ -389,7 +389,7 @@ const InnerCreateDaoProposal = ({
     // Copy link to clipboard.
     navigator.clipboard.writeText(
       SITE_URL +
-        getDaoProposalPath(daoInfo.coreAddress, 'create', {
+        getDaoProposalPath(dao.coreAddress, 'create', {
           pi: cid,
         })
     )
@@ -405,7 +405,7 @@ const InnerCreateDaoProposal = ({
             sdaLabel: t('title.proposals'),
           },
           current: t('title.createProposal'),
-          daoInfo,
+          dao,
         }}
       />
 
@@ -451,7 +451,7 @@ const InnerCreateDaoProposal = ({
 // storage periodically.
 const FormSaver = () => {
   const { watch, getValues } = useFormContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
 
   const proposalCreatedCardProps = useRecoilValue(proposalCreatedCardPropsAtom)
   const setLatestProposalSave = useSetRecoilState(

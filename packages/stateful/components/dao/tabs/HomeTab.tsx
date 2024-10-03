@@ -7,7 +7,7 @@ import {
   DaoSplashHeader,
   useAppContext,
   useCachedLoadable,
-  useDaoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 import { getDaoRewardDistributors } from '@dao-dao/utils'
@@ -28,7 +28,7 @@ import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { mode } = useAppContext()
   const { isWalletConnected, isSecretNetworkPermitNeeded } =
     useDaoWithWalletSecretNetworkPermit()
@@ -80,7 +80,7 @@ export const HomeTab = () => {
         <DaoSplashHeader
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
-          daoInfo={dao.info}
+          dao={dao}
         />
       )}
 

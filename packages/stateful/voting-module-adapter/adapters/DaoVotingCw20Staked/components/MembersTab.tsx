@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state/query'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 
 import {
@@ -12,12 +15,11 @@ import {
   EntityDisplay,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { governanceToken } = useGovernanceTokenInfo()
 
   const queryClient = useQueryClient()

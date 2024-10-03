@@ -14,7 +14,7 @@ import {
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { Account } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
@@ -36,7 +36,7 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
   const {
     isWalletConnected,
     address,

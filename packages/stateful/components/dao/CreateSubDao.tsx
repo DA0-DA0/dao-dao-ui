@@ -1,4 +1,4 @@
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
@@ -12,10 +12,9 @@ export const CreateSubDao = () => {
     coreVersion,
     name,
     imageUrl,
-    parentDao,
-    admin,
     accounts,
-  } = useDaoInfoContext()
+    info: { parentDao, admin },
+  } = useDao()
 
   // Chain x/gov DAO infos have coreAddress set to their name for URL
   // resolution, so retrieve their gov module address from their accounts list

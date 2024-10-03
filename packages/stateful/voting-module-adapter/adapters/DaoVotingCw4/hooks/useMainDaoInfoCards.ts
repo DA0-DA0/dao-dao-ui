@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next'
 
+import { useChain } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useLoadingVotingModule } from './useLoadingVotingModule'
+import { useLoadingVotingModuleInfo } from './useLoadingVotingModuleInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, coreAddress } = useVotingModuleAdapterOptions()
-  const votingModule = useLoadingVotingModule(coreAddress, {
+  const { chain_id: chainId } = useChain()
+
+  const loadingMembers = useLoadingVotingModuleInfo({
     fetchMembers: true,
   })
 
@@ -20,12 +21,12 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
         {
           label: t('title.members'),
           tooltip: t('info.membersTooltip'),
-          loading: votingModule.loading,
-          value: votingModule.loading
+          loading: loadingMembers.loading,
+          value: loadingMembers.loading
             ? undefined
-            : votingModule.errored
+            : loadingMembers.errored
             ? '<error>'
-            : votingModule.data.members?.length ?? '<error>',
+            : loadingMembers.data.members?.length ?? '<error>',
         },
       ]
 }

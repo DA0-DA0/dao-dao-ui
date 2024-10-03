@@ -9,7 +9,7 @@ import {
   tokenQueries,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading, useDaoContext } from '@dao-dao/stateless'
+import { useCachedLoading, useDao } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
@@ -23,7 +23,7 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { address: walletAddress } = useWallet()
   const queryClient = useQueryClient()
 

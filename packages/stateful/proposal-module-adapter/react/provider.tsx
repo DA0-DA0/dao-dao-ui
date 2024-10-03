@@ -1,6 +1,6 @@
 import { ReactNode, useMemo } from 'react'
 
-import { useDaoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 import {
   IProposalModuleCommonContext,
   IProposalModuleContext,
@@ -25,7 +25,7 @@ export const ProposalModuleAdapterProvider = ({
   proposalId,
   children,
 }: ProposalModuleAdapterProviderProps) => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { context, commonContext } = useMemo(() => {
     const context = matchAndLoadAdapter(dao, proposalId)
     const commonContext = commonContextFromAdapterContext(context)
@@ -54,7 +54,7 @@ export const ProposalModuleAdapterCommonProvider = ({
   proposalModuleAddress,
   children,
 }: ProposalModuleAdapterCommonProviderProps) => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const context = useMemo(
     () => matchAndLoadCommonContext(dao, proposalModuleAddress),
     [dao, proposalModuleAddress]

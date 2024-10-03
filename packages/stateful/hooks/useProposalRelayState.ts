@@ -20,7 +20,7 @@ import {
 import {
   useCachedLoading,
   useCachedLoadingWithError,
-  useDaoInfoContext,
+  useDao,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
@@ -66,7 +66,7 @@ export const useProposalRelayState = ({
   openSelfRelayExecute,
   loadingTxHash,
 }: UseProposalRelayStateOptions): UseProposalRelayStateReturn => {
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const {
     chain: { chain_id: srcChainId },
   } = useSupportedChainContext()

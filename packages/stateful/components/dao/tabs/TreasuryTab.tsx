@@ -5,7 +5,7 @@ import {
 import {
   TreasuryTab as StatelessTreasuryTab,
   useCachedLoading,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
   useInitializedActionForKey,
 } from '@dao-dao/stateless'
@@ -26,7 +26,7 @@ import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenLine } from '../DaoTokenLine'
 
 export const TreasuryTab = () => {
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
   const { isWalletConnected } = useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
@@ -39,8 +39,8 @@ export const TreasuryTab = () => {
 
   const tokens = useCachedLoading(
     treasuryTokenCardInfosForDaoSelector({
-      chainId: daoInfo.chainId,
-      coreAddress: daoInfo.coreAddress,
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
     }),
@@ -48,8 +48,8 @@ export const TreasuryTab = () => {
   )
   const nfts = useCachedLoading(
     lazyNftCardInfosForDaoSelector({
-      chainId: daoInfo.chainId,
-      coreAddress: daoInfo.coreAddress,
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),
     {}
@@ -97,7 +97,7 @@ export const TreasuryTab = () => {
       configureRebalancerHref={
         // Prefill URL only valid if action exists.
         configureRebalancerAction
-          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+          ? getDaoProposalPath(dao.coreAddress, 'create', {
               prefill: configureRebalancerPrefill,
             })
           : undefined
@@ -110,7 +110,7 @@ export const TreasuryTab = () => {
         !createCrossChainAccountAction.loading &&
         !createCrossChainAccountAction.errored &&
         !createCrossChainAccountAction.data.metadata.hideFromPicker
-          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+          ? getDaoProposalPath(dao.coreAddress, 'create', {
               prefill: createCrossChainAccountPrefill,
             })
           : undefined

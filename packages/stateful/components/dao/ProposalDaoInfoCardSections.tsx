@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Loader, TooltipInfoIcon, useDaoContext } from '@dao-dao/stateless'
+import { Loader, TooltipInfoIcon, useDao } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
 
 import { ProposalModuleAdapterCommonProvider } from '../../proposal-module-adapter'
@@ -11,7 +11,7 @@ import { Trans } from '../Trans'
 import { ProposalDaoInfoCards } from './ProposalDaoInfoCards'
 
 export const ProposalDaoInfoCardSections = () => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
 
   return (
     <>

@@ -53,18 +53,11 @@ export type VotingModuleAdapter = {
   id: string
   contractNames: string[]
 
-  load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
+  load: (votingModule: IVotingModuleBase) => IVotingModuleAdapter
 }
 
-export interface IVotingModuleAdapterOptions {
-  chainId: string
-  coreAddress: string
-  votingModule: IVotingModuleBase
-}
-
-export interface IVotingModuleAdapterContext {
+export type IVotingModuleAdapterContext = {
   id: string
-  options: IVotingModuleAdapterOptions
   adapter: IVotingModuleAdapter
   votingModule: IVotingModuleBase
 }

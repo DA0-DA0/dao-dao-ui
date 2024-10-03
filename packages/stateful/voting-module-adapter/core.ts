@@ -1,7 +1,6 @@
 import {
   IDaoBase,
   IVotingModuleAdapterContext,
-  IVotingModuleAdapterOptions,
   VotingModuleAdapter,
 } from '@dao-dao/types'
 
@@ -58,16 +57,9 @@ export const matchAndLoadAdapter = (
     )
   }
 
-  const options: IVotingModuleAdapterOptions = {
-    chainId: dao.chainId,
-    coreAddress: dao.coreAddress,
-    votingModule: dao.votingModule,
-  }
-
   return {
     id: adapter.id,
-    adapter: adapter.load(options),
-    options,
+    adapter: adapter.load(dao.votingModule),
     votingModule: dao.votingModule,
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useDaoContextIfAvailable, useUpdatingRef } from '@dao-dao/stateless'
+import { useDaoIfAvailable, useUpdatingRef } from '@dao-dao/stateless'
 import { DaoSource, PermitForPermitData } from '@dao-dao/types'
 import { serializeDaoSource } from '@dao-dao/utils'
 
@@ -37,7 +37,7 @@ export const useOnSecretNetworkPermitUpdate = ({
   reRender = true,
   callback,
 }: OnSecretNetworkPermitUpdateOptions = {}) => {
-  const currentDaoSource = useDaoContextIfAvailable()?.dao.source
+  const currentDaoSource = useDaoIfAvailable()?.source
 
   // Memoize callback into a ref.
   const callbackRef = useUpdatingRef(callback)

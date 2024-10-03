@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
-import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { TokenAmountDisplay, useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
@@ -12,13 +12,12 @@ import {
 } from '@dao-dao/utils'
 
 import { useMembership, useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { votingModule } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { totalVotingWeight } = useMembership()
 
   const { unstakingDuration } = useStakingInfo()
