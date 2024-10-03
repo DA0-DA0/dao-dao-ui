@@ -12,12 +12,12 @@ export const localStorageEffect =
     }
 
     const savedValue = localStorage.getItem(key)
-    if (savedValue !== null) {
+    if (savedValue && savedValue !== 'undefined') {
       setSelf(parse(savedValue))
     }
 
     onSet((newValue: T, _: any, isReset: boolean) => {
-      if (isReset) {
+      if (isReset || newValue === undefined) {
         localStorage.removeItem(key)
       } else {
         localStorage.setItem(key, serialize(newValue))

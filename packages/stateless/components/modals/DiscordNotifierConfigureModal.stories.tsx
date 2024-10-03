@@ -20,8 +20,10 @@ Default.args = {
   visible: true,
   onClose: () => alert('close'),
   setup: () => alert('setup'),
+  doRegister: () => alert('register'),
   registrations: [],
-  loading: false,
+  loadingRegistration: false,
+  finishingRegistration: false,
   connected: true,
   ConnectWallet: () => <div>ConnectWallet</div>,
 }

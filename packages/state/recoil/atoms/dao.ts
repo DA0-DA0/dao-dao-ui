@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 
 import { localStorageEffectJSON } from '../effects'
 
@@ -21,11 +21,18 @@ export const temporaryFollowingDaosAtom = atom<{
   default: { following: [], unfollowing: [] },
 })
 
-export const discordNotifierSetupAtom = atom<{
-  state: string
-  coreAddress: string
-} | null>({
+export const discordNotifierSetupAtom = atomFamily<
+  | {
+      state: string
+      clientId: string
+      clientSecret: string
+      botToken: string
+      redirectUri: string
+    }
+  | undefined,
+  string
+>({
   key: 'discordNotifierSetup',
-  default: null,
+  default: undefined,
   effects: [localStorageEffectJSON],
 })
