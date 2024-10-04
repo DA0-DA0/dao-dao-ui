@@ -154,6 +154,42 @@ export const sortTokensValueDescending: SortFn<
     : aPrice.eq(bPrice)
     ? 0
     : aPrice.gt(bPrice)
+    ? -1
+    : 1
+}
+
+/**
+ * Function to sort token lists ascending by USD value.
+ */
+export const sortTokensValueAscending: SortFn<
+  Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>
+> = (a, b) => {
+  // If loading or no price, show at bottom.
+  const aPrice =
+    a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
+      ? undefined
+      : a.lazyInfo.data.totalBalance.times(
+          a.lazyInfo.data.usdUnitPrice.usdPrice
+        )
+  const bPrice =
+    b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
+      ? undefined
+      : b.lazyInfo.data.totalBalance.times(
+          b.lazyInfo.data.usdUnitPrice.usdPrice
+        )
+
+  // If prices are equal, sort alphabetically by symbol.
+  return aPrice === bPrice
+    ? a.token.symbol
+        .toLocaleLowerCase()
+        .localeCompare(b.token.symbol.toLocaleLowerCase())
+    : aPrice === undefined
+    ? 1
+    : bPrice === undefined
+    ? -1
+    : aPrice.eq(bPrice)
+    ? 0
+    : aPrice.gt(bPrice)
     ? 1
     : -1
 }

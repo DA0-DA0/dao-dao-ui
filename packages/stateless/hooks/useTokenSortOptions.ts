@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
 import { SortFn, TokenCardInfo, TypedOption } from '@dao-dao/types'
-import { sortTokensValueDescending } from '@dao-dao/utils'
+import {
+  sortTokensValueAscending,
+  sortTokensValueDescending,
+} from '@dao-dao/utils'
 
 /**
  * Options to use with the `useButtonPopupSorter` hook and the `ButtonPopup`
@@ -19,36 +22,7 @@ export const useTokenSortOptions = (): TypedOption<
     },
     {
       label: t('info.lowestUsdValue'),
-      value: (a, b) => {
-        // If loading or no price, show at bottom.
-        const aPrice =
-          a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
-            ? undefined
-            : a.lazyInfo.data.totalBalance.times(
-                a.lazyInfo.data.usdUnitPrice.usdPrice
-              )
-        const bPrice =
-          b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
-            ? undefined
-            : b.lazyInfo.data.totalBalance.times(
-                b.lazyInfo.data.usdUnitPrice.usdPrice
-              )
-
-        // If prices are equal, sort alphabetically by symbol.
-        return aPrice === bPrice
-          ? a.token.symbol
-              .toLocaleLowerCase()
-              .localeCompare(b.token.symbol.toLocaleLowerCase())
-          : aPrice === undefined
-          ? 1
-          : bPrice === undefined
-          ? -1
-          : aPrice.eq(bPrice)
-          ? 0
-          : aPrice.gt(bPrice)
-          ? 1
-          : -1
-      },
+      value: sortTokensValueAscending,
     },
     {
       // Most token symbols are in English, so no need to translate.
