@@ -32,10 +32,13 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
   if (
     context.type !== ActionContextType.Dao ||
     // Type check.
-    chainContext.type !== ActionChainContextType.Supported ||
-    !chainContext.config.polytone
+    chainContext.type !== ActionChainContextType.Supported
   ) {
     throw new Error('Invalid context for this action.')
+  }
+
+  if (!chainContext.config.polytone) {
+    throw new Error(`Cross-chain accounts have not been enabled for ${name}.`)
   }
 
   const missingChainIds = Object.keys(chainContext.config.polytone).filter(
