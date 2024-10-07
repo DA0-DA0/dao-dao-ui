@@ -1,3 +1,4 @@
+import { AssetList } from '@chain-registry/types'
 import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
@@ -33,6 +34,7 @@ import {
   decodeGovProposal,
   feemarketProtoRpcClientRouter,
   getAllRpcResponse,
+  getChainForChainId,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
@@ -1259,6 +1261,24 @@ export const fetchGovProposalVotes = async (
   }
 }
 
+/**
+ * Fetch chain registry assets for chain.
+ */
+export const fetchChainRegistryAssets = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<AssetList['assets']> =>
+  (
+    await (
+      await fetch(
+        `https://raw.githubusercontent.com/cosmos/chain-registry/master/${
+          getChainForChainId(chainId).chain_name
+        }/assetlist.json`
+      )
+    ).json()
+  ).assets
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -1486,5 +1506,15 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'govProposalVotes', options],
       queryFn: () => fetchGovProposalVotes(queryClient, options),
+    }),
+  /**
+   * Fetch chain registry assets for chain.
+   */
+  chainRegistryAssets: (
+    options: Parameters<typeof fetchChainRegistryAssets>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'chainRegistryAssets', options],
+      queryFn: () => fetchChainRegistryAssets(options),
     }),
 }

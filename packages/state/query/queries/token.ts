@@ -14,6 +14,7 @@ import {
   MAINNET,
   OSMOSIS_API_BASE,
   bitsongProtoRpcClientRouter,
+  convertChainRegistryAssetToGenericToken,
   getChainForChainName,
   getFallbackImage,
   getIbcTransferInfoFromChannel,
@@ -243,6 +244,38 @@ export const fetchTokenInfo = async (
     console.error(err)
   }
 
+  // Attempt to fetch from chain registry on GitHub.
+  try {
+    const chainRegistryAssets = await queryClient.fetchQuery(
+      chainQueries.chainRegistryAssets({
+        chainId: source.chainId,
+      })
+    )
+
+    const asset = chainRegistryAssets.find(
+      (a) => a.base === source.denomOrAddress
+    )
+
+    if (asset) {
+      const converted = convertChainRegistryAssetToGenericToken(
+        source.chainId,
+        asset
+      )
+
+      return {
+        chainId,
+        type,
+        denomOrAddress,
+        symbol: converted.symbol,
+        decimals: converted.decimals,
+        imageUrl: converted.imageUrl,
+        source,
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
+
   // If nothing found, just return empty token.
   return {
     chainId,
@@ -264,13 +297,15 @@ export const fetchTokenSource = async (
   { chainId, type, denomOrAddress }: GenericTokenSource
 ): Promise<GenericTokenSource> => {
   // Check if Skip API has the info.
-  const skipAsset = await queryClient.fetchQuery(
-    skipQueries.asset(queryClient, {
-      chainId,
-      type,
-      denomOrAddress,
-    })
-  )
+  const skipAsset = await queryClient
+    .fetchQuery(
+      skipQueries.asset(queryClient, {
+        chainId,
+        type,
+        denomOrAddress,
+      })
+    )
+    .catch(() => null)
 
   if (skipAsset) {
     const sourceType = skipAsset.origin_denom.startsWith('cw20:')
