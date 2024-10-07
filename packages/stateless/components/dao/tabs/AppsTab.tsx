@@ -54,6 +54,10 @@ type InnerAppsTabProps = AppsTabProps & {
   className?: string
 }
 
+// Only allow URLs starting with `http(s)://`, to prevent XSS via `javascript:`
+// URLs.
+const ALLOWED_URL_REGEX = /^https?:\/\/.+$/
+
 const InnerAppsTab = ({
   iframeRef,
   fullScreen,
@@ -67,13 +71,19 @@ const InnerAppsTab = ({
   const [inputUrl, setInputUrl] = useState<string>(url)
 
   const go = (url: string) => {
-    setUrl(url)
+    if (ALLOWED_URL_REGEX.test(url)) {
+      setUrl(url)
+    }
   }
 
   // On first iframe mount, go to URL.
   useEffect(() => {
     try {
-      if (iframe && (url === '' || (url && new URL(url).href))) {
+      if (
+        iframe &&
+        (url === '' || (url && new URL(url).href)) &&
+        ALLOWED_URL_REGEX.test(url)
+      ) {
         iframe.src = url
       }
     } catch {
