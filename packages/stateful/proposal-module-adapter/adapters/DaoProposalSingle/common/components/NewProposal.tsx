@@ -16,7 +16,7 @@ import {
   useActionsContext,
   useCachedLoadable,
   useChain,
-  useDaoInfoContext,
+  useDao,
   useProcessTQ,
 } from '@dao-dao/stateless'
 import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
@@ -55,9 +55,8 @@ export const NewProposal = ({
     name: daoName,
     imageUrl: daoImageUrl,
     coreAddress,
-    isActive,
-    activeThreshold,
-  } = useDaoInfoContext()
+    info: { isActive, activeThreshold },
+  } = useDao()
   const { isWalletConnecting, isWalletConnected, getStargateClient } =
     useWallet()
 

@@ -3,6 +3,7 @@ import { ComponentProps, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ActionComponent,
   GenericToken,
@@ -10,7 +11,6 @@ import {
   LoadingData,
   TokenType,
 } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TokenInput } from '../inputs'
@@ -83,7 +83,8 @@ export const NativeCoinSelector = ({
   const amountField = (fieldNamePrefix + 'amount') as 'amount'
   const decimalsField = (fieldNamePrefix + 'decimals') as 'decimals'
 
-  const { register, setValue, watch } = useFormContext<NativeCoinForm>()
+  const { register, setValue, getValues, watch } =
+    useFormContext<NativeCoinForm>()
   const watchDenom = watch(denomField)
   const watchAmount = watch(amountField)
   const watchDecimals = watch(decimalsField) || 0
@@ -99,10 +100,7 @@ export const NativeCoinSelector = ({
             token.denomOrAddress === watchDenom &&
             (!chainId || token.chainId === chainId)
         )
-  const balance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedToken?.token.decimals ?? 0
-  )
+  const balance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   const decimals = customToken
     ? watchDecimals
@@ -121,16 +119,16 @@ export const NativeCoinSelector = ({
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: watchDenom })
-      : watchAmount > balance
+      : balance.toHumanReadable(decimals).lt(watchAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: balance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: balance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: symbol,
         })
       : undefined
 
-  const minUnit = convertMicroDenomToDenomWithDecimals(1, decimals)
+  const minUnit = HugeDecimal.one.toHumanReadableNumber(decimals)
   const minAmount = min ?? minUnit
 
   return (
@@ -140,6 +138,7 @@ export const NativeCoinSelector = ({
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: amountField,
             error: errors?.amount || errors?._error,
@@ -164,11 +163,10 @@ export const NativeCoinSelector = ({
                       description:
                         t('title.balance') +
                         ': ' +
-                        convertMicroDenomToDenomWithDecimals(
-                          balance,
-                          token.decimals
-                        ).toLocaleString(undefined, {
-                          maximumFractionDigits: token.decimals,
+                        HugeDecimal.from(
+                          balance
+                        ).toInternationalizedHumanReadableString({
+                          decimals: token.decimals,
                         }),
                     })),
                 }

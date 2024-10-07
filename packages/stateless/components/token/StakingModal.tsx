@@ -1,6 +1,7 @@
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { LoadingData } from '@dao-dao/types'
 import {
   StakingModalProps,
@@ -12,7 +13,7 @@ import { convertDurationToHumanReadableString } from '@dao-dao/utils'
 import { Button } from '../buttons/Button'
 import {
   InputLabel,
-  NumberInput,
+  NumericInput,
   PercentButton,
   SegmentedControls,
   TokenInput,
@@ -22,22 +23,16 @@ import { Tooltip } from '../tooltip/Tooltip'
 import { ValidatorPicker } from '../ValidatorPicker'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 
-export * from '@dao-dao/types/components/StakingModal'
-
 export const StakingModal = ({
   initialMode,
   amount,
   setAmount,
   onClose,
-  // microdenom
   claimableTokens,
-  // macrodenom
   loadingStakableTokens,
-  // macrodenom
   loadingUnstakableTokens,
   unstakingDuration,
   token,
-  // macrodenom
   proposalDeposit,
   loading,
   error,
@@ -65,14 +60,14 @@ export const StakingModal = ({
       data:
         validatorPicker.stakes?.find(
           (stake) => stake.validator.address === targetValidator
-        )?.amount ?? 0,
+        )?.amount ?? HugeDecimal.zero,
     }
   }
   // If not choosing a validator and no unstakable amount passed, assume 0.
   else if (!loadingUnstakableTokens) {
     loadingUnstakableTokens = {
       loading: false,
-      data: 0,
+      data: HugeDecimal.zero,
     }
   }
 
@@ -88,15 +83,17 @@ export const StakingModal = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : t('error.cannotTxZeroTokens')
+      return claimableTokens.isPositive()
+        ? undefined
+        : t('error.cannotTxZeroTokens')
     }
-    if (amount <= 0) {
+    if (!amount.isPositive()) {
       return t('error.cannotTxZeroTokens')
     }
     if (maxTx === undefined) {
       return t('error.loadingData')
     }
-    if (amount > maxTx) {
+    if (amount.gt(maxTx)) {
       return t('error.cannotStakeMoreThanYouHave')
     }
   }
@@ -174,7 +171,8 @@ export const StakingModal = ({
                         validatorPicker.validators.filter((v) =>
                           validatorPicker.stakes?.some(
                             (s) =>
-                              s.validator.address === v.address && s.amount > 0
+                              s.validator.address === v.address &&
+                              s.amount.isPositive()
                           )
                         )
                       }
@@ -200,7 +198,7 @@ export const StakingModal = ({
                             validatorPicker.stakes?.some(
                               (s) =>
                                 s.validator.address === v.address &&
-                                s.amount > 0
+                                s.amount.isPositive()
                             )
                           )
                     }
@@ -233,7 +231,7 @@ export const StakingModal = ({
           }
           mode={mode}
           proposalDeposit={proposalDeposit}
-          setAmount={(amount: number) => setAmount(amount)}
+          setAmount={setAmount}
           tokenDecimals={token.decimals}
           tokenSymbol={token.symbol}
           unstakingDuration={unstakingDuration}
@@ -244,14 +242,14 @@ export const StakingModal = ({
 }
 
 interface StakeUnstakeModesBodyProps {
-  amount: number
+  amount: HugeDecimal
   mode: StakingMode
-  loadingMax: LoadingData<number>
-  setAmount: (newAmount: number) => void
+  loadingMax: LoadingData<HugeDecimal>
+  setAmount: (newAmount: HugeDecimal) => void
   tokenSymbol: string
   tokenDecimals: number
   unstakingDuration: Duration | null
-  proposalDeposit?: number
+  proposalDeposit?: HugeDecimal
 }
 
 const StakeUnstakeModesBody = ({
@@ -269,23 +267,26 @@ const StakeUnstakeModesBody = ({
   return (
     <>
       <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
-      <NumberInput
+      <NumericInput
         containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
         ghost
-        max={loadingMax.loading ? undefined : loadingMax.data}
-        min={1 / 10 ** tokenDecimals}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setAmount(e.target.valueAsNumber)
+        max={
+          loadingMax.loading
+            ? undefined
+            : loadingMax.data.toHumanReadableNumber(tokenDecimals)
         }
+        min={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
         plusMinusButtonSize="lg"
-        setValue={(_, value) => setAmount(value)}
-        step={1 / 10 ** tokenDecimals}
+        setValue={(_, value) =>
+          setAmount(HugeDecimal.fromHumanReadable(value, tokenDecimals))
+        }
+        step={HugeDecimal.one.toHumanReadableNumber(tokenDecimals)}
         textClassName="font-mono leading-5 symbol-small-body-text"
-        unit={`$${tokenSymbol}`}
-        value={amount}
+        unit={'$' + tokenSymbol}
+        value={amount.toHumanReadableString(tokenDecimals)}
       />
-      {!loadingMax.loading && amount > loadingMax.data && (
-        <span className="caption-text mt-1 ml-1 text-text-interactive-error">
+      {!loadingMax.loading && loadingMax.data.lt(amount) && (
+        <span className="caption-text text-text-interactive-error mt-1 ml-1">
           {t('error.cannotStakeMoreThanYouHave')}
         </span>
       )}
@@ -303,10 +304,8 @@ const StakeUnstakeModesBody = ({
             <PercentButton
               key={percent}
               amount={amount}
-              decimals={tokenDecimals}
-              label={`${percent}%`}
               loadingMax={loadingMax}
-              percent={percent / 100}
+              percent={percent}
               setAmount={setAmount}
             />
           ))}
@@ -314,20 +313,20 @@ const StakeUnstakeModesBody = ({
         {mode === StakingMode.Stake &&
           !!proposalDeposit &&
           !loadingMax.loading &&
-          loadingMax.data > proposalDeposit && (
+          loadingMax.data.gt(proposalDeposit) && (
             <PercentButton
-              absoluteOffset={-proposalDeposit}
+              absoluteOffset={proposalDeposit.negated()}
               amount={amount}
               className="mt-2"
-              decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
-                proposalDeposit: proposalDeposit.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                }),
+                proposalDeposit:
+                  proposalDeposit.toInternationalizedHumanReadableString({
+                    decimals: tokenDecimals,
+                  }),
                 tokenSymbol,
               })}
               loadingMax={loadingMax}
-              percent={1}
+              percent={100}
               setAmount={setAmount}
             />
           )}
@@ -340,7 +339,7 @@ const StakeUnstakeModesBody = ({
         ('height' in unstakingDuration
           ? unstakingDuration.height
           : unstakingDuration.time) > 0 && (
-          <div className="mt-7 space-y-5 border-t border-border-secondary pt-7">
+          <div className="border-border-secondary mt-7 space-y-5 border-t pt-7">
             <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
                 `: ${convertDurationToHumanReadableString(
@@ -363,7 +362,7 @@ const StakeUnstakeModesBody = ({
 }
 
 interface ClaimModeBodyProps {
-  amount: number
+  amount: HugeDecimal
   tokenDecimals: number
   tokenSymbol: string
 }

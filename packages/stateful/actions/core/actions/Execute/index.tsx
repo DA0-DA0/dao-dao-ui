@@ -3,6 +3,7 @@ import JSON5 from 'json5'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -23,8 +24,6 @@ import {
 import { MsgExecuteContract as SecretMsgExecuteContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   bech32DataToAddress,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getAccountAddress,
@@ -188,10 +187,10 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
         contractAddress: funds[0].denom,
         msg: {
           send: {
-            amount: convertDenomToMicroDenomStringWithDecimals(
+            amount: HugeDecimal.fromHumanReadable(
               funds[0].amount,
               funds[0].decimals
-            ),
+            ).toString(),
             [isSecret ? 'recipient' : 'contract']: address,
             msg: encodeJsonToBase64(msg),
             ...(isSecret && {
@@ -207,13 +206,9 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
         contractAddress: address,
         msg,
         funds: funds
-          .map(({ denom, amount, decimals }) => ({
-            denom,
-            amount: convertDenomToMicroDenomStringWithDecimals(
-              amount,
-              decimals
-            ),
-          }))
+          .map(({ denom, amount, decimals }) =>
+            HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+          )
           // Neutron errors with `invalid coins` if the funds list is not
           // alphabetized.
           .sort((a, b) => a.denom.localeCompare(b.denom)),
@@ -364,16 +359,16 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
             ? [
                 {
                   denom: decodedMessage.wasm.execute.contract_addr,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    executeMsg.send.amount,
-                    cw20TokenDecimals
-                  ),
+                  amount: HugeDecimal.from(
+                    executeMsg.send.amount
+                  ).toHumanReadableString(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
-                amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+                amount:
+                  HugeDecimal.from(amount).toHumanReadableString(decimals),
                 decimals,
               })),
           cw20: isCw20,
@@ -402,16 +397,16 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
                     chainId,
                     decodedMessage.stargate.value.contract
                   ),
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    executeMsg.send.amount,
-                    cw20TokenDecimals
-                  ),
+                  amount: HugeDecimal.from(
+                    executeMsg.send.amount
+                  ).toHumanReadableString(cw20TokenDecimals),
                   decimals: cw20TokenDecimals,
                 },
               ]
             : fundsTokens.map(({ denom, amount, decimals }) => ({
                 denom,
-                amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+                amount:
+                  HugeDecimal.from(amount).toHumanReadableString(decimals),
                 decimals,
               })),
           cw20: isCw20,

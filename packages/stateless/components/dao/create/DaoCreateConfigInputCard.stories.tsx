@@ -17,7 +17,7 @@ export default {
 } as ComponentMeta<typeof DaoCreateConfigInputCard>
 
 const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
-  const { register, watch, setValue } = useForm<NewDao>({
+  const { register, watch, setValue, getValues } = useForm<NewDao>({
     defaultValues: makeDefaultNewDao(CHAIN_ID),
     mode: 'onChange',
   })
@@ -32,6 +32,22 @@ const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
           <VotingDurationInput
             data={newDao.proposalModuleAdapters[0].data}
             fieldNamePrefix="proposalModuleAdapters.0.data."
+            getValues={(fieldNameOrNames?: string | readonly string[]) =>
+              fieldNameOrNames === undefined
+                ? getValues()
+                : typeof fieldNameOrNames === 'string'
+                ? getValues(
+                    ('proposalModuleAdapters.0.data.' +
+                      fieldNameOrNames) as `proposalModuleAdapters.${number}.data.${string}`
+                  )
+                : getValues(
+                    fieldNameOrNames.map(
+                      (fieldName) =>
+                        ('proposalModuleAdapters.0.data.' +
+                          fieldName) as `proposalModuleAdapters.${number}.data.${string}`
+                    )
+                  )
+            }
             newDao={newDao}
             register={(fieldName, options) =>
               register(

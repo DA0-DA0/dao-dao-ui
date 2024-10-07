@@ -155,15 +155,17 @@ export type GovernanceProposalActionData = {
   description: string
   metadata: string
   deposit: {
-    amount: number
+    amount: string
     denom: string
+    decimals: number
   }[]
   legacy: {
     typeUrl: string
     // CommunityPoolSpendProposal
     spends: {
-      amount: number
+      amount: string
       denom: string
+      decimals: number
     }[]
     spendRecipient: string
     // ParameterChangeProposal

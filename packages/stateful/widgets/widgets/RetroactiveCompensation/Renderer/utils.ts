@@ -1,3 +1,5 @@
+import { HugeDecimal } from '@dao-dao/math'
+
 import {
   AnyToken,
   Attribute,
@@ -86,18 +88,20 @@ export const computeCompensation = (
           const nativeTokens = attribute.nativeTokens.map(
             ({ denom, amount }): AnyToken => ({
               denomOrAddress: denom,
-              amount: BigInt(
-                Math.floor(Number(amount) * proportionalCompensation)
-              ).toString(),
+              amount: HugeDecimal.from(amount)
+                .times(proportionalCompensation)
+                .trunc()
+                .toString(),
             })
           )
 
           const cw20Tokens = attribute.cw20Tokens.map(
             ({ address, amount }): AnyToken => ({
               denomOrAddress: address,
-              amount: BigInt(
-                Math.floor(Number(amount) * proportionalCompensation)
-              ).toString(),
+              amount: HugeDecimal.from(amount)
+                .times(proportionalCompensation)
+                .trunc()
+                .toString(),
             })
           )
 

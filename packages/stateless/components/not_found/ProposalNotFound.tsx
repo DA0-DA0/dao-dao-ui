@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoTabId, PageHeaderProps } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { useDaoNavHelpers } from '../../hooks'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
@@ -16,7 +16,7 @@ export const ProposalNotFound = ({
   PageHeaderContent,
 }: ProposalNotFoundProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   return (

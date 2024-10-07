@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Duration,
   GenericToken,
@@ -23,11 +24,11 @@ export interface UseStakingInfoResponse {
   claims?: Claim[]
   claimsPending?: Claim[]
   claimsAvailable?: Claim[]
-  sumClaimsAvailable?: number
+  sumClaimsAvailable?: HugeDecimal
   // Total staked value
-  loadingTotalStakedValue?: LoadingData<number>
+  loadingTotalStakedValue?: LoadingData<HugeDecimal>
   // Wallet staked value
-  loadingWalletStakedValue?: LoadingData<number>
+  loadingWalletStakedValue?: LoadingData<HugeDecimal>
 }
 
 export type UseGovernanceTokenInfoOptions = {
@@ -53,7 +54,7 @@ export type UseGovernanceTokenInfoResponse = {
   /**
    * The supply of the governance token converted to the appropriate decimals.
    */
-  supply: number
+  supply: HugeDecimal
   /**
    * The staking contract address for the governance token.
    */
@@ -65,12 +66,12 @@ export type UseGovernanceTokenInfoResponse = {
    * Unstaked governance token balance. Only defined if a wallet is connected
    * and the option to fetch this is true.
    */
-  loadingWalletBalance?: LoadingData<number>
+  loadingWalletBalance?: LoadingData<HugeDecimal>
   /**
    * The treasury balance of the governance token. Only defined if the option to
    * fetch this is true.
    */
-  loadingTreasuryBalance?: LoadingData<number>
+  loadingTreasuryBalance?: LoadingData<HugeDecimal>
   /**
    * The price of the governance token. Only defined if the option to fetch this
    * is true.

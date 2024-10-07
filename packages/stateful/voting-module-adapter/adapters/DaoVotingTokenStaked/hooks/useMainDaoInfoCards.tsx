@@ -1,23 +1,23 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
-import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { TokenAmountDisplay, useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { loadingTotalStakedValue, unstakingDuration } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
@@ -34,16 +34,19 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
-      formula: 'daoVotingTokenStaked/topStakers',
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
+      formula:
+        votingModule instanceof TokenStakedVotingModule
+          ? 'daoVotingTokenStaked/topStakers'
+          : 'daoVotingNativeStaked/topStakers',
       noFallback: true,
     })
   )
 
   return [
     // Can't view members on Secret Network.
-    ...(isSecretNetwork(chainId)
+    ...(isSecretNetwork(votingModule.chainId)
       ? []
       : [
           {
@@ -80,13 +83,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
           amount={
             loadingTotalStakedValue.loading
               ? { loading: true }
-              : {
-                  loading: false,
-                  data: convertMicroDenomToDenomWithDecimals(
-                    loadingTotalStakedValue.data,
-                    decimals
-                  ),
-                }
+              : HugeDecimal.from(loadingTotalStakedValue.data)
           }
           decimals={decimals}
           symbol={symbol}

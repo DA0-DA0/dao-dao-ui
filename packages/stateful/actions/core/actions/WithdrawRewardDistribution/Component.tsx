@@ -13,7 +13,6 @@ import {
 import { DaoRewardDistributionWithRemaining } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -83,10 +82,7 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
                 label: getHumanReadableRewardDistributionLabel(t, distribution),
                 description: (
                   <TokenAmountDisplay
-                    amount={convertMicroDenomToDenomWithDecimals(
-                      distribution.remaining,
-                      distribution.token.decimals
-                    )}
+                    amount={distribution.remaining}
                     className="text-text-interactive-valid"
                     decimals={distribution.token.decimals}
                     suffix={' ' + t('info.remaining')}
@@ -120,12 +116,12 @@ export const WithdrawRewardDistributionComponent: ActionComponent<
             {selectedDistribution && (
               <p className="text-text-interactive-valid">
                 {t('info.tokensWillBeWithdrawn', {
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    selectedDistribution.remaining,
-                    selectedDistribution.token.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: selectedDistribution.token.decimals,
-                  }),
+                  amount:
+                    selectedDistribution.remaining.toInternationalizedHumanReadableString(
+                      {
+                        decimals: selectedDistribution.token.decimals,
+                      }
+                    ),
                   tokenSymbol: selectedDistribution.token.symbol,
                 })}
               </p>

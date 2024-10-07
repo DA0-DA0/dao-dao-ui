@@ -24,7 +24,7 @@ import {
   ActionMap,
 } from '@dao-dao/types/actions'
 
-import { useActionsContext, useDaoInfoContextIfAvailable } from '../../contexts'
+import { useActionsContext, useDaoIfAvailable } from '../../contexts'
 import { useLoadingPromise } from '../../hooks'
 import { Loader } from '../logo'
 import { ActionCard } from './ActionCard'
@@ -52,7 +52,7 @@ export const ActionsEditor = ({
   }>()
   const { actionMap } = useActionsContext()
 
-  const isDao = !!useDaoInfoContextIfAvailable()
+  const isDao = !!useDaoIfAvailable()
 
   // Type assertion assumes the passed in field name is correct.
   const actionDataFieldName = _actionDataFieldName as 'actionData'

@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 
-import { useDaoContextIfAvailable } from '@dao-dao/stateless'
+import { useDaoIfAvailable } from '@dao-dao/stateless'
 import { GenericToken } from '@dao-dao/types'
 
 /**
@@ -9,7 +9,7 @@ import { GenericToken } from '@dao-dao/types'
  * context. Should never error.
  */
 export const useDaoGovernanceToken = () => {
-  const dao = useDaoContextIfAvailable()?.dao
+  const dao = useDaoIfAvailable()
   return useSuspenseQuery<GenericToken | null>(
     dao?.maybeVotingModule?.getGovernanceTokenQuery?.() || {
       queryKey: ['null'],

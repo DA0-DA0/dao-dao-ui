@@ -1,7 +1,7 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { DaoCreationGetInstantiateInfo, TokenType } from '@dao-dao/types'
 import {
   TokenBasedCreatorId,
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
   isSecretNetwork,
@@ -60,10 +60,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         ...commonConfig,
         deposit: proposalDeposit.enabled
           ? {
-              amount: convertDenomToMicroDenomStringWithDecimals(
+              amount: HugeDecimal.fromHumanReadable(
                 proposalDeposit.amount,
                 proposalDeposit.token?.decimals ?? 0
-              ),
+              ).toString(),
               denom:
                 proposalDeposit.type === 'voting_module_token'
                   ? {
@@ -103,10 +103,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         ...commonConfig,
         deposit: proposalDeposit.enabled
           ? {
-              amount: convertDenomToMicroDenomStringWithDecimals(
+              amount: HugeDecimal.fromHumanReadable(
                 proposalDeposit.amount,
                 proposalDeposit.token?.decimals ?? 0
-              ),
+              ).toString(),
               denom:
                 proposalDeposit.type === 'voting_module_token'
                   ? {

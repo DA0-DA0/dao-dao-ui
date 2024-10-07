@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { PercentButton } from './PercentButton'
 
 export default {
@@ -9,7 +11,7 @@ export default {
 } as ComponentMeta<typeof PercentButton>
 
 const Template: ComponentStory<typeof PercentButton> = (args) => {
-  const [amount, setAmount] = useState(50)
+  const [amount, setAmount] = useState(HugeDecimal.fromHumanReadable(50, 6))
 
   return <PercentButton {...args} amount={amount} setAmount={setAmount} />
 }
@@ -17,7 +19,6 @@ const Template: ComponentStory<typeof PercentButton> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   label: '25%',
-  loadingMax: { loading: false, data: 1234 },
-  percent: 0.25,
-  decimals: 6,
+  loadingMax: { loading: false, data: HugeDecimal.fromHumanReadable(1234, 6) },
+  percent: 25,
 }

@@ -38,16 +38,18 @@ Default.args = {
     metadata: '',
     deposit: [
       {
-        amount: 100,
+        amount: '100',
         denom: 'ujunox',
+        decimals: 6,
       },
     ],
     legacy: {
       typeUrl: SoftwareUpgradeProposal.typeUrl,
       spends: [
         {
-          amount: 1,
+          amount: '1',
           denom: 'ujunox',
+          decimals: 6,
         },
       ],
       spendRecipient: 'junoRecipient',
@@ -73,7 +75,7 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    minDeposits: { loading: false, data: [] },
+    minDeposits: { loading: false, errored: false, data: [] },
     communityPoolBalances: { loading: false, data: [] },
     encodeContext: {
       type: ActionContextType.Wallet,

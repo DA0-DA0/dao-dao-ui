@@ -6,7 +6,7 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
+  NumericInput,
   StatusCard,
   useActionOptions,
   useChain,
@@ -72,13 +72,16 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.codeId')} />
-          <NumberInput
+          <NumericInput
             containerClassName="xs:h-full"
             disabled={!isCreating}
             error={errors?.codeId}
             fieldName={fieldNamePrefix + 'codeId'}
+            min={1}
+            numericValue
             register={register}
             sizing="fill"
+            step={1}
             validation={[validateRequired, validatePositive]}
           />
           <InputErrorMessage error={errors?.codeId} />

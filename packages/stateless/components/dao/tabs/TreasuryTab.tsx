@@ -23,7 +23,7 @@ import {
   serializeTokenSource,
 } from '@dao-dao/utils'
 
-import { useDaoInfoContext, useSupportedChainContext } from '../../../contexts'
+import { useDao, useSupportedChainContext } from '../../../contexts'
 import { useButtonPopupSorter, useTokenSortOptions } from '../../../hooks'
 import { ErrorPage } from '../../error'
 import { AccountSelector } from '../../inputs'
@@ -76,7 +76,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
     chain: { chain_id: currentChainId },
     config: { noIndexer },
   } = useSupportedChainContext()
-  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress, accounts } = useDao()
 
   // Combine chain tokens into loadable, lazily. Load all that are ready.
   const { nonValenceTokens, valenceTokens } = useMemo((): {

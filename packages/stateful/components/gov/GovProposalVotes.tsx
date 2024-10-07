@@ -68,8 +68,7 @@ const InnerGovProposalVotes = ({
           voterAddress: voter,
           vote: options.sort((a, b) => Number(b.weight) - Number(a.weight))[0]
             .option,
-          votingPowerPercent:
-            Number(staked) / Number(BigInt(bondedTokens) / 100n),
+          votingPowerPercent: staked.div(bondedTokens).div(100).toNumber(),
         })
       )
 

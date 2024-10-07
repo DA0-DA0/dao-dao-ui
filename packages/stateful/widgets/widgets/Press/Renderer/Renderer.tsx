@@ -7,12 +7,7 @@ import {
 import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  Tooltip,
-  useDaoInfoContext,
-  useDaoNavHelpers,
-} from '@dao-dao/stateless'
+import { Button, Tooltip, useDao, useDaoNavHelpers } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
   IconButtonLinkProps,
@@ -46,7 +41,7 @@ export const Renderer = ({
   IconButtonLink,
 }: RendererProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   const openPostId =

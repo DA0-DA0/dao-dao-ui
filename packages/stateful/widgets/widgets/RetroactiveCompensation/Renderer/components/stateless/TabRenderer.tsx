@@ -2,11 +2,7 @@ import { Add, ArrowBackRounded, Remove } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Tooltip,
-  useDaoInfoContext,
-  useDaoNavHelpers,
-} from '@dao-dao/stateless'
+import { Tooltip, useDao, useDaoNavHelpers } from '@dao-dao/stateless'
 import { ButtonLinkProps, WidgetId } from '@dao-dao/types'
 
 import { PagePath } from '../../types'
@@ -23,7 +19,7 @@ export const TabRenderer = ({
   ButtonLink,
 }: TabRendererProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { daoSubpathComponents, getDaoPath } = useDaoNavHelpers()
 
   const pagePath = daoSubpathComponents[1] || ''

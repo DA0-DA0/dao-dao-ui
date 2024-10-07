@@ -17,7 +17,7 @@ import {
   Tooltip,
   useCachedLoadable,
   useChain,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
@@ -37,8 +37,8 @@ export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { chain_id: chainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
+  const { coreAddress } = useDao()
   const { isWalletConnected, hexPublicKey } = useWallet({
     loadAccount: true,
   })

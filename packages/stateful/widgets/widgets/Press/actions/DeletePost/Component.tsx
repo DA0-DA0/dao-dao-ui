@@ -8,7 +8,7 @@ import {
   InputLabel,
   Loader,
   SelectInput,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionComponent, LoadingData } from '@dao-dao/types'
@@ -35,7 +35,7 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
   const { register, watch } = useFormContext<DeletePostData>()
   const id = watch((fieldNamePrefix + 'id') as 'id')
 
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   return isCreating ? (

@@ -6,7 +6,7 @@ import {
   ErrorPage,
   LineLoader,
   NoContent,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { LoadingDataWithError, WidgetId } from '@dao-dao/types'
@@ -28,7 +28,7 @@ export type HomeProps = {
 
 export const Home = ({ loadingSurveys, isMember, SurveyRow }: HomeProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
 
   return (

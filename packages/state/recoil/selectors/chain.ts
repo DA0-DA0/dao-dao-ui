@@ -735,7 +735,7 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
 
       return validators
         .map((validator) => cosmosValidatorToValidator(validator))
-        .sort((a, b) => b.tokens - a.tokens)
+        .sort((a, b) => b.tokens.minus(a.tokens).toNumber())
     },
 })
 

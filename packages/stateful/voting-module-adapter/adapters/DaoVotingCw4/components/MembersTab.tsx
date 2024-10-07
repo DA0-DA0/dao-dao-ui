@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   MembersTab as StatelessMembersTab,
   useDaoNavHelpers,
+  useVotingModule,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -13,29 +14,28 @@ import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { ButtonLink, DaoMemberCard } from '../../../../components'
 import { useMembership } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useLoadingVotingModule } from '../hooks/useLoadingVotingModule'
+import { useLoadingVotingModuleInfo } from '../hooks/useLoadingVotingModuleInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
   const { isMember = false, totalVotingWeight } = useMembership()
-  const votingModule = useLoadingVotingModule(coreAddress, {
+  const loadingMembers = useLoadingVotingModuleInfo({
     fetchMembers: true,
   })
 
   const members: LoadingDataWithError<StatefulDaoMemberCardProps[]> =
-    votingModule.loading
+    loadingMembers.loading
       ? { loading: true, errored: false }
-      : votingModule.errored
-      ? { loading: false, errored: true, error: votingModule.error }
+      : loadingMembers.errored
+      ? { loading: false, errored: true, error: loadingMembers.error }
       : {
           loading: false,
           errored: false,
           data:
-            votingModule.data.members?.map(({ addr, weight }) => ({
+            loadingMembers.data.members?.map(({ addr, weight }) => ({
               address: addr,
               balanceLabel: t('title.votingWeight'),
               balance: {
@@ -58,19 +58,23 @@ export const MembersTab = () => {
     <StatelessMembersTab
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
-      addMemberHref={getDaoProposalPath(coreAddress, 'create', {
-        prefill: getDaoProposalSinglePrefill({
-          actions: [
-            {
-              actionKey: ActionKey.ManageMembers,
-              data: {
-                toAdd: [{ addr: '', weight: NaN }],
-                toRemove: [],
+      addMemberHref={getDaoProposalPath(
+        votingModule.dao.coreAddress,
+        'create',
+        {
+          prefill: getDaoProposalSinglePrefill({
+            actions: [
+              {
+                actionKey: ActionKey.ManageMembers,
+                data: {
+                  toAdd: [{ addr: '', weight: NaN }],
+                  toRemove: [],
+                },
               },
-            },
-          ],
-        }),
-      })}
+            ],
+          }),
+        }
+      )}
       isMember={isMember}
       members={members}
       topVoters={{

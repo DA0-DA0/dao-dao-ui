@@ -1,5 +1,7 @@
 import { ComponentType } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { Account } from './account'
 import { ChainId, Validator } from './chain'
 import {
@@ -130,7 +132,7 @@ export enum UnstakingTaskStatus {
 export type UnstakingTask = {
   token: GenericToken
   status: UnstakingTaskStatus
-  amount: number
+  amount: HugeDecimal
   // If unstaking or ready to claim, date it will be/was unstaked.
   // If claimed, date it was claimed.
   date?: Date
@@ -139,8 +141,8 @@ export type UnstakingTask = {
 export type TokenStake = {
   token: GenericToken
   validator: Validator
-  amount: number
-  rewards: number
+  amount: HugeDecimal
+  rewards: HugeDecimal
 }
 
 export type TokenCardLazyInfo = {
@@ -150,20 +152,20 @@ export type TokenCardLazyInfo = {
         unstakingTasks: UnstakingTask[]
         unstakingDurationSeconds: number | undefined
         stakes: TokenStake[]
-        totalStaked: number
-        totalPendingRewards: number
-        totalUnstaking: number
+        totalStaked: HugeDecimal
+        totalPendingRewards: HugeDecimal
+        totalUnstaking: HugeDecimal
       }
     | undefined
   // unstakedBalance + totalStaked + totalUnstaking
-  totalBalance: number
+  totalBalance: HugeDecimal
   // Display DAOs that the token is used as governance in, and optionally an
   // amount of staked tokens. This is used to display how much a wallet has
   // staked.
   daosGoverned?: {
     coreAddress: string
     stakingContractAddress: string
-    stakedBalance?: number
+    stakedBalance?: HugeDecimal
   }[]
 }
 
@@ -172,11 +174,15 @@ export type TokenCardInfo = {
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string
-  unstakedBalance: number
-  // Only native tokens load staking info for now, so let's show a nice loader.
+  unstakedBalance: HugeDecimal
+  /**
+   * Only native tokens load staking info for now, so let's show a nice loader.
+   */
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
-  // If defined, adds a color indicator.
+  /**
+   * If defined, adds a color indicator.
+   */
   color?: string
   /**
    * Whether or not to hide the chain icon on tokens.

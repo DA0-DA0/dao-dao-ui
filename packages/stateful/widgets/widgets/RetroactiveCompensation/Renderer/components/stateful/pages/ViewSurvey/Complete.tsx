@@ -9,7 +9,7 @@ import {
   Loader,
   useCachedLoadable,
   useChain,
-  useDaoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
@@ -53,7 +53,7 @@ export const Complete = ({
   isMember,
 }: ViewSurveyPageProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { goToDaoProposal } = useDaoNavHelpers()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress = '' } = useWallet()

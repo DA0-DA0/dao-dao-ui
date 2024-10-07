@@ -2,6 +2,7 @@ import uniqBy from 'lodash.uniqby'
 import { useEffect, useState } from 'react'
 import { useRecoilCallback } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { DaoProposalMultipleSelectors } from '@dao-dao/state'
 import {
   ProposalVote,
@@ -33,8 +34,8 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
   const voteOptions = useLoadingVoteOptions()
 
   const totalPower = loadingProposal.loading
-    ? 0
-    : Number(loadingProposal.data.total_power)
+    ? HugeDecimal.zero
+    : HugeDecimal.from(loadingProposal.data.total_power)
 
   const [loading, setLoading] = useState(true)
   const [noMoreVotes, setNoMoreVotes] = useState(false)
@@ -79,8 +80,12 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
               ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
                 voterAddress: voter,
                 vote,
-                votingPowerPercent:
-                  totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
+                votingPowerPercent: totalPower.isZero()
+                  ? 0
+                  : HugeDecimal.from(power)
+                      .div(totalPower)
+                      .times(100)
+                      .toNumber(),
                 rationale,
                 votedAt: votedAt ? new Date(votedAt) : undefined,
               })
@@ -150,8 +155,9 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
           ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
             voterAddress: voter,
             vote,
-            votingPowerPercent:
-              totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
+            votingPowerPercent: totalPower.isZero()
+              ? 0
+              : HugeDecimal.from(power).div(totalPower).times(100).toNumber(),
             rationale,
             votedAt: votedAt ? new Date(votedAt) : undefined,
           })

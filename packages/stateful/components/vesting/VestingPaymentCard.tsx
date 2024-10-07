@@ -3,6 +3,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   cwVestingExtraQueries,
@@ -23,7 +24,6 @@ import {
   StatefulVestingPaymentCardProps,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -94,14 +94,14 @@ export const VestingPaymentCard = ({
         owner: vestingContractAddress,
         token,
         // Unused. We just want the USD price and staking info.
-        unstakedBalance: 0,
+        unstakedBalance: '0',
       })
     ),
     {
       usdUnitPrice: undefined,
       stakingInfo: undefined,
       // Unused. We just want the USD price and staking info.
-      totalBalance: 0,
+      totalBalance: HugeDecimal.zero,
     }
   )
 
@@ -279,17 +279,11 @@ export const VestingPaymentCard = ({
           // Canceled vests have their curves set to constant.
           'constant' in vest.vested
         }
-        claimedAmount={convertMicroDenomToDenomWithDecimals(
-          vest.claimed,
-          token.decimals
-        )}
+        claimedAmount={HugeDecimal.from(vest.claimed)}
         claiming={claiming}
         cw20Address={cw20Address}
         description={vest.description}
-        distributableAmount={convertMicroDenomToDenomWithDecimals(
-          distributable,
-          token.decimals
-        )}
+        distributableAmount={distributable}
         endDate={endDate}
         isWalletConnected={isWalletConnected}
         lazyInfo={lazyInfoLoading}
@@ -302,10 +296,7 @@ export const VestingPaymentCard = ({
         recipient={vest.recipient}
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
-        remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
-          Number(total) - Number(vested),
-          token.decimals
-        )}
+        remainingBalanceVesting={total.minus(vested)}
         startDate={startDate}
         steps={steps}
         title={vest.title}

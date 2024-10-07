@@ -21,7 +21,7 @@ export default {
       toChainId: CHAIN_ID,
       from: '',
       to: '',
-      amount: 1,
+      amount: '1',
       cw20: false,
       denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
     }),

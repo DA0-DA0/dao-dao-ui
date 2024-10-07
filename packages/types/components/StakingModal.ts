@@ -1,3 +1,5 @@
+import { HugeDecimal } from '@dao-dao/math'
+
 import { Duration } from '../contracts/common'
 import { DOmit, LoadingData } from '../misc'
 import { GenericToken } from '../token'
@@ -15,25 +17,25 @@ export interface StakingModalProps {
   // The mode to open the staking modal in.
   initialMode: StakingMode
   // The number of tokens in question.
-  amount: number
+  amount: HugeDecimal
   // Sets the number of tokens in question.
-  setAmount: (newAmount: number) => void
+  setAmount: (newAmount: HugeDecimal) => void
   // Called when the staking modal is closed.
   onClose: () => void
   // The number of tokens that are currently claimable.
-  claimableTokens: number
+  claimableTokens: HugeDecimal
   // The number of tokens that are unstakable. If undefined, will not be shown.
   // If `validatorPicker` is present, unstakable tokens will depend on the
   // chosen validator.
-  loadingUnstakableTokens?: LoadingData<number>
+  loadingUnstakableTokens?: LoadingData<HugeDecimal>
   // The number of tokens that are stakable.
-  loadingStakableTokens: LoadingData<number>
+  loadingStakableTokens: LoadingData<HugeDecimal>
   // The duration for unstaking.
   unstakingDuration: Duration | null
   // Token that is being staked.
   token: GenericToken
   // Proposal deposit for the token that is being staked.
-  proposalDeposit?: number
+  proposalDeposit?: HugeDecimal
   // Is there an error?
   error?: string | undefined
   // Are we ready to stake? Ex: is wallet connected?
@@ -41,7 +43,7 @@ export interface StakingModalProps {
   // Triggered when the stake / unstake / claim button is pressed.
   onAction: (
     mode: StakingMode,
-    amount: number,
+    amount: HugeDecimal,
     validator?: string,
     // If mode is `StakingMode.Restake`, this will be the validator to unstake
     // funds from.

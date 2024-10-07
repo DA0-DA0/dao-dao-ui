@@ -3,16 +3,13 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useChain, useDao } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -37,7 +34,7 @@ export const ProfileCardMemberInfo = ({
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
   const {
     address: walletAddress,
     isWalletConnected,
@@ -100,9 +97,10 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${sumClaimsAvailable.toLocaleString()} $${
-          collectionInfo.symbol
-        }`
+        t('success.claimedTokens', {
+          amount: sumClaimsAvailable.toLocaleString(),
+          tokenSymbol: collectionInfo.symbol,
+        })
       )
     } catch (err) {
       console.error(err)
@@ -138,7 +136,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsPending ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
-      amount: Number(1),
+      amount: HugeDecimal.one,
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -150,7 +148,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsAvailable ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
-      amount: Number(1),
+      amount: HugeDecimal.one,
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -193,10 +191,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

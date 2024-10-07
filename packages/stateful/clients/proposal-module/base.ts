@@ -43,6 +43,13 @@ export abstract class ProposalModuleBase<
   ) {}
 
   /**
+   * Chain ID of the proposal module.
+   */
+  get chainId(): string {
+    return this.dao.chainId
+  }
+
+  /**
    * Contract address.
    */
   get address(): string {

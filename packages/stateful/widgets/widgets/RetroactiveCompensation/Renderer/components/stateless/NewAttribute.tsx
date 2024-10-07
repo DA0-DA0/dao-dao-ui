@@ -2,6 +2,7 @@ import { Add, Close } from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   IconButton,
@@ -12,10 +13,7 @@ import {
   useChainContext,
 } from '@dao-dao/stateless'
 import { GenericToken } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  validateRequired,
-} from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
 import { NewSurveyFormData } from '../../types'
 
@@ -37,6 +35,7 @@ export const NewAttribute = ({
     register,
     formState: { errors },
     setValue,
+    getValues,
     watch,
   } = useFormContext<NewSurveyFormData>()
 
@@ -126,13 +125,16 @@ export const NewAttribute = ({
                   amount={{
                     watch,
                     setValue,
+                    getValues,
                     register,
                     fieldName: `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
                     error:
                       errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
                         ?.amount,
-                    step: convertMicroDenomToDenomWithDecimals(
-                      1,
+                    min: HugeDecimal.one.toHumanReadableNumber(
+                      selectedToken?.decimals ?? 0
+                    ),
+                    step: HugeDecimal.one.toHumanReadableNumber(
                       selectedToken?.decimals ?? 0
                     ),
                   }}

@@ -7,10 +7,13 @@ import {
   FieldPathValue,
   FieldValues,
   FormState,
+  UseFormGetValues,
   UseFormRegister,
   UseFormReturn,
   UseFormSetValue,
 } from 'react-hook-form'
+
+import { HugeDecimal } from '@dao-dao/math'
 
 import { Account } from './account'
 import { SupportedChainConfig, WithChainId } from './chain'
@@ -348,6 +351,7 @@ export interface DaoCreationVotingConfigItemInputProps<
   data: ModuleData
   register: UseFormRegister<ModuleData>
   setValue: UseFormSetValue<ModuleData>
+  getValues: UseFormGetValues<ModuleData>
   watch: <TFieldName extends FieldPath<ModuleData>>(
     name: TFieldName,
     defaultValue?: FieldPathValue<ModuleData, TFieldName>
@@ -410,7 +414,7 @@ export type DaoCreationVotingConfigWithAllowRevoting = {
 export type DaoCreationVotingConfigWithProposalDeposit = {
   proposalDeposit: {
     enabled: boolean
-    amount: number
+    amount: string
     // Token input fields.
     type: 'native' | 'cw20' | 'voting_module_token'
     denomOrAddress: string
@@ -440,7 +444,7 @@ export type DaoCreationVotingConfigWithActiveThreshold = {
   activeThreshold: {
     enabled: boolean
     type: 'percent' | 'absolute'
-    value: number
+    value: string
   }
 }
 
@@ -593,7 +597,7 @@ export type VotingVaultInfo =
 
 export type VotingVaultWithInfo = VotingVault & {
   info: VotingVaultInfo
-  totalPower: string
+  totalPower: HugeDecimal
 }
 
 /**
@@ -635,7 +639,7 @@ export type DaoRewardDistributionWithRemaining = DaoRewardDistribution & {
   /**
    * Remaining rewards to be distributed.
    */
-  remaining: number
+  remaining: HugeDecimal
 }
 
 /**
@@ -653,7 +657,7 @@ export type PendingDaoRewards = {
     /**
      * Pending rewards for the distribution.
      */
-    rewards: number
+    rewards: HugeDecimal
   }[]
   /**
    * Total pending rewards across all distributions, merged by token.

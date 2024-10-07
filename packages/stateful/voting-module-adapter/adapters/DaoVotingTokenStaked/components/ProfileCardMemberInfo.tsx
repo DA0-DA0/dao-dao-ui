@@ -3,12 +3,13 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import { useCachedLoadable, useDao, useVotingModule } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -16,7 +17,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertExpirationToDate,
-  convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
   processError,
 } from '@dao-dao/utils'
@@ -27,7 +27,6 @@ import {
   useWallet,
 } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
@@ -36,15 +35,13 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { name: daoName } = useDao()
+  const votingModule = useVotingModule()
   const {
     address: walletAddress,
     isWalletConnected,
     refreshBalances,
-  } = useWallet({
-    chainId,
-  })
+  } = useWallet()
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
@@ -60,7 +57,7 @@ export const ProfileCardMemberInfo = ({
     refreshTotals,
     claimsPending,
     claimsAvailable,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     loadingTotalStakedValue,
     refreshClaims,
@@ -71,7 +68,7 @@ export const ProfileCardMemberInfo = ({
   })
 
   const doClaim = DaoVotingTokenStakedHooks.useClaim({
-    contractAddress: votingModuleAddress,
+    contractAddress: votingModule.address,
     sender: walletAddress ?? '',
   })
 
@@ -80,7 +77,7 @@ export const ProfileCardMemberInfo = ({
     if (!isWalletConnected) {
       return toast.error(t('error.logInToContinue'))
     }
-    if (!sumClaimsAvailable) {
+    if (sumClaimsAvailable.isZero()) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -96,12 +93,12 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable,
-          governanceToken.decimals
-        ).toLocaleString(undefined, {
-          maximumFractionDigits: governanceToken.decimals,
-        })} $${governanceToken.symbol}`
+        t('success.claimedTokens', {
+          amount: sumClaimsAvailable.toInternationalizedHumanReadableString({
+            decimals: governanceToken.decimals,
+          }),
+          tokenSymbol: governanceToken.symbol,
+        })
       )
     } catch (err) {
       console.error(err)
@@ -124,12 +121,12 @@ export const ProfileCardMemberInfo = ({
 
   const blockHeightLoadable = useCachedLoadable(
     blockHeightSelector({
-      chainId,
+      chainId: votingModule.chainId,
     })
   )
   const blocksPerYear = useRecoilValue(
     blocksPerYearSelector({
-      chainId,
+      chainId: votingModule.chainId,
     })
   )
 
@@ -137,10 +134,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.Unstaking,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
-        governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(amount),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -152,10 +146,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.ReadyToClaim,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
-        governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(amount),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -184,14 +175,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: convertMicroDenomToDenomWithDecimals(
-                      loadingWalletStakedValue.data,
-                      governanceToken.decimals
-                    ),
-                    unstaked: convertMicroDenomToDenomWithDecimals(
-                      loadingUnstakedBalance.data,
-                      governanceToken.decimals
-                    ),
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
                   },
                 ],
               }
@@ -204,10 +189,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

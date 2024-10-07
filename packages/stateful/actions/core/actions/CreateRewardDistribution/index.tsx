@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { nanoid } from 'nanoid'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { contractQueries, tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, BucketEmoji, useChain } from '@dao-dao/stateless'
 import {
@@ -25,10 +26,8 @@ import {
   InstantiateMsg,
 } from '@dao-dao/types/contracts/DaoRewardsDistributor'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   getNativeTokenForChainId,
@@ -125,13 +124,13 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         .denomOrAddress,
       immediate: false,
       rate: {
-        amount: 1,
+        amount: '1',
         duration: {
           value: 1,
           units: DurationUnits.Hours,
         },
       },
-      initialFunds: 0,
+      initialFunds: '0',
       openFunding: true,
     }
   }
@@ -146,7 +145,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     denomOrAddress,
     immediate,
     rate,
-    initialFunds,
+    initialFunds: _initialFunds,
     openFunding,
   }: CreateRewardDistributionData): Promise<UnifiedCosmosMsg[]> {
     if (this.options.context.type !== ActionContextType.Dao) {
@@ -167,6 +166,11 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         type,
         denomOrAddress,
       })
+    )
+
+    const initialFunds = HugeDecimal.fromHumanReadable(
+      _initialFunds,
+      token.decimals
     )
 
     let distributor = this.distributors[0]?.address
@@ -244,10 +248,10 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 }
               : {
                   linear: {
-                    amount: convertDenomToMicroDenomStringWithDecimals(
+                    amount: HugeDecimal.fromHumanReadable(
                       rate.amount,
                       token.decimals
-                    ),
+                    ).toString(),
                     duration: convertDurationWithUnitsToDuration(rate.duration),
                     continuous: false,
                   },
@@ -261,11 +265,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     )
 
     // Fund if initial funds are set.
-    if (initialFunds) {
-      const microAmount = convertDenomToMicroDenomStringWithDecimals(
-        initialFunds,
-        token.decimals
-      )
+    if (initialFunds.isPositive()) {
       messages.push(
         type === TokenType.Native
           ? makeExecuteSmartContractMessage({
@@ -280,7 +280,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                   ? [
                       {
                         denom: denomOrAddress,
-                        amount: microAmount,
+                        amount: initialFunds.toString(),
                       },
                     ]
                   : undefined,
@@ -292,7 +292,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
               contractAddress: denomOrAddress,
               msg: {
                 send: {
-                  amount: microAmount,
+                  amount: initialFunds.toString(),
                   contract: distributor,
                   msg: encodeJsonToBase64({
                     fund_latest: {},
@@ -569,9 +569,9 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
               {
                 fund_latest: {},
               }
-            )?.amount || '0'
-          : '0'
-        : '0'
+            )?.amount || 0
+          : 0
+        : 0
 
     const denomOrAddress =
       'native' in createMsg.denom
@@ -591,13 +591,11 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       denomOrAddress,
       immediate: 'immediate' in createMsg.emission_rate,
       rate: {
-        amount:
+        amount: HugeDecimal.from(
           'linear' in createMsg.emission_rate
-            ? convertMicroDenomToDenomWithDecimals(
-                createMsg.emission_rate.linear.amount,
-                token.decimals
-              )
-            : 1,
+            ? createMsg.emission_rate.linear.amount
+            : 1
+        ).toHumanReadableString(token.decimals),
         duration:
           'linear' in createMsg.emission_rate
             ? convertDurationToDurationWithUnits(
@@ -608,11 +606,21 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
                 units: DurationUnits.Hours,
               },
       },
-      initialFunds:
-        initialFunds === '0'
-          ? 0
-          : convertMicroDenomToDenomWithDecimals(initialFunds, token.decimals),
+      initialFunds: HugeDecimal.from(initialFunds).toHumanReadableString(
+        token.decimals
+      ),
       openFunding: !!createMsg.open_funding,
+    }
+  }
+
+  transformImportData({
+    initialFunds,
+    ...data
+  }: any): CreateRewardDistributionData {
+    return {
+      ...data,
+      // Ensure initialFunds is a string.
+      initialFunds: HugeDecimal.from(initialFunds).toString(),
     }
   }
 }

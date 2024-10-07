@@ -7,6 +7,7 @@ import {
   waitForAny,
 } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountTxSave,
   AccountType,
@@ -25,7 +26,6 @@ import {
   INACTIVE_DAO_NAMES,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -357,24 +357,19 @@ export const walletTokenCardInfosSelector = selectorFamily<
       const infos: TokenCardInfo[] = [
         ...nativeBalances.flatMap((accountBalances, accountIndex) =>
           accountBalances.map(({ token, balance }) => {
-            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              balance,
-              token.decimals
-            )
-
             // Staking info only exists for native token.
             const hasStakingInfo =
               token.denomOrAddress ===
                 getNativeTokenForChainId(chainId).denomOrAddress &&
               // Check if anything staked.
-              Number(
+              HugeDecimal.from(
                 get(
                   nativeDelegatedBalanceSelector({
                     address: walletAddress,
                     chainId,
                   })
                 ).amount
-              ) > 0
+              ).isPositive()
 
             const owner = allAccounts[accountIndex]
 
@@ -383,7 +378,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
                 tokenCardLazyInfoSelector({
                   owner: owner.address,
                   token,
-                  unstakedBalance,
+                  unstakedBalance: balance,
                 })
               )
             )
@@ -392,12 +387,12 @@ export const walletTokenCardInfosSelector = selectorFamily<
               owner,
               token,
               isGovernanceToken: false,
-              unstakedBalance,
+              unstakedBalance: HugeDecimal.from(balance),
               hasStakingInfo,
               lazyInfo: loadableToLoadingData(lazyInfo, {
                 usdUnitPrice: undefined,
                 stakingInfo: undefined,
-                totalBalance: unstakedBalance,
+                totalBalance: HugeDecimal.from(balance),
               }),
             }
 
@@ -410,9 +405,8 @@ export const walletTokenCardInfosSelector = selectorFamily<
             return []
           }
 
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            cw20Contracts[index].balance || '0',
-            token.decimals
+          const unstakedBalance = HugeDecimal.from(
+            cw20Contracts[index].balance || 0
           )
 
           const lazyInfo = get(
@@ -420,7 +414,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
               tokenCardLazyInfoSelector({
                 owner: walletAddress,
                 token,
-                unstakedBalance,
+                unstakedBalance: unstakedBalance.toString(),
               })
             )
           )

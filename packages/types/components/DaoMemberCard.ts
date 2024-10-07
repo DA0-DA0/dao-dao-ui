@@ -1,5 +1,7 @@
 import { ComponentType } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { LoadingData } from '../misc'
 import { GenericToken } from '../token'
 import { ButtonLinkProps } from './Buttonifier'
@@ -9,7 +11,7 @@ export type DaoMemberCardProps = {
   address: string
   balanceLabel: string
   balance: LoadingData<{
-    amount: number
+    amount: number | HugeDecimal
     token?: GenericToken
   }>
   votingPowerPercent: LoadingData<number>

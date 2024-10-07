@@ -5,16 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { stakingLoadingAtom } from '@dao-dao/state'
-import {
-  ModalLoader,
-  SegmentedControls,
-  StakingMode,
-  useDaoContext,
-} from '@dao-dao/stateless'
+import { ModalLoader, SegmentedControls, useDao } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
   LazyNftCardInfo,
   LoadingDataWithError,
+  StakingMode,
 } from '@dao-dao/types'
 import { MsgExecuteContract } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { MsgTransferONFT } from '@dao-dao/types/protobuf/codegen/OmniFlix/onft/v1beta1/tx'
@@ -47,7 +43,7 @@ const InnerStakingModal = ({
   initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const {
     address: walletAddress,
     isWalletConnected,
@@ -84,7 +80,7 @@ const InnerStakingModal = ({
   const hasStake =
     loadingWalletStakedValue !== undefined &&
     !loadingWalletStakedValue.loading &&
-    loadingWalletStakedValue.data > 0
+    loadingWalletStakedValue.data.isPositive()
 
   const walletStakedBalanceLoading = useQueryLoadingDataWithError(
     dao.votingModule.getVotingPowerQuery(walletAddress)
@@ -166,7 +162,10 @@ const InnerStakingModal = ({
           refreshTotals()
 
           toast.success(
-            `Staked ${stakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.stakedTokens', {
+              amount: stakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setStakeTokenIds([])
 
@@ -210,7 +209,10 @@ const InnerStakingModal = ({
           refreshClaims?.()
 
           toast.success(
-            `Unstaked ${unstakeTokenIds.length} $${collectionInfo.symbol}`
+            t('success.unstakedTokens', {
+              amount: unstakeTokenIds.length,
+              tokenSymbol: collectionInfo.symbol,
+            })
           )
           setUnstakeTokenIds([])
 

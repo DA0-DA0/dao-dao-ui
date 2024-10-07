@@ -3,11 +3,12 @@ import { MutableRefObject, useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   communityPoolBalancesSelector,
   genericTokenBalanceSelector,
-  genericTokenSelector,
+  tokenQueries,
 } from '@dao-dao/state'
 import {
   ActionBase,
@@ -16,6 +17,7 @@ import {
   RaisedHandEmoji,
   useActionOptions,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   AccountType,
@@ -138,53 +140,8 @@ const InnerComponent = ({
       ? context.params.expeditedMinDeposit
       : context.params.minDeposit
 
-  // On chain or min deposit change, reset deposit, except first load.
-  useEffect(() => {
-    if (!firstDepositSet.current) {
-      firstDepositSet.current = true
-      return
-    }
-
-    setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
-      {
-        denom: minDepositParams[0].denom,
-        amount: Number(minDepositParams[0].amount),
-      },
-    ])
-  }, [
-    chainId,
-    setValue,
-    props.fieldNamePrefix,
-    minDepositParams,
-    firstDepositSet,
-  ])
-
-  // Update version in data.
-  useEffect(() => {
-    setValue(
-      (props.fieldNamePrefix + 'version') as 'version',
-      context.params.supportsV1
-        ? GovProposalVersion.V1
-        : GovProposalVersion.V1_BETA_1
-    )
-  }, [setValue, props.fieldNamePrefix, context.params.supportsV1])
-
-  // Get token info for all deposit tokens.
-  const minDepositTokens = useCachedLoading(
-    waitForAll(
-      minDepositParams.map(({ denom }) =>
-        genericTokenSelector({
-          type: TokenType.Native,
-          denomOrAddress: denom,
-          chainId,
-        })
-      )
-    ),
-    []
-  )
-
-  // Get address balances for all deposit tokens when wallet connected.
-  const minDepositBalances = useCachedLoading(
+  // Get tokens and balances for all deposit tokens.
+  const minDeposits = useCachedLoadingWithError(
     address
       ? waitForAll(
           minDepositParams.map(({ denom }) =>
@@ -197,28 +154,66 @@ const InnerComponent = ({
           )
         )
       : undefined,
-    []
+    (data) =>
+      data.map(({ token, balance }, index) => ({
+        token,
+        balance,
+        // Min deposit required.
+        min: minDepositParams[index].amount,
+      }))
   )
+
+  const minDepositToken =
+    minDeposits.loading || minDeposits.errored || !minDepositParams.length
+      ? undefined
+      : minDeposits.data.find(
+          ({ token }) => token.denomOrAddress === minDepositParams[0].denom
+        )
+
+  // On chain or min deposit change, reset deposit, except first load.
+  useEffect(() => {
+    if (!minDepositToken) {
+      return
+    }
+
+    if (!firstDepositSet.current) {
+      firstDepositSet.current = true
+      return
+    }
+
+    setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
+      {
+        denom: minDepositParams[0].denom,
+        amount: HugeDecimal.from(
+          minDepositParams[0].amount
+        ).toHumanReadableString(minDepositToken.token.decimals),
+        decimals: minDepositToken.token.decimals,
+      },
+    ])
+  }, [
+    chainId,
+    setValue,
+    props.fieldNamePrefix,
+    minDepositParams,
+    firstDepositSet,
+    minDepositToken,
+  ])
+
+  // Update version in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'version') as 'version',
+      context.params.supportsV1
+        ? GovProposalVersion.V1
+        : GovProposalVersion.V1_BETA_1
+    )
+  }, [setValue, props.fieldNamePrefix, context.params.supportsV1])
 
   return (
     <StatelessGovernanceProposalComponent
       {...props}
       options={{
-        minDeposits: minDepositTokens.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: minDepositTokens.data.map((token, index) => ({
-                token,
-                // Wallet's balance or 0 if not loaded.
-                balance:
-                  (!minDepositBalances.loading &&
-                    minDepositBalances.data[index]?.balance) ||
-                  '0',
-                // Min deposit required.
-                min: minDepositParams[index].amount,
-              })),
-            },
+        minDeposits,
         communityPoolBalances,
         encodeContext,
         TokenAmountDisplay,
@@ -317,6 +312,14 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
 
     const deposit = minDeposit[0]
 
+    const depositToken = await this.options.queryClient.fetchQuery(
+      tokenQueries.info(this.options.queryClient, {
+        chainId: this.defaultChainId,
+        type: TokenType.Native,
+        denomOrAddress: deposit.denom,
+      })
+    )
+
     this.defaults = {
       chainId: this.defaultChainId,
       version: supportsV1
@@ -329,14 +332,18 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
         ? [
             {
               denom: deposit.denom,
-              amount: Number(deposit.amount),
+              amount: HugeDecimal.from(deposit.amount).toHumanReadableString(
+                depositToken.decimals
+              ),
+              decimals: depositToken.decimals,
             },
           ]
         : [
             {
               denom: getNativeTokenForChainId(this.defaultChainId)
                 .denomOrAddress,
-              amount: 0,
+              amount: '0',
+              decimals: getNativeTokenForChainId(this.defaultChainId).decimals,
             },
           ],
       legacy: {
@@ -384,11 +391,17 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
       throw new Error('Could not find proposer address.')
     }
 
+    const initialDeposit = await Promise.all(
+      deposit.map(async ({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      )
+    )
+
     const msg = supportsV1
       ? makeStargateMessage({
           stargate: {
             typeUrl: MsgSubmitProposalV1.typeUrl,
-            value: {
+            value: MsgSubmitProposalV1.fromPartial({
               messages: useV1LegacyContent
                 ? [
                     MsgExecLegacyContent.toProtoMsg({
@@ -399,10 +412,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
                 : msgs.map((msg) =>
                     cwMsgToProtobuf(chainId, msg, govModuleAddress)
                   ),
-              initialDeposit: deposit.map(({ amount, denom }) => ({
-                amount: BigInt(amount).toString(),
-                denom,
-              })),
+              initialDeposit,
               proposer,
               title,
               summary: description,
@@ -410,20 +420,17 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
               expedited: expedited || false,
               // Metadata must be set, so just use the title as a fallback.
               metadata: metadata.trim() || title,
-            } as MsgSubmitProposalV1,
+            }),
           },
         })
       : makeStargateMessage({
           stargate: {
             typeUrl: MsgSubmitProposalV1Beta1.typeUrl,
-            value: {
+            value: MsgSubmitProposalV1Beta1.fromPartial({
               content: legacyContent,
-              initialDeposit: deposit.map(({ amount, denom }) => ({
-                amount: BigInt(amount).toString(),
-                denom,
-              })),
+              initialDeposit,
               proposer,
-            } as MsgSubmitProposalV1Beta1,
+            }),
           },
         })
 
@@ -464,12 +471,12 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
     return true
   }
 
-  decode([
+  async decode([
     {
       decodedMessage,
       account: { chainId },
     },
-  ]: ProcessedMessage[]): Partial<GovernanceProposalActionData> {
+  ]: ProcessedMessage[]): Promise<Partial<GovernanceProposalActionData>> {
     if (decodedMessage.stargate.typeUrl === MsgSubmitProposalV1Beta1.typeUrl) {
       const proposal = decodedMessage.stargate.value as MsgSubmitProposalV1Beta1
       const typeUrl = proposal.content?.typeUrl
@@ -485,27 +492,59 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
         customContent = JSON.stringify(proposal.content, null, 2)
       } catch {}
 
+      const deposit = await Promise.all(
+        proposal.initialDeposit.map(async ({ denom, amount }) => {
+          const { decimals } = await this.options.queryClient.fetchQuery(
+            tokenQueries.info(this.options.queryClient, {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+            })
+          )
+
+          return {
+            denom,
+            amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
+            decimals,
+          }
+        })
+      )
+
+      const spends =
+        proposal.content.typeUrl === CommunityPoolSpendProposal.typeUrl
+          ? await Promise.all(
+              (proposal.content.amount as Coin[]).map(
+                async ({ denom, amount }) => {
+                  const { decimals } =
+                    await this.options.queryClient.fetchQuery(
+                      tokenQueries.info(this.options.queryClient, {
+                        chainId,
+                        type: TokenType.Native,
+                        denomOrAddress: denom,
+                      })
+                    )
+
+                  return {
+                    denom,
+                    amount:
+                      HugeDecimal.from(amount).toHumanReadableString(decimals),
+                    decimals,
+                  }
+                }
+              )
+            )
+          : []
+
       return {
         chainId,
         version: GovProposalVersion.V1_BETA_1,
         title: proposal.content.title,
         description: proposal.content.description,
         metadata: '',
-        deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
-          ...coin,
-          amount: Number(amount),
-        })),
+        deposit,
         legacy: {
           typeUrl,
-          spends:
-            proposal.content.typeUrl === CommunityPoolSpendProposal.typeUrl
-              ? (proposal.content.amount as Coin[]).map(
-                  ({ amount, denom }) => ({
-                    amount: Number(amount),
-                    denom,
-                  })
-                )
-              : [],
+          spends,
           spendRecipient:
             proposal.content.typeUrl === CommunityPoolSpendProposal.typeUrl
               ? proposal.content.recipient
@@ -531,16 +570,31 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
         proposal.messages
       )
 
+      const deposit = await Promise.all(
+        proposal.initialDeposit.map(async ({ denom, amount }) => {
+          const { decimals } = await this.options.queryClient.fetchQuery(
+            tokenQueries.info(this.options.queryClient, {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+            })
+          )
+
+          return {
+            denom,
+            amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
+            decimals,
+          }
+        })
+      )
+
       return {
         chainId,
         version: GovProposalVersion.V1,
         title: proposal.title,
         description: proposal.summary,
         metadata: proposal.metadata,
-        deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
-          ...coin,
-          amount: Number(amount),
-        })),
+        deposit,
         msgs: decodedMessages,
         expedited: proposal.expedited || false,
       }

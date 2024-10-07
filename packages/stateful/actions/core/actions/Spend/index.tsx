@@ -1,9 +1,9 @@
-import { coin, coins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
 import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   neutronQueries,
   nobleQueries,
@@ -49,9 +49,7 @@ import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/tr
 import { MsgTransfer as NeutronMsgTransfer } from '@dao-dao/types/protobuf/codegen/neutron/transfer/v1/tx'
 import {
   MAINNET,
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToSeconds,
-  convertMicroDenomToDenomWithDecimals,
   decodeMessage,
   getAccountAddress,
   getChainForChainId,
@@ -254,10 +252,10 @@ const StatefulSpendComponent: ComponentType<
 
   const amountIn =
     selectedToken && amount
-      ? convertDenomToMicroDenomStringWithDecimals(
+      ? HugeDecimal.fromHumanReadable(
           amount,
           selectedToken.token.decimals
-        )
+        ).toString()
       : undefined
 
   // Get Skip route for IBC transfer.
@@ -395,7 +393,7 @@ const StatefulSpendComponent: ComponentType<
         errored: false,
       }
   // Get the amount out from an IBC path.
-  const ibcAmountOut: LoadingDataWithError<number | undefined> = isIbc
+  const ibcAmountOut: LoadingDataWithError<HugeDecimal | undefined> = isIbc
     ? skipRoute.loading || !selectedToken
       ? {
           loading: true,
@@ -411,10 +409,7 @@ const StatefulSpendComponent: ComponentType<
           loading: false,
           errored: false,
           updating: skipRoute.updating,
-          data: convertMicroDenomToDenomWithDecimals(
-            skipRoute.data.amount_out,
-            selectedToken.token.decimals
-          ),
+          data: HugeDecimal.from(skipRoute.data.amount_out),
         }
     : {
         loading: false,
@@ -561,7 +556,7 @@ export class SpendAction extends ActionBase<SpendData> {
       toChainId: this.options.chain.chain_id,
       from: this.options.address,
       to: '',
-      amount: 1,
+      amount: '1',
       denom: nativeToken?.denomOrAddress || '',
       cw20: nativeToken?.type === TokenType.Cw20,
       ibcTimeout: {
@@ -593,7 +588,7 @@ export class SpendAction extends ActionBase<SpendData> {
         type: cw20 ? TokenType.Cw20 : TokenType.Native,
       })
     )
-    const amount = convertDenomToMicroDenomStringWithDecimals(_amount, decimals)
+    const amount = HugeDecimal.fromHumanReadable(_amount, decimals)
 
     // Gov module community pool spend.
     if (this.options.context.type === ActionContextType.Gov) {
@@ -603,7 +598,7 @@ export class SpendAction extends ActionBase<SpendData> {
           value: MsgCommunityPoolSpend.fromPartial({
             authority: this.options.address,
             recipient: to,
-            amount: coins(amount, denom),
+            amount: amount.toCoins(denom),
           }),
         },
       })
@@ -673,7 +668,7 @@ export class SpendAction extends ActionBase<SpendData> {
             value: {
               sourcePort: 'transfer',
               sourceChannel,
-              token: coin(amount, denom),
+              token: amount.toCoin(denom),
               sender: from,
               receiver: to,
               timeoutTimestamp,
@@ -743,7 +738,7 @@ export class SpendAction extends ActionBase<SpendData> {
       }
     } else if (!cw20) {
       msg = {
-        bank: makeBankMessage(amount, to, denom),
+        bank: makeBankMessage(amount.toString(), to, denom),
       }
     } else {
       msg = makeWasmMessage({
@@ -754,7 +749,7 @@ export class SpendAction extends ActionBase<SpendData> {
             msg: {
               transfer: {
                 recipient: to,
-                amount,
+                amount: amount.toString(),
               },
             },
           },
@@ -1004,17 +999,16 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId,
         from,
         to,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.stargate.value.token.amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.stargate.value.token.amount
+        ).toHumanReadableString(token.decimals),
         denom: token.denomOrAddress,
         // Should always be false.
         cw20: token.type === TokenType.Cw20,
 
         // Nanoseconds to milliseconds.
         _absoluteIbcTimeout: Number(
-          decodedMessage.stargate.value.timeoutTimestamp / BigInt(1e6)
+          BigInt(decodedMessage.stargate.value.timeoutTimestamp) / BigInt(1e6)
         ),
 
         _ibcData: {
@@ -1028,10 +1022,9 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId: chainId,
         from,
         to: decodedMessage.bank.send.to_address,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.bank.send.amount[0].amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.bank.send.amount[0].amount
+        ).toHumanReadableString(token.decimals),
         denom: token.denomOrAddress,
         cw20: false,
       }
@@ -1041,10 +1034,9 @@ export class SpendAction extends ActionBase<SpendData> {
         toChainId: chainId,
         from,
         to: decodedMessage.wasm.execute.msg.transfer.recipient,
-        amount: convertMicroDenomToDenomWithDecimals(
-          decodedMessage.wasm.execute.msg.transfer.amount,
-          token.decimals
-        ),
+        amount: HugeDecimal.from(
+          decodedMessage.wasm.execute.msg.transfer.amount
+        ).toHumanReadableString(token.decimals),
         denom: decodedMessage.wasm.execute.contract_addr,
         cw20: true,
       }
@@ -1056,8 +1048,8 @@ export class SpendAction extends ActionBase<SpendData> {
   transformImportData(data: any): SpendData {
     return {
       ...data,
-      // Ensure amount is a number.
-      amount: Number(data.amount),
+      // Ensure amount is a string.
+      amount: HugeDecimal.from(data.amount).toString(),
     }
   }
 }

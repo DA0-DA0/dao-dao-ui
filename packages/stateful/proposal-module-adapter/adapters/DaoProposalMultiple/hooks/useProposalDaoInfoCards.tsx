@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { constSelector } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw1WhitelistSelectors,
   DaoProposalMultipleSelectors,
@@ -18,7 +19,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
-  convertMicroDenomToDenomWithDecimals,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
@@ -35,7 +35,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
 
   const config = useCachedLoadingWithError(
     DaoProposalMultipleSelectors.configSelector({
-      chainId: proposalModule.dao.chainId,
+      chainId: proposalModule.chainId,
       contractAddress: proposalModule.address,
     })
   )
@@ -45,7 +45,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       ? undefined
       : !depositInfo.errored && depositInfo.data
       ? genericTokenSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           type:
             'native' in depositInfo.data.denom
               ? TokenType.Native
@@ -73,7 +73,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
       : config.errored || !('veto' in config.data) || !config.data.veto
       ? constSelector(undefined)
       : Cw1WhitelistSelectors.adminsIfCw1Whitelist({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           contractAddress: config.data.veto.vetoer,
         })
   )
@@ -151,10 +151,7 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
           '<error>'
         ) : depositInfo.data && depositTokenInfo.data ? (
           <TokenAmountDisplay
-            amount={convertMicroDenomToDenomWithDecimals(
-              depositInfo.data.amount,
-              depositTokenInfo.data.decimals
-            )}
+            amount={HugeDecimal.from(depositInfo.data.amount)}
             decimals={depositTokenInfo.data.decimals}
             iconUrl={depositTokenInfo.data.imageUrl}
             showFullAmount

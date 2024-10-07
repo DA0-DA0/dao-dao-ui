@@ -9,7 +9,7 @@ import {
 
 import { PageLoader, TabBar } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useDaoInfoContext } from '../contexts'
+import { useDao } from '../contexts'
 import { useTabBarScrollReset } from '../hooks'
 
 export const DaoDappTabbedHome = ({
@@ -21,7 +21,7 @@ export const DaoDappTabbedHome = ({
   onSelectTabId,
   ...headerProps
 }: DaoDappTabbedHomeProps) => {
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
 
   // Auto scroll to top of tab on change.
   const { tabBarRef, tabContainerRef } = useTabBarScrollReset({
@@ -34,7 +34,7 @@ export const DaoDappTabbedHome = ({
         <DaoSplashHeader
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
-          daoInfo={daoInfo}
+          dao={dao}
           {...headerProps}
         />
       </div>

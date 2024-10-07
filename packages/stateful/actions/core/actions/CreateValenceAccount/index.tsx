@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   tokenQueries,
   valenceRebalancerExtraQueries,
@@ -32,8 +33,6 @@ import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwas
 import {
   VALENCE_INSTANTIATE2_SALT,
   VALENCE_SUPPORTED_CHAINS,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getDisplayNameForChainId,
   getSupportedChainConfig,
@@ -164,7 +163,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
     funds: [
       {
         denom: 'untrn',
-        amount: 10,
+        amount: '10',
         decimals: 6,
       },
     ],
@@ -200,18 +199,17 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
       )
     }
 
-    const convertedFunds = funds.map(({ denom, amount, decimals }) => ({
-      denom,
-      amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
-    }))
+    const convertedFunds = funds.map(({ denom, amount, decimals }) =>
+      HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+    )
 
     // Add service fee to funds.
     if (serviceFee && serviceFee.amount !== '0') {
       const existing = convertedFunds.find((f) => f.denom === serviceFee.denom)
       if (existing) {
-        existing.amount = (
-          BigInt(existing.amount) + BigInt(serviceFee.amount)
-        ).toString()
+        existing.amount = HugeDecimal.from(existing.amount)
+          .plus(serviceFee.amount)
+          .toString()
       } else {
         convertedFunds.push({
           denom: serviceFee.denom,
@@ -280,8 +278,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
 
           return {
             denom,
-            amount: convertMicroDenomToDenomWithDecimals(
-              amount,
+            amount: HugeDecimal.from(amount).toHumanReadableString(
               token.decimals
             ),
             decimals: token.decimals,

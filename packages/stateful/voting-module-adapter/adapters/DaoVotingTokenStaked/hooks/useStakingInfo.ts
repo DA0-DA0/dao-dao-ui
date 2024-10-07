@@ -1,17 +1,25 @@
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import { constSelector, useSetRecoilState } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
+  DaoVotingNativeStakedSelectors,
   DaoVotingTokenStakedSelectors,
   blockHeightSelector,
+  daoVotingTokenStakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
@@ -19,16 +27,14 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
-  const { address: walletAddress } = useWallet({
-    chainId,
-  })
+  const votingModule = useVotingModule()
+  const { address: walletAddress } = useWallet()
+  const queryClient = useQueryClient()
 
-  const config = useRecoilValue(
-    DaoVotingTokenStakedSelectors.getConfigSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
+  const { data: config } = useSuspenseQuery(
+    daoVotingTokenStakedQueries.getConfig(queryClient, {
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
     })
   )
 
@@ -47,7 +53,7 @@ export const useStakingInfo = ({
   const blockHeightLoadable = useCachedLoadable(
     fetchClaims
       ? blockHeightSelector({
-          chainId,
+          chainId: votingModule.chainId,
         })
       : undefined
   )
@@ -62,8 +68,8 @@ export const useStakingInfo = ({
   const loadingClaims = useCachedLoading(
     fetchClaims && walletAddress
       ? DaoVotingTokenStakedSelectors.claimsSelector({
-          chainId,
-          contractAddress: votingModuleAddress,
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined),
@@ -82,16 +88,19 @@ export const useStakingInfo = ({
     ? claims?.filter((c) => claimAvailable(c, blockHeight))
     : undefined
   const sumClaimsAvailable = claimsAvailable?.reduce(
-    (p, c) => p + Number(c.amount),
-    0
+    (sum, c) => sum.plus(c.amount),
+    HugeDecimal.zero
   )
 
   // Total staked value
   const loadingTotalStakedValue = useCachedLoading(
     fetchTotalStakedValue
-      ? DaoVotingTokenStakedSelectors.totalPowerAtHeightSelector({
-          chainId,
-          contractAddress: votingModuleAddress,
+      ? (votingModule instanceof TokenStakedVotingModule
+          ? DaoVotingTokenStakedSelectors
+          : DaoVotingNativeStakedSelectors
+        ).totalPowerAtHeightSelector({
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           params: [{}],
         })
       : constSelector(undefined),
@@ -101,9 +110,12 @@ export const useStakingInfo = ({
   // Wallet staked value
   const loadingWalletStakedValue = useCachedLoading(
     fetchWalletStakedValue && walletAddress
-      ? DaoVotingTokenStakedSelectors.votingPowerAtHeightSelector({
-          chainId,
-          contractAddress: votingModuleAddress,
+      ? (votingModule instanceof TokenStakedVotingModule
+          ? DaoVotingTokenStakedSelectors
+          : DaoVotingNativeStakedSelectors
+        ).votingPowerAtHeightSelector({
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined),
@@ -111,7 +123,7 @@ export const useStakingInfo = ({
   )
 
   return {
-    stakingContractAddress: votingModuleAddress,
+    stakingContractAddress: votingModule.address,
     unstakingDuration: config.unstaking_duration ?? undefined,
     refreshTotals,
     /// Optional
@@ -129,7 +141,7 @@ export const useStakingInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingTotalStakedValue.data.power),
+          data: HugeDecimal.from(loadingTotalStakedValue.data.power),
         },
     // Wallet staked value
     loadingWalletStakedValue: loadingWalletStakedValue.loading
@@ -138,7 +150,7 @@ export const useStakingInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletStakedValue.data.power),
+          data: HugeDecimal.from(loadingWalletStakedValue.data.power),
         },
   }
 }

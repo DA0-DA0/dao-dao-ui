@@ -21,13 +21,15 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "deposit": [
     {
       "denom": "<DENOM>",
-      "amount": <AMOUNT>
+      "amount": "<AMOUNT>",
+      "decimals": <DECIMALS>
     }
   ],
   "spends": [
     {
       "denom": "<DENOM>",
-      "amount": <AMOUNT>
+      "amount": "<AMOUNT>",
+      "decimals": <DECIMALS>
     },
     ...
   ],

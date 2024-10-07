@@ -1,10 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state/query'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import {
   ButtonLink,
@@ -12,19 +15,18 @@ import {
   EntityDisplay,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { governanceToken } = useGovernanceTokenInfo()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       formula: 'daoVotingCw20Staked/topStakers',
       noFallback: true,
     }),
@@ -41,10 +43,7 @@ export const MembersTab = () => {
             loading: false,
             data: {
               token: governanceToken,
-              amount: convertMicroDenomToDenomWithDecimals(
-                balance,
-                governanceToken.decimals
-              ),
+              amount: HugeDecimal.from(balance),
             },
           },
           votingPowerPercent: {

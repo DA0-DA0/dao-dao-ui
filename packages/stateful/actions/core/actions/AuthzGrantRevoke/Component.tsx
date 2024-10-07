@@ -11,7 +11,7 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NumberInput,
+  NumericInput,
   RadioInput,
   SegmentedControlsTitle,
   SelectInput,
@@ -69,7 +69,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const { control, register, setValue, watch } =
+  const { control, register, setValue, getValues, watch } =
     useFormContext<AuthzGrantRevokeData>()
 
   const {
@@ -255,7 +255,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               className="mt-2 self-start"
               onClick={() =>
                 appendCoin({
-                  amount: 1,
+                  amount: '1',
                   denom: nativeToken.denomOrAddress,
                   decimals: nativeToken.decimals,
                 })
@@ -413,19 +413,21 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   tooltip={t('form.callsDescription')}
                 />
 
-                <NumberInput
+                <NumericInput
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.calls}
                   fieldName={(fieldNamePrefix + 'calls') as 'calls'}
+                  getValues={getValues}
                   min={0}
+                  numericValue
                   register={register}
                   setValue={setValue}
                   sizing="md"
                   step={1}
-                  validation={[validateNonNegative, validateRequired]}
-                  watch={watch}
+                  validation={[validateRequired, validateNonNegative]}
                 />
+                <InputErrorMessage error={errors?.calls} />
               </div>
             )}
 
@@ -465,7 +467,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     className="mt-2 self-start"
                     onClick={() =>
                       appendCoin({
-                        amount: 1,
+                        amount: '1',
                         denom: nativeToken.denomOrAddress,
                         decimals: nativeToken.decimals,
                       })

@@ -1,6 +1,6 @@
-import { coins } from '@cosmjs/stargate'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, DownArrowEmoji } from '@dao-dao/stateless'
 import {
@@ -18,8 +18,6 @@ import {
 } from '@dao-dao/types/actions'
 import { MsgFundCommunityPool } from '@dao-dao/types/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -85,7 +83,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
 
     this.defaults = {
       chainId: options.chain.chain_id,
-      amount: 100,
+      amount: '100',
       denom: options.chainContext.nativeToken?.denomOrAddress || '',
     }
   }
@@ -116,13 +114,10 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
           typeUrl: MsgFundCommunityPool.typeUrl,
           value: MsgFundCommunityPool.fromPartial({
             depositor,
-            amount: coins(
-              convertDenomToMicroDenomStringWithDecimals(
-                amount,
-                token.decimals
-              ),
-              denom
-            ),
+            amount: HugeDecimal.fromHumanReadable(
+              amount,
+              token.decimals
+            ).toCoins(denom),
           }),
         },
       })
@@ -158,7 +153,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
 
     return {
       chainId,
-      amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+      amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
       denom,
     }
   }

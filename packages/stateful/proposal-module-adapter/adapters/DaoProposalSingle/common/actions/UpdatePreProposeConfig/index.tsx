@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   contractQueries,
   genericTokenSelector,
@@ -30,8 +31,6 @@ import {
 import {
   ContractName,
   DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   isFeatureSupportedByVersion,
   isValidBech32Address,
@@ -165,7 +164,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
 
     const config = await this.options.queryClient.fetchQuery(
       daoPreProposeSingleQueries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.prePropose.address,
       })
     )
@@ -175,7 +174,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
           tokenQueries.info(this.options.queryClient, {
-            chainId: this.proposalModule.dao.chainId,
+            chainId: this.proposalModule.chainId,
             type:
               'native' in config.deposit_info.denom
                 ? TokenType.Native
@@ -195,10 +194,9 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
       config.deposit_info
         ? {
-            amount: convertMicroDenomToDenomWithDecimals(
-              config.deposit_info.amount,
-              token?.decimals ?? 0
-            ),
+            amount: HugeDecimal.from(
+              config.deposit_info.amount
+            ).toHumanReadableString(token?.decimals ?? 0),
             type: isVotingModuleToken
               ? 'voting_module_token'
               : 'native' in config.deposit_info.denom
@@ -213,10 +211,10 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
             refundPolicy: config.deposit_info.refund_policy,
           }
         : {
-            amount: 1,
+            amount: '1',
             type: 'native',
             denomOrAddress: getNativeTokenForChainId(
-              this.proposalModule.dao.chainId
+              this.proposalModule.chainId
             ).denomOrAddress,
             token: undefined,
             refundPolicy: DepositRefundPolicy.OnlyPassed,
@@ -251,10 +249,10 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
       update_config: {
         deposit_info: depositRequired
           ? {
-              amount: convertDenomToMicroDenomStringWithDecimals(
+              amount: HugeDecimal.fromHumanReadable(
                 depositInfo.amount,
                 depositInfo.token?.decimals ?? 0
-              ),
+              ).toString(),
               denom:
                 depositInfo.type === 'voting_module_token'
                   ? {
@@ -310,7 +308,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.proposalModule.dao.chainId,
+      chainId: this.proposalModule.chainId,
       contractAddress: this.prePropose.address,
       sender: this.options.address,
       msg: updateConfigMessage,
@@ -335,7 +333,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
           },
         },
       }) &&
-      chainId === this.proposalModule.dao.chainId &&
+      chainId === this.proposalModule.chainId &&
       (await this.options.queryClient.fetchQuery(
         contractQueries.isContract(this.options.queryClient, {
           chainId,
@@ -398,7 +396,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
       return {
         depositRequired: false,
         depositInfo: {
-          amount: 1,
+          amount: '1',
           type: 'native',
           denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
           refundPolicy: DepositRefundPolicy.OnlyPassed,
@@ -415,8 +413,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
         : 'cw20'
 
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
-      amount: convertMicroDenomToDenomWithDecimals(
-        configDepositInfo.amount,
+      amount: HugeDecimal.from(configDepositInfo.amount).toHumanReadableString(
         token.decimals
       ),
       type,

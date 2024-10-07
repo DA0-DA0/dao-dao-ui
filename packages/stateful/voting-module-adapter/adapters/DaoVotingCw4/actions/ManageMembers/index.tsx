@@ -1,5 +1,5 @@
 import { daoVotingCw4Queries } from '@dao-dao/state/query'
-import { ActionBase, PeopleEmoji, useActionOptions } from '@dao-dao/stateless'
+import { ActionBase, PeopleEmoji } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -16,16 +16,14 @@ import {
 
 import { Cw4VotingModule } from '../../../../../clients'
 import { AddressInput, EntityDisplay } from '../../../../../components'
-import { useLoadingVotingModule } from '../../hooks/useLoadingVotingModule'
+import { useLoadingVotingModuleInfo } from '../../hooks/useLoadingVotingModuleInfo'
 import {
   ManageMembersData,
   ManageMembersComponent as StatelessManageMembersComponent,
 } from './Component'
 
 const Component: ActionComponent = (props) => {
-  const { address } = useActionOptions()
-
-  const votingModule = useLoadingVotingModule(address, {
+  const loadingMembers = useLoadingVotingModuleInfo({
     fetchMembers: true,
   })
 
@@ -34,11 +32,12 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         currentMembers:
-          votingModule.loading || votingModule.errored
+          loadingMembers.loading || loadingMembers.errored
             ? { loading: true }
             : {
                 loading: false,
-                data: votingModule.data.members?.map(({ addr }) => addr) || [],
+                data:
+                  loadingMembers.data.members?.map(({ addr }) => addr) || [],
               },
         AddressInput,
         EntityDisplay,
@@ -82,7 +81,7 @@ export class ManageMembersAction extends ActionBase<ManageMembersData> {
   async setup() {
     this.cw4GroupAddress = await this.options.queryClient.fetchQuery(
       daoVotingCw4Queries.groupContract(this.options.queryClient, {
-        chainId: this.votingModule.dao.chainId,
+        chainId: this.votingModule.chainId,
         contractAddress: this.votingModule.address,
       })
     )

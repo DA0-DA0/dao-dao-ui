@@ -63,7 +63,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   loadCommon: ({ proposalModule }) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
-      chainId: proposalModule.dao.chainId,
+      chainId: proposalModule.chainId,
       proposalModuleAddress: proposalModule.address,
       version: proposalModule.version,
       preProposeAddress: proposalModule.prePropose?.address ?? null,
@@ -97,12 +97,12 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       // Selectors
       selectors: {
         proposalCount: proposalCountSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           proposalModuleAddress: proposalModule.address,
         }),
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
-            chainId: proposalModule.dao.chainId,
+            chainId: proposalModule.chainId,
             proposalModuleAddress: proposalModule.address,
             proposalModulePrefix: proposalModule.prefix,
             ...props,
@@ -112,14 +112,14 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
           ? {
               reversePreProposePendingProposalInfos: (props) =>
                 reversePreProposePendingProposalInfosSelector({
-                  chainId: proposalModule.dao.chainId,
+                  chainId: proposalModule.chainId,
                   proposalModuleAddress: proposalModule.prePropose!.address,
                   proposalModulePrefix: proposalModule.prefix,
                   ...props,
                 }),
               reversePreProposeCompletedProposalInfos: (props) =>
                 reversePreProposeCompletedProposalInfosSelector({
-                  chainId: proposalModule.dao.chainId,
+                  chainId: proposalModule.chainId,
                   proposalModuleAddress: proposalModule.prePropose!.address,
                   proposalModulePrefix: proposalModule.prefix,
                   ...props,
@@ -127,7 +127,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             }
           : {}),
         maxVotingPeriod: maxVotingPeriodSelector({
-          chainId: proposalModule.dao.chainId,
+          chainId: proposalModule.chainId,
           proposalModuleAddress: proposalModule.address,
         }),
       },

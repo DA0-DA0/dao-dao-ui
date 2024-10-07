@@ -1,5 +1,7 @@
 import { Chain } from '@chain-registry/types'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { Coin } from './contracts'
 import { ContractVersion } from './features'
 import { GenericToken, TokenType } from './token'
@@ -26,30 +28,30 @@ export type SupportedChainContext = Omit<ConfiguredChainContext, 'config'> & {
   config: SupportedChainConfig
 }
 
-export interface Validator {
+export type Validator = {
   address: string
   moniker: string
   website: string
   details: string
   commission: number
   status: string
-  tokens: number
+  tokens: HugeDecimal
 }
 
-export interface Delegation {
+export type Delegation = {
   validator: Validator
   delegated: Coin
   pendingReward: Coin
 }
 
-export interface UnbondingDelegation {
+export type UnbondingDelegation = {
   validator: Validator
   balance: Coin
   startedAtHeight: number
   finishesAt: Date
 }
 
-export interface NativeDelegationInfo {
+export type NativeDelegationInfo = {
   delegations: Delegation[]
   unbondingDelegations: UnbondingDelegation[]
 }

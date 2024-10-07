@@ -2,7 +2,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { daoVotingSgCommunityNftExtraQueries } from '@dao-dao/state'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 
 import {
@@ -11,17 +14,16 @@ import {
   EntityDisplay,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     daoVotingSgCommunityNftExtraQueries.allVoters(queryClient, {
-      chainId,
-      address: votingModuleAddress,
+      chainId: votingModule.chainId,
+      address: votingModule.address,
     }),
     (data) =>
       data?.map(

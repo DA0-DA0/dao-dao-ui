@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { HourglassEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
+import { HourglassEmoji, NumericInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -19,18 +19,20 @@ export const VotingDurationInput = ({
   data: { votingDuration },
   register,
   setValue,
-  watch,
+  getValues,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithVotingDuration>) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row gap-2">
-      <NumberInput
+      <NumericInput
         containerClassName="grow"
         error={errors?.votingDuration?.value}
         fieldName="votingDuration.value"
+        getValues={getValues}
         min={1}
+        numericValue
         register={register}
         setValue={setValue}
         sizing="sm"
@@ -45,7 +47,6 @@ export const VotingDurationInput = ({
             value >= 60 ||
             t('error.mustBeAtLeastSixtySeconds'),
         ]}
-        watch={watch}
       />
 
       <SelectInput

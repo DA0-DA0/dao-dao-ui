@@ -2,19 +2,16 @@ import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { Cw1WhitelistSelectors } from '@dao-dao/state'
 import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
   useChain,
-  useDaoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { PreProposeModuleType } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatDate,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+import { formatDate, formatPercentOf100 } from '@dao-dao/utils'
 
 import { useDaoGovernanceToken, useQueryLoadingData } from '../../hooks'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -42,7 +39,7 @@ const InnerMainDaoInfoCards = () => {
   const votingModuleCards = useMainDaoInfoCards()
   const tokenInfo = useDaoGovernanceToken()
 
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { activeThreshold, created, proposalModules } = dao.info
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
@@ -109,12 +106,7 @@ const InnerMainDaoInfoCards = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                tvlLoading.loading
-                  ? { loading: true }
-                  : {
-                      loading: false,
-                      data: tvlLoading.data.amount,
-                    }
+                tvlLoading.loading ? { loading: true } : tvlLoading.data.amount
               }
               dateFetched={
                 tvlLoading.loading
@@ -122,7 +114,6 @@ const InnerMainDaoInfoCards = () => {
                   : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
-              hideApprox
             />
           ),
         },
@@ -142,9 +133,8 @@ const InnerMainDaoInfoCards = () => {
                       )
                     : tokenInfo && (
                         <TokenAmountDisplay
-                          amount={convertMicroDenomToDenomWithDecimals(
-                            activeThreshold.absolute_count.count,
-                            tokenInfo.decimals
+                          amount={HugeDecimal.from(
+                            activeThreshold.absolute_count.count
                           )}
                           decimals={tokenInfo.decimals}
                           symbol={tokenInfo.symbol}

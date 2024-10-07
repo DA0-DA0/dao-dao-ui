@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import {
   SubDaosTab as StatelessSubDaosTab,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
   useInitializedActionForKey,
 } from '@dao-dao/stateless'
@@ -15,7 +15,11 @@ import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
-  const { chainId, coreAddress, supportedFeatures } = useDaoInfoContext()
+  const {
+    chainId,
+    coreAddress,
+    info: { supportedFeatures },
+  } = useDao()
   const { getDaoPath, getDaoProposalPath } = useDaoNavHelpers()
 
   const { isMember = false } = useMembership()

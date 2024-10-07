@@ -23,7 +23,7 @@ import {
   Tooltip,
   TooltipTruncatedText,
   useConfiguredChainContext,
-  useDaoInfoContext,
+  useDao,
   useExecuteAt,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
@@ -109,7 +109,7 @@ const InnerProposalStatusAndInfo = ({
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
 
   const config = useRecoilValue(
@@ -389,7 +389,7 @@ const InnerProposalStatusAndInfoLoader = (
   props: BaseProposalStatusAndInfoProps
 ) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDao()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>

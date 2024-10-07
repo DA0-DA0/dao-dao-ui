@@ -1,7 +1,6 @@
 import {
   IDaoBase,
   IVotingModuleAdapterContext,
-  IVotingModuleAdapterOptions,
   VotingModuleAdapter,
 } from '@dao-dao/types'
 
@@ -9,7 +8,6 @@ import {
   DaoVotingCw20StakedAdapter,
   DaoVotingCw4Adapter,
   DaoVotingCw721StakedAdapter,
-  DaoVotingNativeStakedAdapter,
   DaoVotingOnftStakedAdapter,
   DaoVotingSgCommunityNftAdapter,
   DaoVotingTokenStakedAdapter,
@@ -30,7 +28,6 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw4Adapter,
   DaoVotingCw20StakedAdapter,
   DaoVotingCw721StakedAdapter,
-  DaoVotingNativeStakedAdapter,
   DaoVotingOnftStakedAdapter,
   DaoVotingSgCommunityNftAdapter,
   DaoVotingTokenStakedAdapter,
@@ -42,9 +39,7 @@ export const getAdapterById = (id: string) =>
 
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
-    adapter.contractNames.some(
-      (contractName) => contractNameToMatch === contractName
-    )
+    adapter.contractNames.includes(contractNameToMatch)
   ) || FallbackAdapter
 
 export const matchAndLoadAdapter = (
@@ -62,16 +57,9 @@ export const matchAndLoadAdapter = (
     )
   }
 
-  const options: IVotingModuleAdapterOptions = {
-    chainId: dao.chainId,
-    votingModuleAddress: dao.info.votingModuleAddress,
-    coreAddress: dao.coreAddress,
-  }
-
   return {
     id: adapter.id,
-    adapter: adapter.load(options),
-    options,
+    adapter: adapter.load(dao.votingModule),
     votingModule: dao.votingModule,
   }
 }

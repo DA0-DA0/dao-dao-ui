@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 
-import { DaoInfo, DaoTabId } from '../dao'
+import { IDaoBase } from '../clients'
+import { DaoTabId } from '../dao'
 
 export type BreadcrumbCrumb = {
   href: string
@@ -32,10 +33,10 @@ export type BreadcrumbsProps = {
    */
   current: ReactNode
   /**
-   * DAO info, if this is being rendered outside of the context provider (like
-   * in the PageHeader), but still needs access to the DAO info.
+   * DAO, if this is being rendered outside of the context provider (like in the
+   * PageHeader), but still needs access to the DAO.
    */
-  daoInfo?: DaoInfo | null
+  dao?: IDaoBase | null
   /**
    * Optional container class name.
    */

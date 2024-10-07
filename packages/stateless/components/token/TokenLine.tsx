@@ -102,7 +102,6 @@ export const TokenLine = <T extends TokenCardInfo>(
           className="body-text truncate text-right font-mono"
           decimals={token.decimals}
           hideSymbol
-          showFullAmount
           wrapperClassName="justify-end"
         />
 
@@ -113,8 +112,10 @@ export const TokenLine = <T extends TokenCardInfo>(
               amount={
                 lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
                   ? { loading: true }
-                  : lazyInfo.data.totalBalance *
-                    lazyInfo.data.usdUnitPrice.usdPrice
+                  : lazyInfo.data.totalBalance.toUsdValue(
+                      token.decimals,
+                      lazyInfo.data.usdUnitPrice.usdPrice
+                    )
               }
               className="caption-text font-mono"
               dateFetched={

@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ChainId,
   DaoCreatorGetInstantiateInfo,
@@ -7,8 +8,6 @@ import { ExecuteMsg as BtsgFtFactoryExecuteMsg } from '@dao-dao/types/contracts/
 import { InitialBalance } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
   NEW_DAO_TOKEN_DECIMALS,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   isSecretNetwork,
 } from '@dao-dao/utils'
@@ -53,12 +52,17 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ? !activeThreshold.type || activeThreshold.type === 'percent'
         ? {
             percentage: {
-              percent: (activeThreshold.value / 100).toString(),
+              percent: (Number(activeThreshold.value) / 100).toString(),
             },
           }
         : {
             absolute_count: {
-              count: BigInt(activeThreshold.value).toString(),
+              count: HugeDecimal.fromHumanReadable(
+                activeThreshold.value,
+                govTokenType === GovernanceTokenType.New
+                  ? NEW_DAO_TOKEN_DECIMALS
+                  : existingToken?.decimals ?? 0
+              ).toString(),
             },
           }
       : null,
@@ -73,26 +77,31 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ({ weight, members }) =>
         members.map(({ address }) => ({
           address,
-          amount: convertDenomToMicroDenomStringWithDecimals(
-            // Governance Token-based DAOs distribute tier weights evenly
-            // amongst members.
-            (weight / members.length / 100) * initialSupply,
+          // Governance Token-based DAOs distribute tier weights evenly amongst
+          // members.
+          amount: HugeDecimal.fromHumanReadable(
+            initialSupply,
             NEW_DAO_TOKEN_DECIMALS
-          ),
+          )
+            .times(weight)
+            .div(members.length)
+            .div(100)
+            .toFixed(0),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the remaining tokens
     // after the member weights are distributed.
-    const microInitialTreasuryBalance = BigInt(
-      convertDenomToMicroDenomWithDecimals(
-        initialSupply,
-        NEW_DAO_TOKEN_DECIMALS
-      ) -
+    const microInitialTreasuryBalance = HugeDecimal.fromHumanReadable(
+      initialSupply,
+      NEW_DAO_TOKEN_DECIMALS
+    )
+      .minus(
         microInitialBalances.reduce(
-          (acc, { amount }) => acc + Number(amount),
-          0
+          (acc, { amount }) => acc.plus(amount),
+          HugeDecimal.zero
         )
-    ).toString()
+      )
+      .toString()
 
     // Secret Network only supports creating new CW20 DAOs (SNIP20). Native
     // tokens are supported on other chains. This should never happen, but just
@@ -113,7 +122,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           throw new Error('tokenCreationFactoryAddress not set')
         }
 
-        if (!maxSupply) {
+        if (!maxSupply || maxSupply === '0') {
           throw new Error('Max supply not set')
         }
 
@@ -125,10 +134,10 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
           issue: {
             symbol: symbol.toLowerCase(),
             name,
-            max_supply: convertDenomToMicroDenomStringWithDecimals(
+            max_supply: HugeDecimal.fromHumanReadable(
               maxSupply,
               NEW_DAO_TOKEN_DECIMALS
-            ),
+            ).toString(),
             uri: metadataUrl || '',
             initial_balances: microInitialBalances,
             initial_dao_balance: microInitialTreasuryBalance,

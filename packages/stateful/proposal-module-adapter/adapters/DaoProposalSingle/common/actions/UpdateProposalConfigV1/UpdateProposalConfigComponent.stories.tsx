@@ -17,7 +17,7 @@ export default {
       onlyMembersExecute: true,
       depositRequired: true,
       depositInfo: {
-        deposit: 123,
+        deposit: '123',
         refundFailedProposals: true,
       },
       thresholdType: '%',

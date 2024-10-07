@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -22,8 +23,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   encodeJsonToBase64,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
@@ -134,7 +133,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
     this.defaults = {
       address: this.distributions[0]?.address || '',
       id: this.distributions[0]?.id || 0,
-      amount: 100,
+      amount: '100',
     }
   }
 
@@ -150,10 +149,10 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
       throw new Error('Distribution not found')
     }
 
-    const microAmount = convertDenomToMicroDenomStringWithDecimals(
+    const microAmount = HugeDecimal.fromHumanReadable(
       amount,
       distribution.token.decimals
-    )
+    ).toString()
 
     return distribution.token.type === TokenType.Native
       ? makeExecuteSmartContractMessage({
@@ -192,7 +191,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
   breakdownMessage(decodedMessage: any): {
     distribution: DaoRewardDistribution
-    amount: number
+    amount: string
   } {
     const isNativeFund = objectMatchesStructure(decodedMessage, {
       wasm: {
@@ -237,8 +236,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
     return {
       distribution,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
+      amount: HugeDecimal.from(amount).toHumanReadableString(
         distribution.token.decimals
       ),
     }

@@ -1,11 +1,18 @@
-import { genericTokenSelector } from '@dao-dao/state/recoil'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { HugeDecimal } from '@dao-dao/math'
+import { tokenQueries } from '@dao-dao/state/query'
 import {
   TokenAmountDisplay as StatelessTokenAmountDisplay,
-  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { StatefulTokenAmountDisplayProps, TokenType } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  GenericToken,
+  StatefulTokenAmountDisplayProps,
+  TokenType,
+} from '@dao-dao/types'
+
+import { useQueryLoadingData } from '../hooks'
 
 /**
  * Automatically show a native coin token amount.
@@ -15,9 +22,13 @@ export const TokenAmountDisplay = ({
   ...props
 }: StatefulTokenAmountDisplayProps) => {
   const { chain_id: chainId } = useChain()
+  const queryClient = useQueryClient()
 
-  const loadingGenericToken = useCachedLoading(
-    genericTokenSelector({
+  const loadingGenericToken = useQueryLoadingData<
+    GenericToken,
+    GenericToken | undefined
+  >(
+    tokenQueries.info(queryClient, {
       type: TokenType.Native,
       denomOrAddress: denom,
       chainId,
@@ -32,10 +43,7 @@ export const TokenAmountDisplay = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                amount,
-                loadingGenericToken.data.decimals
-              ),
+              data: HugeDecimal.from(amount),
             }
       }
       decimals={

@@ -80,7 +80,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
     }
 
     return daoVotingCw4Queries.votingPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         address,
@@ -93,7 +93,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return daoVotingCw4Queries.totalPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -104,7 +104,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
   async getHookCaller(): Promise<string> {
     return this.queryClient.fetchQuery(
       daoVotingCw4Queries.groupContract(this.queryClient, {
-        chainId: this.dao.chainId,
+        chainId: this.chainId,
         contractAddress: this.address,
       })
     )
@@ -114,7 +114,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
     return (
       await this.queryClient.fetchQuery(
         cw4GroupQueries.hooks(this.queryClient, {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: await this.getHookCaller(),
         })
       )

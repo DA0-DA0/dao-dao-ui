@@ -1,4 +1,4 @@
-import { useDaoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 
 import { LinkWrapper } from '../../../../../../components'
 import {
@@ -16,7 +16,7 @@ export const SurveyRow = ({
   const { isWalletConnected, hexPublicKey } = useWallet({
     loadAccount: true,
   })
-  const { dao } = useDaoContext()
+  const dao = useDao()
 
   // Load survey from query in case list is out of date.
   const loadingSurvey = useQueryLoadingDataWithError(

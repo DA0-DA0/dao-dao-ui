@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
@@ -19,7 +20,7 @@ export default {
       type: StakingActionType.Delegate,
       validator: '',
       toValidator: '',
-      amount: 1,
+      amount: '1',
       withdrawAddress: '',
     }),
   ],
@@ -33,7 +34,7 @@ const stakes: TokenStake[] = [
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
     validator: {
       address: 'sparkIBC',
       moniker: 'Spark IBC',
@@ -41,14 +42,14 @@ const stakes: TokenStake[] = [
       details: '',
       commission: 0.05,
       status: 'BOND_STATUS_BONDED',
-      tokens: 5,
+      tokens: HugeDecimal.fromHumanReadable(5, token.decimals),
     },
-    rewards: 1.23,
+    rewards: HugeDecimal.fromHumanReadable(1.23, token.decimals),
   },
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
     validator: {
       address: 'elsehow',
       moniker: 'elsehow',
@@ -56,14 +57,14 @@ const stakes: TokenStake[] = [
       details: '',
       commission: 0.05,
       status: 'BOND_STATUS_BONDED',
-      tokens: 6.2,
+      tokens: HugeDecimal.fromHumanReadable(6, token.decimals),
     },
-    rewards: 4.56,
+    rewards: HugeDecimal.fromHumanReadable(4.56, token.decimals),
   },
   {
     token,
     // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
     validator: {
       address: 'cosmostation',
       moniker: 'Cosmostation',
@@ -71,9 +72,9 @@ const stakes: TokenStake[] = [
       details: '',
       commission: 0.05,
       status: 'BOND_STATUS_BONDED',
-      tokens: 7,
+      tokens: HugeDecimal.fromHumanReadable(7, token.decimals),
     },
-    rewards: 7.89,
+    rewards: HugeDecimal.fromHumanReadable(7.89, token.decimals),
   },
 ]
 
@@ -94,7 +95,7 @@ Default.args = {
         details: '',
         commission: 0.05,
         status: 'BOND_STATUS_BONDED',
-        tokens: 9,
+        tokens: HugeDecimal.fromHumanReadable(9, token.decimals),
       },
     ],
     executed: false,

@@ -212,7 +212,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -249,7 +249,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         isPreProposeApprovalProposal
           ? Number(
               findWasmAttributeValue(
-                this.dao.chainId,
+                this.chainId,
                 events,
                 this.prePropose.address,
                 'id'
@@ -257,7 +257,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
             )
           : Number(
               findWasmAttributeValue(
-                this.dao.chainId,
+                this.chainId,
                 events,
                 this.address,
                 'proposal_id'
@@ -281,7 +281,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -388,7 +388,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId: number
   }): FetchQueryOptions<ProposalResponse> {
     return daoProposalSingleV2Queries.proposal(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -415,7 +415,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         : daoProposalSingleV2Queries.getVote
 
     return query(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -447,14 +447,14 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         : daoProposalSingleV2Queries.proposalCount
 
     return query(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
   getConfigQuery(): FetchQueryOptions<Config> {
     return daoProposalSingleV2Queries.config(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
@@ -465,7 +465,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         'singleChoiceProposalModule',
         'depositInfo',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -474,7 +474,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           const { deposit_info: depositInfo } =
             await this.queryClient.fetchQuery(
               daoPreProposeSingleQueries.config(this.queryClient, {
-                chainId: this.dao.chainId,
+                chainId: this.chainId,
                 contractAddress: this.prePropose.address,
               })
             )
@@ -488,7 +488,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           const { deposit_info: depositInfo } =
             await this.queryClient.fetchQuery(
               cwProposalSingleV1Queries.config(this.queryClient, {
-                chainId: this.dao.chainId,
+                chainId: this.chainId,
                 contractAddress: this.address,
               })
             )

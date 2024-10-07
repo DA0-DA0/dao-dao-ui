@@ -3,11 +3,11 @@ import { NeutronVotingVaultsTab, useChain } from '@dao-dao/stateless'
 
 import { DaoVotingVaultCard } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModule } from '../hooks'
+import { useVotingModuleInfo } from '../hooks'
 
 export const VaultsTab = () => {
   const { chain_id: chainId } = useChain()
-  const { votingRegistryAddress, loadingVaults } = useVotingModule()
+  const { votingRegistryAddress, loadingVaults } = useVotingModuleInfo()
   const loadingTotalVotingPower = useQueryLoadingDataWithError(
     neutronVotingRegistryQueries.totalPowerAtHeight({
       chainId,

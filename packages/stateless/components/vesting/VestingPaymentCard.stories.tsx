@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { ButtonLink, EntityDisplay } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators/DaoPageWrapperDecorator'
@@ -58,9 +59,9 @@ Default.args = {
   claiming: false,
   onManageStake: () => alert('manage stake'),
   onAddToken: () => alert('add token'),
-  remainingBalanceVesting: 401239.5123,
-  distributableAmount: 1942.7984,
-  claimedAmount: 39.234,
+  remainingBalanceVesting: HugeDecimal.fromHumanReadable(401239.5123, 6),
+  distributableAmount: HugeDecimal.fromHumanReadable(1942.7984, 6),
+  claimedAmount: HugeDecimal.fromHumanReadable(39.234, 6),
   // Started 2 days ago.
   startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
   // Ends in 7 days.
@@ -69,12 +70,12 @@ Default.args = {
     {
       // Started 2 days ago.
       timestamp: Date.now() - 1000 * 60 * 60 * 24 * 2,
-      amount: 0,
+      amount: HugeDecimal.zero,
     },
     {
       // Ends in 7 days.
       timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7,
-      amount: 403221.5447,
+      amount: HugeDecimal.fromHumanReadable(403221.5447, 6),
     },
   ],
 }

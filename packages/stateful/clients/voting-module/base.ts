@@ -43,6 +43,13 @@ export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>
   }
 
   /**
+   * Chain ID of the voting module.
+   */
+  get chainId(): string {
+    return this.dao.chainId
+  }
+
+  /**
    * Query options to fetch the voting power for a given address. Optionally
    * specify a block height. If undefined, the latest block height will be used.
    * If address is undefined, will return query in loading state.

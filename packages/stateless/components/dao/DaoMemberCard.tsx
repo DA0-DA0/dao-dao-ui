@@ -108,11 +108,7 @@ export const DaoMemberCard = ({
           <p className="caption-text">{balanceLabel}</p>
 
           <TokenAmountDisplay
-            amount={
-              balance.loading
-                ? { loading: true }
-                : { loading: false, data: balance.data.amount }
-            }
+            amount={balance.loading ? { loading: true } : balance.data.amount}
             className="caption-text font-mono"
             decimals={
               balance.loading || !balance.data.token

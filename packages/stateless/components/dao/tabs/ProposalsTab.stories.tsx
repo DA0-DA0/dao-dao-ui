@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { ProposalListProps } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../../contexts/Dao'
+import { useDao } from '../../../contexts/Dao'
 import { ButtonLink } from '../../buttons'
 import { ProposalLineProps, ProposalList } from '../../proposal'
 import * as ProposalListStories from '../../proposal/ProposalList.stories'
@@ -17,7 +17,7 @@ export default {
 } as ComponentMeta<typeof ProposalsTab>
 
 const Template: ComponentStory<typeof ProposalsTab> = (args) => (
-  <ProposalsTab {...args} daoInfo={useDaoInfoContext()} />
+  <ProposalsTab {...args} dao={useDao()} />
 )
 
 export const Default = Template.bind({})

@@ -3,6 +3,7 @@ import { ComponentType, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ErrorPage,
@@ -11,7 +12,7 @@ import {
   InputLabel,
   Loader,
   MarkdownRenderer,
-  NumberInput,
+  NumericInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
   SegmentedControls,
@@ -33,7 +34,6 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceRebalancer'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   makeValidateAddress,
   validatePositive,
@@ -90,7 +90,7 @@ export type ConfigureRebalancerData = {
   maxLimit?: number
   minBalance?: {
     denom: string
-    amount: number
+    amount: string
   }
   targetOverrideStrategy: TargetOverrideStrategy
 }
@@ -124,8 +124,15 @@ export const ConfigureRebalancerComponent: ActionComponent<
     chain: { bech32_prefix: bech32Prefix },
   } = useSupportedChainContext()
 
-  const { control, watch, register, setValue, clearErrors, setError } =
-    useFormContext<ConfigureRebalancerData>()
+  const {
+    control,
+    watch,
+    register,
+    setValue,
+    getValues,
+    clearErrors,
+    setError,
+  } = useFormContext<ConfigureRebalancerData>()
   const {
     fields: tokensFields,
     append: appendToken,
@@ -230,10 +237,12 @@ export const ConfigureRebalancerComponent: ActionComponent<
                   amount={{
                     watch,
                     setValue,
+                    getValues,
                     register,
                     fieldName: (fieldNamePrefix +
                       `tokens.${index}.percent`) as `tokens.${number}.percent`,
                     error: errors?.tokens?.[index]?.percent,
+                    numericValue: true,
                     min: 0.01,
                     max: 100,
                     step: 0.01,
@@ -332,7 +341,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     ? undefined
                     : {
                         denom: tokens[0]?.denom ?? '',
-                        amount: 1,
+                        amount: '1',
                       }
                 )
               }
@@ -350,16 +359,15 @@ export const ConfigureRebalancerComponent: ActionComponent<
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix +
                   'minBalance.amount') as 'minBalance.amount',
                 error: errors?.minBalance?.amount,
-                min: convertMicroDenomToDenomWithDecimals(
-                  1,
+                min: HugeDecimal.one.toHumanReadableNumber(
                   minBalanceToken?.decimals ?? 0
                 ),
-                step: convertMicroDenomToDenomWithDecimals(
-                  1,
+                step: HugeDecimal.one.toHumanReadableNumber(
                   minBalanceToken?.decimals ?? 0
                 ),
               }}
@@ -448,12 +456,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="P" />
-                <NumberInput
+                <NumericInput
                   error={errors?.pid?.kp}
                   fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -465,12 +474,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="I" />
-                <NumberInput
+                <NumericInput
                   error={errors?.pid?.ki}
                   fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -482,12 +492,13 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <div className="space-y-2">
                 {/* eslint-disable-next-line i18next/no-literal-string */}
                 <InputLabel name="D" />
-                <NumberInput
+                <NumericInput
                   error={errors?.pid?.kd}
                   fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
                   hidePlusMinus
                   max={1}
                   min={0}
+                  numericValue
                   register={register}
                   sizing="sm"
                   step={0.01}
@@ -577,19 +588,20 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
               {maxLimitEnabled && (
                 <div className="flex flex-row gap-2 self-start">
-                  <NumberInput
+                  <NumericInput
                     containerClassName="grow min-w-[min(8rem,50%)]"
                     error={errors?.maxLimit}
                     fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
+                    getValues={getValues}
                     max={100}
                     min={0.01}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="auto"
                     step={0.01}
                     unit="%"
-                    validation={[validatePositive, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validatePositive]}
                   />
                 </div>
               )}
@@ -634,7 +646,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     nativeBalances.data.find(
                       ({ token }) => token.denomOrAddress === denom
                     ) ?? {}
-                  const balance = Number(_balance) || 0
+                  const balance = HugeDecimal.from(_balance || 0)
                   const price = prices.data.find(
                     ({ token: { denomOrAddress: priceDenom } }) =>
                       priceDenom === denom
@@ -646,8 +658,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
                   return {
                     symbol: token.symbol,
-                    initialAmount: convertMicroDenomToDenomWithDecimals(
-                      balance,
+                    initialAmount: balance.toHumanReadableNumber(
                       token.decimals
                     ),
                     targetProportion: percent / 100,

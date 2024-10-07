@@ -3,14 +3,12 @@ import clsx from 'clsx'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   PopupTriggerCustomComponent,
   ValidatorPickerProps,
 } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from './buttons'
 import { CopyToClipboard } from './CopyToClipboard'
@@ -41,7 +39,7 @@ export const ValidatorPicker = ({
       ...acc,
       [stake.validator.address]: stake.amount,
     }),
-    {} as Record<string, number | undefined>
+    {} as Record<string, HugeDecimal | undefined>
   )
 
   // Sort staked first, then by total staked tokens (i.e. voting power and
@@ -53,7 +51,7 @@ export const ValidatorPicker = ({
 
     // If both validators have a stake, sort by stake.
     if (aStake && bStake) {
-      return bStake - aStake
+      return bStake.minus(aStake).toNumber()
     }
     // If only one validator has a stake, sort that one first.
     else if (aStake) {
@@ -64,7 +62,7 @@ export const ValidatorPicker = ({
 
     // If neither validator has a stake, sort by total tokens staked (i.e.
     // popularity).
-    return b.tokens - a.tokens
+    return b.tokens.minus(a.tokens).toNumber()
   })
 
   const TriggerRenderer: PopupTriggerCustomComponent = useCallback(
@@ -131,10 +129,7 @@ export const ValidatorPicker = ({
               </p>
 
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  tokens,
-                  token.decimals
-                )}
+                amount={tokens}
                 className="inline-block"
                 decimals={token.decimals}
                 prefix={t('title.totalStaked') + ': '}

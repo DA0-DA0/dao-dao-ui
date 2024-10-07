@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   TokenAmountDisplay,
@@ -8,11 +9,10 @@ import {
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 export type CommunityPoolDepositData = {
   chainId: string
-  amount: number
+  amount: string
   denom: string
   _error?: string
 }
@@ -26,7 +26,7 @@ export const CommunityPoolDepositComponent: ActionComponent<
 > = ({ fieldNamePrefix, isCreating, errors, options: { tokens } }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setValue } =
+  const { register, watch, setValue, getValues } =
     useFormContext<CommunityPoolDepositData>()
 
   const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
@@ -40,10 +40,7 @@ export const CommunityPoolDepositComponent: ActionComponent<
           token.chainId === spendChainId && token.denomOrAddress === spendDenom
       )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedDecimals
-  )
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
@@ -54,10 +51,10 @@ export const CommunityPoolDepositComponent: ActionComponent<
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: spendDenom })
-      : spendAmount > selectedBalance
+      : selectedBalance.toHumanReadable(selectedDecimals).lt(spendAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDecimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals: selectedDecimals,
           }),
           tokenSymbol: symbol,
         })
@@ -70,11 +67,12 @@ export const CommunityPoolDepositComponent: ActionComponent<
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: (fieldNamePrefix + 'amount') as 'amount',
             error: errors?.amount,
-            min: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
-            step: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+            min: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
+            step: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
           }}
           onSelectToken={({ chainId, denomOrAddress }) => {
             setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
@@ -92,11 +90,10 @@ export const CommunityPoolDepositComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
                       }),
                   })),
                 }

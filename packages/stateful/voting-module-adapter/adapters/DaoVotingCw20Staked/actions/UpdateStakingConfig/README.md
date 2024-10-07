@@ -17,7 +17,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 {
   "unstakingDurationEnabled": <true | false>,
   "unstakingDuration": {
-    "value": "<NUMBER>",
+    "value": <NUMBER>,
     "units": "<seconds | minutes | hours | days | weeks | months | years>"
   }
 }

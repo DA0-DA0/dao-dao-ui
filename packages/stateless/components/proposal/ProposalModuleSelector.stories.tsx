@@ -5,7 +5,7 @@ import { matchAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { ProposalModuleSelector } from './ProposalModuleSelector'
 
 export default {
@@ -16,11 +16,11 @@ export default {
 } as ComponentMeta<typeof ProposalModuleSelector>
 
 const Template: ComponentStory<typeof ProposalModuleSelector> = (args) => {
-  const daoInfo = useDaoInfoContext()
+  const dao = useDao()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module.
-    daoInfo.proposalModules.find(
+    dao.proposalModules.find(
       ({ contractName }) =>
         matchAdapter(contractName)?.id === DaoProposalSingleAdapterId
     )!

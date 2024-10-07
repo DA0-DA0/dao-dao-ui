@@ -3,6 +3,7 @@ import { ComponentType, useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   Checkbox,
@@ -21,7 +22,6 @@ import {
   TransProps,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   makeValidateAddress,
   transformIpfsUrlToHttpsIfNecessary,
@@ -282,19 +282,19 @@ export const Rate = ({
                   .reduce(
                     (acc, { denomOrAddress, amount }) => ({
                       ...acc,
-                      [denomOrAddress]:
-                        (acc[denomOrAddress] ?? 0) +
-                        convertMicroDenomToDenomWithDecimals(
-                          amount,
-                          tokenMap[denomOrAddress]?.token.decimals ?? 0
-                        ),
+                      [denomOrAddress]: (
+                        acc[denomOrAddress] ?? HugeDecimal.zero
+                      ).plus(amount),
                     }),
-                    {} as Record<string, number>
+                    {} as Record<string, HugeDecimal>
                   )
                 const projectedTotalUsdc = Object.entries(projectedTokens)
-                  .map(
-                    ([denomOrAddress, amount]) =>
-                      (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
+                  .map(([denomOrAddress, amount]) =>
+                    amount
+                      .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
+                      .toHumanReadableNumber(
+                        tokenMap[denomOrAddress]?.token.decimals ?? 0
+                      )
                   )
                   .reduce((acc, amount) => acc + amount, 0)
 
@@ -428,7 +428,6 @@ export const Rate = ({
                               className="caption-text text-right"
                               dateFetched={tokenPrices[0]?.timestamp}
                               estimatedUsdValue
-                              hideApprox
                               prefix="= "
                             />
                           </div>

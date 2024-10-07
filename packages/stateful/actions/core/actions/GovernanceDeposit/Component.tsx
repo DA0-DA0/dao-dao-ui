@@ -3,6 +3,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GovernanceProposalFromProposal,
   InputLabel,
@@ -14,18 +15,15 @@ import {
   GenericToken,
   GovProposalActionDisplayProps,
   GovProposalWithDecodedContent,
-  LoadingData,
+  LoadingDataWithError,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  validateRequired,
-} from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
 export type GovernanceDepositOptions = {
   proposals: GovProposalWithDecodedContent[]
-  depositTokens: LoadingData<GenericToken[]>
+  depositTokens: LoadingDataWithError<GenericToken[]>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
 }
@@ -34,7 +32,7 @@ export type GovernanceDepositData = {
   chainId: string
   proposalId: string
   deposit: {
-    amount: number
+    amount: string
     denom: string
   }[]
 }
@@ -55,13 +53,14 @@ export const GovernanceDepositComponent: ActionComponent<
   data,
 }) => {
   const { t } = useTranslation()
-  const { setValue, register, watch } = useFormContext<GovernanceDepositData>()
+  const { setValue, register, getValues, watch } =
+    useFormContext<GovernanceDepositData>()
 
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
   const proposalSelected = proposals.find((p) => p.id.toString() === proposalId)
 
   const selectedDepositToken =
-    depositTokens.loading || !data.deposit.length
+    depositTokens.loading || depositTokens.errored || !data.deposit.length
       ? undefined
       : depositTokens.data.find(
           ({ denomOrAddress }) => denomOrAddress === data.deposit[0].denom
@@ -101,19 +100,17 @@ export const GovernanceDepositComponent: ActionComponent<
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: (fieldNamePrefix +
               'deposit.0.amount') as 'deposit.0.amount',
             error: errors?.deposit?.[0]?.amount,
-            min: convertMicroDenomToDenomWithDecimals(
-              1,
+            min: HugeDecimal.one.toHumanReadableNumber(
               selectedDepositToken?.decimals ?? 0
             ),
-            step: convertMicroDenomToDenomWithDecimals(
-              1,
+            step: HugeDecimal.one.toHumanReadableNumber(
               selectedDepositToken?.decimals ?? 0
             ),
-            convertMicroDenom: true,
           }}
           onSelectToken={({ denomOrAddress }) =>
             setValue(
@@ -123,7 +120,9 @@ export const GovernanceDepositComponent: ActionComponent<
           }
           readOnly={!isCreating}
           selectedToken={selectedDepositToken}
-          tokens={depositTokens}
+          tokens={
+            depositTokens.errored ? { loading: false, data: [] } : depositTokens
+          }
         />
       </div>
 

@@ -1,24 +1,23 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
-import { TokenAmountDisplay } from '@dao-dao/stateless'
+import { TokenAmountDisplay, useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
-  convertDenomToMicroDenomWithDecimals,
   convertDurationToHumanReadableString,
   formatPercentOf100,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { useMembership, useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 import { useStakingInfo } from './useStakingInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { totalVotingWeight } = useMembership()
 
   const { unstakingDuration } = useStakingInfo()
@@ -31,8 +30,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
       formula: 'daoVotingCw20Staked/topStakers',
       noFallback: true,
     })
@@ -40,7 +39,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
 
   return [
     // Can't view members on Secret Network.
-    ...(isSecretNetwork(chainId)
+    ...(isSecretNetwork(votingModule.chainId)
       ? []
       : [
           {
@@ -77,9 +76,10 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
         totalVotingWeight === undefined
           ? undefined
           : formatPercentOf100(
-              (totalVotingWeight /
-                convertDenomToMicroDenomWithDecimals(supply, decimals)) *
-                100
+              HugeDecimal.from(totalVotingWeight)
+                .div(HugeDecimal.fromHumanReadable(supply, decimals))
+                .times(100)
+                .toNumber()
             ),
     },
     {

@@ -3,12 +3,13 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   FilterableItemPopup,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
-  NumberInput,
+  NumericInput,
   PercentButton,
   StatusCard,
   TokenAmountDisplay,
@@ -20,7 +21,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
@@ -32,7 +32,7 @@ import {
 export type FundRewardDistributionData = {
   address: string
   id: number
-  amount: number
+  amount: string
 }
 
 export type FundRewardDistributionOptions = {
@@ -55,7 +55,7 @@ export const FundRewardDistributionComponent: ActionComponent<
   options: { distributions, tokens },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } =
+  const { register, setValue, watch, getValues } =
     useFormContext<FundRewardDistributionData>()
 
   const address = watch((fieldNamePrefix + 'address') as 'address')
@@ -68,28 +68,29 @@ export const FundRewardDistributionComponent: ActionComponent<
 
   const selectedBalance =
     selectedDistribution && !tokens.loading
-      ? convertMicroDenomToDenomWithDecimals(
+      ? HugeDecimal.from(
           tokens.data.find((t) =>
             tokensEqual(t.token, selectedDistribution.token)
-          )?.balance || 0,
-          selectedDistribution.token.decimals
+          )?.balance || 0
         )
-      : 0
+      : HugeDecimal.zero
 
   const warning =
     !isCreating || tokens.loading || tokens.updating || !selectedDistribution
       ? undefined
-      : amount && amount > selectedBalance
+      : amount &&
+        selectedBalance
+          .toHumanReadable(selectedDistribution.token.decimals)
+          .lt(amount)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDistribution.token.decimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals: selectedDistribution.token.decimals,
           }),
           tokenSymbol: selectedDistribution.token.symbol,
         })
       : undefined
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(
     selectedDistribution?.token.decimals ?? 0
   )
 
@@ -159,17 +160,19 @@ export const FundRewardDistributionComponent: ActionComponent<
           <div className="flex flex-col gap-2 max-w-prose">
             <InputLabel name={t('form.funds')} primary />
 
-            <NumberInput
+            <NumericInput
               containerClassName={clsx(!isCreating && 'self-start')}
               disabled={!isCreating}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
-              min={0}
+              getValues={getValues}
+              min={HugeDecimal.one.toHumanReadableNumber(
+                selectedDistribution.token.decimals
+              )}
               register={register}
               setValue={setValue}
               step={minAmount}
               unit={'$' + selectedDistribution.token.symbol}
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
             <InputErrorMessage error={errors?.amount} />
             <InputErrorMessage error={warning} warning />
@@ -187,7 +190,9 @@ export const FundRewardDistributionComponent: ActionComponent<
                   onClick={() =>
                     setValue(
                       (fieldNamePrefix + 'amount') as 'amount',
-                      selectedBalance
+                      selectedBalance.toHumanReadableString(
+                        selectedDistribution.token.decimals
+                      )
                     )
                   }
                   showFullAmount
@@ -195,20 +200,23 @@ export const FundRewardDistributionComponent: ActionComponent<
                 />
               </div>
 
-              {selectedBalance > 0 && (
+              {selectedBalance.isPositive() && (
                 <div className="grid grid-cols-5 gap-1">
                   {[10, 25, 50, 75, 100].map((percent) => (
                     <PercentButton
                       key={percent}
-                      amount={amount}
-                      decimals={selectedDistribution.token.decimals}
-                      label={`${percent}%`}
+                      amount={HugeDecimal.fromHumanReadable(
+                        amount,
+                        selectedDistribution.token.decimals
+                      )}
                       loadingMax={{ loading: false, data: selectedBalance }}
-                      percent={percent / 100}
+                      percent={percent}
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount
+                          amount.toHumanReadableString(
+                            selectedDistribution.token.decimals
+                          )
                         )
                       }
                     />

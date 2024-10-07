@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   InputErrorMessage,
@@ -10,7 +11,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   isValidBech32Address,
   makeValidateAddress,
   validateRequired,
@@ -37,7 +37,7 @@ export const InstantiateTokenSwap: ActionComponent<
   const {
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
-  const { register, watch, setValue, trigger } = useFormContext()
+  const { register, watch, setValue, getValues, trigger } = useFormContext()
 
   const selfParty = watch(fieldNamePrefix + 'selfParty')
   const counterparty = watch(fieldNamePrefix + 'counterparty')
@@ -46,11 +46,7 @@ export const InstantiateTokenSwap: ActionComponent<
     ({ token }) => selfParty.denomOrAddress === token.denomOrAddress
   )
   const selfDecimals = selfToken?.token.decimals ?? 0
-  const selfMin = convertMicroDenomToDenomWithDecimals(1, selfDecimals)
-  const selfMax = convertMicroDenomToDenomWithDecimals(
-    selfToken?.balance ?? 0,
-    selfDecimals
-  )
+  const selfMax = HugeDecimal.from(selfToken?.balance ?? 0)
   const selfSymbol = selfToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyToken = counterpartyTokenBalances.loading
@@ -59,14 +55,7 @@ export const InstantiateTokenSwap: ActionComponent<
         ({ token }) => counterparty.denomOrAddress === token.denomOrAddress
       )
   const counterpartyDecimals = counterpartyToken?.token.decimals ?? 0
-  const counterpartyMin = convertMicroDenomToDenomWithDecimals(
-    1,
-    counterpartyDecimals
-  )
-  const counterpartyMax = convertMicroDenomToDenomWithDecimals(
-    counterpartyToken?.balance ?? 0,
-    counterpartyDecimals
-  )
+  const counterpartyMax = HugeDecimal.from(counterpartyToken?.balance ?? 0)
   const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =
@@ -113,11 +102,12 @@ export const InstantiateTokenSwap: ActionComponent<
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: fieldNamePrefix + 'counterparty.amount',
             error: errors?.counterparty?.amount,
-            min: counterpartyMin,
-            step: counterpartyMin,
+            min: HugeDecimal.one.toHumanReadableNumber(counterpartyDecimals),
+            step: HugeDecimal.one.toHumanReadableNumber(counterpartyDecimals),
           }}
           disabled={!counterpartyAddressValid}
           onSelectToken={({ type, denomOrAddress, decimals }) => {
@@ -147,11 +137,13 @@ export const InstantiateTokenSwap: ActionComponent<
         />
 
         {/* Warn if counterparty does not have the requested amount. */}
-        {counterparty.amount > counterpartyMax && (
+        {counterpartyMax
+          .toHumanReadable(counterpartyDecimals)
+          .lt(counterparty.amount) && (
           <p className="caption-text text-text-interactive-warning-body">
             {t('error.counterpartyBalanceInsufficient', {
-              amount: counterpartyMax.toLocaleString(undefined, {
-                maximumFractionDigits: counterpartyDecimals,
+              amount: counterpartyMax.toInternationalizedHumanReadableString({
+                decimals: counterpartyDecimals,
               }),
               tokenSymbol: counterpartySymbol,
             })}
@@ -175,18 +167,19 @@ export const InstantiateTokenSwap: ActionComponent<
           amount={{
             watch,
             setValue,
+            getValues,
             register,
             fieldName: fieldNamePrefix + 'selfParty.amount',
             error: errors?.selfParty?.amount,
-            min: selfMin,
-            step: selfMin,
-            max: selfMax,
+            min: HugeDecimal.one.toHumanReadableNumber(selfDecimals),
+            step: HugeDecimal.one.toHumanReadableNumber(selfDecimals),
+            max: selfMax.toHumanReadableString(selfDecimals),
             validations: [
               (value) =>
-                value <= selfMax ||
+                selfMax.toHumanReadable(selfDecimals).gte(value) ||
                 t('error.treasuryInsufficient', {
-                  amount: selfMax.toLocaleString(undefined, {
-                    maximumFractionDigits: selfDecimals,
+                  amount: selfMax.toInternationalizedHumanReadableString({
+                    decimals: selfDecimals,
                   }),
                   tokenSymbol: selfSymbol,
                 }),

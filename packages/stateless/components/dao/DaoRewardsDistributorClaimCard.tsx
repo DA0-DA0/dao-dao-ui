@@ -59,12 +59,10 @@ export const DaoRewardsDistributorClaimCard = ({
               )}
               dateFetched={totalTimestamp}
               decimals={2}
-              hideApprox
               hideSymbol
-              maxDecimals={2}
               minAmount={hasRewards ? 0.01 : undefined}
-              minDecimals={2}
               prefix="$"
+              showAllDecimals
             />
           </div>
 
@@ -140,7 +138,7 @@ export const DaoRewardsDistributorClaimCard = ({
                             token.imageUrl ||
                             getFallbackImage(token.denomOrAddress)
                           }
-                          minDecimals={token.decimals}
+                          showAllDecimals
                           showFullAmount
                           suffix={'  $' + token.symbol}
                           suffixClassName="whitespace-pre text-text-tertiary"
@@ -156,12 +154,10 @@ export const DaoRewardsDistributorClaimCard = ({
                           )}
                           dateFetched={timestamp}
                           decimals={2}
-                          hideApprox
                           hideSymbol
-                          maxDecimals={2}
                           minAmount={usdValue > 0 ? 0.01 : undefined}
-                          minDecimals={2}
                           prefix="$"
+                          showAllDecimals
                         />
                       </div>
                     </div>

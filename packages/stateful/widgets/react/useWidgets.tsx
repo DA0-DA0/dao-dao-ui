@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
+import { useChain, useDao } from '@dao-dao/stateless'
 import {
   LoadedWidget,
   LoadingData,
@@ -28,7 +28,7 @@ export const useWidgets = ({
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { items } = useDaoInfoContext()
+  const { items } = useDao().info
   const { isMember = false } = useMembership()
 
   const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {

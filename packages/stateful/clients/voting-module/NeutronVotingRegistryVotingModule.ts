@@ -36,7 +36,7 @@ export class NeutronVotingRegistryVotingModule extends VotingModuleBase<CwDao> {
     }
 
     return neutronVotingRegistryQueries.votingPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         address,
@@ -49,7 +49,7 @@ export class NeutronVotingRegistryVotingModule extends VotingModuleBase<CwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return neutronVotingRegistryQueries.totalPowerAtHeight({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,

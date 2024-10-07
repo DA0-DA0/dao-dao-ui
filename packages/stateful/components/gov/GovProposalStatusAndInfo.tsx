@@ -1,5 +1,4 @@
 import { EncodeObject } from '@cosmjs/proto-signing'
-import { coins } from '@cosmjs/stargate'
 import {
   AccountCircleOutlined,
   AttachMoney,
@@ -12,11 +11,12 @@ import { ComponentProps, ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GOV_PROPOSAL_STATUS_I18N_KEY_MAP,
   Logo,
-  NumberInput,
+  NumericInput,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
@@ -35,8 +35,6 @@ import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1bet
 import { MsgDeposit } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   getDisplayNameForChainId,
   processError,
@@ -133,10 +131,8 @@ const InnerGovProposalStatusAndInfo = ({
     (d) => d.denom === depositToken.denomOrAddress
   )!.amount
 
-  const missingDeposit = convertMicroDenomToDenomWithDecimals(
-    Number(minDepositAmount) - Number(currentDepositAmount),
-    depositToken.decimals
-  )
+  const missingDeposit =
+    HugeDecimal.from(minDepositAmount).minus(currentDepositAmount)
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -176,11 +172,10 @@ const InnerGovProposalStatusAndInfo = ({
       Value: (props) => (
         <p {...props}>
           {t('format.token', {
-            amount: convertMicroDenomToDenomWithDecimals(
-              currentDepositAmount,
-              depositToken.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: depositToken.decimals,
+            amount: HugeDecimal.from(
+              currentDepositAmount
+            ).toInternationalizedHumanReadableString({
+              decimals: depositToken.decimals,
             }),
             symbol: depositToken.symbol,
           })}
@@ -236,13 +231,7 @@ const InnerGovProposalStatusAndInfo = ({
         value: {
           proposalId,
           depositor: walletAddress,
-          amount: coins(
-            convertDenomToMicroDenomStringWithDecimals(
-              depositValue,
-              depositToken.decimals
-            ),
-            depositToken.denomOrAddress
-          ),
+          amount: depositValue.toCoins(depositToken.denomOrAddress),
         },
       }
 
@@ -254,7 +243,9 @@ const InnerGovProposalStatusAndInfo = ({
 
       toast.success(
         t('success.deposited', {
-          amount: depositValue,
+          amount: depositValue.toInternationalizedHumanReadableString({
+            decimals: depositToken.decimals,
+          }),
           tokenSymbol: depositToken.symbol,
         })
       )
@@ -297,35 +288,35 @@ const InnerGovProposalStatusAndInfo = ({
         status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ? {
               header: (
-                <NumberInput
+                <NumericInput
                   containerClassName="-mb-1"
-                  max={missingDeposit}
-                  min={convertMicroDenomToDenomWithDecimals(
-                    1,
+                  max={missingDeposit.toHumanReadableString(
                     depositToken.decimals
                   )}
-                  onInput={(event) =>
-                    setDepositValue(
-                      Number(
-                        Number(
-                          (event.target as HTMLInputElement).value
-                        ).toFixed(depositToken.decimals)
-                      )
-                    )
-                  }
+                  min={HugeDecimal.one.toHumanReadableNumber(
+                    depositToken.decimals
+                  )}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
                       deposit()
                     }
                   }}
-                  setValue={(_, value) => setDepositValue(value)}
-                  step={convertMicroDenomToDenomWithDecimals(
-                    1,
+                  setValue={(_, value) =>
+                    setDepositValue(
+                      HugeDecimal.fromHumanReadable(
+                        value,
+                        depositToken.decimals
+                      )
+                    )
+                  }
+                  step={HugeDecimal.one.toHumanReadableNumber(
                     depositToken.decimals
                   )}
                   unit={'$' + depositToken.symbol}
-                  value={depositValue}
+                  value={depositValue.toHumanReadableString(
+                    depositToken.decimals
+                  )}
                 />
               ),
               label: t('button.deposit'),

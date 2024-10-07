@@ -3,6 +3,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   cwVestingExtraQueries,
@@ -14,15 +15,17 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   StakingModal,
-  StakingModalProps,
-  StakingMode,
   useCachedLoadable,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
+  ActionKey,
+  StakingModalProps,
+  StakingMode,
+  TokenStake,
+  VestingInfo,
+} from '@dao-dao/types'
+import {
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   processError,
@@ -73,7 +76,7 @@ export const VestingStakingModal = ({
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const { address: walletAddress = '' } = useWallet({
@@ -100,7 +103,7 @@ export const VestingStakingModal = ({
 
   const onAction = async (
     mode: StakingMode,
-    amount: number,
+    amount: HugeDecimal,
     validator?: string,
     fromValidator?: string
   ) => {
@@ -114,10 +117,7 @@ export const VestingStakingModal = ({
     try {
       if (mode === StakingMode.Stake) {
         const data = {
-          amount: convertDenomToMicroDenomStringWithDecimals(
-            amount,
-            nativeToken.decimals
-          ),
+          amount: amount.toFixed(0),
           validator,
         }
 
@@ -149,10 +149,7 @@ export const VestingStakingModal = ({
         }
       } else if (mode === StakingMode.Unstake) {
         const data = {
-          amount: convertDenomToMicroDenomStringWithDecimals(
-            amount,
-            nativeToken.decimals
-          ),
+          amount: amount.toFixed(0),
           validator,
         }
 
@@ -188,10 +185,6 @@ export const VestingStakingModal = ({
           return
         }
 
-        const convertedAmount = convertDenomToMicroDenomStringWithDecimals(
-          amount,
-          nativeToken.decimals
-        )
         if (recipientIsDao) {
           await goToDaoProposal(recipient, 'create', {
             prefill: getDaoProposalSinglePrefill({
@@ -204,7 +197,7 @@ export const VestingStakingModal = ({
                     message: JSON.stringify(
                       {
                         redelegate: {
-                          amount: convertedAmount,
+                          amount: amount.toFixed(0),
                           src_validator: fromValidator,
                           dst_validator: validator,
                         },
@@ -221,7 +214,7 @@ export const VestingStakingModal = ({
           })
         } else {
           await redelegate({
-            amount: convertedAmount,
+            amount: amount.toFixed(0),
             srcValidator: fromValidator,
             dstValidator: validator,
           })
@@ -293,17 +286,14 @@ export const VestingStakingModal = ({
       amount={amount}
       claimableTokens={
         // Tokens are claimable somewhere else.
-        0
+        HugeDecimal.zero
       }
       enableRestaking
       initialMode={StakingMode.Stake}
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(
-          stakable,
-          nativeToken.decimals
-        ),
+        data: HugeDecimal.from(stakable),
       }}
       onAction={onAction}
       setAmount={setAmount}

@@ -21,10 +21,10 @@ export type CreatorData = {
   govTokenType: GovernanceTokenType
   selectedTokenType: TokenType
   newInfo: {
-    initialSupply: number
+    initialSupply: string
     initialTreasuryPercent: number
     // For BitSong which needs an up front max.
-    maxSupply?: number
+    maxSupply?: string
     imageUrl?: string
     // For Bitsong, which needs a JSON URL containing the image.
     metadataUrl?: string

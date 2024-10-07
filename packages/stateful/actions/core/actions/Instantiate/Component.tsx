@@ -12,7 +12,7 @@ import {
   InputErrorMessage,
   InputLabel,
   NativeCoinSelector,
-  NumberInput,
+  NumericInput,
   TextInput,
   useActionOptions,
   useChain,
@@ -41,7 +41,7 @@ export type InstantiateData = {
   message: string
   funds: {
     denom: string
-    amount: number
+    amount: string
     // Will multiply `amount` by 10^decimals when generating the message.
     decimals: number
   }[]
@@ -132,10 +132,12 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = ({
       <div className="flex flex-row items-center gap-2">
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel name={t('form.codeId')} />
-          <NumberInput
+          <NumericInput
             disabled={!isCreating}
             error={errors?.codeId}
             fieldName={fieldNamePrefix + 'codeId'}
+            min={1}
+            numericValue
             register={register}
             sizing="sm"
             step={1}

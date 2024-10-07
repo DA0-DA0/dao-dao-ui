@@ -2,14 +2,13 @@ import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { useVotingModule } from './useVotingModule'
+import { useVotingModuleInfo } from './useVotingModuleInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
 
-  const { loadingVaults } = useVotingModule()
+  const { loadingVaults } = useVotingModuleInfo()
 
   return loadingVaults.loading || loadingVaults.errored
     ? []
@@ -24,10 +23,7 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
               }),
               value: (
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    totalPower,
-                    info.bondToken.decimals
-                  )}
+                  amount={totalPower}
                   decimals={info.bondToken.decimals}
                   symbol={info.bondToken.symbol}
                 />

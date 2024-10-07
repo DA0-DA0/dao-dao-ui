@@ -176,7 +176,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -200,7 +200,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
 
       proposalNumber = Number(
         findWasmAttributeValue(
-          this.dao.chainId,
+          this.chainId,
           events,
           this.address,
           'proposal_id'
@@ -308,7 +308,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId: number
   }): FetchQueryOptions<ProposalResponse> {
     return secretDaoProposalMultipleQueries.proposal({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         proposalId,
@@ -334,7 +334,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     // If no voter nor permit, return query in loading state.
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalMultipleQueries.getVote({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       // Force type-cast since the query won't be enabled until this is set.
       // This allows us to pass an undefined `voter` argument in order to
@@ -373,21 +373,21 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
 
   getProposalCountQuery(): FetchQueryOptions<number> {
     return secretDaoProposalMultipleQueries.proposalCount({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
   getDaoAddressQuery(): FetchQueryOptions<string> {
     return secretDaoProposalMultipleQueries.dao({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
   getConfigQuery(): FetchQueryOptions<Config> {
     return secretDaoProposalMultipleQueries.config({
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
     })
   }
@@ -398,7 +398,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
         'secretMultipleChoiceProposalModule',
         'depositInfo',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -407,7 +407,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
           const { deposit_info: depositInfo } =
             await this.queryClient.fetchQuery(
               secretDaoPreProposeMultipleQueries.config({
-                chainId: this.dao.chainId,
+                chainId: this.chainId,
                 contractAddress: this.prePropose.address,
               })
             )

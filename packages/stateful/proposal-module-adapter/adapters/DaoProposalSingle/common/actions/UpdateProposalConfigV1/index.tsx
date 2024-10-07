@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { cwProposalSingleV1Queries, tokenQueries } from '@dao-dao/state'
 import { ActionBase, BallotDepositEmoji } from '@dao-dao/stateless'
 import {
@@ -12,10 +13,8 @@ import {
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -122,7 +121,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
   async setup() {
     const config = await this.options.queryClient.fetchQuery(
       cwProposalSingleV1Queries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
     )
@@ -130,7 +129,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
           tokenQueries.info(this.options.queryClient, {
-            chainId: this.proposalModule.dao.chainId,
+            chainId: this.proposalModule.chainId,
             type: TokenType.Cw20,
             denomOrAddress: config.deposit_info.token,
           })
@@ -142,16 +141,14 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const depositInfo =
       config.deposit_info && token
         ? {
-            deposit: convertMicroDenomToDenomWithDecimals(
-              Number(config.deposit_info.deposit),
-              // A deposit being configured implies that a token will be
-              // present.
-              token.decimals
-            ),
+            // A deposit being configured implies that a token will be present.
+            deposit: HugeDecimal.from(
+              config.deposit_info.deposit
+            ).toHumanReadableString(token.decimals),
             refundFailedProposals: config.deposit_info.refund_failed_proposals,
           }
         : {
-            deposit: 0,
+            deposit: '0',
             refundFailedProposals: false,
           }
 
@@ -171,7 +168,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
 
   async encode(data: UpdateProposalConfigData): Promise<UnifiedCosmosMsg> {
     return makeExecuteSmartContractMessage({
-      chainId: this.proposalModule.dao.chainId,
+      chainId: this.proposalModule.chainId,
       contractAddress: this.proposalModule.address,
       sender: this.options.address,
       msg: {
@@ -206,7 +203,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
           ...(data.depositInfo &&
             data.depositRequired && {
               deposit_info: {
-                deposit: convertDenomToMicroDenomStringWithDecimals(
+                deposit: HugeDecimal.fromHumanReadable(
                   data.depositInfo.deposit,
                   this.proposalModule.dao.votingModule.getGovernanceTokenQuery
                     ? (
@@ -215,7 +212,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
                         )
                       ).decimals
                     : 0
-                ),
+                ).toString(),
                 refund_failed_proposals: data.depositInfo.refundFailedProposals,
                 token: { voting_module_token: {} },
               },
@@ -249,7 +246,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
           },
         },
       }) &&
-      chainId === this.proposalModule.dao.chainId &&
+      chainId === this.proposalModule.chainId &&
       decodedMessage.wasm.execute.contract_addr === this.proposalModule.address
     )
   }
@@ -263,8 +260,9 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
     const depositRequired = !!config.deposit_info
     const depositInfo = config.deposit_info
       ? {
-          deposit: convertMicroDenomToDenomWithDecimals(
-            Number(config.deposit_info.deposit),
+          deposit: HugeDecimal.from(
+            config.deposit_info.deposit
+          ).toHumanReadableString(
             this.proposalModule.dao.votingModule.getGovernanceTokenQuery
               ? (
                   await this.options.queryClient.fetchQuery(

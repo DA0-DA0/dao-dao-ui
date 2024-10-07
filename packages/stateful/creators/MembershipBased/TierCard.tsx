@@ -2,6 +2,7 @@ import { Add, Close } from '@mui/icons-material'
 import {
   Control,
   FormState,
+  UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
@@ -14,7 +15,7 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
+  NumericInput,
   TextInput,
   useChain,
 } from '@dao-dao/stateless'
@@ -41,6 +42,7 @@ export interface TierCardProps {
   watch: UseFormWatch<NewDao<CreatorData>>
   errors: FormState<NewDao<CreatorData>>['errors']
   setValue: UseFormSetValue<NewDao<CreatorData>>
+  getValues: UseFormGetValues<NewDao<CreatorData>>
   remove?: () => void
 }
 
@@ -58,6 +60,7 @@ export const TierCard = ({
     watch,
     errors,
     setValue,
+    getValues,
     showColorDotOnMember,
   } = props
 
@@ -135,15 +138,16 @@ export const TierCard = ({
             })}
           />
 
-          <NumberInput
+          <NumericInput
             error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
             fieldName={`creator.data.tiers.${tierIndex}.weight`}
+            getValues={getValues}
             min={0}
+            numericValue
             register={register}
             setValue={setValue}
             step={1}
             validation={[validateNonNegative, validateRequired]}
-            watch={watch}
           />
 
           <InputErrorMessage

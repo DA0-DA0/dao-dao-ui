@@ -2,29 +2,27 @@ import { WarningRounded } from '@mui/icons-material'
 import { ComponentType, Dispatch, ReactNode, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AmountWithTimestamp,
   GenericToken,
   LoadingData,
   ModalProps,
 } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  shortenTokenSymbol,
-} from '@dao-dao/utils'
+import { shortenTokenSymbol } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
-import { NumberInput, PercentButton } from '../inputs'
+import { NumericInput, PercentButton } from '../inputs'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Modal } from './Modal'
 
 export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
   token: GenericToken
   loadingBalance: LoadingData<AmountWithTimestamp>
-  onDeposit: (amount: number) => void | Promise<void>
+  onDeposit: (amount: HugeDecimal) => void | Promise<void>
   loading: boolean
-  amount: number
-  setAmount: Dispatch<SetStateAction<number>>
+  amount: HugeDecimal
+  setAmount: Dispatch<SetStateAction<HugeDecimal>>
   connected: boolean
   ConnectWallet?: ComponentType
   subtitle?: string | ReactNode
@@ -48,7 +46,7 @@ export const TokenDepositModal = ({
 }: TokenDepositModalProps) => {
   const { t } = useTranslation()
 
-  const min = convertMicroDenomToDenomWithDecimals(1, token.decimals)
+  const min = HugeDecimal.one.toHumanReadableNumber(token.decimals)
 
   const { tokenSymbol } = shortenTokenSymbol(token.symbol)
 
@@ -70,7 +68,7 @@ export const TokenDepositModal = ({
               disabled
             }
             loading={loading}
-            onClick={() => amount > 0 && onDeposit(amount)}
+            onClick={() => amount.isPositive() && onDeposit(amount)}
           >
             {t('button.deposit')}
           </Button>
@@ -101,7 +99,7 @@ export const TokenDepositModal = ({
             amount={
               loadingBalance.loading
                 ? loadingBalance
-                : { loading: false, data: loadingBalance.data.amount }
+                : loadingBalance.data.amount
             }
             dateFetched={
               loadingBalance.loading
@@ -116,31 +114,24 @@ export const TokenDepositModal = ({
         </div>
       )}
 
-      <NumberInput
+      <NumericInput
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
         autoFocus={modalProps.visible}
         max={loadingBalance.loading ? undefined : loadingBalance.data.amount}
         min={min}
-        onInput={(event) =>
-          setAmount(
-            Number(
-              Number((event.target as HTMLInputElement).value).toFixed(
-                token.decimals
-              )
-            )
-          )
-        }
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault()
             onDeposit(amount)
           }
         }}
-        setValue={(_, value) => setAmount(value)}
+        setValue={(_, value) =>
+          setAmount(HugeDecimal.fromHumanReadable(value, token.decimals))
+        }
         step={min}
         unit={'$' + tokenSymbol}
-        value={amount}
+        value={amount.toHumanReadableString(token.decimals)}
       />
 
       <div className="grid grid-cols-5 gap-2">
@@ -148,14 +139,18 @@ export const TokenDepositModal = ({
           <PercentButton
             key={percent}
             amount={amount}
-            decimals={token.decimals}
-            label={`${percent}%`}
             loadingMax={
               loadingBalance.loading
                 ? loadingBalance
-                : { loading: false, data: loadingBalance.data.amount }
+                : {
+                    loading: false,
+                    data: HugeDecimal.fromHumanReadable(
+                      loadingBalance.data.amount,
+                      token.decimals
+                    ),
+                  }
             }
-            percent={percent / 100}
+            percent={percent}
             setAmount={setAmount}
           />
         ))}

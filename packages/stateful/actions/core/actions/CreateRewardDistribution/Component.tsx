@@ -1,11 +1,12 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   InputLabel,
   MarkdownRenderer,
-  NumberInput,
+  NumericInput,
   PercentButton,
   SegmentedControls,
   SelectInput,
@@ -26,7 +27,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   isValidBech32Address,
   tokensEqual,
   validateNonNegative,
@@ -39,10 +39,10 @@ export type CreateRewardDistributionData = {
   denomOrAddress: string
   immediate: boolean
   rate: {
-    amount: number
+    amount: string
     duration: DurationWithUnits
   }
-  initialFunds: number
+  initialFunds: string
   openFunding: boolean
 }
 
@@ -65,7 +65,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
     address,
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
-  const { register, setValue, watch } =
+  const { register, setValue, watch, getValues } =
     useFormContext<CreateRewardDistributionData>()
 
   const denomOrAddress = watch(
@@ -86,12 +86,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
       : tokens.data.find((t) => tokensEqual(t.token, token.data))
   const decimals = selectedToken?.token.decimals ?? 0
 
-  const minAmount = convertMicroDenomToDenomWithDecimals(1, decimals)
-
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    decimals
-  )
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
   const warning =
     !isCreating ||
     tokens.loading ||
@@ -101,10 +96,11 @@ export const CreateRewardDistributionComponent: ActionComponent<
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: denomOrAddress })
-      : initialFunds && initialFunds > selectedBalance
+      : initialFunds &&
+        selectedBalance.toHumanReadable(decimals).lt(initialFunds)
       ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: selectedBalance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: selectedToken.token.symbol,
         })
@@ -161,11 +157,10 @@ export const CreateRewardDistributionComponent: ActionComponent<
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
                       }),
                   })),
                 }
@@ -198,23 +193,23 @@ export const CreateRewardDistributionComponent: ActionComponent<
         />
 
         {!immediate && (
-          <div className="flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 bg-background-tertiary rounded-md max-w-prose">
-            <NumberInput
+          <div className="bg-background-tertiary flex flex-wrap flex-row gap-x-4 gap-y-2 px-4 py-3 rounded-md max-w-prose">
+            <NumericInput
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.rate?.amount}
               fieldName={(fieldNamePrefix + 'rate.amount') as 'rate.amount'}
-              min={minAmount}
+              getValues={getValues}
+              min={HugeDecimal.one.toHumanReadableNumber(decimals)}
               register={register}
               setValue={setValue}
-              step={minAmount}
+              step={HugeDecimal.one.toHumanReadableNumber(decimals)}
               unit={
                 selectedToken
                   ? '$' + selectedToken?.token.symbol
                   : t('info.tokens')
               }
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
 
             <div className="flex flex-row grow gap-4 justify-between items-center">
@@ -222,20 +217,21 @@ export const CreateRewardDistributionComponent: ActionComponent<
 
               <div className="flex grow flex-row gap-2">
                 <div className="flex flex-col gap-1 grow">
-                  <NumberInput
+                  <NumericInput
                     disabled={!isCreating}
                     error={errors?.rate?.duration?.value}
                     fieldName={
                       (fieldNamePrefix +
                         'rate.duration.value') as 'rate.duration.value'
                     }
+                    getValues={getValues}
                     min={1}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="none"
                     step={1}
                     validation={[validatePositive, validateRequired]}
-                    watch={watch}
                   />
                   <InputErrorMessage error={errors?.rate?.duration?.value} />
                 </div>
@@ -269,19 +265,19 @@ export const CreateRewardDistributionComponent: ActionComponent<
           {t('info.initialRewardsFundsDescription')}
         </p>
 
-        <NumberInput
+        <NumericInput
           containerClassName={!isCreating ? 'self-start' : undefined}
           disabled={!isCreating}
           fieldName={(fieldNamePrefix + 'initialFunds') as 'initialFunds'}
+          getValues={getValues}
           min={0}
           register={register}
           setValue={setValue}
-          step={minAmount}
+          step={HugeDecimal.one.toHumanReadableNumber(decimals)}
           unit={
             selectedToken ? '$' + selectedToken?.token.symbol : t('info.tokens')
           }
           validation={[validateRequired, validateNonNegative]}
-          watch={watch}
         />
         <InputErrorMessage error={errors?.initialFunds} />
         <InputErrorMessage error={warning} warning />
@@ -299,7 +295,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
               onClick={() =>
                 setValue(
                   (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                  selectedBalance
+                  selectedBalance.toHumanReadableString(decimals)
                 )
               }
               showFullAmount
@@ -307,20 +303,18 @@ export const CreateRewardDistributionComponent: ActionComponent<
             />
           </div>
 
-          {selectedBalance > 0 && (
+          {selectedBalance.isPositive() && (
             <div className="grid grid-cols-5 gap-1">
               {[10, 25, 50, 75, 100].map((percent) => (
                 <PercentButton
                   key={percent}
-                  amount={initialFunds}
-                  decimals={decimals}
-                  label={`${percent}%`}
+                  amount={HugeDecimal.fromHumanReadable(initialFunds, decimals)}
                   loadingMax={{ loading: false, data: selectedBalance }}
-                  percent={percent / 100}
+                  percent={percent}
                   setAmount={(amount) =>
                     setValue(
                       (fieldNamePrefix + 'initialFunds') as 'initialFunds',
-                      amount
+                      amount.toHumanReadableString(decimals)
                     )
                   }
                 />

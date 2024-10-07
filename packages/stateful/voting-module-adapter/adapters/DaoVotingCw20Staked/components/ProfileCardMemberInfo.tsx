@@ -3,17 +3,14 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20StakeSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useChain, useDao } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -21,7 +18,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertExpirationToDate,
-  convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
   processError,
 } from '@dao-dao/utils'
@@ -42,7 +38,7 @@ export const ProfileCardMemberInfo = ({
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
   const {
     address: walletAddress,
     isWalletConnected,
@@ -64,7 +60,7 @@ export const ProfileCardMemberInfo = ({
     refreshTotals,
     claimsPending,
     claimsAvailable,
-    sumClaimsAvailable,
+    sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     loadingTotalStakedValue,
     refreshClaims,
@@ -111,7 +107,7 @@ export const ProfileCardMemberInfo = ({
     if (!isWalletConnected) {
       return toast.error(t('error.logInToContinue'))
     }
-    if (!sumClaimsAvailable) {
+    if (sumClaimsAvailable.isZero()) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -135,12 +131,12 @@ export const ProfileCardMemberInfo = ({
       refreshClaims?.()
 
       toast.success(
-        `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable,
-          governanceToken.decimals
-        ).toLocaleString(undefined, {
-          maximumFractionDigits: governanceToken.decimals,
-        })} $${governanceToken.symbol}`
+        t('success.claimedTokens', {
+          amount: sumClaimsAvailable.toInternationalizedHumanReadableString({
+            decimals: governanceToken.decimals,
+          }),
+          tokenSymbol: governanceToken.symbol,
+        })
       )
     } catch (err) {
       console.error(err)
@@ -179,10 +175,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.Unstaking,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
-        governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(amount),
       date:
         blocksPerYearLoadable.state === 'hasValue'
           ? convertExpirationToDate(
@@ -197,10 +190,7 @@ export const ProfileCardMemberInfo = ({
     ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.ReadyToClaim,
-      amount: convertMicroDenomToDenomWithDecimals(
-        amount,
-        governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(amount),
       date:
         blocksPerYearLoadable.state === 'hasValue'
           ? convertExpirationToDate(
@@ -232,14 +222,8 @@ export const ProfileCardMemberInfo = ({
                 data: [
                   {
                     token: governanceToken,
-                    staked: convertMicroDenomToDenomWithDecimals(
-                      loadingWalletStakedValue.data,
-                      governanceToken.decimals
-                    ),
-                    unstaked: convertMicroDenomToDenomWithDecimals(
-                      loadingUnstakedBalance.data,
-                      governanceToken.decimals
-                    ),
+                    staked: loadingWalletStakedValue.data,
+                    unstaked: loadingUnstakedBalance.data,
                   },
                 ],
               }
@@ -252,10 +236,10 @@ export const ProfileCardMemberInfo = ({
             ? { loading: true }
             : {
                 loading: false,
-                data:
-                  (loadingWalletStakedValue.data /
-                    loadingTotalStakedValue.data) *
-                  100,
+                data: loadingWalletStakedValue.data
+                  .div(loadingTotalStakedValue.data)
+                  .times(100)
+                  .toNumber(),
               }
         }
         onClaim={onClaim}

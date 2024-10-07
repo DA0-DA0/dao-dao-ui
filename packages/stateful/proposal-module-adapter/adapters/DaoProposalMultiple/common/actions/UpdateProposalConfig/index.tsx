@@ -180,7 +180,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
   async setup() {
     const config = await this.options.queryClient.fetchQuery(
       daoProposalMultipleQueries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
     )
@@ -193,7 +193,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
           cw1WhitelistExtraQueries.adminsIfCw1Whitelist(
             this.options.queryClient,
             {
-              chainId: this.proposalModule.dao.chainId,
+              chainId: this.proposalModule.chainId,
               address: config.veto.vetoer,
             }
           )
@@ -214,7 +214,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
   async encode(data: UpdateProposalConfigData): Promise<UnifiedCosmosMsg> {
     const config = await this.options.queryClient.fetchQuery(
       daoProposalMultipleQueries.config(this.options.queryClient, {
-        chainId: this.proposalModule.dao.chainId,
+        chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
     )
@@ -251,7 +251,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.proposalModule.dao.chainId,
+      chainId: this.proposalModule.chainId,
       contractAddress: this.proposalModule.address,
       sender: this.options.address,
       msg: updateConfigMessage,
@@ -288,7 +288,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
           },
         },
       }) &&
-      chainId === this.proposalModule.dao.chainId &&
+      chainId === this.proposalModule.chainId &&
       decodedMessage.wasm.execute.contract_addr === this.proposalModule.address
     )
   }
@@ -306,7 +306,7 @@ export class DaoProposalMultipleUpdateConfigAction extends ActionBase<UpdateProp
           cw1WhitelistExtraQueries.adminsIfCw1Whitelist(
             this.options.queryClient,
             {
-              chainId: this.proposalModule.dao.chainId,
+              chainId: this.proposalModule.chainId,
               address: config.veto.vetoer,
             }
           )

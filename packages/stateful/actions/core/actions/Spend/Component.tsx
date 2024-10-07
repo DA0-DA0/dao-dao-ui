@@ -1,9 +1,9 @@
 import { ArrowRightAltRounded } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ComponentType, RefAttributes, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountSelector,
   Button,
@@ -16,7 +16,7 @@ import {
   InputLabel,
   InputThemedText,
   Loader,
-  NumberInput,
+  NumericInput,
   PercentButton,
   SelectInput,
   StatusCard,
@@ -46,7 +46,6 @@ import {
 } from '@dao-dao/types/actions'
 import { Params as NobleTariffParams } from '@dao-dao/types/protobuf/codegen/tariff/params'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   formatPercentOf100,
   getAccountAddress,
@@ -74,7 +73,7 @@ export type SpendData = {
    */
   from: string
   to: string
-  amount: number
+  amount: string
   denom: string
   /**
    * Whether or not `denom` is a CW20 token address. CW20 tokens cannot be sent
@@ -121,7 +120,7 @@ export type SpendOptions = {
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
   // If this is an IBC transfer, show the expected receive amount.
-  ibcAmountOut: LoadingDataWithError<number | undefined>
+  ibcAmountOut: LoadingDataWithError<HugeDecimal | undefined>
   // If this is an IBC transfer and a multi-TX route exists that unwinds the
   // tokens correctly but doesn't use PFM, this is the better path.
   betterNonPfmIbcPath: LoadingData<string[] | undefined>
@@ -169,7 +168,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     chain: { chain_id: mainChainId },
   } = useActionOptions()
 
-  const { register, watch, setValue } = useFormContext<SpendData>()
+  const { register, watch, setValue, getValues } = useFormContext<SpendData>()
 
   const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
@@ -268,14 +267,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             token.denomOrAddress === spendDenom &&
             (token.type === TokenType.Cw20) === isCw20
         )
-  const balance = convertMicroDenomToDenomWithDecimals(
-    selectedToken?.balance ?? 0,
-    selectedToken?.token.decimals ?? 0
-  )
 
   const decimals = loadedCustomToken
     ? token.data.decimals
     : selectedToken?.token.decimals || 0
+
+  const balance = HugeDecimal.from(selectedToken?.balance ?? 0)
 
   // A warning if the denom was not found in the treasury or the amount is too
   // high. We don't want to make this an error because often people want to
@@ -286,10 +283,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       ? undefined
       : !selectedToken
       ? t('error.unknownDenom', { denom: spendDenom })
-      : spendAmount > balance
+      : balance.toHumanReadable(decimals).lt(spendAmount)
       ? t('error.insufficientFundsWarning', {
-          amount: balance.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
+          amount: balance.toInternationalizedHumanReadableString({
+            decimals,
           }),
           tokenSymbol: symbol,
         })
@@ -333,11 +330,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
-                min: convertMicroDenomToDenomWithDecimals(1, decimals),
-                step: convertMicroDenomToDenomWithDecimals(1, decimals),
+                min: HugeDecimal.one.toHumanReadableNumber(decimals),
+                step: HugeDecimal.one.toHumanReadableNumber(decimals),
                 // For custom token, show unit if loaded successfully.
                 unit: loadedCustomToken ? token.data.symbol : undefined,
                 unitIconUrl: loadedCustomToken
@@ -345,7 +343,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   : undefined,
                 unitClassName: '!text-text-primary',
               }}
-              containerClassName={clsx('grow !max-w-full')}
+              containerClassName="grow !max-w-full"
               onCustomTokenChange={(custom) => {
                 setValue((fieldNamePrefix + 'denom') as 'denom', custom)
                 // If denom entered is a valid contract address, it's most
@@ -417,11 +415,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                         description:
                           t('title.balance') +
                           ': ' +
-                          convertMicroDenomToDenomWithDecimals(
-                            balance,
-                            token.decimals
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: token.decimals,
+                          HugeDecimal.from(
+                            balance
+                          ).toInternationalizedHumanReadableString({
+                            decimals: token.decimals,
                           }),
                       })),
                     }
@@ -481,27 +478,31 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   decimals={selectedToken.token.decimals}
                   iconUrl={selectedToken.token.imageUrl}
                   onClick={() =>
-                    setValue((fieldNamePrefix + 'amount') as 'amount', balance)
+                    setValue(
+                      (fieldNamePrefix + 'amount') as 'amount',
+                      balance.toHumanReadableString(decimals)
+                    )
                   }
                   showFullAmount
                   symbol={selectedToken.token.symbol}
                 />
               </div>
 
-              {balance > 0 && (
+              {balance.isPositive() && (
                 <div className="grid grid-cols-5 gap-1">
                   {[10, 25, 50, 75, 100].map((percent) => (
                     <PercentButton
                       key={percent}
-                      amount={spendAmount}
-                      decimals={selectedToken.token.decimals}
-                      label={`${percent}%`}
+                      amount={HugeDecimal.fromHumanReadable(
+                        spendAmount,
+                        decimals
+                      )}
                       loadingMax={{ loading: false, data: balance }}
-                      percent={percent / 100}
+                      percent={percent}
                       setAmount={(amount) =>
                         setValue(
                           (fieldNamePrefix + 'amount') as 'amount',
-                          amount
+                          amount.toHumanReadableString(decimals)
                         )
                       }
                     />
@@ -565,7 +566,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       ) : (
         <div className="flex flex-row gap-3 items-center">
           <TokenAmountDisplay
-            amount={spendAmount}
+            amount={HugeDecimal.fromHumanReadable(spendAmount, decimals)}
             decimals={decimals}
             iconClassName="!h-6 !w-6"
             iconUrl={
@@ -669,11 +670,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                       fee: neutronTransferFee.data
                         .map(({ token, balance }) =>
                           t('format.token', {
-                            amount: convertMicroDenomToDenomWithDecimals(
-                              balance,
-                              token.decimals
-                            ).toLocaleString(undefined, {
-                              maximumFractionDigits: token.decimals,
+                            amount: HugeDecimal.from(
+                              balance
+                            ).toInternationalizedHumanReadableString({
+                              decimals: token.decimals,
                             }),
                             symbol: token.symbol,
                           })
@@ -795,14 +795,16 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             {isCreating ? (
               <>
                 <div className="flex flex-row gap-1">
-                  <NumberInput
+                  <NumericInput
                     disabled={!isCreating}
                     error={errors?.ibcTimeout?.value}
                     fieldName={
                       (fieldNamePrefix +
                         'ibcTimeout.value') as 'ibcTimeout.value'
                     }
+                    getValues={getValues}
                     min={1}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="md"
@@ -814,8 +816,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                             count: ibcTimeout?.value,
                           }).toLocaleLowerCase()
                     }
-                    validation={[validatePositive, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validatePositive]}
                   />
 
                   {isCreating && (
@@ -857,9 +858,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
           {selectedToken &&
             !ibcAmountOut.loading &&
+            !ibcAmountOut.updating &&
             !ibcAmountOut.errored &&
             ibcAmountOut.data &&
-            ibcAmountOut.data !== spendAmount && (
+            !ibcAmountOut.data
+              .toHumanReadable(selectedToken.token.decimals)
+              .eq(spendAmount) && (
               <div className="flex flex-col gap-2 mt-1">
                 <InputLabel name={t('form.amountReceived')} />
 
@@ -880,25 +884,27 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
 type NobleTariffProps = {
   token: GenericToken
-  amount: number
+  amount: string
   params: NobleTariffParams
 }
 
 const NobleTariff = ({
   token: { symbol, decimals },
-  amount,
+  amount: _amount,
   params: { transferFeeBps, transferFeeMax },
 }: NobleTariffProps) => {
   const { t } = useTranslation()
 
-  const feeDecimal = Number(transferFeeBps) / 1e4
-  const maxFee = convertMicroDenomToDenomWithDecimals(transferFeeMax, decimals)
-  const fee =
-    amount && !isNaN(amount)
-      ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)
-      : 0
+  const amount = HugeDecimal.fromHumanReadable(_amount, decimals)
 
-  if (fee === 0) {
+  const feeDecimal = Number(transferFeeBps) / 1e4
+  const maxFee = HugeDecimal.from(transferFeeMax)
+  const fee =
+    _amount && !amount.isNaN()
+      ? HugeDecimal.min(amount.times(feeDecimal), maxFee)
+      : HugeDecimal.zero
+
+  if (fee.isZero()) {
     return null
   }
 
@@ -907,14 +913,14 @@ const NobleTariff = ({
       {t('info.nobleTariffApplied', {
         feePercent: formatPercentOf100(feeDecimal * 100),
         tokenSymbol: symbol,
-        maxFee: maxFee.toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        maxFee: maxFee.toInternationalizedHumanReadableString({
+          decimals,
         }),
-        fee: fee.toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        fee: fee.toInternationalizedHumanReadableString({
+          decimals,
         }),
-        output: (amount - fee).toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        output: amount.minus(fee).toInternationalizedHumanReadableString({
+          decimals,
         }),
       })}
     </p>

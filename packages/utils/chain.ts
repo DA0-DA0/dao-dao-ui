@@ -6,6 +6,7 @@ import uniq from 'lodash.uniq'
 import RIPEMD160 from 'ripemd160'
 import semverGte from 'semver/functions/gte'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   BaseChainConfig,
@@ -147,7 +148,7 @@ export const cosmosValidatorToValidator = ({
     ? Number(commission.commissionRates.rate)
     : -1,
   status: bondStatusToJSON(status),
-  tokens: Number(tokens),
+  tokens: HugeDecimal.from(tokens),
 })
 
 export const getImageUrlForChainId = (chainId: string): string => {

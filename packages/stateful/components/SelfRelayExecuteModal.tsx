@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   genericTokenBalanceSelector,
@@ -60,7 +61,6 @@ import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v
 import { toTimestamp } from '@dao-dao/types/protobuf/codegen/helpers'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -156,7 +156,7 @@ export const SelfRelayExecuteModal = ({
   )
   // Amount funded once funding is complete.
   const [fundedAmount, setFundedAmount] = useState<
-    Record<string, number | undefined>
+    Record<string, HugeDecimal | undefined>
   >({})
   const [executeTx, setExecuteTx] =
     useState<Pick<IndexedTx, 'events' | 'height'>>()
@@ -166,7 +166,7 @@ export const SelfRelayExecuteModal = ({
   }>()
   // Amount refunded once refunding is complete.
   const [refundedAmount, setRefundedAmount] = useState<
-    Record<string, number | undefined>
+    Record<string, HugeDecimal | undefined>
   >({})
 
   // If relay fails and user decides to refund and cancel, this will be set to
@@ -457,30 +457,29 @@ export const SelfRelayExecuteModal = ({
 
       const fundsNeeded =
         // Give a little extra to cover the authz tx fee.
-        getRelayerFundsRef.current(chainId) * 1.2 -
-        Number(currentBalance.amount)
+        HugeDecimal.from(getRelayerFundsRef.current(chainId) * 1.2).minus(
+          currentBalance
+        )
 
-      let msgs: EncodeObject[] =
-        fundsNeeded > 0
-          ? // Send tokens to relayer wallet if needed.
-            [
-              cwMsgToEncodeObject(
-                chainId,
-                {
-                  bank: {
-                    send: {
-                      amount: coins(
-                        BigInt(fundsNeeded).toString(),
-                        relayer.feeToken.denomOrAddress
-                      ),
-                      to_address: relayer.relayerAddress,
-                    },
+      let msgs: EncodeObject[] = fundsNeeded.isPositive()
+        ? // Send tokens to relayer wallet if needed.
+          [
+            cwMsgToEncodeObject(
+              chainId,
+              {
+                bank: {
+                  send: {
+                    amount: fundsNeeded.toCoins(
+                      relayer.feeToken.denomOrAddress
+                    ),
+                    to_address: relayer.relayerAddress,
                   },
                 },
-                relayer.wallet.address
-              ),
-            ]
-          : []
+              },
+              relayer.wallet.address
+            ),
+          ]
+        : []
 
       // Add execute message if executing and has not already executed.
       if (withExecuteRelay && !executeTx && transaction.type === 'execute') {
@@ -506,13 +505,11 @@ export const SelfRelayExecuteModal = ({
       }
 
       // Get new balance of relayer wallet.
-      const newBalance = Number(
-        (
-          await relayer.client.query.bank.balance(
-            relayer.relayerAddress,
-            relayer.feeToken.denomOrAddress
-          )
-        ).amount
+      const newBalance = HugeDecimal.from(
+        await relayer.client.query.bank.balance(
+          relayer.relayerAddress,
+          relayer.feeToken.denomOrAddress
+        )
       )
       setFundedAmount((prev) => ({
         ...prev,
@@ -541,7 +538,7 @@ export const SelfRelayExecuteModal = ({
                 authorization: SendAuthorization.toProtoMsg(
                   SendAuthorization.fromPartial({
                     spendLimit: coins(
-                      BigInt(newBalance).toString(),
+                      newBalance.toString(),
                       relayer.feeToken.denomOrAddress
                     ),
                   })
@@ -1043,15 +1040,16 @@ export const SelfRelayExecuteModal = ({
         // @ts-ignore
         client.gasPrice
       )
-      const remainingTokensAfterFee =
-        Number(remainingTokens.amount) - Number(fee.amount[0].amount)
+      const remainingTokensAfterFee = HugeDecimal.from(remainingTokens).minus(
+        fee.amount[0]
+      )
 
       // Send remaining tokens if there are more than enough to pay the fee.
-      if (remainingTokensAfterFee > 0) {
+      if (remainingTokensAfterFee.isPositive()) {
         await client.sign.sendTokens(
           relayerAddress,
           wallet.address,
-          coins(BigInt(remainingTokensAfterFee).toString(), feeDenom),
+          remainingTokensAfterFee.toCoins(feeDenom),
           fee
         )
 
@@ -1171,12 +1169,14 @@ export const SelfRelayExecuteModal = ({
 
                     const funds =
                       !relayerFunds.loading && !relayerFunds.errored
-                        ? Number(relayerFunds.data[index].amount)
+                        ? HugeDecimal.from(relayerFunds.data[index])
                         : // Use the previously funded amount if the step is past.
-                          fundedAmount[chain_id] ?? 0
-                    const empty = funds === 0
+                          fundedAmount[chain_id] ?? HugeDecimal.zero
+                    const empty = funds.isZero()
 
-                    const funded = funds >= getRelayerFundsRef.current(chain_id)
+                    const funded = funds.gte(
+                      getRelayerFundsRef.current(chain_id)
+                    )
 
                     const isExecute = index === 0
                     // If this is the execute, we need to make sure all
@@ -1207,11 +1207,12 @@ export const SelfRelayExecuteModal = ({
                             title={
                               walletCannotAfford && fundTokenWithBalance
                                 ? t('error.insufficientWalletBalance', {
-                                    amount:
-                                      convertMicroDenomToDenomWithDecimals(
-                                        fundTokenWithBalance.balance,
-                                        fundTokenWithBalance.token.decimals
-                                      ),
+                                    amount: HugeDecimal.from(
+                                      fundTokenWithBalance.balance
+                                    ).toInternationalizedHumanReadableString({
+                                      decimals:
+                                        fundTokenWithBalance.token.decimals,
+                                    }),
                                     tokenSymbol:
                                       fundTokenWithBalance.token.symbol,
                                   })
@@ -1251,17 +1252,7 @@ export const SelfRelayExecuteModal = ({
                         ) : (
                           <div className="flex items-center justify-end gap-2">
                             <TokenAmountDisplay
-                              amount={
-                                walletFunds.loading || walletFunds.errored
-                                  ? { loading: true }
-                                  : {
-                                      loading: false,
-                                      data: convertMicroDenomToDenomWithDecimals(
-                                        funds,
-                                        walletFunds.data[index].token.decimals
-                                      ),
-                                    }
-                              }
+                              amount={funds}
                               decimals={
                                 fundTokenWithBalance?.token.decimals ?? 0
                               }
@@ -1386,11 +1377,12 @@ export const SelfRelayExecuteModal = ({
 
                       const funds =
                         !relayerFunds.loading && !relayerFunds.errored
-                          ? Number(relayerFunds.data[index].amount)
-                          : 0
-                      const empty = funds === 0
+                          ? HugeDecimal.from(relayerFunds.data[index])
+                          : HugeDecimal.zero
+                      const empty = funds.isZero()
 
-                      const refunded = refundedAmount[chain_id] ?? 0
+                      const refunded =
+                        refundedAmount[chain_id] ?? HugeDecimal.zero
 
                       return (
                         <Fragment key={chain_id}>
@@ -1409,10 +1401,7 @@ export const SelfRelayExecuteModal = ({
 
                           <div className="flex items-center justify-end gap-2">
                             <TokenAmountDisplay
-                              amount={convertMicroDenomToDenomWithDecimals(
-                                empty ? refunded : funds,
-                                feeToken.decimals
-                              )}
+                              amount={empty ? refunded : funds}
                               decimals={feeToken.decimals}
                               symbol={feeToken.symbol}
                             />

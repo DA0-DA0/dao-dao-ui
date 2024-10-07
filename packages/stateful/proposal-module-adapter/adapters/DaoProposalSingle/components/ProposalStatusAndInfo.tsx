@@ -22,7 +22,7 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
   useConfiguredChainContext,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
   useExecuteAt,
   useTranslatedTimeDeltaFormatter,
@@ -123,7 +123,7 @@ const InnerProposalStatusAndInfo = ({
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
 

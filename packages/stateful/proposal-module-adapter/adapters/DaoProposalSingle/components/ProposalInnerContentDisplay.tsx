@@ -8,7 +8,7 @@ import {
   ActionsMatchAndRender,
   Button,
   RawActionsRenderer,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import {
   ActionKeyAndData,
@@ -52,7 +52,7 @@ const InnerProposalInnerContentDisplay = ({
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
-  const { chainId, coreVersion } = useDaoInfoContext()
+  const { chainId, coreVersion } = useDao()
 
   const actionMessagesToDisplay = useMemo(() => {
     let messages = proposal.msgs

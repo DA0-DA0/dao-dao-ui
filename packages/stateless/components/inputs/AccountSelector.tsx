@@ -21,7 +21,7 @@ export type AccountSelectorProps = {
   /**
    * The list of accounts.
    */
-  accounts: Account[]
+  accounts: readonly Account[]
   /**
    * Account selection callback function.
    */

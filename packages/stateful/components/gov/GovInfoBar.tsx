@@ -1,17 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  DaoInfoCards,
-  TokenAmountDisplay,
-  useDaoContext,
-} from '@dao-dao/stateless'
+import { DaoInfoCards, TokenAmountDisplay, useDao } from '@dao-dao/stateless'
 
 import { useQueryLoadingData } from '../../hooks'
 
 export const GovInfoBar = () => {
   const { t } = useTranslation()
 
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
     amount: -1,
     timestamp: Date.now(),
@@ -26,12 +22,7 @@ export const GovInfoBar = () => {
           value: (
             <TokenAmountDisplay
               amount={
-                tvlLoading.loading
-                  ? { loading: true }
-                  : {
-                      loading: false,
-                      data: tvlLoading.data.amount,
-                    }
+                tvlLoading.loading ? { loading: true } : tvlLoading.data.amount
               }
               dateFetched={
                 tvlLoading.loading
@@ -39,7 +30,6 @@ export const GovInfoBar = () => {
                   : new Date(tvlLoading.data.timestamp)
               }
               estimatedUsdValue
-              hideApprox
             />
           ),
         },

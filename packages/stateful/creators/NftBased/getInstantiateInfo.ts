@@ -22,7 +22,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
       ? !activeThreshold.type || activeThreshold.type === 'percent'
         ? {
             percentage: {
-              percent: (activeThreshold.value / 100).toString(),
+              percent: (Number(activeThreshold.value) / 100).toString(),
             },
           }
         : {

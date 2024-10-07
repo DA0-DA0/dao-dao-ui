@@ -1,10 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  LineLoader,
-  StatusCard,
-  useDaoContextIfAvailable,
-} from '@dao-dao/stateless'
+import { LineLoader, StatusCard, useDaoIfAvailable } from '@dao-dao/stateless'
 import { StatefulProposalLineProps } from '@dao-dao/types'
 
 import {
@@ -20,7 +16,7 @@ export const ProposalLine = ({
   coreAddress,
   ...props
 }: StatefulProposalLineProps) => {
-  const existingDao = useDaoContextIfAvailable()?.dao
+  const existingDao = useDaoIfAvailable()
 
   const content = (
     <ProposalModuleAdapterProvider proposalId={props.proposalId}>

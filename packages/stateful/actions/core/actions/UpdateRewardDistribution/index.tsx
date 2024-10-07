@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import { ActionBase, ConstructionEmoji } from '@dao-dao/stateless'
 import {
@@ -15,10 +16,8 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
-  convertMicroDenomToDenomWithDecimals,
   getDaoRewardDistributors,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
@@ -99,11 +98,10 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
           emissionRate &&
           !('immediate' in emissionRate) &&
           !('paused' in emissionRate)
-            ? convertMicroDenomToDenomWithDecimals(
-                emissionRate.linear.amount,
-                this.distributions[0].token.decimals
-              )
-            : 1,
+            ? HugeDecimal.from(
+                emissionRate.linear.amount
+              ).toHumanReadableString(this.distributions[0].token.decimals)
+            : '1',
         duration:
           emissionRate &&
           !('immediate' in emissionRate) &&
@@ -145,10 +143,10 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
               }
             : {
                 linear: {
-                  amount: convertDenomToMicroDenomStringWithDecimals(
+                  amount: HugeDecimal.fromHumanReadable(
                     rate.amount,
                     distribution.token.decimals
-                  ),
+                  ).toString(),
                   duration: convertDurationWithUnitsToDuration(rate.duration),
                   continuous: false,
                 },
@@ -204,13 +202,11 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
       id: updateMsg.id,
       immediate: 'immediate' in updateMsg.emission_rate,
       rate: {
-        amount:
+        amount: HugeDecimal.from(
           'linear' in updateMsg.emission_rate
-            ? convertMicroDenomToDenomWithDecimals(
-                updateMsg.emission_rate.linear.amount,
-                distribution.token.decimals
-              )
-            : 1,
+            ? updateMsg.emission_rate.linear.amount
+            : 1
+        ).toHumanReadableString(distribution.token.decimals),
         duration:
           'linear' in updateMsg.emission_rate
             ? convertDurationToDurationWithUnits(

@@ -9,14 +9,17 @@ import {
   VotingModuleAdapter,
 } from '@dao-dao/types'
 import {
+  DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES,
   DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
   DaoVotingTokenStakedAdapterId,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../clients'
 import {
   BitSongFantokenMintAction,
-  MintAction,
+  DaoVotingNativeStakedMintAction,
+  DaoVotingTokenStakedMintAction,
   UpdateStakingConfigAction,
 } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
@@ -24,9 +27,12 @@ import { useMainDaoInfoCards } from './hooks'
 
 export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
-  contractNames: DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
+  contractNames: [
+    ...DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
+    ...DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES,
+  ],
 
-  load: ({ chainId }) => ({
+  load: (votingModule) => ({
     // Hooks
     hooks: {
       useMainDaoInfoCards,
@@ -40,7 +46,7 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
       StakingModal,
 
       // Can't view members on Secret Network.
-      extraTabs: isSecretNetwork(chainId)
+      extraTabs: isSecretNetwork(votingModule.chainId)
         ? undefined
         : [
             {
@@ -57,10 +63,14 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
     fields: {
       actions: {
         actions: [
-          ...(chainId === ChainId.BitsongMainnet ||
-          chainId === ChainId.BitsongTestnet
+          ...(votingModule.chainId === ChainId.BitsongMainnet ||
+          votingModule.chainId === ChainId.BitsongTestnet
             ? [BitSongFantokenMintAction]
-            : [MintAction]),
+            : [
+                votingModule instanceof TokenStakedVotingModule
+                  ? DaoVotingTokenStakedMintAction
+                  : DaoVotingNativeStakedMintAction,
+              ]),
           UpdateStakingConfigAction,
         ],
         categoryMakers: [

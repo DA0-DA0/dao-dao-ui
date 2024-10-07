@@ -40,6 +40,7 @@
     "@cosmos-kit/web3auth": "^2.8.0",
     "@cosmos-kit/xdefi": "^2.8.0",
     "@dao-dao/i18n": "2.5.0-rc.3",
+    "@dao-dao/math": "2.5.0-rc.3",
     "@dao-dao/state": "2.5.0-rc.3",
     "@dao-dao/stateless": "2.5.0-rc.3",
     "@dao-dao/utils": "2.5.0-rc.3",

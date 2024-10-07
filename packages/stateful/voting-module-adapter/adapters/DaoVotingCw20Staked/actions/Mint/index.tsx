@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { ActionBase, HerbEmoji } from '@dao-dao/stateless'
 import { GenericToken, TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
@@ -9,8 +10,6 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -51,7 +50,7 @@ export class MintAction extends ActionBase<MintData> {
 
     this.defaults = {
       to: options.address,
-      amount: 1,
+      amount: '1',
     }
   }
 
@@ -80,10 +79,10 @@ export class MintAction extends ActionBase<MintData> {
       contractAddress: this.governanceToken.denomOrAddress,
       msg: {
         mint: {
-          amount: convertDenomToMicroDenomStringWithDecimals(
+          amount: HugeDecimal.fromHumanReadable(
             amount,
             this.governanceToken.decimals
-          ),
+          ).toString(),
           recipient: to,
         },
       },
@@ -114,10 +113,9 @@ export class MintAction extends ActionBase<MintData> {
 
     return {
       to: decodedMessage.wasm.execute.msg.mint.recipient,
-      amount: convertMicroDenomToDenomWithDecimals(
-        decodedMessage.wasm.execute.msg.mint.amount,
-        this.governanceToken.decimals
-      ),
+      amount: HugeDecimal.from(
+        decodedMessage.wasm.execute.msg.mint.amount
+      ).toHumanReadableString(this.governanceToken.decimals),
     }
   }
 }

@@ -58,7 +58,7 @@ export const UnstakingModal = ({
           // If found, just modify existing by increasing amount. No need to
           // worry about the date since it will be replaced by a claim button.
           if (existingTask) {
-            existingTask.amount += task.amount
+            existingTask.amount = existingTask.amount.plus(task.amount)
           } else {
             // If not found, add this task as the new one.
             combinedTasks.push(task)

@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import { VestingPaymentLineProps } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatDate,
-  formatDateTimeTz,
-} from '@dao-dao/utils'
+import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { ChainProvider } from '../chain'
@@ -67,12 +63,9 @@ export const VestingPaymentLine = ({
 
             <div className="hidden md:block">
               {/* Only show balance available to withdraw if nonzero. */}
-              {distributable !== '0' && (
+              {distributable.isPositive() && (
                 <TokenAmountDisplay
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    distributable,
-                    token.decimals
-                  )}
+                  amount={distributable}
                   className="body-text truncate font-mono"
                   decimals={token.decimals}
                   symbol={token.symbol}
@@ -81,10 +74,7 @@ export const VestingPaymentLine = ({
             </div>
 
             <TokenAmountDisplay
-              amount={convertMicroDenomToDenomWithDecimals(
-                total,
-                token.decimals
-              )}
+              amount={total}
               className="body-text truncate text-right font-mono"
               decimals={token.decimals}
               symbol={token.symbol}
@@ -122,10 +112,7 @@ export const VestingPaymentLine = ({
 
             <div className="body-text flex flex-row items-center justify-end gap-1 justify-self-end text-right font-mono">
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  vested,
-                  token.decimals
-                )}
+                amount={vested}
                 className="truncate"
                 decimals={token.decimals}
                 hideSymbol
@@ -134,10 +121,7 @@ export const VestingPaymentLine = ({
               <p>/</p>
 
               <TokenAmountDisplay
-                amount={convertMicroDenomToDenomWithDecimals(
-                  total,
-                  token.decimals
-                )}
+                amount={total}
                 className="truncate"
                 decimals={token.decimals}
                 symbol={token.symbol}

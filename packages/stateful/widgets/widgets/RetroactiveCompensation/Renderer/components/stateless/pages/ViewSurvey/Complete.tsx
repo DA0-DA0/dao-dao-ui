@@ -11,6 +11,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   CosmosMessageDisplay,
@@ -33,11 +34,7 @@ import {
   StatefulProposalListProps,
 } from '@dao-dao/types'
 import { Boolean } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  decodedMessagesString,
-  validateRequired,
-} from '@dao-dao/utils'
+import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
 
 import { NewProposalData } from '../../../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { CompleteRatings, SurveyWithMetadata } from '../../../../types'
@@ -459,19 +456,19 @@ export const InnerComplete = ({
                     .reduce(
                       (acc, { denomOrAddress, amount }) => ({
                         ...acc,
-                        [denomOrAddress]:
-                          (acc[denomOrAddress] ?? 0) +
-                          convertMicroDenomToDenomWithDecimals(
-                            amount,
-                            tokenMap[denomOrAddress]?.token.decimals ?? 0
-                          ),
+                        [denomOrAddress]: (
+                          acc[denomOrAddress] ?? HugeDecimal.zero
+                        ).plus(amount),
                       }),
-                      {} as Record<string, number>
+                      {} as Record<string, HugeDecimal>
                     )
                   const totalUsdc = Object.entries(tokens)
-                    .map(
-                      ([denomOrAddress, amount]) =>
-                        (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
+                    .map(([denomOrAddress, amount]) =>
+                      amount
+                        .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
+                        .toHumanReadableNumber(
+                          tokenMap[denomOrAddress]?.token.decimals ?? 0
+                        )
                     )
                     .reduce((acc, amount) => acc + amount, 0)
 
@@ -541,7 +538,6 @@ export const InnerComplete = ({
                             className="caption-text text-right"
                             dateFetched={tokenPrices[0]?.timestamp}
                             estimatedUsdValue
-                            hideApprox
                             prefix="= "
                           />
                         </div>

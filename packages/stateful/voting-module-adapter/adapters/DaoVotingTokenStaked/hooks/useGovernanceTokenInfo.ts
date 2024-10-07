@@ -1,18 +1,19 @@
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
+  DaoVotingNativeStakedSelectors,
   DaoVotingTokenStakedSelectors,
   genericTokenSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useVotingModule } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
@@ -23,37 +24,46 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { chainId, coreAddress, votingModuleAddress } =
-    useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet({
-    chainId,
+    chainId: votingModule.chainId,
   })
 
+  const isTokenStaked = votingModule instanceof TokenStakedVotingModule
+
   const { denom } = useRecoilValue(
-    DaoVotingTokenStakedSelectors.denomSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
-    })
+    isTokenStaked
+      ? DaoVotingTokenStakedSelectors.denomSelector({
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
+          params: [],
+        })
+      : DaoVotingNativeStakedSelectors.getConfigSelector({
+          chainId: votingModule.chainId,
+          contractAddress: votingModule.address,
+          params: [],
+        })
   )
 
   const [governanceToken, supply, tokenFactoryIssuerAddress] = useRecoilValue(
     waitForAll([
       genericTokenSelector({
-        chainId,
+        chainId: votingModule.chainId,
         type: TokenType.Native,
         denomOrAddress: denom,
       }),
       nativeSupplySelector({
-        chainId,
+        chainId: votingModule.chainId,
         denom,
       }),
-      DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector(
-        {
-          contractAddress: votingModuleAddress,
-          chainId,
-        }
-      ),
+      isTokenStaked
+        ? DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector(
+            {
+              chainId: votingModule.chainId,
+              contractAddress: votingModule.address,
+            }
+          )
+        : constSelector(undefined),
     ])
   )
 
@@ -63,7 +73,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? nativeDenomBalanceSelector({
-          chainId,
+          chainId: votingModule.chainId,
           walletAddress,
           denom,
         })
@@ -75,8 +85,8 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? nativeDenomBalanceSelector({
-          chainId,
-          walletAddress: coreAddress,
+          chainId: votingModule.chainId,
+          walletAddress: votingModule.dao.coreAddress,
           denom,
         })
       : constSelector(undefined),
@@ -88,7 +98,7 @@ export const useGovernanceTokenInfo = ({
     fetchUsdcPrice
       ? usdPriceSelector({
           type: TokenType.Native,
-          chainId,
+          chainId: votingModule.chainId,
           denomOrAddress: denom,
         })
       : constSelector(undefined),
@@ -98,10 +108,7 @@ export const useGovernanceTokenInfo = ({
   return {
     tokenFactoryIssuerAddress,
     governanceToken,
-    supply: convertMicroDenomToDenomWithDecimals(
-      supply,
-      governanceToken.decimals
-    ),
+    supply: HugeDecimal.from(supply),
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading
@@ -110,7 +117,7 @@ export const useGovernanceTokenInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data.amount),
+          data: HugeDecimal.from(loadingWalletBalance.data.amount),
         },
     // Treasury balance
     loadingTreasuryBalance: loadingTreasuryBalance.loading
@@ -119,7 +126,7 @@ export const useGovernanceTokenInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingTreasuryBalance.data.amount),
+          data: HugeDecimal.from(loadingTreasuryBalance.data.amount),
         },
     // Price
     loadingPrice: loadingPrice.loading

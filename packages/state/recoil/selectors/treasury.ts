@@ -3,6 +3,7 @@ import { Event, IndexedTx } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AccountType,
@@ -16,7 +17,6 @@ import {
 } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
   loadableToLoadingData,
@@ -103,8 +103,8 @@ export interface TransformedTreasuryTransaction {
   timestamp: Date | undefined
   sender: string
   recipient: string
-  amount: number
-  denomLabel: string
+  amount: HugeDecimal
+  token: GenericToken
   outgoing: boolean
 }
 
@@ -152,11 +152,8 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: convertMicroDenomToDenomWithDecimals(
-              coin.amount,
-              token.decimals
-            ),
-            denomLabel: token.symbol,
+            amount: HugeDecimal.from(coin),
+            token,
             outgoing: sender === params.address,
           }
         })
@@ -248,11 +245,6 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
               balance,
               isGovernanceToken = false,
             }): TokenCardInfo | [] => {
-              const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-                balance,
-                token.decimals
-              )
-
               let hasStakingInfo = false
               // Staking info only exists for native token.
               if (
@@ -288,7 +280,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                   tokenCardLazyInfoSelector({
                     owner: account.address,
                     token,
-                    unstakedBalance,
+                    unstakedBalance: balance,
                   })
                 )
               )
@@ -297,12 +289,12 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 owner: account,
                 token,
                 isGovernanceToken,
-                unstakedBalance,
+                unstakedBalance: HugeDecimal.from(balance),
                 hasStakingInfo,
                 lazyInfo: loadableToLoadingData(lazyInfo, {
                   usdUnitPrice: undefined,
                   stakingInfo: undefined,
-                  totalBalance: unstakedBalance,
+                  totalBalance: HugeDecimal.from(balance),
                 }),
               }
             }

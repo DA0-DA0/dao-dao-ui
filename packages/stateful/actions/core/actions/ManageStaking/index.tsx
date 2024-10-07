@@ -1,8 +1,9 @@
-import { coin, parseCoins } from '@cosmjs/amino'
+import { parseCoins } from '@cosmjs/amino'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   nativeUnstakingDurationSecondsSelector,
@@ -46,8 +47,6 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   StakingActionType,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
@@ -93,16 +92,13 @@ const InnerComponent: ActionComponent = (props) => {
     ? { loading: true }
     : {
         loading: false,
-        data: coin(
-          BigInt(
-            balances.data.find(
-              ({ token: { chainId, denomOrAddress } }) =>
-                chainId === nativeToken.chainId &&
-                denomOrAddress === nativeToken.denomOrAddress
-            )?.balance ?? 0
-          ).toString(),
-          nativeToken.denomOrAddress
-        ),
+        data: HugeDecimal.from(
+          balances.data.find(
+            ({ token: { chainId, denomOrAddress } }) =>
+              chainId === nativeToken.chainId &&
+              denomOrAddress === nativeToken.denomOrAddress
+          )?.balance ?? 0
+        ).toCoin(nativeToken.denomOrAddress),
       }
 
   const address = getChainAddressForActionOptions(options, chainId)
@@ -139,7 +135,7 @@ const InnerComponent: ActionComponent = (props) => {
   // rewards. If in wallet context, will be undefined.
   const executedTxLoadable = useExecutedProposalTxLoadable()
 
-  let claimedRewards: number | undefined
+  let claimedRewards: HugeDecimal | undefined
   if (
     executedTxLoadable.state === 'hasValue' &&
     executedTxLoadable.contents &&
@@ -194,10 +190,7 @@ const InnerComponent: ActionComponent = (props) => {
       )[0]
 
       if (coin) {
-        claimedRewards = convertMicroDenomToDenomWithDecimals(
-          coin.amount ?? 0,
-          nativeToken.decimals
-        )
+        claimedRewards = HugeDecimal.from(coin)
       }
     }
   }
@@ -226,14 +219,8 @@ const InnerComponent: ActionComponent = (props) => {
                 ({ validator, delegated, pendingReward }) => ({
                   token: nativeToken,
                   validator,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    delegated.amount,
-                    nativeToken.decimals
-                  ),
-                  rewards: convertMicroDenomToDenomWithDecimals(
-                    pendingReward.amount,
-                    nativeToken.decimals
-                  ),
+                  amount: HugeDecimal.from(delegated.amount),
+                  rewards: HugeDecimal.from(pendingReward.amount),
                 })
               ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,
@@ -326,7 +313,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       // Default to first validator if exists.
       validator: firstValidator,
       toValidator: '',
-      amount: 1,
+      amount: '1',
       withdrawAddress: this.options.address,
     }
   }
@@ -344,14 +331,10 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       chainId
     )
     const nativeToken = getNativeTokenForChainId(chainId)
-    const microAmount = convertDenomToMicroDenomWithDecimals(
+    const amount = HugeDecimal.fromHumanReadable(
       macroAmount,
       nativeToken.decimals
-    )
-    const amount = coin(
-      BigInt(microAmount).toString(),
-      nativeToken.denomOrAddress
-    )
+    ).toCoin(nativeToken.denomOrAddress)
 
     let msg: UnifiedCosmosMsg
     switch (type) {
@@ -517,7 +500,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
             decodedMessage.distribution.withdraw_delegator_reward.validator,
           // Default values, not needed for displaying this type of message.
           toValidator: '',
-          amount: 1,
+          amount: '1',
           withdrawAddress: '',
         }
       } else if (
@@ -530,7 +513,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
             decodedMessage.distribution.set_withdraw_address.address,
           validator: '',
           toValidator: '',
-          amount: 1,
+          amount: '1',
         }
       }
     } else if ('staking' in decodedMessage) {
@@ -555,8 +538,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
           action.type === StakingActionType.Redelegate
             ? data.dst_validator
             : '',
-        amount: convertMicroDenomToDenomWithDecimals(
-          data.amount.amount,
+        amount: HugeDecimal.from(data.amount.amount).toHumanReadableString(
           nativeToken.decimals
         ),
         withdrawAddress: '',

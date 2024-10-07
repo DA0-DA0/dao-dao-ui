@@ -2,7 +2,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 
 import {
   ConnectWallet,
@@ -22,7 +22,7 @@ export const Submit = ({
   connected,
 }: ViewSurveyPageProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { address: walletAddress = '' } = useWallet()
   const { entity: walletEntity } = useEntity(walletAddress)
   const postRequest = usePostRequest()

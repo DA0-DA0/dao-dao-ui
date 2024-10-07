@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { KadoModal, useDaoInfoContext } from '@dao-dao/stateless'
+import { KadoModal, useDao } from '@dao-dao/stateless'
 import { DaoFiatDepositModalProps } from '@dao-dao/types'
 
 export const DaoFiatDepositModal = ({
@@ -10,7 +10,7 @@ export const DaoFiatDepositModal = ({
 }: DaoFiatDepositModalProps) => {
   const { t } = useTranslation()
 
-  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress, accounts } = useDao()
   // Deposit address depends on the account type.
   let depositAddress = accounts.find(
     (account) => account.chainId === chainId && account.type === accountType

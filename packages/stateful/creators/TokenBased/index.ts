@@ -41,9 +41,9 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     selectedTokenType:
       tokenDaoType === 'both' ? TokenType.Native : tokenDaoType,
     newInfo: {
-      initialSupply: 10000000,
+      initialSupply: '10000000',
       initialTreasuryPercent: 90,
-      maxSupply: 100000000,
+      maxSupply: '100000000',
       symbol: '',
       name: '',
     },
@@ -55,7 +55,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
     activeThreshold: {
       enabled: false,
       type: 'percent',
-      value: 10,
+      value: '10',
     },
   }),
   governanceConfig: {

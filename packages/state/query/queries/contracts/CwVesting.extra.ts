@@ -1,12 +1,12 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   TokenType,
   VestingInfo,
   VestingStep,
   VestingValidatorWithSlashes,
 } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { chainQueries } from '../chain'
 import { indexerQueries } from '../indexer'
@@ -115,7 +115,7 @@ export const fetchVestingPaymentInfo = async (
     {
       slashes: [] as VestingValidatorWithSlashes[],
       hasUnregisteredSlashes: false,
-      actualSlashed: 0n,
+      actualSlashed: HugeDecimal.zero,
     },
     // Promise.all([
     //   queryClient.fetchQuery(
@@ -137,7 +137,7 @@ export const fetchVestingPaymentInfo = async (
     //   async ([stakeHistory, unbondingDurationSeconds]): Promise<{
     //     slashes: VestingValidatorWithSlashes[]
     //     hasUnregisteredSlashes: boolean
-    //     actualSlashed: bigint
+    //     actualSlashed: HugeDecimal
     //   }> => {
     //     const uniqueValidators = uniq(
     //       stakeHistory?.stakeEvents.flatMap((event) =>
@@ -181,10 +181,10 @@ export const fetchVestingPaymentInfo = async (
     //       (slashed, { slashes }) =>
     //         slashed +
     //         slashes.reduce(
-    //           (acc, { amount }) => acc + BigInt(amount),
-    //           BigInt(0)
+    //           (acc, { amount }) => acc.plus(amount),
+    //           HugeDecimal.zero
     //         ),
-    //       BigInt(0)
+    //       HugeDecimal.zero
     //     )
 
     //     return {
@@ -203,26 +203,24 @@ export const fetchVestingPaymentInfo = async (
   ])
 
   const actualStaked = delegationInfo.delegations.reduce(
-    (acc, { delegated }) => acc + BigInt(delegated.amount),
-    0n
+    (acc, { delegated }) => acc.plus(delegated),
+    HugeDecimal.zero
   )
   const actualUnstaking = delegationInfo.unbondingDelegations.reduce(
-    (acc, { balance }) => acc + BigInt(balance.amount),
-    0n
+    (acc, { balance }) => acc.plus(balance),
+    HugeDecimal.zero
   )
 
   // If cannot compute the actual slashed amount, then we cannot compute the
   // stakable amount, so default to 0 to prevent the UI from allowing staking.
   const stakable =
     actualSlashed === undefined
-      ? '0'
-      : (
-          BigInt(total) -
-          BigInt(vest.claimed) -
-          BigInt(actualStaked) -
-          BigInt(actualUnstaking) -
-          actualSlashed
-        ).toString()
+      ? HugeDecimal.zero
+      : HugeDecimal.from(total)
+          .minus(vest.claimed)
+          .minus(actualStaked)
+          .minus(actualUnstaking)
+          .minus(actualSlashed)
 
   const completed =
     (vest.status === 'funded' ||
@@ -238,34 +236,22 @@ export const fetchVestingPaymentInfo = async (
       ? [
           {
             timestamp: startTimeMs,
-            amount: convertMicroDenomToDenomWithDecimals(
-              vest.vested.constant.y,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(vest.vested.constant.y),
           },
           {
             timestamp: startTimeMs,
-            amount: convertMicroDenomToDenomWithDecimals(
-              vest.vested.constant.y,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(vest.vested.constant.y),
           },
         ]
       : 'saturating_linear' in vest.vested
       ? [
           {
             timestamp: startTimeMs + vest.vested.saturating_linear.min_x * 1000,
-            amount: convertMicroDenomToDenomWithDecimals(
-              vest.vested.saturating_linear.min_y,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(vest.vested.saturating_linear.min_y),
           },
           {
             timestamp: startTimeMs + vest.vested.saturating_linear.max_x * 1000,
-            amount: convertMicroDenomToDenomWithDecimals(
-              vest.vested.saturating_linear.max_y,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(vest.vested.saturating_linear.max_y),
           },
         ]
       : vest.vested.piecewise_linear.steps.reduce(
@@ -279,10 +265,7 @@ export const fetchVestingPaymentInfo = async (
               ...acc,
               {
                 timestamp: startTimeMs + seconds * 1000,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  amount,
-                  token.decimals
-                ),
+                amount: HugeDecimal.from(amount),
               },
             ]
           },
@@ -297,9 +280,9 @@ export const fetchVestingPaymentInfo = async (
     vest,
     token,
     owner,
-    vested,
-    distributable,
-    total,
+    vested: HugeDecimal.from(vested),
+    distributable: HugeDecimal.from(distributable),
+    total: HugeDecimal.from(total),
     stakable,
     slashes,
     hasUnregisteredSlashes,

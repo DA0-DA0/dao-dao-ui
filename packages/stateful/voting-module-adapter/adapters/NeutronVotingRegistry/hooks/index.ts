@@ -1,2 +1,2 @@
 export * from './useMainDaoInfoCards'
-export * from './useVotingModule'
+export * from './useVotingModuleInfo'

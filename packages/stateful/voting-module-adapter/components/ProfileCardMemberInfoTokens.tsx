@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
@@ -30,8 +31,8 @@ export interface ProfileCardMemberInfoTokensProps
   loadingTokens: LoadingData<
     {
       token: GenericToken
-      staked: number
-      unstaked: number
+      staked: HugeDecimal
+      unstaked: HugeDecimal
     }[]
   >
   hideUnstaking?: boolean
@@ -57,22 +58,28 @@ export const ProfileCardMemberInfoTokens = ({
     () =>
       unstakingTasks.reduce(
         (acc, task) =>
-          acc +
-          // Only include balance of ready to claim tasks.
-          (task.status === UnstakingTaskStatus.ReadyToClaim ? task.amount : 0),
-        0
-      ) ?? 0,
+          acc.plus(
+            // Only include balance of ready to claim tasks.
+            task.status === UnstakingTaskStatus.ReadyToClaim
+              ? task.amount
+              : HugeDecimal.zero
+          ),
+        HugeDecimal.zero
+      ),
     [unstakingTasks]
   )
   const totalUnstakingBalance = useMemo(
     () =>
       unstakingTasks.reduce(
         (acc, task) =>
-          acc +
-          // Only include balance of unstaking tasks.
-          (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-        0
-      ) ?? 0,
+          acc.plus(
+            // Only include balance of unstaking tasks.
+            task.status === UnstakingTaskStatus.Unstaking
+              ? task.amount
+              : HugeDecimal.zero
+          ),
+        HugeDecimal.zero
+      ),
     [unstakingTasks]
   )
   const unstakingBalanceByToken = useMemo(
@@ -80,11 +87,15 @@ export const ProfileCardMemberInfoTokens = ({
       unstakingTasks.reduce(
         (acc, task) => ({
           ...acc,
-          [task.token.denomOrAddress]:
-            (acc[task.token.denomOrAddress] || 0) +
-            (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+          [task.token.denomOrAddress]: (
+            acc[task.token.denomOrAddress] || HugeDecimal.zero
+          ).plus(
+            task.status === UnstakingTaskStatus.Unstaking
+              ? task.amount
+              : HugeDecimal.zero
+          ),
         }),
-        {} as Partial<Record<string, number>>
+        {} as Partial<Record<string, HugeDecimal>>
       ),
     [unstakingTasks]
   )
@@ -93,10 +104,10 @@ export const ProfileCardMemberInfoTokens = ({
 
   const hasStaked =
     !loadingTokens.loading &&
-    loadingTokens.data.some(({ staked }) => staked > 0)
+    loadingTokens.data.some(({ staked }) => staked.isPositive())
   const hasUnstaked =
     !loadingTokens.loading &&
-    loadingTokens.data.some(({ unstaked }) => unstaked > 0)
+    loadingTokens.data.some(({ unstaked }) => unstaked.isPositive())
   const isMember = !loadingVotingPower.loading && loadingVotingPower.data > 0
   const canBeMemberButIsnt = !isMember && hasUnstaked
 
@@ -195,6 +206,7 @@ export const ProfileCardMemberInfoTokens = ({
                       : 'text-text-tertiary'
                   )}
                   decimals={token.decimals}
+                  suffix={` ${t('info.available')}`}
                   symbol={token.symbol}
                 />
               ))
@@ -223,31 +235,36 @@ export const ProfileCardMemberInfoTokens = ({
 
         {/* Show unstaking balance if any are unstaking or claimable or if they are a member. */}
         {!hideUnstaking &&
-          (isMember || totalUnstakingBalance > 0 || claimableBalance > 0) && (
+          (isMember ||
+            totalUnstakingBalance.isPositive() ||
+            claimableBalance.isPositive()) && (
             <div className="flex flex-row items-center justify-between">
               <p>{t('title.unstakingTokens')}</p>
 
               <Button
                 className={clsx(
                   'text-right font-mono underline-offset-2',
-                  totalUnstakingBalance === 0 && 'text-text-tertiary'
+                  totalUnstakingBalance.isZero() && 'text-text-tertiary'
                 )}
                 contentContainerClassName="justify-end flex flex-col items-end"
                 onClick={() => setShowUnstakingTokens(true)}
-                variant={totalUnstakingBalance > 0 ? 'underline' : 'none'}
+                variant={
+                  totalUnstakingBalance.isPositive() ? 'underline' : 'none'
+                }
               >
                 {!loadingTokens.loading &&
                   (onlyOneToken
                     ? loadingTokens.data
                     : loadingTokens.data.filter(
                         ({ token }) =>
-                          !!unstakingBalanceByToken[token.denomOrAddress]
+                          unstakingBalanceByToken[token.denomOrAddress]
                       )
                   ).map(({ token }) => (
                     <TokenAmountDisplay
                       key={token.denomOrAddress}
                       amount={
-                        unstakingBalanceByToken[token.denomOrAddress] || 0
+                        unstakingBalanceByToken[token.denomOrAddress] ||
+                        HugeDecimal.zero
                       }
                       decimals={token.decimals}
                       symbol={token.symbol}
@@ -259,7 +276,7 @@ export const ProfileCardMemberInfoTokens = ({
       </div>
 
       <div className="mt-6 flex flex-col gap-2">
-        {claimableBalance > 0 && (
+        {claimableBalance.isPositive() && (
           <Button
             contentContainerClassName="justify-center"
             disabled={stakingLoading}
@@ -276,9 +293,10 @@ export const ProfileCardMemberInfoTokens = ({
             !onlyOneToken
               ? t('button.claimYourTokens')
               : t('button.claimNumTokens', {
-                  amount: claimableBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: loadingTokens.data[0].token.decimals,
-                  }),
+                  amount:
+                    claimableBalance.toInternationalizedHumanReadableString({
+                      decimals: loadingTokens.data[0].token.decimals,
+                    }),
                   tokenSymbol: onlyTokenSymbol,
                 })}
           </Button>

@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   SkipAsset,
@@ -150,7 +151,7 @@ export const skipRouteSelector = selectorFamily<
             source_asset_denom: sourceDenom,
             dest_asset_chain_id: toChainId,
             dest_asset_denom: asset.denom,
-            amount_in: BigInt(amountIn).toString(),
+            amount_in: HugeDecimal.from(amountIn).toString(),
           }),
         })
       ).json()

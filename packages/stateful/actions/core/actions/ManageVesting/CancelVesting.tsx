@@ -19,7 +19,6 @@ import {
   VestingInfo,
 } from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   getChainAddressForActionOptions,
 } from '@dao-dao/utils'
@@ -123,10 +122,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                       </p>
 
                       <TokenAmountDisplay
-                        amount={convertMicroDenomToDenomWithDecimals(
-                          Number(total) - Number(vested),
-                          token.decimals
-                        )}
+                        amount={total.minus(vested)}
                         decimals={token.decimals}
                         iconUrl={token.imageUrl}
                         symbol={token.symbol}

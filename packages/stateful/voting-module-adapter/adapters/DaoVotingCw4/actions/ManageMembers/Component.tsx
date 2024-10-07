@@ -16,7 +16,7 @@ import {
   InputErrorMessage,
   InputLabel,
   Loader,
-  NumberInput,
+  NumericInput,
   useActionOptions,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -58,7 +58,7 @@ export const ManageMembersComponent: ActionComponent<
   const {
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
-  const { register, setValue, watch, control } =
+  const { register, setValue, watch, control, getValues } =
     useFormContext<ManageMembersData>()
 
   const toRemove = watch((fieldNamePrefix + 'toRemove') as 'toRemove')
@@ -102,17 +102,18 @@ export const ManageMembersComponent: ActionComponent<
                   >
                     <div className="flex flex-col gap-1">
                       <InputLabel name={t('form.votingWeightPlaceholder')} />
-                      <NumberInput
+                      <NumericInput
                         disabled={!isCreating}
                         error={errors?.toAdd?.[index]?.weight}
                         fieldName={weightFieldName}
+                        getValues={getValues}
                         min={0}
+                        numericValue
                         placeholder={t('form.votingWeightPlaceholder')}
                         register={register}
                         setValue={setValue}
                         sizing="fill"
                         validation={[validateRequired, validateNonNegative]}
-                        watch={watch}
                       />
                       <InputErrorMessage
                         error={errors?.toAdd?.[index]?.weight}

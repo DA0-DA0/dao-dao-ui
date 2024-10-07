@@ -26,6 +26,7 @@
     "utils": "yarn workspace @dao-dao/utils",
     "email": "yarn workspace @dao-dao/email",
     "dispatch": "yarn workspace @dao-dao/dispatch",
+    "math": "yarn workspace @dao-dao/math",
     "publish-all": "find . -name '*.log' -delete && lerna publish --no-private from-package"
   },
   "devDependencies": {

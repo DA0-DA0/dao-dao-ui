@@ -3,14 +3,14 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  IProposalModuleBase,
   PreProposeModuleType,
   ProposalModuleAdapter,
-  ProposalModuleInfo,
   TypedOption,
 } from '@dao-dao/types'
 import { ContractName } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { SegmentedControls } from '../inputs/SegmentedControls'
 
 export type ProposalModuleSelectorProps = {
@@ -18,7 +18,7 @@ export type ProposalModuleSelectorProps = {
    * Address of the selected proposal module.
    */
   selected: string
-  setSelected: (proposalModule: ProposalModuleInfo) => void
+  setSelected: (proposalModule: IProposalModuleBase) => void
   matchAdapter: (
     contractNameToMatch: string
   ) => ProposalModuleAdapter | undefined
@@ -35,7 +35,7 @@ export const ProposalModuleSelector = ({
   className,
 }: ProposalModuleSelectorProps) => {
   const { t } = useTranslation()
-  const { proposalModules } = useDaoInfoContext()
+  const { proposalModules } = useDao()
 
   // List of proposal modules available, using the adapter ID to derive a label
   // to display in the selector.
@@ -48,7 +48,7 @@ export const ProposalModuleSelector = ({
           ({ prePropose }) =>
             prePropose?.type !== PreProposeModuleType.NeutronOverruleSingle
         )
-        .map((proposalModule): TypedOption<ProposalModuleInfo> | undefined => {
+        .map((proposalModule): TypedOption<IProposalModuleBase> | undefined => {
           const adapter = matchAdapter(proposalModule.contractName)
 
           return (
@@ -58,7 +58,7 @@ export const ProposalModuleSelector = ({
             }
           )
         })
-        .filter((item): item is TypedOption<ProposalModuleInfo> => !!item)
+        .filter((item): item is TypedOption<IProposalModuleBase> => !!item)
         // Ignore proposals with an approver pre-propose since those are
         // automatically managed by a pre-propose-approval contract in another
         // DAO.

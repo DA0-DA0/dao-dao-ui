@@ -5,7 +5,7 @@ import {
   Loader,
   ProposalContentDisplay,
   StatusCard,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -28,7 +28,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
   proposalInfo,
 }: DaoPreProposeApprovalProposalContentDisplayProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const {
     id,

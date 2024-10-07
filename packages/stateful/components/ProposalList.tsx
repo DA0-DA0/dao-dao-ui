@@ -11,7 +11,7 @@ import {
   ProposalList as StatelessProposalList,
   useAppContext,
   useCachedLoadingWithError,
-  useDaoContext,
+  useDao,
   useDaoNavHelpers,
   useLoadingPromise,
   useUpdatingRef,
@@ -66,7 +66,7 @@ export const ProposalList = ({
   ...props
 }: StatefulProposalListProps) => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { mode } = useAppContext()
   const { isMember = false } = useMembership()
@@ -294,7 +294,7 @@ export const ProposalList = ({
             newProposalInfos = newProposalInfos.filter(
               (info) =>
                 !(
-                  info.proposalModule.dao.chainId === ChainId.NeutronMainnet &&
+                  info.proposalModule.chainId === ChainId.NeutronMainnet &&
                   info.proposalModule.dao.coreAddress ===
                     NEUTRON_GOVERNANCE_DAO &&
                   (info.id === 'A47' || info.id === 'A48')

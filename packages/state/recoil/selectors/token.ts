@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash'
 import {
   selectorFamily,
   waitForAll,
@@ -5,6 +6,7 @@ import {
   waitForAny,
 } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AmountWithTimestamp,
@@ -15,12 +17,12 @@ import {
   TokenCardLazyInfo,
   TokenPriceHistoryRange,
   TokenType,
+  UnstakingTask,
   UnstakingTaskStatus,
   WithChainId,
 } from '@dao-dao/types'
 import {
   MAINNET,
-  convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getChainForChainName,
   getIbcTransferInfoFromChannel,
@@ -390,9 +392,9 @@ export const genericTokenUndelegatingBalancesSelector = selectorFamily<
           }
           acc.push(existing)
         }
-        existing.balance = (
-          BigInt(existing.balance) + BigInt(balance)
-        ).toString()
+        existing.balance = HugeDecimal.from(existing.balance)
+          .plus(balance)
+          .toString()
 
         return acc
       }, [] as GenericTokenBalance[])
@@ -592,7 +594,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
     owner: string
     token: GenericToken
     // For calculating totalBalance.
-    unstakedBalance: number
+    unstakedBalance: string
   }
 >({
   key: 'tokenCardLazyInfo',
@@ -640,13 +642,10 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         )
 
         const unstakingTasks = unbondingDelegations.map(
-          ({ balance, finishesAt }) => ({
+          ({ balance, finishesAt }): UnstakingTask => ({
             token,
             status: UnstakingTaskStatus.Unstaking,
-            amount: convertMicroDenomToDenomWithDecimals(
-              balance.amount,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(balance.amount),
             date: finishesAt,
           })
         )
@@ -655,29 +654,29 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           ({ validator, delegated, pendingReward }) => ({
             token,
             validator,
-            amount: convertMicroDenomToDenomWithDecimals(
-              delegated.amount,
-              token.decimals
-            ),
-            rewards: convertMicroDenomToDenomWithDecimals(
-              pendingReward.amount,
-              token.decimals
-            ),
+            amount: HugeDecimal.from(delegated.amount),
+            rewards: HugeDecimal.from(pendingReward.amount),
           })
         )
 
-        const totalStaked =
-          stakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-        const totalPendingRewards =
-          stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-        const totalUnstaking =
-          unstakingTasks.reduce(
-            (acc, task) =>
-              acc +
+        const totalStaked = stakes.reduce(
+          (acc, stake) => acc.plus(stake.amount),
+          HugeDecimal.zero
+        )
+        const totalPendingRewards = stakes.reduce(
+          (acc, stake) => acc.plus(stake.rewards),
+          HugeDecimal.zero
+        )
+        const totalUnstaking = unstakingTasks.reduce(
+          (acc, task) =>
+            acc.plus(
               // Only include balance of unstaking tasks.
-              (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-            0
-          ) ?? 0
+              task.status === UnstakingTaskStatus.Unstaking
+                ? task.amount
+                : HugeDecimal.zero
+            ),
+          HugeDecimal.zero
+        )
 
         stakingInfo = {
           unstakingTasks,
@@ -699,40 +698,30 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           })
         )
           // Only include DAOs this owner has staked with.
-          .filter(({ stakedBalance }) => stakedBalance > 0)
-          .map(({ stakedBalance, ...rest }) => ({
-            ...rest,
-            // Convert to expected denom.
-            stakedBalance: convertMicroDenomToDenomWithDecimals(
-              stakedBalance,
-              token.decimals
-            ),
-          }))
+          .filter(({ stakedBalance }) => stakedBalance.isPositive())
       }
 
-      const totalBalance =
-        unstakedBalance +
-        // Add staked and unstaking balances.
-        (stakingInfo
-          ? stakingInfo.totalStaked + stakingInfo.totalUnstaking
-          : 0) +
-        // Add balances staked in DAOs, grouped by their
-        // `stakingContractAddress` so we don't double-count tokens staked with
-        // the same staking contract if that staking contract is used in
-        // different DAOs in the list.
-        Object.values(
-          daosGoverned?.reduce(
-            (acc, { stakingContractAddress, stakedBalance = 0 }) => ({
-              ...acc,
-              // If the staking contract address is already in the accumulator,
-              // overwrite so we don't double-count. All staked balances for the
-              // same staking contract should be the same, so overwriting should
-              // do nothing.
-              [stakingContractAddress]: stakedBalance,
-            }),
-            {} as Record<string, number>
-          ) || {}
-        ).reduce((acc, stakedBalance) => acc + stakedBalance, 0)
+      const totalBalance = HugeDecimal.from(unstakedBalance)
+        .plus(
+          // Add staked and unstaking balances.
+          stakingInfo
+            ? stakingInfo.totalStaked.plus(stakingInfo.totalUnstaking)
+            : 0
+        )
+        .plus(
+          // Add balances staked in DAOs, unique by their
+          // `stakingContractAddress` so we don't double-count tokens staked
+          // with the same staking contract if that staking contract is used in
+          // different DAOs in the list.
+          uniqBy(
+            daosGoverned || [],
+            ({ stakingContractAddress }) => stakingContractAddress
+          ).reduce(
+            (acc, { stakedBalance }) =>
+              acc.plus(stakedBalance || HugeDecimal.zero),
+            HugeDecimal.zero
+          )
+        )
 
       return {
         usdUnitPrice,
@@ -794,7 +783,7 @@ export const tokenDaosWithStakedBalanceSelector = selectorFamily<
   {
     coreAddress: string
     stakingContractAddress: string
-    stakedBalance: number
+    stakedBalance: HugeDecimal
   }[],
   WithChainId<{
     type: TokenType
@@ -854,10 +843,10 @@ export const tokenDaosWithStakedBalanceSelector = selectorFamily<
         .map(({ coreAddress, stakingContractAddress }, index) => ({
           coreAddress,
           stakingContractAddress,
-          stakedBalance: Number(daosWalletStakedTokens[index]),
+          stakedBalance: HugeDecimal.from(daosWalletStakedTokens[index]),
         }))
         // Sort descending by staked tokens.
-        .sort((a, b) => b.stakedBalance - a.stakedBalance)
+        .sort((a, b) => b.stakedBalance.minus(a.stakedBalance).toNumber())
 
       return daosWithBalances
     },

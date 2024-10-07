@@ -3,6 +3,7 @@ import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountSelector,
   AddressInput,
@@ -19,7 +20,6 @@ import {
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   makeValidateAddress,
   makeWasmMessage,
@@ -34,7 +34,7 @@ export type ExecuteData = {
   message: string
   funds: {
     denom: string
-    amount: number
+    amount: string
     // Will multiply `amount` by 10^decimals when generating the message.
     decimals: number
   }[]
@@ -58,7 +58,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
   const { context } = useActionOptions()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
-  const { register, control, watch, setValue } = useFormContext()
+  const { register, control, watch, setValue, getValues } = useFormContext()
   const {
     fields: coins,
     append: appendCoin,
@@ -192,15 +192,14 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
                 amount={{
                   watch,
                   setValue,
+                  getValues,
                   register,
                   fieldName: fieldNamePrefix + 'funds.0.amount',
                   error: errors?.funds?.[0]?.amount,
-                  min: convertMicroDenomToDenomWithDecimals(
-                    1,
+                  min: HugeDecimal.one.toHumanReadableNumber(
                     selectedCw20?.token.decimals ?? 0
                   ),
-                  step: convertMicroDenomToDenomWithDecimals(
-                    1,
+                  step: HugeDecimal.one.toHumanReadableNumber(
                     selectedCw20?.token.decimals ?? 0
                   ),
                 }}

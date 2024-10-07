@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@cosmjs/encoding": "^0.32.3",
+    "@dao-dao/math": "2.5.0-rc.3",
     "@dao-dao/types": "2.5.0-rc.3",
     "@dao-dao/utils": "2.5.0-rc.3",
     "@emotion/react": "^11.10.4",

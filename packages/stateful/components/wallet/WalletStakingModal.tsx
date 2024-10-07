@@ -1,9 +1,9 @@
-import { coin } from '@cosmjs/stargate'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { chainQueries } from '@dao-dao/state/query'
 import {
   nativeUnstakingDurationSecondsSelector,
@@ -11,18 +11,15 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   StakingModal,
-  StakingModalProps,
-  StakingMode,
   useCachedLoadable,
   useChainContext,
 } from '@dao-dao/stateless'
-import { cwMsgToEncodeObject } from '@dao-dao/types'
 import {
-  CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+  StakingModalProps,
+  StakingMode,
+  cwMsgToEncodeObject,
+} from '@dao-dao/types'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import {
   useAwaitNextBlock,
@@ -61,16 +58,15 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
           address: walletAddress,
         })
       : undefined,
-    0,
+    HugeDecimal.zero,
     {
-      transform: ({ amount }) =>
-        convertMicroDenomToDenomWithDecimals(amount, nativeToken.decimals),
+      transform: ({ amount }) => HugeDecimal.from(amount),
     }
   )
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const validatorsLoadable = useCachedLoadable(
@@ -94,14 +90,8 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       delegations.map(({ validator, delegated, pendingReward }) => ({
         token: nativeToken,
         validator,
-        amount: convertMicroDenomToDenomWithDecimals(
-          delegated.amount,
-          nativeToken.decimals
-        ),
-        rewards: convertMicroDenomToDenomWithDecimals(
-          pendingReward.amount,
-          nativeToken.decimals
-        ),
+        amount: HugeDecimal.from(delegated.amount),
+        rewards: HugeDecimal.from(pendingReward.amount),
       }))
   )
   const stakes =
@@ -109,7 +99,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
   const onAction = async (
     mode: StakingMode,
-    amount: number,
+    amount: HugeDecimal,
     validator?: string | undefined
   ) => {
     // Should never happen.
@@ -126,11 +116,6 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     try {
       const signingClient = await getSigningStargateClient()
 
-      const microAmount = convertDenomToMicroDenomStringWithDecimals(
-        amount,
-        nativeToken.decimals
-      )
-
       if (mode === StakingMode.Stake) {
         await signingClient.signAndBroadcast(
           walletAddress,
@@ -140,7 +125,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               {
                 staking: {
                   delegate: {
-                    amount: coin(microAmount, nativeToken.denomOrAddress),
+                    amount: amount.toCoin(nativeToken.denomOrAddress),
                     validator,
                   },
                 },
@@ -159,7 +144,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               {
                 staking: {
                   undelegate: {
-                    amount: coin(microAmount, nativeToken.denomOrAddress),
+                    amount: amount.toCoin(nativeToken.denomOrAddress),
                     validator,
                   },
                 },
@@ -192,7 +177,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       amount={amount}
       claimableTokens={
         // Tokens are claimable somewhere else.
-        0
+        HugeDecimal.zero
       }
       initialMode={StakingMode.Stake}
       loading={loading}

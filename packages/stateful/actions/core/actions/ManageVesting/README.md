@@ -17,22 +17,39 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 {
   "mode": "<begin | cancel | registerSlash>",
   "begin": {
-    "amount": <AMOUNT>,
+    "chainId": "<CHAIN ID>",
+    "amount": "<AMOUNT>",
+    "type": "<native | cw20>",
     "denomOrAddress": "<NATIVE DENOM OR CW20 ADDRESS>",
     "recipient": "<RECIPIENT ADDRESS>",
     "title": "<TITLE>",
     // Optional.
     "description": "<DESCRIPTION>",
     "startDate": "<START DATE>",
-    "duration": {
-      "value": <DURATION VALUE>,
-      "units": "<seconds | minutes | hours | days | weeks | months | years>"
-    }
+    "ownerMode": "<none | me | other | many>",
+    "otherOwner": "<ADDRESS>",
+    "manyOwners": [
+      { "address": "<ADDRESS>" },
+      ...
+    ],
+    "manyOwnersCw1WhitelistContract": "<MANY OWNER CW1-WHITELIST ADDRESS>",
+    "steps": [
+      {
+        "percent": <PERCENT>,
+        "delay": {
+          "value": <DURATION VALUE>,
+          "units": "<seconds | minutes | hours | days | weeks | months | years>"
+        }
+      },
+      ...
+    ]
   },
   "cancel": {
+    "chainId": "<CHAIN ID>",
     "address": "<VESTING PAYMENT ADDRESS>"
   },
   "registerSlash": {
+    "chainId": "<CHAIN ID>",
     "address": "<VESTING PAYMENT ADDRESS>",
     "valiator": "<VALIDATOR ADDRESS>",
     "time": "<TIME OF SLASH>",

@@ -1,5 +1,6 @@
 // If name is only a number, prefix with collection name. Fallback to token ID
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   NftCardInfo,
@@ -110,7 +111,7 @@ export const nftCardInfoFromStargazeIndexerNft = (
     ? {
         offerToken,
         amountUsd: token.highestOffer?.offerPrice?.amountUsd,
-        amount: Number(token.highestOffer?.offerPrice?.amount),
+        amount: HugeDecimal.from(token.highestOffer?.offerPrice?.amount || -1),
       }
     : undefined,
   fetchedTimestamp: timestamp,

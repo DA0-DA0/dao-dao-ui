@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
 import {
@@ -32,8 +33,6 @@ import {
 import { MsgInstantiateContract as SecretMsgInstantiateContract } from '@dao-dao/types/protobuf/codegen/secret/compute/v1beta1/msg'
 import {
   bech32AddressToBase64,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getAccountAddress,
@@ -301,10 +300,9 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
     const msg = JSON5.parse(message)
 
     const convertedFunds = funds
-      .map(({ denom, amount, decimals }) => ({
-        denom,
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
-      }))
+      .map(({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      )
       // Neutron errors with `invalid coins` if the funds list is not
       // alphabetized.
       .sort((a, b) => a.denom.localeCompare(b.denom))
@@ -429,7 +427,7 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
           message: JSON.stringify(decodedMessage.wasm.instantiate.msg, null, 2),
           funds: fundsTokens.map(({ denom, amount, decimals }) => ({
             denom,
-            amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+            amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
             decimals,
           })),
           _polytone: polytone
@@ -457,7 +455,7 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
           ),
           funds: fundsTokens.map(({ denom, amount, decimals }) => ({
             denom,
-            amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+            amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
             decimals,
           })),
           _polytone: polytone

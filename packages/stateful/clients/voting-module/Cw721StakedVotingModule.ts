@@ -151,7 +151,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     }
 
     return daoVotingCw721StakedQueries.votingPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         address,
@@ -164,7 +164,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     height?: number
   ): FetchQueryOptions<TotalPowerAtHeightResponse> {
     return daoVotingCw721StakedQueries.totalPowerAtHeight(this.queryClient, {
-      chainId: this.dao.chainId,
+      chainId: this.chainId,
       contractAddress: this.address,
       args: {
         height,
@@ -178,7 +178,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
         'cw721StakedVotingModule',
         'governanceToken',
         {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           address: this.address,
         },
       ],
@@ -186,26 +186,26 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
         const { nft_address: collectionAddress } =
           await this.queryClient.fetchQuery(
             daoVotingCw721StakedQueries.config(this.queryClient, {
-              chainId: this.dao.chainId,
+              chainId: this.chainId,
               contractAddress: this.address,
             })
           )
 
         const contractInfo = await this.queryClient.fetchQuery(
           cw721BaseQueries.contractInfo({
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             contractAddress: collectionAddress,
           })
         )
 
         return {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           type: TokenType.Cw721,
           denomOrAddress: collectionAddress,
           symbol: contractInfo.symbol,
           decimals: 0,
           source: {
-            chainId: this.dao.chainId,
+            chainId: this.chainId,
             type: TokenType.Cw721,
             denomOrAddress: collectionAddress,
           },
@@ -222,7 +222,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     return (
       await this.queryClient.fetchQuery(
         daoVotingCw721StakedQueries.hooks(this.queryClient, {
-          chainId: this.dao.chainId,
+          chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })
       )

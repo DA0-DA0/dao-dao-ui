@@ -4,10 +4,11 @@ import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   InputErrorMessage,
   InputLabel,
-  NumberInput,
+  NumericInput,
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
@@ -17,7 +18,6 @@ import { AddressInputProps, TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   StakingActionType,
-  convertMicroDenomToDenomWithDecimals,
   isValidValidatorAddress,
   makeValidateAddress,
   makeValidateValidatorAddress,
@@ -54,17 +54,17 @@ export const getStakeActions = (
   },
 ]
 
-export interface ManageStakingOptions {
+export type ManageStakingOptions = {
   nativeBalance: string
   stakes: TokenStake[]
   validators: Validator[]
   executed: boolean
-  claimedRewards?: number
+  claimedRewards?: HugeDecimal
   nativeUnstakingDurationSeconds: number
   AddressInput: ComponentType<AddressInputProps<ManageStakingData>>
 }
 
-export interface ManageStakingData {
+export type ManageStakingData = {
   chainId: string
   type: StakingActionType
   validator: string
@@ -72,7 +72,7 @@ export interface ManageStakingData {
   toValidator: string
   // For use when setting withdraw address.
   withdrawAddress: string
-  amount: number
+  amount: string
 
   _error?: string
 }
@@ -96,7 +96,7 @@ export const ManageStakingComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setError, clearErrors, setValue } =
+  const { register, watch, setError, clearErrors, setValue, getValues } =
     useFormContext<ManageStakingData>()
   const stakeActions = getStakeActions(t)
 
@@ -122,32 +122,26 @@ export const ManageStakingComponent: ActionComponent<
   }
 
   // Metadata for the given denom.
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
-    nativeToken.decimals
-  )
+  const minAmount = HugeDecimal.one.toHumanReadableNumber(nativeToken.decimals)
 
   // Get how much is staked and pending for the selected validator.
   const sourceValidatorStaked =
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.amount) ||
-    0
+    HugeDecimal.zero
   const sourceValidatorPendingRewards =
     (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.rewards) ||
-    0
+    HugeDecimal.zero
 
   // If staking, maxAmount is denom treasury balance. Otherwise (for
   // undelegating and redelegating), maxAmount is the staked amount for the
   // source validator.
   const maxAmount =
     type === StakingActionType.Delegate
-      ? convertMicroDenomToDenomWithDecimals(
-          nativeBalance,
-          nativeToken.decimals
-        )
+      ? HugeDecimal.from(nativeBalance)
       : sourceValidatorStaked
 
   // Manually validate based on context.
@@ -179,18 +173,18 @@ export const ManageStakingComponent: ActionComponent<
       return true
     }
 
-    const humanReadableAmount = maxAmount.toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    })
-
     // Logic for undelegating.
     if (type === StakingActionType.Undelegate) {
       return (
-        Number(amount) <= sourceValidatorStaked ||
-        (sourceValidatorStaked === 0
+        sourceValidatorStaked
+          .toHumanReadable(nativeToken.decimals)
+          .gte(amount) ||
+        (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
-              amount: humanReadableAmount,
+              amount: maxAmount.toInternationalizedHumanReadableString({
+                decimals: nativeToken.decimals,
+              }),
               tokenSymbol: nativeToken.symbol,
             }))
       )
@@ -208,11 +202,15 @@ export const ManageStakingComponent: ActionComponent<
       }
 
       return (
-        Number(amount) <= sourceValidatorStaked ||
-        (sourceValidatorStaked === 0
+        sourceValidatorStaked
+          .toHumanReadable(nativeToken.decimals)
+          .gte(amount) ||
+        (sourceValidatorStaked.isZero()
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
-              amount: humanReadableAmount,
+              amount: maxAmount.toInternationalizedHumanReadableString({
+                decimals: nativeToken.decimals,
+              }),
               tokenSymbol: nativeToken.symbol,
             }))
       )
@@ -227,6 +225,7 @@ export const ManageStakingComponent: ActionComponent<
     t,
     amount,
     nativeToken.symbol,
+    nativeToken.decimals,
     sourceValidatorStaked,
     toValidator,
   ])
@@ -253,10 +252,12 @@ export const ManageStakingComponent: ActionComponent<
   // high. We don't want to make this an error because often people want to
   // spend funds that a previous action makes available, so just show a warning.
   const delegateWarning =
-    isCreating && amount > maxAmount && type === StakingActionType.Delegate
+    isCreating &&
+    maxAmount.toHumanReadable(nativeToken.decimals).lt(amount) &&
+    type === StakingActionType.Delegate
       ? t('error.insufficientFundsWarning', {
-          amount: maxAmount.toLocaleString(undefined, {
-            maximumFractionDigits: nativeToken.decimals,
+          amount: maxAmount.toInternationalizedHumanReadableString({
+            decimals: nativeToken.decimals,
           }),
           tokenSymbol: nativeToken.symbol,
         })
@@ -339,18 +340,18 @@ export const ManageStakingComponent: ActionComponent<
         {/* If not withdrawing reward or updating withdraw address, show amount input. */}
         {type !== StakingActionType.WithdrawDelegatorReward &&
           type !== StakingActionType.SetWithdrawAddress && (
-            <NumberInput
+            <NumericInput
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.amount}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+              getValues={getValues}
               min={minAmount}
               register={register}
               setValue={setValue}
               step={minAmount}
               unit={'$' + nativeToken.symbol}
               validation={[validateRequired, validatePositive]}
-              watch={watch}
             />
           )}
       </div>
@@ -376,7 +377,7 @@ export const ManageStakingComponent: ActionComponent<
           // If claiming rewards, show pending rewards if not executed, and
           // claimed rewards if executed.
           (executed && !!claimedRewards) ||
-          (!executed && sourceValidatorPendingRewards > 0)) &&
+          (!executed && sourceValidatorPendingRewards.isPositive())) &&
         // Only show balance if creating.
         isCreating && (
           <div className="flex flex-row items-center gap-2">
@@ -396,12 +397,21 @@ export const ManageStakingComponent: ActionComponent<
               amount={
                 type === StakingActionType.WithdrawDelegatorReward
                   ? executed
-                    ? claimedRewards ?? 0
+                    ? claimedRewards ?? HugeDecimal.zero
                     : sourceValidatorPendingRewards
                   : maxAmount
               }
               decimals={nativeToken.decimals}
               iconUrl={nativeToken.imageUrl}
+              onClick={
+                type !== StakingActionType.WithdrawDelegatorReward
+                  ? () =>
+                      setValue(
+                        (fieldNamePrefix + 'amount') as 'amount',
+                        maxAmount.toHumanReadableString(nativeToken.decimals)
+                      )
+                  : undefined
+              }
               showFullAmount
               symbol={nativeToken.symbol}
             />

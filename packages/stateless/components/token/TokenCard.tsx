@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   getFallbackImage,
@@ -18,7 +19,7 @@ import {
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable } from '../../contexts'
+import { useDaoIfAvailable } from '../../contexts'
 import { useAddToken } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -47,7 +48,7 @@ export const TokenCard = ({
   // If in a DAO context, don't show the DAOs governed section if the only DAO
   // this token governs is the current DAO. See the comment where this is used
   // for more details.
-  const { coreAddress } = useDaoInfoContextIfAvailable() ?? {}
+  const { coreAddress } = useDaoIfAvailable() ?? {}
 
   const lazyStakes =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
@@ -56,15 +57,15 @@ export const TokenCard = ({
 
   const totalStaked =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? 0
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalStaked
   const totalPendingRewards =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? 0
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalPendingRewards
   const totalUnstaking =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? 0
+      ? HugeDecimal.zero
       : lazyInfo.data.stakingInfo.totalUnstaking
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
@@ -223,6 +224,7 @@ export const TokenCard = ({
                   amount={lazyInfo.data.totalBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
 
@@ -233,10 +235,10 @@ export const TokenCard = ({
                   token.decimals > 0 && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
-                        amount={
-                          lazyInfo.data.totalBalance *
+                        amount={lazyInfo.data.totalBalance.toUsdValue(
+                          token.decimals,
                           lazyInfo.data.usdUnitPrice.usdPrice
-                        }
+                        )}
                         dateFetched={lazyInfo.data.usdUnitPrice.timestamp}
                         estimatedUsdValue
                       />
@@ -253,7 +255,7 @@ export const TokenCard = ({
 
           {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
           {(lazyInfo.loading ||
-            lazyInfo.data.totalBalance !== unstakedBalance) && (
+            !lazyInfo.data.totalBalance.eq(unstakedBalance)) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="caption-text flex min-w-0 flex-col items-end gap-1 text-right font-mono">
@@ -262,6 +264,7 @@ export const TokenCard = ({
                   amount={unstakedBalance}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
 
@@ -276,8 +279,10 @@ export const TokenCard = ({
                           lazyInfo.loading ||
                           !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
-                            : unstakedBalance *
-                              lazyInfo.data.usdUnitPrice.usdPrice
+                            : unstakedBalance.toUsdValue(
+                                token.decimals,
+                                lazyInfo.data.usdUnitPrice.usdPrice
+                              )
                         }
                         dateFetched={
                           lazyInfo.loading || !lazyInfo.data.usdUnitPrice
@@ -309,6 +314,7 @@ export const TokenCard = ({
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
+                showFullAmount
                 symbol={tokenSymbol}
               />
             </div>
@@ -360,13 +366,13 @@ export const TokenCard = ({
               <Button
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
-                  totalUnstaking > 0 && 'text-text-body',
+                  totalUnstaking.isPositive() && 'text-text-body',
                   lazyInfo.loading && 'animate-pulse !text-text-body'
                 )}
                 disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
                 variant={
-                  lazyInfo.loading || totalUnstaking === 0
+                  lazyInfo.loading || totalUnstaking.isZero()
                     ? 'none'
                     : 'underline'
                 }
@@ -374,6 +380,7 @@ export const TokenCard = ({
                 <TokenAmountDisplay
                   amount={lazyInfo.loading ? { loading: true } : totalUnstaking}
                   decimals={token.decimals}
+                  showFullAmount
                   symbol={tokenSymbol}
                 />
               </Button>
@@ -388,6 +395,7 @@ export const TokenCard = ({
                 }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
+                showFullAmount
                 symbol={tokenSymbol}
               />
             </div>

@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { EntityDisplay } from '@dao-dao/stateful'
 import { LazyNftCardInfo } from '@dao-dao/types'
 import { getNftKey } from '@dao-dao/utils'
@@ -50,7 +51,7 @@ export const makeProps = (): NftCardProps => {
     description: `Description of NFT #${id}`,
     highestOffer: {
       // Random price between 0 and 10000 with up to 6 decimals.
-      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      amount: HugeDecimal.from(Math.floor(Math.random() * (10000 * 1e6) + 1e6)),
     },
     externalLink: {
       href: '/dog_nft.png',

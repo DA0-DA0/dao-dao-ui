@@ -1,10 +1,10 @@
-import { coins } from '@cosmjs/stargate'
 import { useQueries } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState, waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   genericTokenBalanceSelector,
   neutronVaultQueries,
@@ -15,15 +15,17 @@ import {
 } from '@dao-dao/state'
 import {
   ModalLoader,
-  StakingMode,
   StakingModal as StatelessStakingModal,
   useCachedLoadingWithError,
+  useVotingModule,
 } from '@dao-dao/stateless'
-import { BaseStakingModalProps, TokenInputOption } from '@dao-dao/types'
+import {
+  BaseStakingModalProps,
+  StakingMode,
+  TokenInputOption,
+} from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   makeCombineQueryResultsIntoLoadingDataWithError,
   processError,
   tokensEqual,
@@ -35,8 +37,7 @@ import {
   useAwaitNextBlock,
   useWallet,
 } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useVotingModule } from '../hooks'
+import { useVotingModuleInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader
@@ -53,9 +54,9 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address = '', isWalletConnected, refreshBalances } = useWallet()
-  const { coreAddress, chainId } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
 
-  const { loadingVaults } = useVotingModule()
+  const { loadingVaults } = useVotingModuleInfo()
   const realVaults =
     loadingVaults.loading || loadingVaults.errored
       ? []
@@ -74,7 +75,7 @@ const InnerStakingModal = ({
         ? []
         : realVaults.map(({ address: contractAddress }) =>
             neutronVaultQueries.bondingStatus({
-              chainId,
+              chainId: votingModule.chainId,
               contractAddress,
               args: {
                 address,
@@ -112,7 +113,7 @@ const InnerStakingModal = ({
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
   const [selectedVaultIndex, setSelectedVaultIndex] = useState(0)
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
 
   const selectedVault =
     loadingVaults.loading || loadingVaults.errored
@@ -137,7 +138,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(coreAddress)
+    refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
   const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {
@@ -146,7 +147,7 @@ const InnerStakingModal = ({
   }
 
   const awaitNextBlock = useAwaitNextBlock()
-  const onAction = async (mode: StakingMode, amount: number) => {
+  const onAction = async (mode: StakingMode, amount: HugeDecimal) => {
     if (!selectedVault) {
       toast.error(t('error.loadingData'))
       return
@@ -166,13 +167,7 @@ const InnerStakingModal = ({
           await doStake(
             CHAIN_GAS_MULTIPLIER,
             undefined,
-            coins(
-              convertDenomToMicroDenomStringWithDecimals(
-                amount,
-                selectedVault.bondToken.decimals
-              ),
-              selectedVault.bondToken.denomOrAddress
-            )
+            amount.toCoins(selectedVault.bondToken.denomOrAddress)
           )
 
           // New balances will not appear until the next block.
@@ -182,11 +177,14 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
           toast.success(
-            `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: selectedVault.bondToken.decimals,
-            })} $${selectedVault.bondToken.symbol}`
+            t('success.stakedTokens', {
+              amount: amount.toInternationalizedHumanReadableString({
+                decimals: selectedVault.bondToken.decimals,
+              }),
+              tokenSymbol: selectedVault.bondToken.symbol,
+            })
           )
 
           // Close once done.
@@ -205,10 +203,7 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            amount: convertDenomToMicroDenomStringWithDecimals(
-              amount,
-              selectedVault.bondToken.decimals
-            ),
+            amount: amount.toFixed(0),
           })
 
           // New balances will not appear until the next block.
@@ -218,11 +213,14 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshDaoVotingPower()
 
-          setAmount(0)
+          setAmount(HugeDecimal.zero)
           toast.success(
-            `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: selectedVault.bondToken.decimals,
-            })} $${selectedVault.bondToken.symbol}`
+            t('success.unstakedTokens', {
+              amount: amount.toInternationalizedHumanReadableString({
+                decimals: selectedVault.bondToken.decimals,
+              }),
+              tokenSymbol: selectedVault.bondToken.symbol,
+            })
           )
 
           // Close once done.
@@ -251,7 +249,7 @@ const InnerStakingModal = ({
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={0}
+      claimableTokens={HugeDecimal.zero}
       error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
@@ -262,10 +260,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                selectedVaultUnstakedTokens,
-                selectedVault.bondToken.decimals
-              ),
+              data: HugeDecimal.from(selectedVaultUnstakedTokens),
             }
       }
       loadingUnstakableTokens={
@@ -275,10 +270,7 @@ const InnerStakingModal = ({
           ? { loading: true }
           : {
               loading: false,
-              data: convertMicroDenomToDenomWithDecimals(
-                selectedVaultStakedTokens,
-                selectedVault.bondToken.decimals
-              ),
+              data: HugeDecimal.from(selectedVaultStakedTokens),
             }
       }
       onAction={onAction}

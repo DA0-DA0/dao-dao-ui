@@ -2,11 +2,12 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   DaoSplashHeader,
   useAppContext,
   useCachedLoadable,
-  useDaoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo, DaoPageMode } from '@dao-dao/types'
 import { getDaoRewardDistributors } from '@dao-dao/utils'
@@ -27,7 +28,7 @@ import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
   const { t } = useTranslation()
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { mode } = useAppContext()
   const { isWalletConnected, isSecretNetworkPermitNeeded } =
     useDaoWithWalletSecretNetworkPermit()
@@ -54,19 +55,21 @@ export const HomeTab = () => {
   // Get max deposit of governance token across all proposal modules.
   const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? 0
-      : Math.max(
-          ...proposalModuleDepositInfosLoadable.contents
-            .filter(
-              (depositInfo): depositInfo is CheckedDepositInfo =>
-                !!depositInfo &&
-                ('cw20' in depositInfo.denom
-                  ? depositInfo.denom.cw20
-                  : depositInfo.denom.native) === governanceDenomOrAddress
-            )
-            .map(({ amount }) => Number(amount)),
-          0
-        )
+      ? HugeDecimal.zero
+      : proposalModuleDepositInfosLoadable.contents
+          .filter(
+            (depositInfo): depositInfo is CheckedDepositInfo =>
+              !!depositInfo &&
+              ('cw20' in depositInfo.denom
+                ? depositInfo.denom.cw20
+                : depositInfo.denom.native) === governanceDenomOrAddress
+          )
+          // Get max.
+          .reduce(
+            (acc, { amount }) =>
+              acc.gt(amount) ? acc : HugeDecimal.from(amount),
+            HugeDecimal.zero
+          )
 
   const hasRewardDistributors =
     getDaoRewardDistributors(dao.info.items).length > 0
@@ -77,7 +80,7 @@ export const HomeTab = () => {
         <DaoSplashHeader
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
-          daoInfo={dao.info}
+          dao={dao}
         />
       )}
 
@@ -89,8 +92,8 @@ export const HomeTab = () => {
             {isWalletConnected && !isSecretNetworkPermitNeeded ? (
               <ProfileCardMemberInfo
                 maxGovernanceTokenDeposit={
-                  maxGovernanceTokenProposalModuleDeposit > 0
-                    ? BigInt(maxGovernanceTokenProposalModuleDeposit).toString()
+                  maxGovernanceTokenProposalModuleDeposit.isPositive()
+                    ? maxGovernanceTokenProposalModuleDeposit.toString()
                     : undefined
                 }
               />

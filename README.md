@@ -74,6 +74,7 @@ If something is misconfigured, check out the docs for
 | [`dispatch`](./packages/dispatch)   | DAO DAO Dispatch.                                                                                     |
 | [`email`](./packages/email)         | Email template and generator tools.                                                                   |
 | [`i18n`](./packages/i18n)           | Internationalization/translation system.                                                              |
+| [`math`](./packages/math)           | Math utilities.                                                                                       |
 | [`state`](./packages/state)         | State retrieval and management for the DAO DAO UI.                                                    |
 | [`stateful`](./packages/stateful)   | Stateful components, hooks, and systems that access and manipulate live data.                         |
 | [`stateless`](./packages/stateless) | React components, React hooks, and other stateless rendering utilities which do not access live data. |

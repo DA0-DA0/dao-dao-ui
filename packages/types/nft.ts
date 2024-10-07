@@ -1,5 +1,7 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { ChainId, WithChainId } from './chain'
 import {
   ButtonLinkProps,
@@ -88,7 +90,7 @@ export type NftCardInfo = {
   metadata?: Record<string, any>
   highestOffer?: {
     offerToken?: GenericToken | null
-    amount?: number | null
+    amount?: HugeDecimal | null
     amountUsd?: number | null
   }
   name: string

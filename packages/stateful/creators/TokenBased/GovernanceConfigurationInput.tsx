@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
   genericTokenSelector,
@@ -19,7 +20,7 @@ import {
   InputErrorMessage,
   InputLabel,
   Loader,
-  NumberInput,
+  NumericInput,
   SegmentedControls,
   TextInput,
   VotingPowerDistribution,
@@ -37,7 +38,6 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
-  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   humanReadableList,
   isValidBech32Address,
@@ -67,6 +67,7 @@ export const GovernanceConfigurationInput = ({
       formState: { errors },
       register,
       setValue,
+      getValues,
       setError,
       clearErrors,
       watch,
@@ -277,7 +278,7 @@ export const GovernanceConfigurationInput = ({
     const existingTokenSupply =
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
-          ? BigInt(existingGovernanceTokenSupply.contents).toString()
+          ? HugeDecimal.from(existingGovernanceTokenSupply.contents).toString()
           : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
     setValue('creator.data.existingTokenSupply', existingTokenSupply)
@@ -530,7 +531,7 @@ export const GovernanceConfigurationInput = ({
 
                   <div className="flex grow flex-col">
                     <div className="flex grow flex-row items-center gap-2">
-                      <NumberInput
+                      <NumericInput
                         className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                         containerClassName="grow"
                         error={errors.creator?.data?.newInfo?.maxSupply}
@@ -538,17 +539,16 @@ export const GovernanceConfigurationInput = ({
                         ghost
                         min={data.newInfo.initialSupply}
                         register={register}
-                        step={convertMicroDenomToDenomWithDecimals(
-                          1,
+                        step={HugeDecimal.one.toHumanReadableNumber(
                           NEW_DAO_TOKEN_DECIMALS
                         )}
                         validation={[
                           validatePositive,
                           validateRequired,
                           (maxSupply) =>
-                            (typeof maxSupply === 'number' &&
-                              maxSupply >= data.newInfo.initialSupply) ||
-                            t('error.maxSupplyMustBeAtLeastInitialSupply'),
+                            HugeDecimal.from(maxSupply || 0).gte(
+                              data.newInfo.initialSupply
+                            ) || t('error.maxSupplyMustBeAtLeastInitialSupply'),
                         ]}
                       />
                       <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
@@ -578,15 +578,14 @@ export const GovernanceConfigurationInput = ({
 
               <div className="flex grow flex-col">
                 <div className="flex grow flex-row items-center gap-2">
-                  <NumberInput
+                  <NumericInput
                     className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                     containerClassName="grow"
                     error={errors.creator?.data?.newInfo?.initialSupply}
                     fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
-                    step={convertMicroDenomToDenomWithDecimals(
-                      1,
+                    step={HugeDecimal.one.toHumanReadableNumber(
                       NEW_DAO_TOKEN_DECIMALS
                     )}
                     validation={[validatePositive, validateRequired]}
@@ -613,7 +612,7 @@ export const GovernanceConfigurationInput = ({
 
                 <div className="flex grow flex-col">
                   <div className="flex grow flex-row items-center gap-2">
-                    <NumberInput
+                    <NumericInput
                       className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                       containerClassName="grow"
                       error={
@@ -621,6 +620,9 @@ export const GovernanceConfigurationInput = ({
                       }
                       fieldName="creator.data.newInfo.initialTreasuryPercent"
                       ghost
+                      max={100}
+                      min={0}
+                      numericValue
                       register={register}
                       step={0.0001}
                       validation={[
@@ -685,6 +687,7 @@ export const GovernanceConfigurationInput = ({
                 control={control}
                 data={data}
                 errors={errors}
+                getValues={getValues}
                 register={register}
                 remove={
                   tierFields.length === 1 ? undefined : () => removeTier(idx)

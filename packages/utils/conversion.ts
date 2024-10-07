@@ -16,35 +16,6 @@ import { Expiration } from '@dao-dao/types/contracts/common'
 import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
-export const convertMicroDenomToDenomWithDecimals = (
-  amount: number | string,
-  decimals: number
-) => {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  amount = amount / Math.pow(10, decimals)
-  return isNaN(amount) ? 0 : amount
-}
-
-export const convertDenomToMicroDenomWithDecimals = (
-  amount: number | string,
-  decimals: number
-) => {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  // Need to round. Example: `8.029409 * Math.pow(10, 6)`.
-  amount = Math.round(amount * Math.pow(10, decimals))
-  return isNaN(amount) ? 0 : amount
-}
-
-// Using BigInt.toString() ensures the value is not abbreviated. The
-// Number.toString() function abbreviates large numbers like 1e20.
-export const convertDenomToMicroDenomStringWithDecimals = (
-  ...params: Parameters<typeof convertDenomToMicroDenomWithDecimals>
-) => BigInt(convertDenomToMicroDenomWithDecimals(...params)).toString()
-
 export function convertFromMicroDenom(denom: string) {
   return denom?.substring(1).toUpperCase()
 }

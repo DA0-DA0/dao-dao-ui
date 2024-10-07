@@ -1,31 +1,37 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state/query'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useVotingModule,
+} from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+import { TokenStakedVotingModule } from '../../../../clients'
 import {
   ButtonLink,
   DaoMemberCard,
   EntityDisplay,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const votingModule = useVotingModule()
   const { governanceToken } = useGovernanceTokenInfo()
 
   const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
     indexerQueries.queryContract(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
-      formula: 'daoVotingTokenStaked/topStakers',
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
+      formula:
+        votingModule instanceof TokenStakedVotingModule
+          ? 'daoVotingTokenStaked/topStakers'
+          : 'daoVotingNativeStaked/topStakers',
       noFallback: true,
     }),
     (data) =>
@@ -40,10 +46,7 @@ export const MembersTab = () => {
           balance: {
             loading: false,
             data: {
-              amount: convertMicroDenomToDenomWithDecimals(
-                balance,
-                governanceToken.decimals
-              ),
+              amount: HugeDecimal.from(balance),
               token: governanceToken,
             },
           },

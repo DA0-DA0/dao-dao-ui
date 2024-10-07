@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   useCachedLoadingWithError,
-  useDaoInfoContext,
+  useDao,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import { ParametersExceptFirst } from '@dao-dao/types'
@@ -243,6 +243,6 @@ export const useOnDaoWebSocketMessage = (
 export const useOnCurrentDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
 ) => {
-  const { chainId, coreAddress } = useDaoInfoContext()
+  const { chainId, coreAddress } = useDao()
   return useOnDaoWebSocketMessage(chainId, coreAddress, ...args)
 }

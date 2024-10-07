@@ -11,6 +11,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   ChainProvider,
@@ -20,7 +21,7 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
+  NumericInput,
   RadioInput,
   RadioInputOption,
   SelectInput,
@@ -51,7 +52,6 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToSeconds,
-  convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   getChainAddressForActionOptions,
   getChainForChainId,
@@ -65,7 +65,7 @@ import {
 
 export type BeginVestingData = {
   chainId: string
-  amount: number
+  amount: string
   type: TokenType
   denomOrAddress: string
   recipient: string
@@ -133,8 +133,15 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     throw new Error('Unsupported chain context')
   }
 
-  const { control, register, watch, setValue, setError, clearErrors } =
-    useFormContext<BeginVestingData>()
+  const {
+    control,
+    register,
+    watch,
+    setValue,
+    getValues,
+    setError,
+    clearErrors,
+  } = useFormContext<BeginVestingData>()
   const {
     fields: stepFields,
     append: appendStep,
@@ -201,13 +208,16 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
       const lastMs =
         index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp
-      const lastAmount = index === 0 ? 0 : acc[acc.length - 1].amount
+      const lastAmount =
+        index === 0 ? HugeDecimal.zero : acc[acc.length - 1].amount
 
       return [
         ...acc,
         {
           timestamp: lastMs + delayMs,
-          amount: lastAmount + (percent / 100) * watchAmount,
+          amount: lastAmount.plus(
+            HugeDecimal.from(watchAmount).times(percent).div(100)
+          ),
         },
       ]
     }, [] as VestingStep[])
@@ -236,11 +246,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
   )
   const selectedDecimals = selectedToken?.token.decimals ?? 0
-  const selectedMicroBalance = selectedToken?.balance ?? 0
-  const selectedBalance = convertMicroDenomToDenomWithDecimals(
-    selectedMicroBalance,
-    selectedDecimals
-  )
+  const selectedBalance = HugeDecimal.from(selectedToken?.balance ?? 0)
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const configureVestingPaymentAction = useInitializedActionForKey(
@@ -287,16 +293,17 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   // A warning if the amount is too high. We don't want to make this an error
   // because often people want to spend funds that a previous action makes
   // available, so just show a warning.
-  const insufficientFundsWarning =
-    watchAmount > selectedBalance
-      ? t('error.insufficientFundsWarning', {
-          amount: selectedBalance.toLocaleString(undefined, {
-            maximumFractionDigits: selectedDecimals,
-          }),
-          tokenSymbol:
-            selectedToken?.token.symbol ?? t('info.token').toLocaleUpperCase(),
-        })
-      : undefined
+  const insufficientFundsWarning = selectedBalance
+    .toHumanReadable(selectedDecimals)
+    .lt(watchAmount)
+    ? t('error.insufficientFundsWarning', {
+        amount: selectedBalance.toInternationalizedHumanReadableString({
+          decimals: selectedDecimals,
+        }),
+        tokenSymbol:
+          selectedToken?.token.symbol ?? t('info.token').toLocaleUpperCase(),
+      })
+    : undefined
 
   return (
     <ChainProvider chainId={chainId}>
@@ -366,11 +373,12 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               amount={{
                 watch,
                 setValue,
+                getValues,
                 register,
                 fieldName: (fieldNamePrefix + 'amount') as 'amount',
                 error: errors?.amount,
-                min: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
-                step: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+                min: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
+                step: HugeDecimal.one.toHumanReadableNumber(selectedDecimals),
               }}
               onSelectToken={({ chainId, type, denomOrAddress }) => {
                 setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
@@ -394,11 +402,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                     description:
                       t('title.balance') +
                       ': ' +
-                      convertMicroDenomToDenomWithDecimals(
-                        balance,
-                        token.decimals
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: token.decimals,
+                      HugeDecimal.from(
+                        balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: token.decimals,
                       }),
                   })),
               }}
@@ -603,22 +610,23 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 <div className="flex shrink-0 flex-col gap-1">
                   <InputLabel name={t('form.unlockPercent')} />
 
-                  <NumberInput
+                  <NumericInput
                     disabled={!isCreating}
                     error={errors?.steps?.[index]?.percent}
                     fieldName={
                       (fieldNamePrefix +
                         `steps.${index}.percent`) as `steps.${number}.percent`
                     }
+                    getValues={getValues}
                     max={100}
                     min={0}
+                    numericValue
                     register={register}
                     setValue={setValue}
                     sizing="md"
                     step={0.01}
                     unit="%"
-                    validation={[validateNonNegative, validateRequired]}
-                    watch={watch}
+                    validation={[validateRequired, validateNonNegative]}
                   />
 
                   <InputErrorMessage error={errors?.steps?.[index]?.percent} />
@@ -637,14 +645,16 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                   </div>
 
                   <div className="flex flex-row gap-1">
-                    <NumberInput
+                    <NumericInput
                       disabled={!isCreating}
                       error={errors?.steps?.[index]?.delay?.value}
                       fieldName={
                         (fieldNamePrefix +
                           `steps.${index}.delay.value`) as `steps.${number}.delay.value`
                       }
+                      getValues={getValues}
                       min={1}
+                      numericValue
                       register={register}
                       setValue={setValue}
                       sizing="md"
@@ -656,8 +666,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                               count: steps[index].delay.value,
                             }).toLocaleLowerCase()
                       }
-                      validation={[validatePositive, validateRequired]}
-                      watch={watch}
+                      validation={[validateRequired, validatePositive]}
                     />
 
                     {isCreating && (

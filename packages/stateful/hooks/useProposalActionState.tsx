@@ -10,7 +10,7 @@ import {
   ProposalStatusAndInfoProps,
   TextInput,
   useConfiguredChainContext,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import {
   ChainId,
@@ -60,7 +60,10 @@ export const useProposalActionState = ({
   const {
     chain: { chain_id: chainId },
   } = useConfiguredChainContext()
-  const { coreAddress, items } = useDaoInfoContext()
+  const {
+    coreAddress,
+    info: { items },
+  } = useDao()
   const {
     options: { proposalNumber },
     proposalModule,

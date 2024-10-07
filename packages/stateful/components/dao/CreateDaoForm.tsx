@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   averageColorSelector,
   contractQueries,
@@ -33,7 +34,7 @@ import {
   TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
-  useDaoInfoContextIfAvailable,
+  useDaoIfAvailable,
   useDaoNavHelpers,
   useSupportedChainContext,
   useThemeContext,
@@ -62,7 +63,6 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   SECRET_GAS,
   TokenBasedCreatorId,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   findWasmAttributeValue,
@@ -170,7 +170,7 @@ export const InnerCreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const dao = useDaoIfAvailable()
   const queryClient = useQueryClient()
 
   const chainContext = useSupportedChainContext()
@@ -787,17 +787,18 @@ export const InnerCreateDaoForm = ({
                   tokenBalance:
                     daoVotingTokenBasedCreatorData.govTokenType ===
                     GovernanceTokenType.New
-                      ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
+                      ? HugeDecimal.fromHumanReadable(
+                          daoVotingTokenBasedCreatorData.newInfo.initialSupply,
+                          NEW_DAO_TOKEN_DECIMALS
+                        )
                       : // If using existing token but no token info loaded (should
                       // be impossible), just display 0.
                       !daoVotingTokenBasedCreatorData.existingToken ||
                         daoVotingTokenBasedCreatorData.existingTokenSupply ===
                           undefined
-                      ? 0
-                      : // If using existing token, convert supply from query using decimals.
-                        convertMicroDenomToDenomWithDecimals(
-                          daoVotingTokenBasedCreatorData.existingTokenSupply,
-                          daoVotingTokenBasedCreatorData.existingToken.decimals
+                      ? HugeDecimal.zero
+                      : HugeDecimal.from(
+                          daoVotingTokenBasedCreatorData.existingTokenSupply
                         ),
                   tokenSymbol:
                     daoVotingTokenBasedCreatorData.govTokenType ===
@@ -824,7 +825,7 @@ export const InnerCreateDaoForm = ({
                 }
               : //! Otherwise display native token, which has a balance of 0 initially.
                 {
-                  tokenBalance: 0,
+                  tokenBalance: HugeDecimal.zero,
                   tokenSymbol: nativeToken.symbol,
                   tokenDecimals: nativeToken.decimals,
                 }
@@ -862,7 +863,7 @@ export const InnerCreateDaoForm = ({
               data: {
                 proposalCount: 0,
                 tokenWithBalance: {
-                  balance: tokenBalance,
+                  balance: tokenBalance.toHumanReadableNumber(tokenDecimals),
                   symbol: tokenSymbol,
                   decimals: tokenDecimals,
                 },
@@ -976,7 +977,7 @@ export const InnerCreateDaoForm = ({
               }
             : undefined,
           current: makingSubDao ? t('title.newSubDao') : t('title.newDao'),
-          daoInfo,
+          dao,
         }}
         centerNode={
           !makingSubDao && (

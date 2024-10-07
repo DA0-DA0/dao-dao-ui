@@ -4,12 +4,13 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { daoVotingOnftStakedQueries, omniflixQueries } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceCollectionInfoOptions,
   UseGovernanceCollectionInfoResponse,
@@ -19,19 +20,16 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
-  const { chainId, coreAddress, votingModuleAddress } =
-    useVotingModuleAdapterOptions()
-  const { address: walletAddress } = useWallet({
-    chainId,
-  })
+  const votingModule = useVotingModule()
+  const { address: walletAddress } = useWallet()
 
   const queryClient = useQueryClient()
   const {
     data: { onft_collection_id },
   } = useSuspenseQuery(
     daoVotingOnftStakedQueries.config(queryClient, {
-      chainId,
-      contractAddress: votingModuleAddress,
+      chainId: votingModule.chainId,
+      contractAddress: votingModule.address,
     })
   )
 
@@ -43,11 +41,11 @@ export const useGovernanceCollectionInfo = ({
   ] = useSuspenseQueries({
     queries: [
       omniflixQueries.onftCollectionInfo({
-        chainId,
+        chainId: votingModule.chainId,
         id: onft_collection_id,
       }),
       omniflixQueries.onftCollectionSupply({
-        chainId,
+        chainId: votingModule.chainId,
         id: onft_collection_id,
       }),
     ],
@@ -60,7 +58,7 @@ export const useGovernanceCollectionInfo = ({
     omniflixQueries.onftCollectionSupply(
       fetchWalletBalance && walletAddress
         ? {
-            chainId,
+            chainId: votingModule.chainId,
             id: onft_collection_id,
             owner: walletAddress,
           }
@@ -73,31 +71,31 @@ export const useGovernanceCollectionInfo = ({
     omniflixQueries.onftCollectionSupply(
       fetchTreasuryBalance
         ? {
-            chainId,
+            chainId: votingModule.chainId,
             id: onft_collection_id,
-            owner: coreAddress,
+            owner: votingModule.dao.coreAddress,
           }
         : undefined
     )
   )
 
   return {
-    stakingContractAddress: votingModuleAddress,
+    stakingContractAddress: votingModule.address,
     collectionAddress: onft_collection_id,
     collectionInfo: {
       name,
       symbol,
-      totalSupply,
+      totalSupply: HugeDecimal.from(totalSupply),
     },
     token: {
-      chainId,
+      chainId: votingModule.chainId,
       type: TokenType.Onft,
       denomOrAddress: onft_collection_id,
       symbol,
       decimals: 0,
       imageUrl: previewUri,
       source: {
-        chainId,
+        chainId: votingModule.chainId,
         type: TokenType.Onft,
         denomOrAddress: onft_collection_id,
       },
@@ -111,7 +109,7 @@ export const useGovernanceCollectionInfo = ({
         ? { loading: true }
         : {
             loading: false,
-            data: loadingWalletBalance.data,
+            data: HugeDecimal.from(loadingWalletBalance.data),
           },
     // Treasury balance
     loadingTreasuryBalance:
@@ -121,7 +119,7 @@ export const useGovernanceCollectionInfo = ({
         ? { loading: true }
         : {
             loading: false,
-            data: loadingTreasuryBalance.data,
+            data: HugeDecimal.from(loadingTreasuryBalance.data),
           },
   }
 }

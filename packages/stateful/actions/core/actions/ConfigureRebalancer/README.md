@@ -16,7 +16,26 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 ```json
 {
   "chainId": "<CHAIN ID>",
-  ...
+  "trustee": "<TRUSTEE ADDRESS>",
+  "baseDenom": "<BASE DENOM>",
+  "tokens": [
+    {
+      "denom": "<DENOM>",
+      "percent": <PERCENT>
+    },
+    ...
+  ],
+  "pid": {
+    "kp": <KP>,
+    "ki": <KI>,
+    "kd": <KD>
+  },
+  "maxLimit": <MAX LIMIT>,
+  "minBalance": {
+    "denom": "<DENOM>",
+    "amount": "<AMOUNT>"
+  } | undefined,
+  "targetOverrideStrategy": "<proportional | priority>"
 }
 ```
 

@@ -33,7 +33,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     // Invalidate indexer query first.
     queryClient.invalidateQueries({
       queryKey: indexerQueries.queryContract(queryClient, {
-        chainId: proposalModule.dao.chainId,
+        chainId: proposalModule.chainId,
         contractAddress: proposalModule.address,
         formula: 'daoProposalMultiple/vote',
         args: {

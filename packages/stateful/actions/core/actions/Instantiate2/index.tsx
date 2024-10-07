@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -29,8 +30,6 @@ import {
 } from '@dao-dao/types/actions'
 import { MsgInstantiateContract2 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   decodeJsonFromBase64,
   getAccountAddress,
   isDecodedStargateMsg,
@@ -204,10 +203,9 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
     const msg = JSON5.parse(message)
 
     const convertedFunds = funds
-      .map(({ denom, amount, decimals }) => ({
-        denom,
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
-      }))
+      .map(({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      )
       // Neutron errors with `invalid coins` if the funds list is not
       // alphabetized.
       .sort((a, b) => a.denom.localeCompare(b.denom))
@@ -315,7 +313,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
       salt: data.salt,
       funds: fundsTokens.map(({ denom, amount, decimals }) => ({
         denom,
-        amount: convertMicroDenomToDenomWithDecimals(amount, decimals),
+        amount: HugeDecimal.from(amount).toHumanReadableString(decimals),
         decimals,
       })),
     }

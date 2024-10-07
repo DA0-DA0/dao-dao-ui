@@ -2,12 +2,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ErrorPage,
-  Loader,
-  RadioInput,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { ErrorPage, Loader, RadioInput, useDao } from '@dao-dao/stateless'
 import {
   LoadingDataWithError,
   StatefulEntityDisplayProps,
@@ -34,7 +29,7 @@ export const BecomeApproverComponent: ActionComponent<
   BecomeApproverOptions
 > = ({ fieldNamePrefix, isCreating, options: { options, EntityDisplay } }) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
   const { watch, setValue } = useFormContext<BecomeApproverData>()
 
   const dao = watch((fieldNamePrefix + 'dao') as 'dao')

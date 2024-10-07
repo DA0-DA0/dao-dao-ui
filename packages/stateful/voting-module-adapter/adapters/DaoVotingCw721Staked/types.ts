@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import {
   ContractVersion,
   Duration,
@@ -27,11 +28,11 @@ export interface UseStakingInfoResponse {
   claims?: NftClaim[]
   claimsPending?: NftClaim[]
   claimsAvailable?: NftClaim[]
-  sumClaimsAvailable?: number
+  sumClaimsAvailable?: HugeDecimal
   // Total staked value
-  loadingTotalStakedValue?: LoadingData<number>
+  loadingTotalStakedValue?: LoadingData<HugeDecimal>
   // Wallet staked value
-  loadingWalletStakedValue?: LoadingData<number>
+  loadingWalletStakedValue?: LoadingData<HugeDecimal>
   loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
   loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>
 }
@@ -48,14 +49,14 @@ export interface UseGovernanceCollectionInfoResponse {
   collectionInfo: {
     name: string
     symbol: string
-    totalSupply: number
+    totalSupply: HugeDecimal
   }
   token: GenericToken
   /// Optional
   // Wallet balance
-  loadingWalletBalance?: LoadingData<number>
+  loadingWalletBalance?: LoadingData<HugeDecimal>
   // Treasury balance
-  loadingTreasuryBalance?: LoadingData<number>
+  loadingTreasuryBalance?: LoadingData<HugeDecimal>
   // Price
   // loadingPrice?: LoadingData<GenericTokenWithUsdPrice>
 }

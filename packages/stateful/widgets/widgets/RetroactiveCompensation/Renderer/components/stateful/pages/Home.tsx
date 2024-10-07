@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 
-import { useDaoContext } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 
 import { IconButtonLink } from '../../../../../../../components'
 import {
@@ -13,7 +13,7 @@ import { Home as StatelessHome } from '../../stateless/pages/Home'
 import { SurveyRow } from '../SurveyRow'
 
 export const Home = () => {
-  const { dao } = useDaoContext()
+  const dao = useDao()
   const { hexPublicKey } = useWallet({
     loadAccount: true,
   })

@@ -2,6 +2,7 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -41,8 +42,6 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { Any } from '@dao-dao/types/protobuf/codegen/google/protobuf/any'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -162,10 +161,9 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
       callsRemaining: BigInt(calls),
       // MaxFundsLimit
       // CombinedLimit
-      amounts: funds.map(({ denom, amount, decimals }) => ({
-        amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
-        denom,
-      })),
+      amounts: funds.map(({ denom, amount, decimals }) =>
+        HugeDecimal.fromHumanReadable(amount, decimals).toCoin(denom)
+      ),
     })
 
     let authorization: Any | undefined
@@ -177,7 +175,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
         msg: msgTypeUrl,
         // SendAuthorization
         spendLimit: funds.map(({ denom, amount, decimals }) => ({
-          amount: convertDenomToMicroDenomStringWithDecimals(amount, decimals),
+          amount: HugeDecimal.fromHumanReadable(amount, decimals).toString(),
           denom,
         })),
         allowList: [],
@@ -381,10 +379,8 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                   tokens.find((t) => t.denomOrAddress === denom)?.decimals || 0
                 return {
                   denom,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    decimals
-                  ),
+                  amount:
+                    HugeDecimal.from(amount).toHumanReadableString(decimals),
                   decimals,
                 }
               }) ?? [],
@@ -424,10 +420,8 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
                   tokens.find((t) => t.denomOrAddress === denom)?.decimals || 0
                 return {
                   denom,
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    decimals
-                  ),
+                  amount:
+                    HugeDecimal.from(amount).toHumanReadableString(decimals),
                   decimals,
                 }
               }) ?? [],

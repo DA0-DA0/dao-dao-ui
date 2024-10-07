@@ -3,6 +3,7 @@ import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   GovernanceTokenType,
@@ -33,7 +34,6 @@ import {
 import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
-  convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   isValidBech32Address,
   makeValidateAddress,
@@ -48,6 +48,7 @@ const ProposalDepositInput = ({
   },
   register,
   setValue,
+  getValues,
   watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
@@ -155,6 +156,7 @@ const ProposalDepositInput = ({
                 ? // Only works for cw20.
                   'voting_module_token'
                 : governanceTokenLoadable.contents.denomOrAddress,
+            decimals: governanceTokenLoadable.contents.decimals,
             description: t('title.governanceToken'),
           },
         ]
@@ -166,6 +168,7 @@ const ProposalDepositInput = ({
       chainId,
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
+      decimals: tokenLoaded?.decimals ?? 0,
       symbol:
         (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
@@ -205,11 +208,11 @@ const ProposalDepositInput = ({
                 watch:
                   watch as UseFormWatch<DaoCreationVotingConfigWithProposalDeposit>,
                 setValue,
+                getValues,
                 register,
                 fieldName: 'proposalDeposit.amount',
                 error: errors?.proposalDeposit?.amount,
-                step: convertMicroDenomToDenomWithDecimals(
-                  1,
+                step: HugeDecimal.one.toHumanReadableNumber(
                   tokenLoaded?.decimals ?? 0
                 ),
               }}
@@ -305,8 +308,11 @@ const ProposalDepositReview = ({
   ) : (
     <>
       {t('format.token', {
-        amount: amount.toLocaleString(undefined, {
-          maximumFractionDigits: decimals,
+        amount: HugeDecimal.fromHumanReadable(
+          amount,
+          decimals
+        ).toInternationalizedHumanReadableString({
+          decimals,
         }),
         symbol,
       })}

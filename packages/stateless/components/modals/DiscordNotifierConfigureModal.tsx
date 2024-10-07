@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DiscordNotifierRegistration, ModalProps } from '@dao-dao/types'
 
-import { useDaoInfoContext } from '../../contexts'
+import { useDao } from '../../contexts'
 import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { IconButton, IconButtonLink } from '../icon_buttons'
@@ -53,7 +53,7 @@ export const DiscordNotifierConfigureModal = ({
   ...props
 }: DiscordNotifierConfigureModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
 
   const [registering, setRegistering] = useState(false)
 
@@ -77,7 +77,7 @@ export const DiscordNotifierConfigureModal = ({
       {...props}
       contentContainerClassName="gap-4"
       header={{
-        title: t('title.discordNotifier', { daoName: daoName }),
+        title: t('title.discordNotifier', { daoName }),
         subtitle: t('info.discordNotifierSubtitle'),
       }}
       onClose={() => {

@@ -1,9 +1,9 @@
-import { coins } from '@cosmjs/stargate'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
   nativeDenomBalanceWithTimestampSelector,
@@ -14,15 +14,10 @@ import {
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
-  useDaoInfoContext,
+  useDao,
 } from '@dao-dao/stateless'
 import { Account } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomStringWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { Cw20BaseHooks, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
@@ -41,7 +36,7 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName } = useDao()
   const {
     isWalletConnected,
     address,
@@ -83,7 +78,7 @@ export const DaoTokenDepositModal = ({
     }
   )
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(HugeDecimal.zero)
   const [loading, setLoading] = useState(false)
 
   const transferCw20 = Cw20BaseHooks.useTransfer({
@@ -92,7 +87,7 @@ export const DaoTokenDepositModal = ({
   })
 
   const onDeposit = useCallback(
-    async (amount: number) => {
+    async (amount: HugeDecimal) => {
       if (!address) {
         toast.error(t('error.logInToContinue'))
         return
@@ -105,22 +100,17 @@ export const DaoTokenDepositModal = ({
 
       setLoading(true)
       try {
-        const microAmount = convertDenomToMicroDenomStringWithDecimals(
-          amount,
-          token.decimals
-        )
-
         if (token.type === 'native') {
           const signingClient = await getSigningStargateClient()
           await signingClient.sendTokens(
             address,
             depositAddress,
-            coins(microAmount, token.denomOrAddress),
+            amount.toCoins(token.denomOrAddress),
             CHAIN_GAS_MULTIPLIER
           )
         } else if (token.type === 'cw20') {
           await transferCw20({
-            amount: microAmount,
+            amount: amount.toFixed(0),
             recipient: depositAddress,
           })
         }
@@ -130,8 +120,8 @@ export const DaoTokenDepositModal = ({
 
         toast.success(
           t('success.depositedTokenIntoDao', {
-            amount: amount.toLocaleString(undefined, {
-              maximumFractionDigits: token.decimals,
+            amount: amount.toInternationalizedHumanReadableString({
+              decimals: token.decimals,
             }),
             tokenSymbol: token.symbol,
             daoName,
@@ -140,7 +130,7 @@ export const DaoTokenDepositModal = ({
 
         onClose?.()
         // Clear amount after a timeout to allow closing.
-        setTimeout(() => setAmount(0), 500)
+        setTimeout(() => setAmount(HugeDecimal.zero), 500)
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -176,10 +166,9 @@ export const DaoTokenDepositModal = ({
           : {
               loading: false,
               data: {
-                amount: convertMicroDenomToDenomWithDecimals(
-                  loadingBalance.data.amount,
-                  token.decimals
-                ),
+                amount: HugeDecimal.from(
+                  loadingBalance.data.amount
+                ).toHumanReadableNumber(token.decimals),
                 timestamp: loadingBalance.data.timestamp,
               },
             }

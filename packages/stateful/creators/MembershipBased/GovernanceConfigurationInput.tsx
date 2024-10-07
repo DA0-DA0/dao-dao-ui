@@ -32,6 +32,7 @@ export const GovernanceConfigurationInput = ({
       register,
       watch,
       setValue,
+      getValues,
       setError,
       clearErrors,
     },
@@ -175,6 +176,7 @@ export const GovernanceConfigurationInput = ({
             control={control}
             data={data}
             errors={errors}
+            getValues={getValues}
             register={register}
             remove={tierFields.length === 1 ? undefined : () => removeTier(idx)}
             setValue={setValue}

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { contractQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -22,7 +23,6 @@ import {
 } from '@dao-dao/types/actions'
 import {
   ContractName,
-  convertDenomToMicroDenomStringWithDecimals,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   makeWasmMessage,
@@ -154,10 +154,10 @@ export class PerformTokenSwapAction extends ActionBase<PerformTokenSwapData> {
     }
 
     // Convert amount to micro amount.
-    const amount = convertDenomToMicroDenomStringWithDecimals(
+    const amount = HugeDecimal.fromHumanReadable(
       selfParty.amount,
       selfParty.decimals
-    )
+    ).toString()
 
     return selfParty.type === 'cw20'
       ? makeWasmMessage({

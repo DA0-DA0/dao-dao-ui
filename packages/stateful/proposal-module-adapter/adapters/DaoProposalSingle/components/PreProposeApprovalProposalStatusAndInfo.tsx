@@ -18,7 +18,7 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
-  useDaoInfoContext,
+  useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -69,7 +69,7 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
   proposal: PreProposeApprovalProposalWithMeteadata
 }) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const {
     proposalModule: { prefix, prePropose },

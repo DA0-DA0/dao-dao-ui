@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { CHAIN_ID } from '@dao-dao/storybook'
+import { StakingMode } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
-import { StakingModal, StakingMode } from './StakingModal'
+import { StakingModal } from './StakingModal'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / token / StakingModal',
@@ -12,20 +14,26 @@ export default {
 } as ComponentMeta<typeof StakingModal>
 
 const Template: ComponentStory<typeof StakingModal> = (args) => {
-  const [amount, setAmount] = useState(50)
+  const [amount, setAmount] = useState(HugeDecimal.fromHumanReadable(50, 6))
 
   return <StakingModal {...args} amount={amount} setAmount={setAmount} />
 }
 
 export const StakeUnstake = Template.bind({})
 StakeUnstake.args = {
-  claimableTokens: 20,
+  claimableTokens: HugeDecimal.fromHumanReadable(20, 6),
   loading: false,
   initialMode: StakingMode.Stake,
-  proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: 23456 },
+  proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),
+  loadingStakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(23456, 6),
+  },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: 65432 },
+  loadingUnstakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(65432, 6),
+  },
   unstakingDuration: {
     time: 86400,
   },
@@ -33,13 +41,19 @@ StakeUnstake.args = {
 
 export const Claim = Template.bind({})
 Claim.args = {
-  claimableTokens: 20,
+  claimableTokens: HugeDecimal.fromHumanReadable(20, 6),
   loading: false,
   initialMode: StakingMode.Claim,
-  proposalDeposit: 5,
-  loadingStakableTokens: { loading: false, data: 23456 },
+  proposalDeposit: HugeDecimal.fromHumanReadable(5, 6),
+  loadingStakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(23456, 6),
+  },
   token: getNativeTokenForChainId(CHAIN_ID),
-  loadingUnstakableTokens: { loading: false, data: 65432 },
+  loadingUnstakableTokens: {
+    loading: false,
+    data: HugeDecimal.fromHumanReadable(65432, 6),
+  },
   unstakingDuration: {
     time: 86400,
   },
