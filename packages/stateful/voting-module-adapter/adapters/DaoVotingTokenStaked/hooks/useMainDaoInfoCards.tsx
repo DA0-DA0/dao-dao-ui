@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { HugeDecimal } from '@dao-dao/math'
 import { indexerQueries } from '@dao-dao/state'
 import { TokenAmountDisplay, useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
+  formatPercentOf100,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
@@ -80,12 +80,16 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       }),
       value: (
         <TokenAmountDisplay
-          amount={
-            loadingTotalStakedValue.loading
-              ? { loading: true }
-              : HugeDecimal.from(loadingTotalStakedValue.data)
-          }
+          amount={loadingTotalStakedValue}
           decimals={decimals}
+          suffix={
+            loadingTotalStakedValue.loading
+              ? undefined
+              : ` (${formatPercentOf100(
+                  loadingTotalStakedValue.data.div(supply).times(100).toNumber()
+                )})`
+          }
+          suffixClassName="text-text-secondary"
           symbol={symbol}
         />
       ),

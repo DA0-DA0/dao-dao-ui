@@ -62,11 +62,24 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
       tooltip: t('info.totalStakedTooltip', {
         tokenSymbol: symbol,
       }),
-      value: loadingTotalStakedValue.loading
-        ? '...'
-        : formatPercentOf100(
-            loadingTotalStakedValue.data.div(totalSupply).times(100).toNumber()
-          ),
+      value: (
+        <TokenAmountDisplay
+          amount={loadingTotalStakedValue}
+          decimals={0}
+          suffix={
+            loadingTotalStakedValue.loading
+              ? undefined
+              : ` (${formatPercentOf100(
+                  loadingTotalStakedValue.data
+                    .div(totalSupply)
+                    .times(100)
+                    .toNumber()
+                )})`
+          }
+          suffixClassName="text-text-secondary"
+          symbol={symbol}
+        />
+      ),
     },
     {
       label: t('title.unstakingPeriod'),

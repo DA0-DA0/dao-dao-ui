@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { DaoSource, LoadingDataWithError } from '@dao-dao/types'
 
 import { useQueryLoadingDataWithError } from './query/useQueryLoadingDataWithError'
@@ -35,12 +36,12 @@ interface UseMembershipResponse {
    * The current wallet voting weight in the DAO. Will be undefined until it
    * successfully loads.
    */
-  walletVotingWeight: number | undefined
+  walletVotingWeight: HugeDecimal | undefined
   /**
    * The current wallet voting weight in the DAO. Will be undefined until it
    * successfully loads.
    */
-  totalVotingWeight: number | undefined
+  totalVotingWeight: HugeDecimal | undefined
 }
 
 export const useMembership = ({
@@ -76,19 +77,17 @@ export const useMembership = ({
   useOnSecretNetworkPermitUpdate()
 
   const walletVotingWeight =
-    !_walletVotingWeight.loading &&
-    !_walletVotingWeight.errored &&
-    !isNaN(Number(_walletVotingWeight.data.power))
-      ? Number(_walletVotingWeight.data.power)
+    !_walletVotingWeight.loading && !_walletVotingWeight.errored
+      ? HugeDecimal.from(_walletVotingWeight.data.power)
       : undefined
   const totalVotingWeight =
-    !_totalVotingWeight.loading &&
-    !_totalVotingWeight.errored &&
-    !isNaN(Number(_totalVotingWeight.data.power))
-      ? Number(_totalVotingWeight.data.power)
+    !_totalVotingWeight.loading && !_totalVotingWeight.errored
+      ? HugeDecimal.from(_totalVotingWeight.data.power)
       : undefined
   const isMember =
-    walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
+    walletVotingWeight !== undefined
+      ? walletVotingWeight.isPositive()
+      : undefined
 
   return {
     loading:
@@ -101,9 +100,7 @@ export const useMembership = ({
         : {
             loading: false,
             errored: false,
-            data:
-              !isNaN(Number(_walletVotingWeight.data.power)) &&
-              Number(_walletVotingWeight.data.power) > 0,
+            data: isMember ?? false,
           },
     isMember,
     walletVotingWeight,

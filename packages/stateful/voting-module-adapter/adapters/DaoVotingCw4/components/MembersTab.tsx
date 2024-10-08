@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   MembersTab as StatelessMembersTab,
   useDaoNavHelpers,
@@ -49,7 +50,10 @@ export const MembersTab = () => {
                   ? { loading: true }
                   : {
                       loading: false,
-                      data: (weight / totalVotingWeight) * 100,
+                      data: HugeDecimal.from(weight)
+                        .div(totalVotingWeight)
+                        .times(100)
+                        .toNumber(),
                     },
             })) || [],
         }

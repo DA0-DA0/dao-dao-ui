@@ -21,7 +21,10 @@ export const ProfileCardMemberInfo = ({
           ? { loading: true }
           : {
               loading: false,
-              data: (walletVotingWeight / totalVotingWeight) * 100,
+              data: walletVotingWeight
+                .div(totalVotingWeight)
+                .times(100)
+                .toNumber(),
             }
       }
     />
