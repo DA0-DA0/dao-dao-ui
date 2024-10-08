@@ -43,5 +43,6 @@ Sentry.init({
     'Keplr not found',
     'No wallet exists',
     'No internet connection',
+    'not found in registry',
   ],
 })
