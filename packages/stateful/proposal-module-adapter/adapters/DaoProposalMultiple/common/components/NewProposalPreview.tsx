@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalContentDisplay } from '@dao-dao/stateless'
+import { descriptionWithPotentialProposalMetadata } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../../../../actions'
 import { EntityDisplay, SuspenseLoader } from '../../../../../components'
@@ -36,36 +37,41 @@ export const NewProposalPreview = () => {
         <div>
           <p className="title-text mb-2">{t('title.voteOptions')}</p>
 
-          {choices.map(({ title, description, actionData }, index) => (
-            <MultipleChoiceOptionViewer
-              key={index}
-              SuspenseLoader={SuspenseLoader}
-              actionKeysAndData={actionData}
-              data={{
-                choice: {
-                  description,
-                  index,
-                  // Unused in preview mode. Uses actionKeysAndData instead.
-                  msgs: [],
-                  title,
-                  option_type: 'standard',
-                  vote_count: '0',
-                },
-                voteOption: {
-                  Icon: Circle,
-                  label: title,
-                  value: { option_id: index },
-                  color:
-                    MULTIPLE_CHOICE_OPTION_COLORS[
-                      index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                    ],
-                },
-              }}
-              encodeContext={encodeContext}
-              lastOption={false}
-              preview
-            />
-          ))}
+          {choices.map(
+            ({ title, description, metadata, actionData }, index) => (
+              <MultipleChoiceOptionViewer
+                key={index}
+                SuspenseLoader={SuspenseLoader}
+                actionKeysAndData={actionData}
+                data={{
+                  choice: {
+                    description: descriptionWithPotentialProposalMetadata(
+                      description,
+                      metadata
+                    ),
+                    index,
+                    // Unused in preview mode. Uses actionKeysAndData instead.
+                    msgs: [],
+                    title,
+                    option_type: 'standard',
+                    vote_count: '0',
+                  },
+                  voteOption: {
+                    Icon: Circle,
+                    label: title,
+                    value: { option_id: index },
+                    color:
+                      MULTIPLE_CHOICE_OPTION_COLORS[
+                        index % MULTIPLE_CHOICE_OPTION_COLORS.length
+                      ],
+                  },
+                }}
+                encodeContext={encodeContext}
+                lastOption={false}
+                preview
+              />
+            )
+          )}
 
           {/* None of the above */}
           <MultipleChoiceOptionViewer

@@ -180,6 +180,7 @@ const InnerProposalStatusAndInfo = ({
     loadingTxHash: loadingExecutionTxHash,
   })
   const { action, footer } = useProposalActionState({
+    description: proposal.description,
     statusKey,
     relayState,
     loadingExecutionTxHash,

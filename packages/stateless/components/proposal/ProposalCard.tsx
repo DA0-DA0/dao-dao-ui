@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import removeMarkdown from 'remove-markdown'
 
 import { ProposalCardProps } from '@dao-dao/types/components/ProposalCard'
+import { extractProposalDescriptionAndMetadata } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
@@ -51,7 +52,9 @@ export const ProposalCard = ({
         </DaoImage>
         <p className="primary-text text-text-body text-center">{title}</p>
         <p className="secondary-text line-clamp-4 break-words">
-          {removeMarkdown(description)}
+          {removeMarkdown(
+            extractProposalDescriptionAndMetadata(description).description
+          )}
         </p>
       </div>
 

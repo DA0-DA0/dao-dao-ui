@@ -78,6 +78,7 @@ import {
   MsgMigrateContract,
   MsgUpdateAdmin,
 } from './codegen/cosmwasm/wasm/v1/tx'
+import { ExtensionData } from './codegen/gaia/metaprotocols/extensions'
 import { Any } from './codegen/google/protobuf/any'
 import { UploadCosmWasmPoolCodeAndWhiteListProposal } from './codegen/osmosis/cosmwasmpool/v1beta1/gov'
 import {
@@ -714,6 +715,8 @@ export const getProtobufTypes = (): ReadonlyArray<[string, GeneratedType]> => [
     MsgDeleteAllianceProposal.typeUrl,
     MsgDeleteAllianceProposal as GeneratedType,
   ],
+  // gaia.metaprotocols
+  [ExtensionData.typeUrl, ExtensionData as GeneratedType],
 ]
 export const getTypesRegistry = () => new Registry(getProtobufTypes())
 
@@ -735,6 +738,15 @@ export const getAminoTypes = () =>
     ...bitsongAminoConverters,
     ...secretAminoConverters,
     ...omniFlixAminoConverters,
+
+    // gaia.metaprotocols
+    [ExtensionData.typeUrl]: {
+      // the Amino type is the same as the protobuf type URL, deviating from
+      // convention for some reason...
+      aminoType: ExtensionData.typeUrl,
+      toAmino: ExtensionData.toAmino,
+      fromAmino: ExtensionData.fromAmino,
+    },
   })
 
 // Encodes a protobuf message value from its JSON representation into a byte

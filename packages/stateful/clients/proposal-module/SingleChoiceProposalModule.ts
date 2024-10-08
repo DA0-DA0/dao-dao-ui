@@ -1,3 +1,4 @@
+import { EncodeObject } from '@cosmjs/proto-signing'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
@@ -339,11 +340,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     getSigningClient,
     sender,
     memo,
+    nonCriticalExtensionOptions,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
     memo?: string
+    nonCriticalExtensionOptions?: EncodeObject[]
   }): Promise<void> {
     const client = await getSigningClient()
 
@@ -357,7 +360,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         proposalId,
       },
       undefined,
-      memo
+      memo,
+      undefined,
+      nonCriticalExtensionOptions
     )
   }
 

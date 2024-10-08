@@ -10,6 +10,7 @@ import {
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
+import { EncodeObject } from '@cosmjs/proto-signing'
 
 import {
   Addr,
@@ -491,7 +492,8 @@ export class DaoProposalSingleV2Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    nonCriticalExtensionOptions?: EncodeObject[]
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -503,7 +505,8 @@ export class DaoProposalSingleV2Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      nonCriticalExtensionOptions
     )
   }
   veto = async (

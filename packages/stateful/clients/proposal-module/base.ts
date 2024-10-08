@@ -1,4 +1,5 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { EncodeObject } from '@cosmjs/proto-signing'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
@@ -115,6 +116,7 @@ export abstract class ProposalModuleBase<
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
     memo?: string
+    nonCriticalExtensionOptions?: EncodeObject[]
   }): Promise<void>
 
   /**

@@ -23,6 +23,7 @@ import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
 import {
   convertExpirationToDate,
   dateToWdhms,
+  descriptionWithPotentialProposalMetadata,
   encodeActions,
   processError,
 } from '@dao-dao/utils'
@@ -220,9 +221,13 @@ export const NewProposal = ({
     title,
     description,
     actionData,
+    metadata,
   }) => ({
     title,
-    description,
+    description: descriptionWithPotentialProposalMetadata(
+      description,
+      metadata
+    ),
     msgs: await encodeActions({
       actionMap,
       encodeContext,

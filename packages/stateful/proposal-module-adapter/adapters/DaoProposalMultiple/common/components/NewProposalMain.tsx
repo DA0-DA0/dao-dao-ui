@@ -11,12 +11,7 @@ import { NewProposalForm } from '../../types'
 
 export const NewProposalMain = () => {
   const { t } = useTranslation()
-  const {
-    register,
-    control,
-    watch,
-    formState: { errors },
-  } = useFormContext<NewProposalForm>()
+  const { control, watch } = useFormContext<NewProposalForm>()
 
   const {
     fields: multipleChoiceFields,
@@ -39,13 +34,8 @@ export const NewProposalMain = () => {
               key={id}
               SuspenseLoader={SuspenseLoader}
               addOption={addOption}
-              control={control}
-              descriptionFieldName={`choices.${index}.description`}
-              errorsOption={errors?.choices?.[index]}
               optionIndex={index}
-              registerOption={register}
               removeOption={() => removeOption(index)}
-              titleFieldName={`choices.${index}.title`}
             />
           ))}
         </div>

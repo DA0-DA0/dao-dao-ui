@@ -1,0 +1,39 @@
+diff --git a/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts b/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
+index 804d654..9423be6 100644
+--- a/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
++++ b/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
+@@ -5,7 +5,7 @@ import { QueryClient } from "../../queryclient";
+ export interface TxExtension {
+     readonly tx: {
+         getTx: (txId: string) => Promise<GetTxResponse>;
+-        simulate: (messages: readonly Any[], memo: string | undefined, signer: Pubkey, sequence: number) => Promise<SimulateResponse>;
++        simulate: (messages: readonly Any[], memo: string | undefined, signer: Pubkey, sequence: number, nonCriticalExtensionOptions?: readonly Any[]) => Promise<SimulateResponse>;
+     };
+ }
+ export declare function setupTxExtension(base: QueryClient): TxExtension;
+diff --git a/node_modules/@cosmjs/stargate/build/modules/tx/queries.js b/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
+index 6a78179..831afd7 100644
+--- a/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
++++ b/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
+@@ -20,7 +20,7 @@ function setupTxExtension(base) {
+                 const response = await queryService.GetTx(request);
+                 return response;
+             },
+-            simulate: async (messages, memo, signer, sequence) => {
++            simulate: async (messages, memo, signer, sequence, nonCriticalExtensionOptions) => {
+                 const tx = tx_1.Tx.fromPartial({
+                     authInfo: tx_1.AuthInfo.fromPartial({
+                         fee: tx_1.Fee.fromPartial({}),
+@@ -35,10 +35,11 @@ function setupTxExtension(base) {
+                     body: tx_1.TxBody.fromPartial({
+                         messages: Array.from(messages),
+                         memo: memo,
++                        nonCriticalExtensionOptions,
+                     }),
+                     signatures: [new Uint8Array()],
+                 });
+-                const request = service_1.SimulateRequest.fromPartial({
++            const request = service_1.SimulateRequest.fromPartial({
+                     txBytes: tx_1.Tx.encode(tx).finish(),
+                 });
+                 const response = await queryService.Simulate(request);

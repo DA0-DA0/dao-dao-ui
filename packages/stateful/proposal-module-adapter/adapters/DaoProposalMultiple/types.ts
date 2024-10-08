@@ -4,6 +4,7 @@ import {
   DepositInfoSelector,
   IProposalModuleBase,
   ProcessedTQ,
+  ProposalExecutionMetadata,
   ProposalTimestampInfo,
   ProposalVoteOption,
   UnifiedCosmosMsg,
@@ -16,22 +17,23 @@ import {
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-export interface MultipleChoiceOptionFormData {
+export type MultipleChoiceOptionFormData = {
   title: string
   description: string
   actionData: ActionKeyAndData[]
+  metadata?: ProposalExecutionMetadata
 }
 
-export interface NewProposalForm {
+export type NewProposalForm = {
   title: string
   description: string
   choices: MultipleChoiceOptionFormData[]
 }
 
-export interface NewProposalData {
-  choices: MultipleChoiceOptions
-  description: string
+export type NewProposalData = {
   title: string
+  description: string
+  choices: MultipleChoiceOptions
 }
 
 export interface PercentOrMajorityValue {

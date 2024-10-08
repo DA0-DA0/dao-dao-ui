@@ -1,6 +1,12 @@
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { ProposalContentDisplay, RawActionsRenderer } from '@dao-dao/stateless'
+import {
+  ProposalContentDisplay,
+  ProposalExecutionMetadataRenderer,
+  RawActionsRenderer,
+} from '@dao-dao/stateless'
+import { descriptionWithPotentialProposalMetadata } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../../../../actions'
 import { EntityDisplay } from '../../../../../components'
@@ -8,6 +14,7 @@ import { useEntity, useWallet } from '../../../../../hooks'
 import { NewProposalForm } from '../../types'
 
 export const NewProposalPreview = () => {
+  const { t } = useTranslation()
   const { watch } = useFormContext<NewProposalForm>()
 
   const { address: walletAddress = '' } = useWallet()
@@ -19,6 +26,7 @@ export const NewProposalPreview = () => {
   const proposalTitle = watch('title')
 
   const actionData = watch('actionData') || []
+  const metadata = watch('metadata')
 
   return (
     <ProposalContentDisplay
@@ -28,14 +36,25 @@ export const NewProposalPreview = () => {
         address: walletAddress,
         entity,
       }}
-      description={proposalDescription}
+      description={descriptionWithPotentialProposalMetadata(
+        proposalDescription,
+        metadata
+      )}
       innerContentDisplay={
-        actionData.length ? (
-          <RawActionsRenderer
-            actionKeysAndData={actionData}
-            encodeContext={encodeContext}
-          />
-        ) : undefined
+        <div className="flex flex-col gap-6">
+          {actionData.length ? (
+            <RawActionsRenderer
+              actionKeysAndData={actionData}
+              encodeContext={encodeContext}
+            />
+          ) : (
+            <p className="caption-text italic">{t('info.noProposalActions')}</p>
+          )}
+
+          {metadata?.enabled && (
+            <ProposalExecutionMetadataRenderer metadata={metadata} />
+          )}
+        </div>
       }
       title={proposalTitle}
     />

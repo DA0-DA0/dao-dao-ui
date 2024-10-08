@@ -9,6 +9,7 @@ import {
   Button,
   DropdownIconButton,
   MarkdownRenderer,
+  ProposalExecutionMetadataRenderer,
   RawActionsRenderer,
   Tooltip,
 } from '@dao-dao/stateless'
@@ -18,6 +19,7 @@ import {
   ActionKeyAndDataNoId,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
+import { extractProposalDescriptionAndMetadata } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionData } from '../types'
 
@@ -85,6 +87,10 @@ export const MultipleChoiceOptionViewer = ({
   )
   const toggleExpanded = () => setExpanded((e) => !e)
 
+  const { description, metadata } = extractProposalDescriptionAndMetadata(
+    choice.description
+  )
+
   return (
     <div
       className={clsx(
@@ -140,8 +146,8 @@ export const MultipleChoiceOptionViewer = ({
           !expanded && 'hidden'
         )}
       >
-        {!isNoneOption && !!choice.description && (
-          <MarkdownRenderer markdown={choice.description} />
+        {!isNoneOption && !!description && (
+          <MarkdownRenderer markdown={description} />
         )}
 
         {noMessages ? (
@@ -178,6 +184,8 @@ export const MultipleChoiceOptionViewer = ({
             </p>
           </Button>
         )}
+
+        <ProposalExecutionMetadataRenderer metadata={metadata} />
       </div>
     </div>
   )
