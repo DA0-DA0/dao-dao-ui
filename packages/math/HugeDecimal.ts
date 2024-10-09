@@ -63,7 +63,7 @@ export class HugeDecimal {
    * example: `1.000000 $NTRN`.
    *
    * This will convert the value to its raw integer representation by
-   * multiplying by 10^decimals and truncating any remaining decimal places.
+   * multiplying by 10^decimals.
    *
    * @param n the value
    * @param decimals the number of decimals
@@ -71,7 +71,7 @@ export class HugeDecimal {
    */
   static fromHumanReadable(n: HugeDecimal.Value, decimals: number) {
     // Multiply by 10^decimals to convert to the integer representation.
-    return HugeDecimal.from(n).times(BigNumber(10).pow(decimals)).trunc()
+    return HugeDecimal.from(n).times(BigNumber(10).pow(decimals))
   }
 
   /**

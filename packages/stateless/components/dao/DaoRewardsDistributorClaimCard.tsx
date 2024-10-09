@@ -2,6 +2,7 @@ import { ArrowDropDown, Payments } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import { DaoRewardsDistributorClaimCardProps } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
@@ -50,7 +51,11 @@ export const DaoRewardsDistributorClaimCard = ({
             />
 
             <TokenAmountDisplay
-              amount={rewards.loading ? { loading: true } : totalUsdValue}
+              amount={
+                rewards.loading
+                  ? { loading: true }
+                  : HugeDecimal.from(totalUsdValue)
+              }
               className={clsx(
                 'font-medium !text-lg',
                 hasRewards
@@ -60,7 +65,7 @@ export const DaoRewardsDistributorClaimCard = ({
               dateFetched={totalTimestamp}
               decimals={2}
               hideSymbol
-              minAmount={hasRewards ? 0.01 : undefined}
+              minAmount={0.01}
               prefix="$"
               showAllDecimals
             />
@@ -145,7 +150,7 @@ export const DaoRewardsDistributorClaimCard = ({
                         />
 
                         <TokenAmountDisplay
-                          amount={usdValue}
+                          amount={HugeDecimal.from(usdValue)}
                           className={clsx(
                             '!text-sm',
                             usdValue > 0
@@ -155,7 +160,7 @@ export const DaoRewardsDistributorClaimCard = ({
                           dateFetched={timestamp}
                           decimals={2}
                           hideSymbol
-                          minAmount={usdValue > 0 ? 0.01 : undefined}
+                          minAmount={0.01}
                           prefix="$"
                           showAllDecimals
                         />
