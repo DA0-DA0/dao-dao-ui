@@ -62,7 +62,7 @@ export const fetchTokenInfo = async (
           denomOrAddress,
         })
       )
-      .catch(() => undefined),
+      .catch(() => null),
   ])
 
   if (asset) {
@@ -88,9 +88,9 @@ export const fetchTokenInfo = async (
     // If Skip API does not have the info, check if Skip API has the source
     // if it's different. This has happened before when Skip does not have
     // an IBC asset that we were able to reverse engineer the source for.
-    const sourceAsset = await queryClient.fetchQuery(
-      skipQueries.asset(queryClient, source)
-    )
+    const sourceAsset = await queryClient
+      .fetchQuery(skipQueries.asset(queryClient, source))
+      .catch(() => null)
 
     if (sourceAsset) {
       return {
