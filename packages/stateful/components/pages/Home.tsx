@@ -86,13 +86,13 @@ export const Home: NextPage<StatefulHomeProps> = ({
   const selectedChain = chainId ? getSupportedChainConfig(chainId) : undefined
   const selectedChainHasSubDaos = !!selectedChain?.subDaos?.length
   const chainSubDaos = useLoadingDaos(
-    selectedChainHasSubDaos
+    chainId && selectedChainHasSubDaos
       ? {
           loading: false,
           data:
             selectedChain?.subDaos?.map(
               (coreAddress): DaoSource => ({
-                chainId: chainId!,
+                chainId,
                 coreAddress,
               })
             ) ?? [],

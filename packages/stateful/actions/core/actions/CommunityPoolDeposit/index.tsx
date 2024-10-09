@@ -69,8 +69,8 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
   constructor(options: ActionOptions) {
     // Neutron does not use the x/distribution community pool.
     if (
-      options.chain.chain_id === ChainId.NeutronMainnet ||
-      options.chain.chain_id === ChainId.NeutronTestnet
+      options.chain.chainId === ChainId.NeutronMainnet ||
+      options.chain.chainId === ChainId.NeutronTestnet
     ) {
       throw new Error('Neutron does not support community pool deposits')
     }
@@ -82,7 +82,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       amount: '100',
       denom: options.chainContext.nativeToken?.denomOrAddress || '',
     }
@@ -107,7 +107,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
     )
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: {

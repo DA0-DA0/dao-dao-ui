@@ -68,7 +68,7 @@ export const useProposalRelayState = ({
 }: UseProposalRelayStateOptions): UseProposalRelayStateReturn => {
   const { coreAddress } = useDao()
   const {
-    chain: { chain_id: srcChainId },
+    chain: { chainId: srcChainId },
   } = useSupportedChainContext()
 
   const packetsLoadable = useCachedLoadingWithError(

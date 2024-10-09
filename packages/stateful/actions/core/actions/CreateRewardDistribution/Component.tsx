@@ -63,7 +63,7 @@ export const CreateRewardDistributionComponent: ActionComponent<
   const { t } = useTranslation()
   const {
     address,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, setValue, watch, getValues } =
     useFormContext<CreateRewardDistributionData>()

@@ -8,7 +8,7 @@ import { useWallet } from './useWallet'
 // Save wallet signer in recoil atom so it can be used by contract selectors.
 export const useSyncWalletSigner = () => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     getSigningClient,
     address,
     isWalletConnected,

@@ -4,11 +4,27 @@ import { HugeDecimal } from '@dao-dao/math'
 
 import { Coin } from './contracts'
 import { ContractVersion } from './features'
+import { SkipChain } from './skip'
 import { GenericToken, TokenType } from './token'
+
+export type AnyChain = {
+  chainId: string
+  chainName: string
+  bech32Prefix: string
+  prettyName: string
+  /**
+   * Chain registry definition if exists.
+   */
+  chainRegistry?: Chain
+  /**
+   * Skip chain definition if fetched via Skip API.
+   */
+  skipChain?: SkipChain
+}
 
 export type IChainContext = {
   chainId: string
-  chain: Chain
+  chain: AnyChain
   // Chain may not have a native token.
   nativeToken?: GenericToken
   // If defined, this is a configured chain, which means it is supported (DAO
@@ -133,9 +149,9 @@ export type BaseChainConfig = {
 
 export type ConfiguredChain = BaseChainConfig & {
   /**
-   * Chain info from chain registry.
+   * Chain info.
    */
-  chain: Chain
+  chain: AnyChain
 }
 
 export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
@@ -252,7 +268,7 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
 }
 
 export type SupportedChain = SupportedChainConfig & {
-  chain: Chain
+  chain: AnyChain
 }
 
 export type CodeIdConfig = {

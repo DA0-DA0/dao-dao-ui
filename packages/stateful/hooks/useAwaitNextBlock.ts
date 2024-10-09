@@ -10,7 +10,7 @@ import { useChain } from '@dao-dao/stateless'
 // Returns a function that polls the chain's block height and resolves once it
 // increments.
 export const useAwaitNextBlock = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const clientLoadable = useRecoilValueLoadable(
     cosmWasmClientForChainSelector(chainId)

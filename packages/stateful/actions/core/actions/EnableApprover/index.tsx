@@ -157,7 +157,7 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
             depositInfo && 'cw20' in depositInfo.denom
               ? await this.options.queryClient.fetchQuery(
                   contractQueries.secretCodeHash({
-                    chainId: this.options.chain.chain_id,
+                    chainId: this.options.chain.chainId,
                     address: depositInfo.denom.cw20,
                   })
                 )
@@ -234,7 +234,7 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
         }
 
         return makeExecuteSmartContractMessage({
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           contractAddress: m.address,
           sender: this.options.address,
           msg: {

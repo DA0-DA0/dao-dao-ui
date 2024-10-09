@@ -38,7 +38,7 @@ export class DeletePostAction extends ActionBase<DeletePostData> {
 
     // The chain that Press is set up on. If chain ID is undefined, default to
     // native DAO chain for backwards compatibility.
-    const pressChainId = pressData.chainId || options.chain.chain_id
+    const pressChainId = pressData.chainId || options.chain.chainId
     this.pressChainId = pressChainId
 
     this.Component = function DeletePostActionComponent(props) {

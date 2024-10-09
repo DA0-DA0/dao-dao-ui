@@ -47,7 +47,7 @@ import {
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
   } = useActionOptions()
 
   const governanceToken = useDaoGovernanceToken() ?? undefined

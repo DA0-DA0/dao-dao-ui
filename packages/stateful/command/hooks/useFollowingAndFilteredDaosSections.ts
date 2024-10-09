@@ -50,7 +50,7 @@ export const useFollowingAndFilteredDaosSections = ({
       ? waitForAllSettled(
           chains.map(({ chain }) =>
             searchDaosSelector({
-              chainId: chain.chain_id,
+              chainId: chain.chainId,
               query: options.filter,
               limit,
               // Exclude following DAOs from search since they show in a
@@ -58,7 +58,7 @@ export const useFollowingAndFilteredDaosSections = ({
               exclude: followingDaosLoading.loading
                 ? undefined
                 : followingDaosLoading.data
-                    .filter(({ chainId }) => chainId === chain.chain_id)
+                    .filter(({ chainId }) => chainId === chain.chainId)
                     .map(({ coreAddress }) => coreAddress),
             })
           )

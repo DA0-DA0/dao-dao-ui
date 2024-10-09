@@ -103,7 +103,7 @@ export const ExecuteProposalComponent: ActionComponent<
             register={register}
             validation={[
               validateRequired,
-              makeValidateAddress(getChainForChainId(chainId).bech32_prefix),
+              makeValidateAddress(getChainForChainId(chainId).bech32Prefix),
             ]}
           />
         </ChainProvider>

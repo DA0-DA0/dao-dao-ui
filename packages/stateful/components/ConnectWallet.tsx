@@ -14,10 +14,9 @@ import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const { t } = useTranslation()
 
-  const {
-    chain: { chain_name: currentChainName } = { chain_name: undefined },
-  } = useChainContextIfAvailable() ?? {}
-  const chainName = currentChainName || getSupportedChains()[0].chain.chain_name
+  const { chain: { chainName: currentChainName } = { chainName: undefined } } =
+    useChainContextIfAvailable() ?? {}
+  const chainName = currentChainName || getSupportedChains()[0].chain.chainName
 
   const { getWalletRepo } = useManager()
 
@@ -25,7 +24,7 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const mainWalletChainId = useRecoilValue(walletChainIdAtom)
   // Get main wallet connection.
   const mainWallet = getWalletRepo(
-    maybeGetChainForChainId(mainWalletChainId)?.chain_name || chainName
+    maybeGetChainForChainId(mainWalletChainId)?.chainName || chainName
   )?.current
 
   const {

@@ -13,7 +13,7 @@ export const WalletFiatRampModal = (
 
   return (
     <KadoModal
-      chainId={chain.chain_id}
+      chainId={chain.chainId}
       header={{
         title: t('title.fiatOnOffRamp'),
         subtitle: t('info.fiatOnOffRampDescription'),

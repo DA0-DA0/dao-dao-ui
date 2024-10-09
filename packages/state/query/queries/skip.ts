@@ -1,11 +1,13 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
+  AnyChain,
   GenericTokenSource,
   SkipAsset,
   SkipChain,
   TokenType,
 } from '@dao-dao/types'
+import { convertSkipChainToAnyChain } from '@dao-dao/utils'
 
 import { indexerQueries } from './indexer'
 
@@ -19,9 +21,9 @@ export const fetchSkipChain = async (
   }: {
     chainId: string
   }
-): Promise<SkipChain> => {
+): Promise<AnyChain> => {
   const chain = await queryClient.fetchQuery(
-    indexerQueries.snapper({
+    indexerQueries.snapper<SkipChain>({
       query: 'skip-chain',
       parameters: {
         chainId,
@@ -33,7 +35,7 @@ export const fetchSkipChain = async (
     throw new Error('No Skip chain found')
   }
 
-  return chain
+  return convertSkipChainToAnyChain(chain)
 }
 
 /**
@@ -103,7 +105,11 @@ export const fetchSkipChainPfmEnabled = async (
   { chainId }: { chainId: string }
 ): Promise<boolean> => {
   const chain = await fetchSkipChain(queryClient, { chainId })
-  return chain?.ibc_capabilities?.cosmos_pfm ?? chain?.pfm_enabled ?? false
+  return (
+    chain?.skipChain?.ibc_capabilities?.cosmos_pfm ??
+    chain?.skipChain?.pfm_enabled ??
+    false
+  )
 }
 
 export const skipQueries = {

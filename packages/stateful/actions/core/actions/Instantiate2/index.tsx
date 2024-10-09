@@ -156,7 +156,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
 
   constructor(options: ActionOptions) {
     // Secret Network does not support instantiate2.
-    if (isSecretNetwork(options.chain.chain_id)) {
+    if (isSecretNetwork(options.chain.chainId)) {
       throw new Error('Instantiate2 is not supported on Secret Network.')
     }
 
@@ -172,7 +172,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       sender: options.address,
       admin: options.address,
       codeId: 0,
@@ -228,13 +228,13 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
 
     return account.type === AccountType.Polytone
       ? maybeMakePolytoneExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           instantiate2Msg
         )
       : account.type === AccountType.Ica
       ? maybeMakeIcaExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           this.options.address,
           account.address,

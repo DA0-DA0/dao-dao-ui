@@ -31,7 +31,7 @@ import {
 
 const Component: ActionComponent = (props) => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
   const availableWidgets = useMemo(() => getWidgets(chainId), [chainId])
   const loadingExistingWidgets = useWidgets()

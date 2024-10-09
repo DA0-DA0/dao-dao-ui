@@ -100,7 +100,7 @@ export const getPfmChainPathFromMemo = (
   const {
     destinationChain: { chain_name },
   } = getIbcTransferInfoFromChannel(sourceChainId, sourceChannelId)
-  const toChainId = getChainForChainName(chain_name).chain_id
+  const toChainId = getChainForChainName(chain_name).chainId
 
   return [
     sourceChainId,

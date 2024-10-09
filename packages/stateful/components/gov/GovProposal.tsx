@@ -45,7 +45,7 @@ type InnerGovProposalProps = {
 
 const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const dao = useDaoIfAvailable()
 
   const proposalId = proposal.id.toString()
@@ -168,7 +168,7 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
 }
 
 export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const queryClient = useQueryClient()
   const proposalLoading = useQueryLoadingDataWithError(
     proposalInfo

@@ -67,7 +67,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   options: { AddressInput, balances },
 }) => {
   const { t } = useTranslation()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const { control, register, setValue, getValues, watch } =
     useFormContext<AuthzGrantRevokeData>()

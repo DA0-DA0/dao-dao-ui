@@ -35,7 +35,7 @@ import { ViewSurveyPageProps } from './types'
 
 export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
   const { coreAddress } = useDao()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))

@@ -38,7 +38,7 @@ const InnerGovProposalVotes = ({
   proposalId,
   ...props
 }: GovProposalVotesProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const queryClient = useQueryClient()
 
   // Load all staked voting power.

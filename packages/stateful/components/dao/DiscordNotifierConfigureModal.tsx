@@ -36,7 +36,7 @@ import { ConnectWallet } from '../ConnectWallet'
 export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { getDaoPath } = useDaoNavHelpers()
   const { coreAddress } = useDao()
   const { isWalletConnected, hexPublicKey } = useWallet({

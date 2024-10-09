@@ -79,7 +79,7 @@ export const GovernanceConfigurationInput = ({
   const { address: walletAddress } = useWallet()
 
   const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
     config,
   } = useSupportedChainContext()
 

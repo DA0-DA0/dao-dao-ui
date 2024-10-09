@@ -125,7 +125,7 @@ export const Rate = ({
   const { survey } = status
 
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const { watch, setValue, handleSubmit, reset } = useForm<RatingsFormData>({
     defaultValues: {

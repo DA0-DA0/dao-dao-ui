@@ -241,7 +241,7 @@ export const fetchCryptographicMultisigAccount = async ({
   chainId: string
   address: string
 }): Promise<CryptographicMultisigAccount> => {
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
 
   const { account } = await client.auth.v1beta1.account({

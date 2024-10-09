@@ -1,4 +1,4 @@
-import { AssetList } from '@chain-registry/types'
+import { Asset } from '@chain-registry/types'
 import { fromBase64 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
@@ -1268,12 +1268,12 @@ export const fetchChainRegistryAssets = async ({
   chainId,
 }: {
   chainId: string
-}): Promise<AssetList['assets']> =>
+}): Promise<Asset[]> =>
   (
     await (
       await fetch(
         `https://raw.githubusercontent.com/cosmos/chain-registry/master/${
-          getChainForChainId(chainId).chain_name
+          getChainForChainId(chainId).chainName
         }/assetlist.json`
       )
     ).json()

@@ -23,7 +23,7 @@ export const getChainAssets = (chainId: string) => {
       assets
         .find(
           ({ chain_name }) =>
-            chain_name === getChainForChainId(chainId).chain_name
+            chain_name === getChainForChainId(chainId).chainName
         )
         ?.assets.map((asset) =>
           convertChainRegistryAssetToGenericToken(chainId, asset)

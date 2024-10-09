@@ -32,7 +32,7 @@ export const MainDaoInfoCards = () => {
 
 const InnerMainDaoInfoCards = () => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const {
     hooks: { useMainDaoInfoCards },
   } = useVotingModuleAdapter()

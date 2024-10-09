@@ -1,10 +1,10 @@
-import { Chain } from '@chain-registry/types'
 import { QueryClient } from '@tanstack/react-query'
 import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { ActionMaker } from './actions'
+import { AnyChain } from './chain'
 import { IProposalModuleBase } from './clients'
 import {
   DaoInfoCard,
@@ -152,7 +152,7 @@ export type IProposalModuleAdapterOptions = {
   /**
    * The DAO's native chain.
    */
-  chain: Chain
+  chain: AnyChain
   /**
    * The DAO's core contract address.
    */

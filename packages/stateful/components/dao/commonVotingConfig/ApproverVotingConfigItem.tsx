@@ -30,7 +30,7 @@ const ApproverInput = ({
   DaoCreationVotingConfigWithApprover &
     DaoCreationVotingConfigWithEnableMultipleChoice
 >) => {
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   return (
     <div className="flex flex-col gap-2">

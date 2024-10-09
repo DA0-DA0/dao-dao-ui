@@ -55,7 +55,7 @@ export const UploadCodeComponent: ActionComponent<UploadCodeOptions> = ({
   const { setValue, watch, control, register } =
     useFormContext<UploadCodeData>()
 
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const accessType = watch((fieldNamePrefix + 'accessType') as 'accessType')
   const {

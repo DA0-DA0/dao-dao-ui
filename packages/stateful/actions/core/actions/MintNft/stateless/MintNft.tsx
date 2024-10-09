@@ -27,7 +27,7 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
   options: { nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const { register } = useFormContext()
 

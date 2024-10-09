@@ -22,7 +22,7 @@ import { GovActionsProvider } from '../../actions'
 import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const tokenCardInfos = useCachedLoadingWithError(
     communityPoolBalancesSelector({

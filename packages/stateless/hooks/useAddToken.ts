@@ -8,7 +8,7 @@ import { useChain } from '../contexts/Chain'
 
 export const useAddToken = () => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const addToken = useMemo(
     () =>

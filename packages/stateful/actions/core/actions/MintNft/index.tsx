@@ -166,12 +166,12 @@ export class MintNftAction extends ActionBase<MintNftData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       contractChosen: false,
       collectionAddress: undefined,
 
       instantiateData: {
-        chainId: options.chain.chain_id,
+        chainId: options.chain.chainId,
         name: '',
         symbol: '',
       },
@@ -203,7 +203,7 @@ export class MintNftAction extends ActionBase<MintNftData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

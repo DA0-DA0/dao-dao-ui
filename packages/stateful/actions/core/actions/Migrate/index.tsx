@@ -96,7 +96,7 @@ export class MigrateAction extends ActionBase<MigrateData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       contract: '',
       codeId: 0,
       msg: '{}',
@@ -112,7 +112,7 @@ export class MigrateAction extends ActionBase<MigrateData> {
     const msg = JSON5.parse(msgString)
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       isSecretNetwork(chainId)
         ? makeStargateMessage({

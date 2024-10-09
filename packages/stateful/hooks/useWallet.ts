@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
@@ -19,7 +18,7 @@ import {
   useChainContextIfAvailable,
   useUpdatingRef,
 } from '@dao-dao/stateless'
-import { LoadingData } from '@dao-dao/types'
+import { AnyChain, LoadingData } from '@dao-dao/types'
 import {
   SecretSigningCosmWasmClient,
   SupportedSigningCosmWasmClient,
@@ -49,7 +48,7 @@ export type UseWalletOptions = {
 
 export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
   // Use chain from our version of the chain-registry.
-  chain: Chain
+  chain: AnyChain
   account: WalletAccount | undefined
   hexPublicKey: LoadingData<string>
   /**
@@ -88,7 +87,7 @@ export const useWallet = ({
       : currentChain || maybeGetChainForChainId(walletChainId)) ||
     getSupportedChains()[0].chain
 
-  const _walletChain = useChain(chain.chain_name, false)
+  const _walletChain = useChain(chain.chainName, false)
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
   const walletChainRef = useUpdatingRef(_walletChain)
@@ -97,7 +96,7 @@ export const useWallet = ({
   const mainWalletChainId = useRecoilValue(walletChainIdAtom)
   // Get main wallet connection.
   const mainWallet = getWalletRepo(
-    maybeGetChainForChainId(mainWalletChainId)?.chain_name || chain.chain_name
+    maybeGetChainForChainId(mainWalletChainId)?.chainName || chain.chainName
   )?.current
   const mainWalletConnected = !!mainWallet?.isWalletConnected
   // Memoize wallet chain since it changes every render. The hook above forces
@@ -124,7 +123,7 @@ export const useWallet = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     mainWalletConnected,
-    chain.chain_name,
+    chain.chainName,
     walletChainRef.current.wallet?.name,
     walletChainRef.current.status,
   ])
@@ -200,12 +199,12 @@ export const useWallet = ({
   const queryClient = useQueryClient()
   useEffect(() => {
     queryClient.prefetchQuery({
-      ...chainQueries.dynamicGasPrice({ chainId: chain.chain_id }),
+      ...chainQueries.dynamicGasPrice({ chainId: chain.chainId }),
       // Make stale in less than a minute so it refreshes in the
       // `useAutoRefreshData` hook that runs every minute.
       staleTime: 50 * 1000,
     })
-  }, [queryClient, chain.chain_id])
+  }, [queryClient, chain.chainId])
 
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletChainRef.current.address ?? '')
@@ -255,7 +254,7 @@ export const useWallet = ({
       // TODO(secret): support different enigma utils sources based on connected
       // wallet
       const getSecretUtils = () => {
-        const secretUtils = window.keplr?.getEnigmaUtils(chain.chain_id)
+        const secretUtils = window.keplr?.getEnigmaUtils(chain.chainId)
         if (!secretUtils) {
           throw new Error('No Secret utils found')
         }
@@ -264,19 +263,19 @@ export const useWallet = ({
 
       // Get Secret Network signing client with Keplr's encryption utils.
       const getSecretSigningCosmWasmClient = async () => {
-        if (!isSecretNetwork(chain.chain_id)) {
+        if (!isSecretNetwork(chain.chainId)) {
           throw new Error('Not on Secret Network')
         }
 
         const signer = walletChainRef.current.getOfflineSignerAmino()
 
         return await SecretSigningCosmWasmClient.secretConnectWithSigner(
-          getRpcForChainId(chain.chain_id),
+          getRpcForChainId(chain.chainId),
           signer,
-          makeGetSignerOptions(queryClient)(chain),
+          makeGetSignerOptions(queryClient)(chain.chainName),
           {
-            url: getLcdForChainId(chain.chain_id),
-            chainId: chain.chain_id,
+            url: getLcdForChainId(chain.chainId),
+            chainId: chain.chainId,
             wallet: signer,
             walletAddress: walletChainRef.current.address,
             encryptionUtils: getSecretUtils(),
@@ -285,7 +284,7 @@ export const useWallet = ({
       }
 
       // Get relevant signing client based on chain.
-      const getSigningClient = isSecretNetwork(chain.chain_id)
+      const getSigningClient = isSecretNetwork(chain.chainId)
         ? getSecretSigningCosmWasmClient
         : walletChainRef.current.getSigningCosmWasmClient
 
@@ -296,7 +295,7 @@ export const useWallet = ({
           // Fallback to getting chain wallet from repo if not set on
           // walletChain. This won't be set if the walletChain is disconnected.
           (mainWalletRef.current
-            ? getWalletRepo(chain.chain_name).getWallet(
+            ? getWalletRepo(chain.chainName).getWallet(
                 mainWalletRef.current.walletName
               )
             : undefined),

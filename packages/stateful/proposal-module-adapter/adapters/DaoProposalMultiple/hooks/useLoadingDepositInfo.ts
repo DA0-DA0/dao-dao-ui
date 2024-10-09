@@ -14,7 +14,7 @@ export const useLoadingDepositInfo = (): LoadingData<
   const {
     proposalModule: { prePropose },
     proposalNumber,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useProposalModuleAdapterOptions()
 
   const selectorValue = useCachedLoadable<

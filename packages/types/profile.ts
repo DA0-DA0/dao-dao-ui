@@ -1,4 +1,4 @@
-import { Chain } from '@chain-registry/types'
+import { AnyChain } from './chain'
 
 export type PfpkPublicKey = {
   /**
@@ -120,7 +120,7 @@ export type ProfileChain = {
   /**
    * The chain object.
    */
-  chain: Chain
+  chain: AnyChain
   /**
    * Whether or not this is a DAO DAO-supported chain.
    */

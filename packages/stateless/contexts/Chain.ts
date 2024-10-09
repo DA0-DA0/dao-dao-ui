@@ -1,7 +1,7 @@
-import { Chain } from '@chain-registry/types'
 import { createContext, useContext, useMemo } from 'react'
 
 import {
+  AnyChain,
   ConfiguredChainContext,
   IChainContext,
   SupportedChainContext,
@@ -51,4 +51,4 @@ export const useSupportedChainContext = (): SupportedChainContext => {
   return context as SupportedChainContext
 }
 
-export const useChain = (): Chain => useChainContext().chain
+export const useChain = (): AnyChain => useChainContext().chain

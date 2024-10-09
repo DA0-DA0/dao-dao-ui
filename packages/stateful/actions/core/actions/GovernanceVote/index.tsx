@@ -184,7 +184,7 @@ export class GovernanceVoteAction extends ActionBase<GovernanceVoteData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       proposalId: '',
       vote: VoteOption.VOTE_OPTION_ABSTAIN,
     }
@@ -196,7 +196,7 @@ export class GovernanceVoteAction extends ActionBase<GovernanceVoteData> {
     vote,
   }: GovernanceVoteData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       {
         gov: {

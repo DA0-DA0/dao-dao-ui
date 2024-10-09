@@ -68,7 +68,7 @@ export const useProposalVetoState = ({
   const { t } = useTranslation()
   const router = useRouter()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useConfiguredChainContext()
   const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()

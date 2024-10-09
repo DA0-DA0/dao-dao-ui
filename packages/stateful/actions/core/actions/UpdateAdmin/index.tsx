@@ -42,7 +42,7 @@ const Component: ActionComponent = (props) => {
   const { watch } = useFormContext<UpdateAdminData>()
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
 
   const contract = watch((props.fieldNamePrefix + 'contract') as 'contract')
 
@@ -90,7 +90,7 @@ export class UpdateAdminAction extends ActionBase<UpdateAdminData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       contract: '',
       newAdmin: '',
     }
@@ -98,7 +98,7 @@ export class UpdateAdminAction extends ActionBase<UpdateAdminData> {
 
   encode({ chainId, contract, newAdmin }: UpdateAdminData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       isSecretNetwork(chainId)
         ? makeStargateMessage({

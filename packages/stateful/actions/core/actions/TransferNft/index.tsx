@@ -42,7 +42,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch } = useFormContext<TransferNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
@@ -110,7 +110,7 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       collection: '',
       tokenId: '',
       recipient: '',
@@ -134,7 +134,7 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

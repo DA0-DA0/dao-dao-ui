@@ -78,7 +78,7 @@ export class ActionMatcher implements IActionMatcher {
       const processedMessages = await Promise.all(
         messages.map((message) =>
           this.messageProcessor({
-            chainId: this.options.chain.chain_id,
+            chainId: this.options.chain.chainId,
             sender: this.options.address,
             message,
             queryClient: this.options.queryClient,

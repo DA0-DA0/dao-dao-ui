@@ -35,7 +35,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 }) => {
   const { t } = useTranslation()
   const options = useActionOptions()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
   const { register, control } = useFormContext()
 
   const address = getChainAddressForActionOptions(options, chainId)

@@ -28,7 +28,7 @@ export const NeutronOverruleSubDaoProposalComponent: ActionComponent<
 > = ({ fieldNamePrefix, options: { EntityDisplay, ProposalLine } }) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
   const { watch } = useFormContext<NeutronOverruleSubDaoProposalData>()
   const { getDaoProposalPath } = useDaoNavHelpers()

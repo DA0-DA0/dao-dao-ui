@@ -84,7 +84,7 @@ export class HideIcaAction extends ActionBase<HideIcaData> {
     // Hide from picker if chain does not support ICA controller.
     this.metadata.hideFromPicker = !(await this.options.queryClient.fetchQuery(
       chainQueries.supportsIcaController({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
       })
     ))
 

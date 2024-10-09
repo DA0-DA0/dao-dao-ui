@@ -58,7 +58,7 @@ export const useProposalActionState = ({
 }: UseProposalActionStateOptions): UseProposalActionStateReturn => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useConfiguredChainContext()
   const {
     coreAddress,

@@ -56,7 +56,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
   const {
     address,
     context,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
 
   const targetAddress = watch(

@@ -78,7 +78,7 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
             daoRewardsDistributorExtraQueries.distributions(
               this.options.queryClient,
               {
-                chainId: this.options.chain.chain_id,
+                chainId: this.options.chain.chainId,
                 address,
               }
             )
@@ -93,7 +93,7 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
                 remaining: HugeDecimal.from(
                   await this.options.queryClient.fetchQuery(
                     daoRewardsDistributorQueries.undistributedRewards({
-                      chainId: this.options.chain.chain_id,
+                      chainId: this.options.chain.chainId,
                       contractAddress: address,
                       args: { id: distribution.id },
                     })
@@ -122,7 +122,7 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: address,
       msg: {

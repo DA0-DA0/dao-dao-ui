@@ -31,7 +31,7 @@ import { CreateSurvey as StatelessCreateSurvey } from '../../stateless/pages/Cre
 
 export const CreateSurvey = () => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { coreAddress } = useDao()
   const { getDaoPath } = useDaoNavHelpers()
   const router = useRouter()

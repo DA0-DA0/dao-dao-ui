@@ -25,7 +25,7 @@ export const MintNft: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch } = useFormContext()
 
@@ -35,7 +35,7 @@ export const MintNft: ActionComponent = (props) => {
     collectionAddress = '',
     mintMsg,
   }: MintNftData = watch(props.fieldNamePrefix)
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
 
   const nftInfoLoading = useCachedLoading<NftCardInfo | undefined>(
     // Nothing to load if creating.

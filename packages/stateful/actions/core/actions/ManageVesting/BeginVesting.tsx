@@ -126,7 +126,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const {
     context,
     chainContext,
-    chain: { chain_id: nativeChainId },
+    chain: { chainId: nativeChainId },
   } = actionOptions
 
   if (chainContext.type !== ActionChainContextType.Supported) {
@@ -259,7 +259,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     return null
   }
 
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
   const chainAddressOwner = getChainAddressForActionOptions(
     actionOptions,
     chainId

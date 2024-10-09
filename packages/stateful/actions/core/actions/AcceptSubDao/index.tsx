@@ -75,7 +75,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       address: '',
     }
   }
@@ -90,7 +90,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
     }
 
     if (
-      !isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
+      !isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
     ) {
       throw new Error('Invalid SubDAO address')
     }
@@ -116,7 +116,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
     // a cross-chain SubDAO.
     const subDaoAddressOnOurChain = getAccountAddress({
       accounts: subDaoAccounts,
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       types: [AccountType.Base, AccountType.Polytone],
     })
     if (!subDaoAddressOnOurChain) {
@@ -126,51 +126,47 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
     }
 
     return [
-      ...maybeMakePolytoneExecuteMessages(
-        this.options.chain.chain_id,
-        chainId,
-        [
-          makeExecuteSmartContractMessage({
-            chainId,
-            sender,
-            contractAddress: address,
-            msg: {
-              accept_admin_nomination: {},
-            },
-          }),
-          // Check if SubDAO is currently set to itself. If so, we can DAO admin
-          // execute to update the contract-level admin to us right after
-          // accepting the admin nomination.
-          ...(subDaoAdmin === address
-            ? [
-                makeExecuteSmartContractMessage({
-                  chainId,
-                  sender,
-                  contractAddress: address,
-                  msg: {
-                    execute_admin_msgs: {
-                      msgs: [
-                        {
-                          wasm: {
-                            update_admin: {
-                              contract_addr: address,
-                              admin: sender,
-                            },
+      ...maybeMakePolytoneExecuteMessages(this.options.chain.chainId, chainId, [
+        makeExecuteSmartContractMessage({
+          chainId,
+          sender,
+          contractAddress: address,
+          msg: {
+            accept_admin_nomination: {},
+          },
+        }),
+        // Check if SubDAO is currently set to itself. If so, we can DAO admin
+        // execute to update the contract-level admin to us right after
+        // accepting the admin nomination.
+        ...(subDaoAdmin === address
+          ? [
+              makeExecuteSmartContractMessage({
+                chainId,
+                sender,
+                contractAddress: address,
+                msg: {
+                  execute_admin_msgs: {
+                    msgs: [
+                      {
+                        wasm: {
+                          update_admin: {
+                            contract_addr: address,
+                            admin: sender,
                           },
                         },
-                      ],
-                    },
+                      },
+                    ],
                   },
-                }),
-              ]
-            : []),
-        ]
-      ),
+                },
+              }),
+            ]
+          : []),
+      ]),
       // If we're a DAO, add to our SubDAOs list.
       ...(this.options.context.type === ActionContextType.Dao
         ? [
             makeExecuteSmartContractMessage({
-              chainId: this.options.chain.chain_id,
+              chainId: this.options.chain.chainId,
               sender: this.options.address,
               contractAddress: this.options.address,
               msg: {
@@ -210,7 +206,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
     )
     const subDaoAccountOnOurChain = getAccountAddress({
       accounts: subDaoAccounts,
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       types: [AccountType.Base, AccountType.Polytone],
     })
 

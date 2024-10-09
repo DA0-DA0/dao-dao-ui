@@ -11,7 +11,7 @@ export const useLoadingGovProposalWalletVoteInfo = (
   proposalId: number | string
 ): LoadingDataWithError<GovProposalWalletVoteInfo> => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useConfiguredChainContext()
   const { address: voter } = useWallet()
   const queryClient = useQueryClient()

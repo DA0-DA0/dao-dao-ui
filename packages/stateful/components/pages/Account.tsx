@@ -54,7 +54,7 @@ export const Account: NextPage = () => {
   const { prefix } = fromBech32(address as string)
   // Choose first chain matching bech32 prefix.
   const configuredChain =
-    getConfiguredChains().find(({ chain }) => chain.bech32_prefix === prefix) ||
+    getConfiguredChains().find(({ chain }) => chain.bech32Prefix === prefix) ||
     getConfiguredChains()[0]
   // Transform just in case there was no chain found and we defaulted to the
   // first configured chain.

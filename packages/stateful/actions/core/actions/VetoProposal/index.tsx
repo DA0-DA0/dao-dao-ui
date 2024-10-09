@@ -42,7 +42,7 @@ import {
 const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
   const { isCreating, fieldNamePrefix } = props
   const {
-    chain: { chain_id: daoChainId },
+    chain: { chainId: daoChainId },
     address,
   } = useActionOptions()
   const { watch, setValue } = useFormContext<VetoProposalData>()
@@ -161,7 +161,7 @@ export class VetoProposalAction extends ActionBase<VetoProposalData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       coreAddress: '',
       proposalModuleAddress: '',
       proposalId: -1,
@@ -209,7 +209,7 @@ export class VetoProposalAction extends ActionBase<VetoProposalData> {
     })
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       isCw1Whitelist
         ? makeCw1WhitelistExecuteMessage({

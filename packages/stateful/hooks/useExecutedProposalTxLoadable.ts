@@ -6,7 +6,7 @@ import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { useProposalModuleAdapterIfAvailable } from '../proposal-module-adapter'
 
 export const useExecutedProposalTxLoadable = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   // Use proposal execution hash to find instantiated
   // address if already instantiated. If not in a proposal, the proposal module

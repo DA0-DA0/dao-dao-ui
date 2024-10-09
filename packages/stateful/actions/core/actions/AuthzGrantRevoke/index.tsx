@@ -109,7 +109,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
     })
 
     this._defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       mode: 'grant',
       authorizationTypeUrl: AUTHORIZATION_TYPES[0].type.typeUrl,
       customTypeUrl: false,
@@ -202,7 +202,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
     expiration.setMilliseconds(0)
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: {

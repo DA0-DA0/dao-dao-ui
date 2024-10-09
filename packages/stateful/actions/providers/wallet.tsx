@@ -26,7 +26,7 @@ export const WalletActionsProvider = ({
   const accounts = useQueryLoadingDataWithError(
     address
       ? accountQueries.list(queryClient, {
-          chainId: chain.chain_id,
+          chainId: chain.chainId,
           address,
         })
       : undefined

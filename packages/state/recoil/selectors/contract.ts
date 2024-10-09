@@ -171,7 +171,7 @@ export const isContractSelector = selectorFamily<
       if (
         !isValidBech32Address(
           contractAddress,
-          getChainForChainId(chainId).bech32_prefix
+          getChainForChainId(chainId).bech32Prefix
         )
       ) {
         return false

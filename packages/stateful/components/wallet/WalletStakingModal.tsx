@@ -37,7 +37,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
   const { t } = useTranslation()
 
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     nativeToken,
   } = useChainContext()
   const {

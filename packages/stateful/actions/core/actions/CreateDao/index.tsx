@@ -16,7 +16,7 @@ import { daoQueries } from '../../../../queries'
 import { CreateDaoComponent, CreateDaoData } from './Component'
 
 const Component: ActionComponent<undefined, CreateDaoData> = (props) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   // If admin is set, attempt to load parent DAO info.
   const parentDao = useQueryLoadingDataWithError(

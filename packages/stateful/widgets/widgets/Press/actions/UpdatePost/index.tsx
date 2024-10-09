@@ -65,7 +65,7 @@ export class UpdatePostAction extends ActionBase<UpdatePostData> {
           contractAddress: pressData.contract,
           // The chain that Press is set up on. If chain ID is undefined,
           // default to native DAO chain for backwards compatibility.
-          chainId: pressData.chainId || options.chain.chain_id,
+          chainId: pressData.chainId || options.chain.chainId,
         }),
         []
       )

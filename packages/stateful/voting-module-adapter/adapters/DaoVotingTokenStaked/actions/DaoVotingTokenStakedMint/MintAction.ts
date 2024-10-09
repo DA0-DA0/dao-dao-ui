@@ -62,7 +62,7 @@ export class DaoVotingTokenStakedMintAction extends ActionBase<MintData> {
       daoVotingTokenStakedExtraQueries.validatedTokenfactoryIssuerContract(
         this.options.queryClient,
         {
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           address: this.options.context.dao.votingModule.address,
         }
       )
@@ -85,7 +85,7 @@ export class DaoVotingTokenStakedMintAction extends ActionBase<MintData> {
     return [
       // Set DAO minter allowance to the amount we're about to mint.
       makeExecuteSmartContractMessage({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         sender: this.options.address,
         contractAddress: this.tokenFactoryIssuerAddress,
         msg: {
@@ -97,7 +97,7 @@ export class DaoVotingTokenStakedMintAction extends ActionBase<MintData> {
       }),
       // Mint.
       makeExecuteSmartContractMessage({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         sender: this.options.address,
         contractAddress: this.tokenFactoryIssuerAddress,
         msg: {

@@ -26,7 +26,7 @@ import {
 const Component: ActionComponent = (props) => {
   const {
     address,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
 
   const currentlyEnabledLoading = useCachedLoadingWithError(
@@ -76,7 +76,7 @@ export class ManageVetoableDaosAction extends ActionBase<ManageVetoableDaosData>
     this.manageStorageItemsAction = manageStorageItemsAction
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       enable: true,
       address: '',
     }

@@ -35,7 +35,7 @@ export const PressEditor = ({
   const {
     config: { polytone },
   } = useSupportedChainContext()
-  const { chain_id: nativeChainId } = useChain()
+  const { chainId: nativeChainId } = useChain()
   const {
     name: daoName,
     info: { polytoneProxies },
@@ -109,7 +109,7 @@ export const PressEditor = ({
         throw new Error(t('error.loadingData'))
       }
 
-      setValue((fieldNamePrefix + 'chainId') as 'chainId', chain.chain_id)
+      setValue((fieldNamePrefix + 'chainId') as 'chainId', chain.chainId)
       setValue((fieldNamePrefix + 'contract') as 'contract', contractAddress)
 
       toast.success(t('success.created'))

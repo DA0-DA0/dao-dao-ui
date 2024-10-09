@@ -113,7 +113,7 @@ export const ManageStakingComponent: ActionComponent<
   const selectedAction = stakeActions.find((a) => a.type === type)
 
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
     nativeToken,
   } = useChainContext()
 

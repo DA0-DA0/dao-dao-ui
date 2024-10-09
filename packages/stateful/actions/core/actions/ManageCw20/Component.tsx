@@ -126,7 +126,7 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
             type="contract"
             validation={[
               validateRequired,
-              makeValidateAddress(chain.bech32_prefix),
+              makeValidateAddress(chain.bech32Prefix),
               // Invalidate field if additional error is present.
               () => additionalAddressError || true,
             ]}

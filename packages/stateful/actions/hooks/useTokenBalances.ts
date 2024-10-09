@@ -51,7 +51,7 @@ export const useTokenBalances = ({
 > => {
   const {
     address,
-    chain: { chain_id: chainId },
+    chain: { chainId },
     context,
   } = useActionOptions()
 

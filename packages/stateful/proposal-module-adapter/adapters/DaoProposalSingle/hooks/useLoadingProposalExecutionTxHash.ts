@@ -11,7 +11,7 @@ export const useLoadingProposalExecutionTxHash = () => {
   const {
     proposalModule: { address: proposalModuleAddress, prePropose },
     proposalNumber,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useProposalModuleAdapterOptions()
 
   const loadingProposal = useLoadingProposal()

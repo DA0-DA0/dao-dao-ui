@@ -18,7 +18,7 @@ const NFTS_PER_PAGE = 30
 
 export const NftCollectionTab = () => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { collectionAddress, stakingContractAddress } =
     useGovernanceCollectionInfo()
 

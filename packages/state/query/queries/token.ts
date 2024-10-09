@@ -347,7 +347,7 @@ export const fetchTokenSource = async (
               getChainForChainName(
                 getIbcTransferInfoFromChannel(currentChainId, channel)
                   .destinationChain.chain_name
-              ).chain_id,
+              ).chainId,
             chainId
           )
 

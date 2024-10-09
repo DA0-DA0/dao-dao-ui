@@ -39,7 +39,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch } = useFormContext<BurnNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
@@ -114,7 +114,7 @@ export class BurnNftAction extends ActionBase<BurnNftData> {
 
   encode({ chainId, collection, tokenId }: BurnNftData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

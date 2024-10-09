@@ -35,7 +35,7 @@ export const fetchEntityInfo = async (
     ignoreEntities?: string[]
   }
 ): Promise<Entity> => {
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
 
   // Check if address is module account.
   const moduleName = await queryClient

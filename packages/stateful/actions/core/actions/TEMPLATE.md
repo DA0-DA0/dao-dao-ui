@@ -32,7 +32,7 @@ export class TemplateAction extends ActionBase<TemplateData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       address: '',
       field: '',
     }
@@ -40,7 +40,7 @@ export class TemplateAction extends ActionBase<TemplateData> {
 
   encode({ chainId, address, field }: TemplateData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

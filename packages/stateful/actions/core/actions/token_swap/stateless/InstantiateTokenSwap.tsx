@@ -35,7 +35,7 @@ export const InstantiateTokenSwap: ActionComponent<
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, watch, setValue, getValues, trigger } = useFormContext()
 

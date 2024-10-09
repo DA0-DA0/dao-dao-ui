@@ -47,7 +47,7 @@ export class FundRebalancerAction extends SpendAction {
 
     this.defaults = {
       ...this.defaults,
-      fromChainId: this.options.chain.chain_id,
+      fromChainId: this.options.chain.chainId,
       from: this.options.address,
       toChainId: this.valenceAccount.chainId,
       to: this.valenceAccount.address,

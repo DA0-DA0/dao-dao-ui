@@ -73,7 +73,7 @@ const InnerComponent: ActionComponent = (props) => {
   const { watch } = useFormContext()
 
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     nativeToken,
   } = useChainContext()
 
@@ -300,7 +300,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
         (
           await this.options.queryClient.fetchQuery(
             chainQueries.nativeDelegationInfo(this.options.queryClient, {
-              chainId: this.options.chain.chain_id,
+              chainId: this.options.chain.chainId,
               address: this.options.address,
             })
           )
@@ -308,7 +308,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       ''
 
     this.defaults = {
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       type: StakingActionType.Delegate,
       // Default to first validator if exists.
       validator: firstValidator,
@@ -400,7 +400,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       msg
     )

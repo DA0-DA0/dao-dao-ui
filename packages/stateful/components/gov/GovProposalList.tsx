@@ -27,7 +27,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   const chain = useChain()
   const { asPath } = useRouter()
   const queryClient = useQueryClient()
-  const hasIndexer = chainIsIndexed(chain.chain_id)
+  const hasIndexer = chainIsIndexed(chain.chainId)
 
   // Refresh all proposals on proposal WebSocket messages.
   const refreshGovProposals = useRefreshGovProposals()
@@ -35,14 +35,14 @@ export const GovProposalList = ({ className }: { className: string }) => {
 
   const openGovProposalsVotingPeriod = useQueryLoadingDataWithError(
     chainQueries.govProposals(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
     })
   )
 
   const govProposalsDepositPeriod = useQueryLoadingDataWithError(
     chainQueries.govProposals(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
     })
   )
@@ -50,7 +50,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   // Get max page by loading a single item and then getting the total.
   const loadingMaxPage = useQueryLoadingDataWithError(
     chainQueries.govProposals(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       limit: 1,
     })
   )
@@ -62,7 +62,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   const [page, setPage] = useState(1)
   const loadingPaginatedGovProposals = useQueryLoadingDataWithError(
     chainQueries.govProposals(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       offset: (page - 1) * PROPSALS_PER_PAGE,
       limit: PROPSALS_PER_PAGE,
     })
@@ -167,7 +167,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   const searchedGovProposals = useQueryLoadingDataWithError(
     showingSearchResults
       ? chainQueries.searchAndDecodeGovProposals(queryClient, {
-          chainId: chain.chain_id,
+          chainId: chain.chainId,
           query: search,
           limit: 20,
         })
@@ -182,7 +182,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
       canLoadMore={!showingSearchResults && page < maxPage}
       className={className}
       createNewProposalHref={asPath + '/create'}
-      daoName={getDisplayNameForChainId(chain.chain_id)}
+      daoName={getDisplayNameForChainId(chain.chainId)}
       daosWithVetoableProposals={[]}
       error={
         showingSearchResults

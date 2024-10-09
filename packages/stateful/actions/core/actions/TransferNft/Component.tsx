@@ -112,7 +112,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                   // contract.
                   (executeSmartContract
                     ? makeValidateAddress
-                    : makeValidateAddress)(chain.bech32_prefix),
+                    : makeValidateAddress)(chain.bech32Prefix),
                 ]}
               />
             </ChainProvider>

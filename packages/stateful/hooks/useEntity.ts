@@ -31,7 +31,7 @@ export type UseEntityReturn = {
  * (polytone) account address.
  */
 export const useEntity = (address: string): UseEntityReturn => {
-  const { chain_id: currentChainId, bech32_prefix: currentBech32Prefix } =
+  const { chainId: currentChainId, bech32Prefix: currentBech32Prefix } =
     useChain()
   const chainId = useMemo(() => {
     try {
@@ -43,7 +43,7 @@ export const useEntity = (address: string): UseEntityReturn => {
       // If prefix mismatch, try to find matching chain for prefix and use that
       // one instead.
       const matchingChainId = getConfiguredChains().find(
-        ({ chain }) => chain.bech32_prefix === prefix
+        ({ chain }) => chain.bech32Prefix === prefix
       )?.chainId
 
       if (matchingChainId) {

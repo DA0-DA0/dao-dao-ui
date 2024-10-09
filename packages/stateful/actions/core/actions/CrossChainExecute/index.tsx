@@ -52,7 +52,7 @@ const InnerComponent: ActionComponent = (props) => (
 )
 
 const InnerComponentWrapper: ActionComponent = (props) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const options = useActionOptions()
   const address = getChainAddressForActionOptions(options, chainId)
@@ -69,7 +69,7 @@ const InnerComponentWrapper: ActionComponent = (props) => {
 const Component: ActionComponent = (props) => {
   const {
     context,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
 
   const { watch } = useFormContext<CrossChainExecuteData>()
@@ -116,18 +116,18 @@ export class CrossChainExecuteAction extends ActionBase<CrossChainExecuteData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       msgs: [],
     }
   }
 
   encode({ chainId, msgs }: CrossChainExecuteData): UnifiedCosmosMsg[] {
-    if (this.options.chain.chain_id === chainId) {
+    if (this.options.chain.chainId === chainId) {
       throw new Error('Cannot execute on the same chain')
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       msgs
     )

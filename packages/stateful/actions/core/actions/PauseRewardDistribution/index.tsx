@@ -84,7 +84,7 @@ export class PauseRewardDistributionAction extends ActionBase<PauseRewardDistrib
               daoRewardsDistributorExtraQueries.distributions(
                 this.options.queryClient,
                 {
-                  chainId: this.options.chain.chain_id,
+                  chainId: this.options.chain.chainId,
                   address,
                 }
               )
@@ -121,7 +121,7 @@ export class PauseRewardDistributionAction extends ActionBase<PauseRewardDistrib
       }),
       // Pause the distribution.
       makeExecuteSmartContractMessage({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         sender: this.options.address,
         contractAddress: address,
         msg: {

@@ -46,7 +46,7 @@ export const CreateValenceAccountComponent: ActionComponent<
   options: { serviceFee, nativeBalances },
 }) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const { control, watch, setValue, setError, clearErrors } =
     useFormContext<CreateValenceAccountData>()

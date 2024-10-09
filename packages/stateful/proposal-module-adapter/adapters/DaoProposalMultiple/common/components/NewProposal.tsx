@@ -51,7 +51,7 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const {
     name: daoName,
     imageUrl: daoImageUrl,

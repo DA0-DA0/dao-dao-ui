@@ -6,12 +6,14 @@ import {
 } from 'chain-registry'
 
 import {
+  AnyChain,
   BaseChainConfig,
   ChainId,
   CodeHashConfig,
   CodeIdConfig,
   ContractVersion,
   PolytoneConfig,
+  SkipChain,
   SupportedChainConfig,
   TokenType,
 } from '@dao-dao/types'
@@ -32,18 +34,38 @@ const ALL_POLYTONE = _ALL_POLYTONE as unknown as Partial<
   Record<ChainId, PolytoneConfig>
 >
 
+export const convertChainRegistryChainToAnyChain = (
+  chain: Chain
+): AnyChain => ({
+  chainId: chain.chain_id,
+  chainName: chain.chain_name,
+  bech32Prefix: chain.bech32_prefix,
+  prettyName: chain.pretty_name ?? chain.chain_name,
+  chainRegistry: chain,
+})
+
+export const convertSkipChainToAnyChain = (chain: SkipChain): AnyChain => ({
+  chainId: chain.chain_id,
+  chainName: chain.chain_name,
+  bech32Prefix: chain.bech32_prefix,
+  prettyName: chain.pretty_name ?? chain.chain_name,
+  skipChain: chain,
+})
+
 //! ----- Modified chain-registry -----
-let chains = [...chainRegistryChains]
+let chains: AnyChain[] = chainRegistryChains.map(
+  convertChainRegistryChainToAnyChain
+)
 const assets = [...chainRegistryAssets]
 
 // BitSong Testnet
-const bitSongTestnetChain: Chain = {
-  ...chains.find((c) => c.chain_id === ChainId.BitsongMainnet)!,
+const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
+  ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
+  chain_id: ChainId.BitsongTestnet,
   chain_name: 'bitsongtestnet',
   status: 'live',
   network_type: 'testnet',
   pretty_name: 'BitSong Testnet',
-  chain_id: ChainId.BitsongTestnet,
   apis: {
     rpc: [
       {
@@ -56,22 +78,23 @@ const bitSongTestnetChain: Chain = {
       },
     ],
   },
-}
+})
 chains.push(bitSongTestnetChain)
 assets.push({
-  chain_name: bitSongTestnetChain.chain_name,
+  chain_name: bitSongTestnetChain.chainName,
   // Copy assets from BitSong mainnet.
   assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
 })
 
 // OmniFlix Hub Testnet
-const omniFlixHubTestnetChain: Chain = {
-  ...chains.find((c) => c.chain_id === ChainId.OmniflixHubMainnet)!,
+const omniFlixHubTestnetChain = convertChainRegistryChainToAnyChain({
+  ...chains.find((c) => c.chainId === ChainId.OmniflixHubMainnet)!
+    .chainRegistry!,
+  chain_id: ChainId.OmniflixHubTestnet,
   chain_name: 'omniflixhubtestnet',
   status: 'live',
   network_type: 'testnet',
   pretty_name: 'OmniFlix Hub Testnet',
-  chain_id: ChainId.OmniflixHubTestnet,
   apis: {
     rpc: [
       {
@@ -84,22 +107,21 @@ const omniFlixHubTestnetChain: Chain = {
       },
     ],
   },
-}
+})
 chains.push(omniFlixHubTestnetChain)
 assets.push({
-  chain_name: omniFlixHubTestnetChain.chain_name,
+  chain_name: omniFlixHubTestnetChain.chainName,
   // Copy assets from OmniFlix Hub mainnet.
   assets: assets.find((a) => a.chain_name === 'omniflixhub')?.assets ?? [],
 })
 
 // Remove thorchain and althea since they spam the console.
 const chainsToRemove = ['thorchain', 'althea']
-chains = chains.filter((chain) => !chainsToRemove.includes(chain.chain_name))
+chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
 
 // Shrink Cosmos Hub ICS provider testnet name since Keplr thinks it's too long.
-chains.find(
-  (c) => c.chain_id === ChainId.CosmosHubProviderTestnet
-)!.pretty_name = 'Cosmos ICS Provider Testnet'
+chains.find((c) => c.chainId === ChainId.CosmosHubProviderTestnet)!.prettyName =
+  'Cosmos ICS Provider Testnet'
 
 export { chains, assets }
 //! ----- Modified chain-registry -----
@@ -720,27 +742,31 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
   ...chains
     .flatMap((chain): BaseChainConfig | [] => {
       // Skip if chain already exists in configured chains.
-      if (SUPPORTED_CHAINS.some((c) => c.chainId === chain.chain_id)) {
+      if (SUPPORTED_CHAINS.some((c) => c.chainId === chain.chainId)) {
         return []
       }
 
       // Skip if no RPC exists for chain. Can't use `getRpcForChainId` helper
       // because that file depends on this one. Yay circular dependencies.
-      if (!(chain.chain_id in CHAIN_ENDPOINTS) && !chain.apis?.rpc?.length) {
+      if (
+        !(chain.chainId in CHAIN_ENDPOINTS) &&
+        !chain.chainRegistry?.apis?.rpc?.length
+      ) {
         return []
       }
 
       let explorerUrlTemplates: BaseChainConfig['explorerUrlTemplates'] =
         undefined
-      if (chain.explorers) {
+      const explorers = chain.chainRegistry?.explorers
+      if (explorers) {
         const pingPubOrMintscanExplorer =
-          chain.explorers?.find(
+          explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'ping.pub' &&
               // Some explorers have kind = 'ping.pub' but the wrong URL.
               explorer.url?.includes('ping.pub')
           ) ||
-          chain.explorers?.find(
+          explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'mintscan' &&
               explorer.url?.includes('mintscan.io')
@@ -755,7 +781,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
         }
 
         if (!explorerUrlTemplates) {
-          const atomScanExplorer = chain.explorers?.find(
+          const atomScanExplorer = explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'atomscan' &&
               explorer.url?.includes('atomscan.com')
@@ -771,7 +797,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
         }
 
         if (!explorerUrlTemplates) {
-          const bigDipperExplorer = chain.explorers?.find(
+          const bigDipperExplorer = explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'bigdipper' &&
               explorer.url?.includes('bigdipper.live')
@@ -787,7 +813,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
         }
 
         if (!explorerUrlTemplates) {
-          const explorersGuruExplorer = chain.explorers?.find(
+          const explorersGuruExplorer = explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'explorers.guru' &&
               explorer.url?.includes('explorers.guru')
@@ -803,7 +829,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
         }
 
         if (!explorerUrlTemplates) {
-          const stakeflowExplorer = chain.explorers?.find(
+          const stakeflowExplorer = explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'stakeflow' &&
               explorer.url?.includes('stakeflow.io')
@@ -820,11 +846,11 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
       }
 
       return {
-        chainId: chain.chain_id,
-        name: chain.chain_name,
-        mainnet: chain.network_type === 'mainnet',
+        chainId: chain.chainId,
+        name: chain.chainName,
+        mainnet: chain.chainRegistry?.network_type === 'mainnet',
         accentColor: '',
-        noGov: NO_GOV_CHAIN_IDS.includes(chain.chain_id),
+        noGov: NO_GOV_CHAIN_IDS.includes(chain.chainId),
         explorerUrlTemplates,
       }
     })

@@ -23,7 +23,7 @@ const wrapExecuteHook =
     // Make sure we have the signing client for this chain and wallet.
     useSyncWalletSigner()
 
-    const { chain_id: chainId } = useChain()
+    const { chainId } = useChain()
     const clientLoadable = useRecoilValueLoadable(
       executeClient({
         ...params,

@@ -40,7 +40,7 @@ const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
     address,
-    chain: { chain_id: srcChainId },
+    chain: { chainId: srcChainId },
   } = useActionOptions()
 
   const { watch, setError, clearErrors } = useFormContext<CreateIcaData>()
@@ -145,7 +145,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
     // Hide from picker if chain does not support ICA controller.
     this.metadata.hideFromPicker = !(await this.options.queryClient.fetchQuery(
       chainQueries.supportsIcaController({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
       })
     ))
 
@@ -158,7 +158,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
     }
 
     const { sourceChain, destinationChain } = getIbcTransferInfoBetweenChains(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId
     )
 
@@ -201,7 +201,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
         }
       ) &&
       getIbcTransferInfoFromConnection(
-        this.options.chain.chain_id,
+        this.options.chain.chainId,
         messages[0].decodedMessage.stargate.value.connectionId
       )
 
@@ -224,7 +224,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
           ICA_CHAINS_TX_PREFIX +
             getChainForChainName(
               icaRegistrationInfo.destinationChain.chain_name
-            ).chain_id &&
+            ).chainId &&
         value === '1'
         ? // Both ICA registration and item storage.
           2
@@ -243,12 +243,12 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
     const {
       destinationChain: { chain_name },
     } = getIbcTransferInfoFromConnection(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       decodedMessage.stargate.value.connectionId
     )
 
     return {
-      chainId: getChainForChainName(chain_name).chain_id,
+      chainId: getChainForChainName(chain_name).chainId,
     }
   }
 }

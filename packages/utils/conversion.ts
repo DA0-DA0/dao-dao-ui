@@ -561,7 +561,4 @@ export const abbreviateAddress = (address: string, takeN = 4): string => {
  * chain directly from their connected wallet whenever possible.
  */
 export const transformBech32Address = (address: string, toChainId: string) =>
-  toBech32(
-    getChainForChainId(toChainId).bech32_prefix,
-    fromBech32(address).data
-  )
+  toBech32(getChainForChainId(toChainId).bech32Prefix, fromBech32(address).data)

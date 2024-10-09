@@ -43,7 +43,7 @@ export const ProfileHome = ({
   ...headerProps
 }: ProfileHomeProps) => {
   const router = useRouter()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const _tab = router.query.tab
   const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined

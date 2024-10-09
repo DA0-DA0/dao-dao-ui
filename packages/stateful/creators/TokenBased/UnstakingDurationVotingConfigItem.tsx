@@ -51,7 +51,7 @@ export const UnstakingDurationInput = ({
 
   const {
     chainId,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useSupportedChainContext()
 
   const showCustomStakingAddress =

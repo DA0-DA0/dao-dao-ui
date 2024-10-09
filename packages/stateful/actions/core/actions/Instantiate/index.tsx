@@ -63,7 +63,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = options
 
   const { watch, setValue } = useFormContext<InstantiateData>()
@@ -271,7 +271,7 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       sender: options.address,
       admin: options.address,
       codeId: 0,
@@ -335,13 +335,13 @@ export class InstantiateAction extends ActionBase<InstantiateData> {
 
     return account.type === AccountType.Polytone
       ? maybeMakePolytoneExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           instantiateMsg
         )
       : account.type === AccountType.Ica
       ? maybeMakeIcaExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           this.options.address,
           account.address,

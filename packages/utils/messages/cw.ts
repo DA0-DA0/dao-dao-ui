@@ -558,7 +558,7 @@ export const decodeIcaExecuteMsg = (
 
     return {
       match: true,
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       type: 'execute',
       msgWithSender: msgsWithSenders[0],
       cosmosMsgWithSender: cosmosMsgsWithSenders[0],
@@ -597,7 +597,7 @@ export const decodeIcaCreateMsg = (
 
     return {
       match: true,
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       type: 'create',
       msgsWithSenders: [],
       cosmosMsgsWithSenders: [],

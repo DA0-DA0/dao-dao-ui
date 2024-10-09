@@ -29,7 +29,7 @@ export const CustomComponent: ActionComponent = ({
 }) => {
   const { t } = useTranslation()
   const { control, setValue, watch } = useFormContext<CustomData>()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const message = watch((fieldNamePrefix + 'message') as 'message')
   // Parse message for display if not creating.

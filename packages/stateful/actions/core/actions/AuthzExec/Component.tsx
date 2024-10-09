@@ -44,7 +44,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
   const { watch, register } = useFormContext<AuthzExecData>()
   const {
     fieldNamePrefix,

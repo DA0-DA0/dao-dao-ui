@@ -53,7 +53,7 @@ const Component: ActionComponent = (props) => {
   const {
     address,
     context,
-    chain: { chain_id: srcChainId },
+    chain: { chainId: srcChainId },
   } = useActionOptions()
 
   const { watch, setError, clearErrors, setValue } =
@@ -239,7 +239,7 @@ export class IcaExecuteAction extends ActionBase<IcaExecuteData> {
     // Hide from picker if chain does not support ICA controller.
     this.metadata.hideFromPicker = !(await this.options.queryClient.fetchQuery(
       chainQueries.supportsIcaController({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
       })
     ))
   }
@@ -253,12 +253,12 @@ export class IcaExecuteAction extends ActionBase<IcaExecuteData> {
       throw new Error('Missing chain ID or ICA remote address')
     }
 
-    if (this.options.chain.chain_id === chainId) {
+    if (this.options.chain.chainId === chainId) {
       throw new Error('Cannot execute on the same chain')
     }
 
     return maybeMakeIcaExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       this.options.address,
       icaRemoteAddress,

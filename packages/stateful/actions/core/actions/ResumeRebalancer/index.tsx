@@ -49,7 +49,7 @@ export class ResumeRebalancerAction extends ActionBase<ResumeRebalancerData> {
 
   encode({ account }: ResumeRebalancerData): UnifiedCosmosMsg {
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: account,
       msg: {

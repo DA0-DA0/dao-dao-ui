@@ -21,7 +21,7 @@ import {
 
 export const useGovDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   return useMemo(
     () => ({

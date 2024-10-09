@@ -27,7 +27,7 @@ export const useWidgets = ({
   location,
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { items } = useDao().info
   const { isMember = false } = useMembership()
 

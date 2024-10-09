@@ -147,7 +147,7 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       sender: options.address,
       address: '',
       message: '{}',
@@ -217,13 +217,13 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
 
     return account.type === AccountType.Polytone
       ? maybeMakePolytoneExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           executeMsg
         )
       : account.type === AccountType.Ica
       ? maybeMakeIcaExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           account.chainId,
           this.options.address,
           account.address,

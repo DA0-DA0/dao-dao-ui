@@ -42,7 +42,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, watch, control } = useFormContext<ManageSubDaosData>()
 

@@ -94,7 +94,7 @@ export const useProfile = ({
   onlySupported = false,
 }: UseProfileOptions = {}): UseProfileReturn => {
   const {
-    chain: { chain_id: walletChainId },
+    chain: { chainId: walletChainId },
     address: currentAddress = '',
     hexPublicKey,
     isWalletConnected,
@@ -146,7 +146,7 @@ export const useProfile = ({
 
               return chain &&
                 // Only include chains that are on the right network type.
-                (chain.network_type === 'mainnet') === MAINNET &&
+                (chain.chainRegistry?.network_type === 'mainnet') === MAINNET &&
                 // Filter by onlySupported filter.
                 (!onlySupported || supported)
                 ? {

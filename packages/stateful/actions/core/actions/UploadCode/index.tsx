@@ -70,7 +70,7 @@ export class UploadCodeAction extends ActionBase<UploadCodeData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       accessType: AccessType.Everybody,
       allowedAddresses: [{ address: options.address }],
     }
@@ -92,7 +92,7 @@ export class UploadCodeAction extends ActionBase<UploadCodeData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: isSecretNetwork(chainId)

@@ -106,7 +106,7 @@ const InnerProposalStatusAndInfo = ({
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
   const { coreAddress } = useDao()

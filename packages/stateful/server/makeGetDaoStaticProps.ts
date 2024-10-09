@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import { fromBase64 } from '@cosmjs/encoding'
 import { QueryClient } from '@tanstack/react-query'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
@@ -14,6 +13,7 @@ import {
   queryIndexer,
 } from '@dao-dao/state'
 import {
+  AnyChain,
   CommonProposalInfo,
   DaoPageMode,
   GovProposalVersion,
@@ -61,7 +61,7 @@ interface GetDaoStaticPropsMakerOptions {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
     queryClient: QueryClient
-    chain: Chain
+    chain: AnyChain
     dao: IDaoBase
   }) =>
     | GetDaoStaticPropsMakerProps
@@ -385,7 +385,7 @@ export const makeGetDaoProposalStaticProps = ({
       if (dao instanceof ChainXGovDao) {
         const url = getProposalUrlPrefix(params) + proposalId
 
-        const client = await cosmosProtoRpcClientRouter.connect(chain.chain_id)
+        const client = await cosmosProtoRpcClientRouter.connect(chain.chainId)
         const cosmosSdkVersion =
           (
             await client.base.tendermint.v1beta1.getNodeInfo()
@@ -401,7 +401,7 @@ export const makeGetDaoProposalStaticProps = ({
                 data: string
               }
             | undefined = await queryIndexer({
-            chainId: chain.chain_id,
+            chainId: chain.chainId,
             type: 'generic',
             formula: 'gov/proposal',
             args: {
@@ -411,13 +411,13 @@ export const makeGetDaoProposalStaticProps = ({
 
           if (indexerProposal) {
             if (supportsV1Gov) {
-              proposal = await decodeGovProposal(chain.chain_id, {
+              proposal = await decodeGovProposal(chain.chainId, {
                 version: GovProposalVersion.V1,
                 id: BigInt(proposalId),
                 proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
               })
             } else {
-              proposal = await decodeGovProposal(chain.chain_id, {
+              proposal = await decodeGovProposal(chain.chainId, {
                 version: GovProposalVersion.V1_BETA_1,
                 id: BigInt(proposalId),
                 proposal: ProposalV1Beta1.decode(
@@ -448,7 +448,7 @@ export const makeGetDaoProposalStaticProps = ({
                   throw new Error('NOT_FOUND')
                 }
 
-                proposal = await decodeGovProposal(chain.chain_id, {
+                proposal = await decodeGovProposal(chain.chainId, {
                   version: GovProposalVersion.V1,
                   id: BigInt(proposalId),
                   proposal: proposalV1,
@@ -478,7 +478,7 @@ export const makeGetDaoProposalStaticProps = ({
                 throw new Error('NOT_FOUND')
               }
 
-              proposal = await decodeGovProposal(chain.chain_id, {
+              proposal = await decodeGovProposal(chain.chainId, {
                 version: GovProposalVersion.V1_BETA_1,
                 id: BigInt(proposalId),
                 proposal: proposalV1Beta1,

@@ -165,7 +165,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const { t } = useTranslation()
   const {
     context,
-    chain: { chain_id: mainChainId },
+    chain: { chainId: mainChainId },
   } = useActionOptions()
 
   const { register, watch, setValue, getValues } = useFormContext<SpendData>()
@@ -225,8 +225,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         // Use profile address if set, falling back to transforming the address
         // (which is unreliable due to different chains using different HD
         // paths).
-        currentEntity.profile?.chains[toChain.chain_id]?.address ||
-        transformBech32Address(currentEntity.address, toChain.chain_id)
+        currentEntity.profile?.chains[toChain.chainId]?.address ||
+        transformBech32Address(currentEntity.address, toChain.chainId)
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
     // account on the destination chain.
@@ -234,7 +234,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       newRecipient =
         getAccountAddress({
           accounts: currentEntity.daoInfo.accounts,
-          chainId: toChain.chain_id,
+          chainId: toChain.chainId,
         }) || ''
     }
 
@@ -353,7 +353,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   (fieldNamePrefix + 'cw20') as 'cw20',
                   isValidBech32Address(
                     custom,
-                    getChainForChainId(spendChainId).bech32_prefix
+                    getChainForChainId(spendChainId).bech32Prefix
                   )
                 )
               }}
@@ -554,7 +554,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   register={register}
                   validation={[
                     validateRequired,
-                    makeValidateAddress(toChain.bech32_prefix),
+                    makeValidateAddress(toChain.bech32Prefix),
                   ]}
                 />
               </ChainProvider>

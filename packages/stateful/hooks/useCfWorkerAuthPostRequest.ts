@@ -39,14 +39,14 @@ export const useCfWorkerAuthPostRequest = (
       if (
         !hexPublicKey.loading &&
         // If override is the same as the wallet-connected chain.
-        overrideChainId === chain.chain_id
+        overrideChainId === chain.chainId
       ) {
         return hexPublicKey.data
       }
 
       const thisChainWallet = overrideChainId
         ? chainWallet?.mainWallet.getChainWallet(
-            getChainForChainId(overrideChainId).chain_name
+            getChainForChainId(overrideChainId).chainName
           )
         : chainWallet
 
@@ -79,7 +79,7 @@ export const useCfWorkerAuthPostRequest = (
 
       return toHex(publicKey)
     },
-    [chain.chain_id, chainWallet, hexPublicKey, t]
+    [chain.chainId, chainWallet, hexPublicKey, t]
   )
 
   const getNonce = useCallback(
@@ -125,9 +125,9 @@ export const useCfWorkerAuthPostRequest = (
       const hexPublicKey = await getHexPublicKey(overrideChainId)
 
       const thisChainWallet =
-        overrideChainId && overrideChainId !== chain.chain_id
+        overrideChainId && overrideChainId !== chain.chainId
           ? chainWallet?.mainWallet.getChainWallet(
-              getChainForChainId(overrideChainId).chain_name
+              getChainForChainId(overrideChainId).chainName
             )
           : chainWallet
 
@@ -196,7 +196,7 @@ export const useCfWorkerAuthPostRequest = (
     [
       defaultSignatureType,
       getHexPublicKey,
-      chain.chain_id,
+      chain.chainId,
       chainWallet,
       getNonce,
       apiBase,

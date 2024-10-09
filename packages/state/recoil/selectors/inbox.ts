@@ -72,7 +72,8 @@ export const inboxItemsSelector = selectorFamily<
               } as InboxLoadedItemWithData)
           )
           .flatMap((item) => {
-            const { network_type } = maybeGetChainForChainId(item.chainId) ?? {}
+            const { network_type } =
+              maybeGetChainForChainId(item.chainId)?.chainRegistry ?? {}
 
             return item &&
               // Filter out items that were cleared.

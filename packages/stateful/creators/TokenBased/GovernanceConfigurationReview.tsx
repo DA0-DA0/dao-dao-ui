@@ -27,7 +27,7 @@ export const GovernanceConfigurationReview = ({
   },
 }: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const tokenLoadable = useRecoilValueLoadable(

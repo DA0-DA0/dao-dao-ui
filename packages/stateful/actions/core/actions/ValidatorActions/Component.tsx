@@ -69,7 +69,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
     const address = getChainAddressForActionOptions(options, chainId)
     const validatorAddress =
       address &&
-      toValidatorAddress(address, getChainForChainId(chainId).bech32_prefix)
+      toValidatorAddress(address, getChainForChainId(chainId).bech32Prefix)
 
     if (typeUrl === MsgCreateValidator.typeUrl) {
       const createMsg = JSON.parse(

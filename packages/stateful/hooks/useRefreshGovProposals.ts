@@ -7,7 +7,7 @@ import { refreshGovProposalsAtom } from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
 
 export const useRefreshGovProposals = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const queryClient = useQueryClient()
   const setRefreshProposal = useSetRecoilState(refreshGovProposalsAtom(chainId))

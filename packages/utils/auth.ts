@@ -69,7 +69,7 @@ export const signOffChainAuth = async <
       nonce,
       chainId,
       chainFeeDenom: getNativeTokenForChainId(chainId).denomOrAddress,
-      chainBech32Prefix: chain.bech32_prefix,
+      chainBech32Prefix: chain.bech32Prefix,
       publicKeyType: getPublicKeyTypeForChain(chainId),
       publicKeyHex: hexPublicKey,
       // Backwards compatible.
@@ -97,7 +97,7 @@ export const signOffChainAuth = async <
         },
       ],
     },
-    chain.chain_id,
+    chain.chainId,
     '',
     0,
     0

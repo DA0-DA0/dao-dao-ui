@@ -37,7 +37,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
   const isOmniFlix =
     chainId === ChainId.OmniflixHubMainnet ||
     chainId === ChainId.OmniflixHubTestnet

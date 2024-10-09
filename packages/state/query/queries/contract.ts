@@ -114,7 +114,7 @@ export const fetchIsContract = async (
   }
 ): Promise<boolean> => {
   if (
-    !isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
+    !isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
   ) {
     return false
   }
@@ -312,7 +312,7 @@ export const generateInstantiate2Address = async (
     dataHash,
     creator,
     toUtf8(salt),
-    getChainForChainId(chainId).bech32_prefix
+    getChainForChainId(chainId).bech32Prefix
   )
 }
 

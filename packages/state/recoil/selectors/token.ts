@@ -245,7 +245,7 @@ export const genericTokenBalancesSelector = selectorFamily<
                     : []
                   : isValidWalletAddress(
                       address,
-                      getChainForChainId(chainId).bech32_prefix
+                      getChainForChainId(chainId).bech32Prefix
                     )
                   ? [
                       walletCw20BalancesSelector({
@@ -507,7 +507,7 @@ export const genericTokenSourceSelector = selectorFamily<
                   getChainForChainName(
                     getIbcTransferInfoFromChannel(currentChainId, channel)
                       .destinationChain.chain_name
-                  ).chain_id,
+                  ).chainId,
                 chainId
               )
 

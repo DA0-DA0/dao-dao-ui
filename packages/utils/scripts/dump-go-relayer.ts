@@ -83,8 +83,8 @@ const dumpChain = async (srcChainId: string, chainIdFilter?: string[]) => {
             )
           }
 
-          const srcChainName = getChainForChainId(srcChainId).chain_name
-          const destChainName = getChainForChainId(destChainId).chain_name
+          const srcChainName = getChainForChainId(srcChainId).chainName
+          const destChainName = getChainForChainId(destChainId).chainName
 
           return `    ${srcChainName}-${destChainName}:
         src:

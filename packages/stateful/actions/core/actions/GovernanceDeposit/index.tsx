@@ -78,7 +78,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   props
 ) => {
   const { isCreating, fieldNamePrefix } = props
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceDepositData>()
   const queryClient = useQueryClient()
@@ -238,7 +238,7 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       proposalId: '',
       deposit: [],
     }
@@ -269,7 +269,7 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
     )
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: {

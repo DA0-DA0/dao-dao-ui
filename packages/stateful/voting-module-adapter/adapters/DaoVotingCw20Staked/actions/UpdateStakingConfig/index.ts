@@ -45,14 +45,14 @@ export class UpdateStakingConfigAction extends ActionBase<UpdateStakingConfigDat
 
     this.stakingContractAddress = await this.options.queryClient.fetchQuery(
       daoVotingCw20StakedQueries.stakingContract(this.options.queryClient, {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         contractAddress: this.options.context.dao.votingModule.address,
       })
     )
 
     const { unstaking_duration } = await this.options.queryClient.fetchQuery(
       cw20StakeQueries.getConfig(this.options.queryClient, {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         contractAddress: this.stakingContractAddress,
       })
     )
@@ -73,7 +73,7 @@ export class UpdateStakingConfigAction extends ActionBase<UpdateStakingConfigDat
     unstakingDuration,
   }: UpdateStakingConfigData): UnifiedCosmosMsg {
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: this.stakingContractAddress!,
       msg: {
