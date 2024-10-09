@@ -3,6 +3,7 @@
   "version": "2.5.0-rc.3",
   "license": "AGPL-3.0-only",
   "scripts": {
+    "postinstall": "cd ../../ && patch-package",
     "analyze": "ANALYZE=true next build",
     "prebuild": "cd ../../packages/state && npm run build:gql",
     "build": "next build --debug",

@@ -135,6 +135,7 @@ const InnerProposalStatusAndInfo = ({
     loadingTxHash: loadingExecutionTxHash,
   })
   const { action, footer } = useProposalActionState({
+    description: winningChoice?.description || '',
     statusKey,
     relayState,
     loadingExecutionTxHash,

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ChainPickerPopup,
   CopyToClipboard,
+  InfoLineCard,
   useActionOptions,
 } from '@dao-dao/stateless'
 import {
@@ -11,7 +12,11 @@ import {
   ActionComponent,
   ActionContextType,
 } from '@dao-dao/types/actions'
-import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
+import {
+  MAINNET,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+} from '@dao-dao/utils'
 
 export type CreateCrossChainAccountData = {
   chainId: string
@@ -38,7 +43,11 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
   }
 
   if (!chainContext.config.polytone) {
-    throw new Error(`Cross-chain accounts have not been enabled for ${name}.`)
+    throw new Error(
+      `Cross-chain accounts have not been enabled for ${
+        name || (MAINNET ? 'this chain' : 'testnets')
+      }.`
+    )
   }
 
   const missingChainIds = Object.keys(chainContext.config.polytone).filter(
@@ -77,31 +86,23 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
           </p>
         )
       ) : (
-        <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-background-secondary px-4 py-3">
-          <div className="flex flex-row items-center gap-2">
-            {imageUrl && (
-              <div
-                className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${imageUrl})`,
-                }}
-              ></div>
-            )}
-
-            <p className="primary-text shrink-0">{name}</p>
-          </div>
-
-          {createdAddress ? (
-            <CopyToClipboard
-              className="min-w-0"
-              takeN={18}
-              tooltip={t('button.clickToCopyAddress')}
-              value={createdAddress}
-            />
-          ) : (
-            <p className="secondary-text">{t('info.pending')}</p>
-          )}
-        </div>
+        <InfoLineCard
+          imageUrl={imageUrl}
+          label={name}
+          value={
+            createdAddress ? (
+              <CopyToClipboard
+                className="min-w-0"
+                takeN={18}
+                tooltip={t('button.clickToCopyAddress')}
+                value={createdAddress}
+              />
+            ) : (
+              t('info.pending')
+            )
+          }
+          valueClassName="!secondary-text"
+        />
       )}
     </>
   )

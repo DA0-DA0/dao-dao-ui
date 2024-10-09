@@ -253,3 +253,32 @@ export type ProposalTimestampInfo = {
   }
   expirationDate?: Date
 }
+
+export type GaiaMetaprotocolsExtensionData = {
+  protocolId: string
+  protocolVersion: string
+  data: string
+}
+
+/**
+ * Metadata relevant to how to execute a proposal.
+ */
+export type ProposalExecutionMetadata = {
+  /**
+   * Only used during creation.
+   */
+  enabled?: boolean
+  /**
+   * Set automatically when encoding.
+   */
+  version?: number
+  memo?: string
+  gaiaMetaprotocolsExtensionData?: GaiaMetaprotocolsExtensionData[]
+}
+
+/**
+ * Metadata used in proposal forms.
+ */
+export type ProposalExecutionMetadataEditorData = {
+  metadata?: ProposalExecutionMetadata
+}

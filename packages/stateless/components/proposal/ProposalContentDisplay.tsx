@@ -11,7 +11,10 @@ import {
   LoadingData,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
-import { formatDate } from '@dao-dao/utils'
+import {
+  extractProposalDescriptionAndMetadata,
+  formatDate,
+} from '@dao-dao/utils'
 
 import { ApprovalBadge } from '../ApprovalBadge'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
@@ -173,7 +176,9 @@ export const ProposalContentDisplay = ({
           EntityDisplay={EntityDisplay}
           addAnchors
           className="max-w-full !overflow-hidden"
-          markdown={description}
+          markdown={
+            extractProposalDescriptionAndMetadata(description).description
+          }
         />
 
         {innerContentDisplay && (

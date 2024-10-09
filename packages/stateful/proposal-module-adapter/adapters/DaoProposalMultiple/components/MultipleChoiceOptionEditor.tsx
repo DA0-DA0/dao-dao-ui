@@ -2,14 +2,7 @@ import { Add, Circle, Close, CopyAllOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { ComponentType, useState } from 'react'
-import {
-  Control,
-  FieldErrors,
-  FieldValues,
-  Path,
-  UseFormRegister,
-  useFormContext,
-} from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -18,6 +11,7 @@ import {
   DropdownIconButton,
   IconButton,
   InputErrorMessage,
+  ProposalExecutionMetadataEditor,
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -26,37 +20,29 @@ import { validateRequired } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionFormData, NewProposalForm } from '../types'
 
-export interface MultipleChoiceOptionEditorProps<
-  FV extends FieldValues,
-  FieldName extends Path<FV>
-> {
-  titleFieldName: FieldName
-  descriptionFieldName: FieldName
-  errorsOption?: FieldErrors<MultipleChoiceOptionFormData>
-  registerOption: UseFormRegister<FV>
+export type MultipleChoiceOptionEditorProps = {
   optionIndex: number
-  control: Control<FV>
   removeOption: () => void
   addOption: (value: Partial<MultipleChoiceOptionFormData>) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export const MultipleChoiceOptionEditor = <
-  FV extends FieldValues,
-  FieldName extends Path<FV>
->({
-  titleFieldName,
-  descriptionFieldName,
-  errorsOption,
-  registerOption,
+export const MultipleChoiceOptionEditor = ({
   optionIndex,
   removeOption,
   addOption,
   SuspenseLoader,
-}: MultipleChoiceOptionEditorProps<FV, FieldName>) => {
+}: MultipleChoiceOptionEditorProps) => {
   const { t } = useTranslation()
 
-  const { watch, getValues } = useFormContext<NewProposalForm>()
+  const {
+    register,
+    watch,
+    getValues,
+    formState: { errors },
+  } = useFormContext<NewProposalForm>()
+
+  const errorsOption = errors?.choices?.[optionIndex]
 
   const [expanded, setExpanded] = useState(true)
   const toggleExpanded = () => {
@@ -89,11 +75,11 @@ export const MultipleChoiceOptionEditor = <
             <TextInput
               className="!title-text"
               error={errorsOption?.title}
-              fieldName={titleFieldName}
+              fieldName={`choices.${optionIndex}.title`}
               ghost
               maxLength={64}
               placeholder={t('form.multipleChoiceOptionTitlePlaceholder')}
-              register={registerOption}
+              register={register}
               validation={[validateRequired]}
             />
             <InputErrorMessage error={errorsOption?.title} />
@@ -128,11 +114,11 @@ export const MultipleChoiceOptionEditor = <
               <TextAreaInput
                 autoFocus
                 error={errorsOption?.description}
-                fieldName={descriptionFieldName}
+                fieldName={`choices.${optionIndex}.description`}
                 placeholder={t(
                   'form.multipleChoiceOptionDescriptionPlaceholder'
                 )}
-                register={registerOption}
+                register={register}
                 rows={5}
               />
               <InputErrorMessage error={errorsOption?.description} />
@@ -155,6 +141,12 @@ export const MultipleChoiceOptionEditor = <
           SuspenseLoader={SuspenseLoader}
           actionDataErrors={errorsOption?.actionData}
           actionDataFieldName={`choices.${optionIndex}.actionData`}
+        />
+
+        <ProposalExecutionMetadataEditor
+          className="mt-2"
+          errors={errorsOption}
+          fieldNamePrefix={`choices.${optionIndex}.`}
         />
       </div>
     </div>

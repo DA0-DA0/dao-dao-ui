@@ -7,6 +7,7 @@ import {
   ActionCardLoader,
   ActionsMatchAndRender,
   Button,
+  ProposalExecutionMetadataRenderer,
   RawActionsRenderer,
   useDao,
 } from '@dao-dao/stateless'
@@ -18,7 +19,11 @@ import {
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { decodeMessages, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  decodeMessages,
+  extractProposalDescriptionAndMetadata,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
@@ -112,34 +117,48 @@ const InnerProposalInnerContentDisplay = ({
     return messages
   }, [chainId, coreVersion, proposal.msgs])
 
+  const { description, metadata } = extractProposalDescriptionAndMetadata(
+    proposal.description
+  )
+
   const onLoad =
     setDuplicateFormData &&
     ((data: ActionKeyAndData[]) =>
       setDuplicateFormData({
         title: proposal.title,
-        description: proposal.description,
+        description,
         actionData: data,
+        metadata: metadata && {
+          enabled: true,
+          ...metadata,
+        },
       }))
 
-  return actionMessagesToDisplay.length ? (
-    <div className="space-y-3">
-      <ActionsMatchAndRender
-        SuspenseLoader={SuspenseLoader}
-        messages={actionMessagesToDisplay}
-        onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-        onLoad={onLoad}
-      />
+  return (
+    <div className="flex flex-col gap-3">
+      {actionMessagesToDisplay.length ? (
+        <>
+          <ActionsMatchAndRender
+            SuspenseLoader={SuspenseLoader}
+            messages={actionMessagesToDisplay}
+            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+            onLoad={onLoad}
+          />
 
-      <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
-        <DataObject className="text-icon-secondary" />
-        <p className="secondary-text">
-          {showRaw ? t('button.hideRawData') : t('button.showRawData')}
-        </p>
-      </Button>
+          <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
+            <DataObject className="text-icon-secondary" />
+            <p className="secondary-text">
+              {showRaw ? t('button.hideRawData') : t('button.showRawData')}
+            </p>
+          </Button>
 
-      {showRaw && <RawActionsRenderer messages={proposal.msgs} />}
+          {showRaw && <RawActionsRenderer messages={proposal.msgs} />}
+        </>
+      ) : (
+        <p className="caption-text italic">{t('info.noProposalActions')}</p>
+      )}
+
+      <ProposalExecutionMetadataRenderer className="mt-3" metadata={metadata} />
     </div>
-  ) : (
-    <p className="caption-text italic">{t('info.noProposalActions')}</p>
   )
 }

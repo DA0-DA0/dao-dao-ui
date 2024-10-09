@@ -12,7 +12,10 @@ import {
   MultipleChoiceProposal,
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { getProposalStatusKey } from '@dao-dao/utils'
+import {
+  extractProposalDescriptionAndMetadata,
+  getProposalStatusKey,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -111,11 +114,20 @@ export const InnerProposalInnerContentDisplay = ({
     setDuplicateFormData({
       title: proposal.title,
       description: proposal.description,
-      choices: choices.map(({ title, description, index }) => ({
-        title,
-        description,
-        actionData: loadedData[index] || [],
-      })),
+      choices: choices.map(({ title, description: _description, index }) => {
+        const { description, metadata } =
+          extractProposalDescriptionAndMetadata(_description)
+
+        return {
+          title,
+          description,
+          actionData: loadedData[index] || [],
+          metadata: metadata && {
+            enabled: true,
+            ...metadata,
+          },
+        }
+      }),
     })
   }, [
     setDuplicateFormData,

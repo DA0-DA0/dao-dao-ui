@@ -23,6 +23,7 @@ import {
   MAX_NUM_PROPOSAL_CHOICES,
   convertExpirationToDate,
   dateToWdhms,
+  descriptionWithPotentialProposalMetadata,
   encodeActions,
   processError,
 } from '@dao-dao/utils'
@@ -229,7 +230,10 @@ export const NewProposal = ({
       options: await Promise.all(
         choices.map(async (option) => ({
           title: option.title,
-          description: option.description,
+          description: descriptionWithPotentialProposalMetadata(
+            option.description,
+            option.metadata
+          ),
           // Type mismatch between Cosmos msgs and Secret Network Cosmos msgs.
           // The contract execution will fail if the messages are invalid, so
           // this is safe. The UI should ensure that the correct messages are

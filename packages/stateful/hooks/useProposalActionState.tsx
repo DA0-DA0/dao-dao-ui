@@ -1,10 +1,17 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { toUtf8 } from '@cosmjs/encoding'
+import { OfflineSigner } from '@cosmjs/proto-signing'
 import { CancelOutlined, Key, Send } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
+import {
+  DaoProposalSingleCommonSelectors,
+  makeGetSignerOptions,
+} from '@dao-dao/state'
 import {
   ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
@@ -19,9 +26,12 @@ import {
   ProposalStatusEnum,
   ProposalStatusKey,
 } from '@dao-dao/types'
+import { ExtensionData } from '@dao-dao/types/protobuf/codegen/gaia/metaprotocols/extensions'
 import {
   DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY,
   NEUTRON_GOVERNANCE_DAO,
+  extractProposalDescriptionAndMetadata,
+  getRpcForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -32,6 +42,10 @@ import { UseProposalRelayStateReturn } from './useProposalRelayState'
 import { useWallet } from './useWallet'
 
 export type UseProposalActionStateOptions = {
+  /**
+   * Proposal description, for decoding additional execution metadata.
+   */
+  description: string
   relayState: UseProposalRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingData<string | undefined>
@@ -50,6 +64,7 @@ export type UseProposalActionStateReturn = Pick<
  * components.
  */
 export const useProposalActionState = ({
+  description,
   relayState,
   statusKey,
   loadingExecutionTxHash,
@@ -58,8 +73,9 @@ export const useProposalActionState = ({
 }: UseProposalActionStateOptions): UseProposalActionStateReturn => {
   const { t } = useTranslation()
   const {
-    chain: { chainId },
+    chain: { chainId, chainName },
   } = useConfiguredChainContext()
+  const queryClient = useQueryClient()
   const {
     coreAddress,
     info: { items },
@@ -72,6 +88,8 @@ export const useProposalActionState = ({
     isWalletConnected,
     address: walletAddress = '',
     getSigningClient,
+    getOfflineSignerDirect,
+    getOfflineSigner,
   } = useWallet()
   const { isMember = false } = useMembership()
 
@@ -89,9 +107,13 @@ export const useProposalActionState = ({
     setActionLoading(false)
   }, [statusKey])
 
+  const { metadata } = extractProposalDescriptionAndMetadata(description)
+
   // If enabled, the user will be shown an input field to enter a memo for the
-  // execution transaction.
-  const allowMemoOnExecute = !!items[DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY]
+  // execution transaction, unless a memo is already set in the metadata.
+  const allowMemoOnExecute = metadata?.memo
+    ? false
+    : !!items[DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY]
   const [memo, setMemo] = useState('')
 
   const onExecute = useCallback(async () => {
@@ -101,11 +123,59 @@ export const useProposalActionState = ({
 
     setActionLoading(true)
     try {
+      const { metadata } = extractProposalDescriptionAndMetadata(description)
+
+      // if gaia metaprotocols extension data exists, must use direct signer.
+      // amino signing does not support it i guess...
+      let signingClientGetter = getSigningClient
+      if (metadata?.gaiaMetaprotocolsExtensionData?.length) {
+        try {
+          let signer: OfflineSigner
+          try {
+            signer = getOfflineSignerDirect()
+          } catch {
+            // fallback to signer if direct signer function is unavailable. this
+            // may or may not be a direct signer, so verify
+            signer = getOfflineSigner()
+            if (!('signDirect' in signer)) {
+              throw new Error('Direct signer not available.')
+            }
+          }
+
+          signingClientGetter = async () =>
+            await SigningCosmWasmClient.connectWithSigner(
+              getRpcForChainId(chainId),
+              signer,
+              makeGetSignerOptions(queryClient)(chainName)
+            )
+        } catch (err) {
+          console.error(
+            'Failed to retrieve direct signer for Gaia Metaprotocols Extension proposal execution.',
+            err
+          )
+
+          throw new Error(
+            t('error.browserExtensionWalletRequiredForProposalExecution')
+          )
+        }
+      }
+
       await proposalModule.execute({
         proposalId: proposalNumber,
-        getSigningClient,
+        getSigningClient: signingClientGetter,
         sender: walletAddress,
-        memo: allowMemoOnExecute && memo ? memo : undefined,
+        memo: metadata?.memo || (allowMemoOnExecute && memo ? memo : undefined),
+        nonCriticalExtensionOptions:
+          metadata?.gaiaMetaprotocolsExtensionData?.map(
+            ({ protocolId, protocolVersion, data }) => ({
+              typeUrl: ExtensionData.typeUrl,
+              value: ExtensionData.fromPartial({
+                protocolId,
+                protocolVersion,
+                data: toUtf8(data),
+              }),
+            })
+          ),
       })
 
       await onExecuteSuccess()
@@ -120,13 +190,20 @@ export const useProposalActionState = ({
     // Loading will stop on success when status refreshes.
   }, [
     isWalletConnected,
+    description,
+    getSigningClient,
     proposalModule,
     proposalNumber,
-    getSigningClient,
     walletAddress,
     allowMemoOnExecute,
     memo,
     onExecuteSuccess,
+    getOfflineSignerDirect,
+    getOfflineSigner,
+    chainId,
+    queryClient,
+    chainName,
+    t,
   ])
 
   const onClose = useCallback(async () => {

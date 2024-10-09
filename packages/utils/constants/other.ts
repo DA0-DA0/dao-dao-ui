@@ -232,3 +232,9 @@ export const DAOS_HIDDEN_FROM_SEARCH = [
   // Lion DAO
   'terra1a9ur9jyvg9kqfsl6euqdkv02v2klqnppzv4jpw93xzp5tr0xhkvschdnm5',
 ]
+
+/**
+ * Separator used between proposal description and additional metadata JSON
+ * stored at the end of the description field.
+ */
+export const PROPOSAL_DESCRIPTION_METADATA_SEPARATOR = '\n~@~@~@~\n'

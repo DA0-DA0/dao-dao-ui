@@ -60,6 +60,7 @@ telescope({
           'cosmwasm.tokenfactory.v1beta1',
           'cosmwasm.wasm.v1',
           'gaia.globalfee.v1beta1',
+          'gaia.metaprotocols',
           'google.protobuf',
           'ibc.applications.transfer.v1',
           'ibc.applications.interchain_accounts.v1',

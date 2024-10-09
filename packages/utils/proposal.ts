@@ -1,7 +1,10 @@
+import JSON5 from 'json5'
 import { TFunction } from 'react-i18next'
 
 import {
   DurationUnits,
+  GaiaMetaprotocolsExtensionData,
+  ProposalExecutionMetadata,
   ProposalModuleInfo,
   ProposalVetoConfig,
 } from '@dao-dao/types'
@@ -15,6 +18,7 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { VetoConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
+import { PROPOSAL_DESCRIPTION_METADATA_SEPARATOR } from './constants'
 import {
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
@@ -200,3 +204,96 @@ export const checkProposalSubmissionPolicy = ({
     isMember
     ? undefined
     : t('error.mustBeMemberToCreateProposal')
+
+/**
+ * Add additional metadata to the end of a proposal description as necessary.
+ */
+export const descriptionWithPotentialProposalMetadata = (
+  description: string,
+  {
+    enabled,
+    memo,
+    gaiaMetaprotocolsExtensionData,
+  }: ProposalExecutionMetadata = {}
+): string => {
+  if (!enabled) {
+    return description
+  }
+
+  const metadata: ProposalExecutionMetadata = {
+    version: 1,
+  }
+
+  if (memo?.trim()) {
+    metadata.memo = memo
+  }
+
+  const validExtensionData = gaiaMetaprotocolsExtensionData?.flatMap(
+    (data): GaiaMetaprotocolsExtensionData | [] =>
+      data.protocolId && data.protocolVersion && data.data
+        ? {
+            ...data,
+            // Ensure valid JSON.
+            data: JSON.stringify(JSON5.parse(data.data)),
+          }
+        : []
+  )
+  if (validExtensionData?.length !== gaiaMetaprotocolsExtensionData?.length) {
+    throw new Error('Invalid Gaia Metaprotocols extension data.')
+  }
+  if (validExtensionData?.length) {
+    metadata.gaiaMetaprotocolsExtensionData = validExtensionData
+  }
+
+  // If metadata is not empty (beyond version), add it to the end of the
+  // description.
+  return Object.keys(metadata).length > 1
+    ? `${description}${PROPOSAL_DESCRIPTION_METADATA_SEPARATOR}${JSON.stringify(
+        metadata
+      )}`
+    : description
+}
+
+/**
+ * Extract additional metadata from the end of a proposal description, and
+ * return the description and metadata separately if it exists.
+ */
+export const extractProposalDescriptionAndMetadata = (
+  description: string
+): {
+  description: string
+  metadata?: ProposalExecutionMetadata
+} => {
+  if (!description.includes(PROPOSAL_DESCRIPTION_METADATA_SEPARATOR)) {
+    return { description }
+  }
+
+  const metadataSeparatorStart = description.lastIndexOf(
+    PROPOSAL_DESCRIPTION_METADATA_SEPARATOR
+  )
+
+  const metadataString = description.slice(
+    metadataSeparatorStart + PROPOSAL_DESCRIPTION_METADATA_SEPARATOR.length
+  )
+
+  let metadata: ProposalExecutionMetadata
+  try {
+    metadata = JSON.parse(metadataString)
+    if (typeof metadata !== 'object' || metadata === null) {
+      throw new Error('Metadata is not an object.')
+    }
+  } catch {
+    // Ignore metadata if failed to parse as JSON.
+    return { description }
+  }
+
+  // Metadata version is not recognized.
+  if (metadata.version !== 1) {
+    return { description }
+  }
+
+  return {
+    description: description.slice(0, metadataSeparatorStart),
+    metadata,
+  }
+}
