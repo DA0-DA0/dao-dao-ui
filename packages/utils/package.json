@@ -26,7 +26,7 @@
     "@types/ripemd160": "^2.0.0",
     "@types/semver": "^7.5.6",
     "ajv": "^8.11.0",
-    "chain-registry": "^1.59.4",
+    "chain-registry": "1.63.107",
     "json5": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.uniq": "^4.5.0",
@@ -43,7 +43,7 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.41.3",
+    "@chain-registry/types": "0.45.86",
     "@cosmjs/proto-signing": "^0.32.3",
     "@dao-dao/config": "2.5.0-rc.3",
     "@tanstack/react-query": "^5.40.0",
