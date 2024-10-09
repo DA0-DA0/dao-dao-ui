@@ -227,7 +227,7 @@ export const DaoDappHome = () => {
                 {
                   actionKey: ActionKey.UpdateAdmin,
                   data: {
-                    chainId: chainId,
+                    chainId,
                     contract: coreAddress,
                     newAdmin: parentDao.coreAddress,
                   },
@@ -262,7 +262,7 @@ export const DaoDappHome = () => {
                       {
                         actionKey: ActionKey.UpdateAdmin,
                         data: {
-                          chainId: chainId,
+                          chainId,
                           contract: coreAddress,
                           newAdmin: parentDao.coreAddress,
                         },

@@ -72,7 +72,7 @@ export class CreatePostAction extends ActionBase<CreatePostData> {
   encode({ tokenId, tokenUri }: CreatePostData): UnifiedCosmosMsg[] {
     // If chain ID is undefined, default to native DAO chain for backwards
     // compatibility.
-    const pressChainId = this.pressData.chainId || this.options.chain.chain_id
+    const pressChainId = this.pressData.chainId || this.options.chain.chainId
 
     const owner = getChainAddressForActionOptions(this.options, pressChainId)
     if (!owner) {

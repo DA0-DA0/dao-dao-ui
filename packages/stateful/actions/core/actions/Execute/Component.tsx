@@ -56,7 +56,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const { register, control, watch, setValue, getValues } = useFormContext()
   const {

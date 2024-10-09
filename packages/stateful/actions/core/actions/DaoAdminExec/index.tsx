@@ -68,7 +68,7 @@ const InnerComponent: ActionComponent = (props) => (
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
     context,
     address,
   } = useActionOptions()
@@ -80,7 +80,7 @@ const Component: ActionComponent = (props) => {
     (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
   )
 
-  const bech32Prefix = maybeGetChainForChainId(chainId)?.bech32_prefix
+  const bech32Prefix = maybeGetChainForChainId(chainId)?.bech32Prefix
 
   const queryClient = useQueryClient()
   const daoSubDaosLoading = useQueryLoadingDataWithError(
@@ -222,19 +222,19 @@ export class DaoAdminExecAction extends ActionBase<DaoAdminExecData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       coreAddress: '',
       msgs: [],
     }
   }
 
   encode({
-    chainId = this.options.chain.chain_id,
+    chainId = this.options.chain.chainId,
     coreAddress,
     msgs,
   }: DaoAdminExecData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

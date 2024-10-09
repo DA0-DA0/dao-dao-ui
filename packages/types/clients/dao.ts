@@ -1,7 +1,7 @@
-import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
 import { Account } from '../account'
+import { AnyChain } from '../chain'
 import { DaoCardLazyData } from '../components'
 import {
   TotalPowerAtHeightResponse,
@@ -27,7 +27,7 @@ export interface IDaoBase {
   /**
    * Chain of the DAO.
    */
-  chain: Chain
+  chain: AnyChain
 
   /**
    * Core address of the DAO.

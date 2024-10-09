@@ -77,7 +77,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
               daoRewardsDistributorExtraQueries.distributions(
                 this.options.queryClient,
                 {
-                  chainId: this.options.chain.chain_id,
+                  chainId: this.options.chain.chainId,
                   address,
                 }
               )
@@ -131,7 +131,7 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: address,
       msg: {

@@ -25,7 +25,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const { watch } = useFormContext<DaoAdminExecData>()
   const { fieldNamePrefix, isCreating, options } = props

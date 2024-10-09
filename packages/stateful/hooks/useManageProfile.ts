@@ -138,7 +138,7 @@ export const useManageProfile = ({
   const {
     address = '',
     isWalletConnected,
-    chain: { chain_id: walletChainId },
+    chain: { chainId: walletChainId },
     chainWallet: currentChainWallet,
     hexPublicKey: currentHexPublicKey,
   } = useWallet({

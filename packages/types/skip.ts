@@ -17,6 +17,7 @@ export type SkipChain = {
   chain_type: string
   ibc_capabilities: Record<string, boolean | undefined>
   is_testnet: boolean
+  pretty_name?: string
 }
 
 export type SkipAsset = {

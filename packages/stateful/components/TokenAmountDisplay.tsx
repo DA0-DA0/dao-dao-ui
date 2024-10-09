@@ -21,7 +21,7 @@ export const TokenAmountDisplay = ({
   coin: { amount, denom },
   ...props
 }: StatefulTokenAmountDisplayProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const queryClient = useQueryClient()
 
   const loadingGenericToken = useQueryLoadingData<

@@ -73,7 +73,7 @@ export const DaoSupportedChainPickerInput = ({
 }: DaoSupportedChainPickerInputProps) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     config,
   } = useChainContext()
   const { watch, setValue } = useFormContext()

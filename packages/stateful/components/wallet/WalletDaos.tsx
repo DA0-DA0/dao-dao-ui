@@ -28,7 +28,7 @@ import { ProfileAddChains } from '../profile/ProfileAddChains'
 export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
   const { t } = useTranslation()
 
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { connected, chains, uniquePublicKeys } = useProfile({
     address,
   })

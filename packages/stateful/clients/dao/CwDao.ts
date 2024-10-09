@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import {
   FetchQueryOptions,
   QueryClient,
@@ -7,6 +6,7 @@ import {
 
 import { daoDaoCoreQueries } from '@dao-dao/state/query'
 import {
+  AnyChain,
   DaoInfo,
   IProposalModuleBase,
   IVotingModuleBase,
@@ -201,7 +201,7 @@ export class CwDao extends DaoBase {
     return this.options.chainId
   }
 
-  get chain(): Chain {
+  get chain(): AnyChain {
     return getChainForChainId(this.chainId)
   }
 

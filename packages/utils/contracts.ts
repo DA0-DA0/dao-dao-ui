@@ -230,7 +230,7 @@ const createDeliverTxResponseErrorMessage = (result: DeliverTxResponse) =>
 export const bech32DataToAddress = (
   chainId: string,
   bech32Bytes: Uint8Array
-): string => toBech32(getChainForChainId(chainId).bech32_prefix, bech32Bytes)
+): string => toBech32(getChainForChainId(chainId).bech32Prefix, bech32Bytes)
 
 /**
  * Convert bech32 address string to base64 string with bech32 data.

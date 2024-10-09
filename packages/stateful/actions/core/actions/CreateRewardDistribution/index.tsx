@@ -49,7 +49,7 @@ import {
 const Component: ActionComponent<undefined, CreateRewardDistributionData> = (
   props
 ) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const queryClient = useQueryClient()
 
   const { watch } = useFormContext<CreateRewardDistributionData>()
@@ -120,7 +120,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
 
     this.defaults = {
       type: TokenType.Native,
-      denomOrAddress: getNativeTokenForChainId(options.chain.chain_id)
+      denomOrAddress: getNativeTokenForChainId(options.chain.chainId)
         .denomOrAddress,
       immediate: false,
       rate: {
@@ -162,7 +162,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
 
     const token = await this.options.queryClient.fetchQuery(
       tokenQueries.info(this.options.queryClient, {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         type,
         denomOrAddress,
       })
@@ -190,7 +190,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
 
       distributor = await this.options.queryClient.fetchQuery(
         contractQueries.instantiate2Address(this.options.queryClient, {
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           creator: this.options.address,
           codeId,
           salt,
@@ -201,7 +201,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         // Will only ever be one message since it's on the native chain.
         ...[
           this.instantiate2Action.encode({
-            chainId: this.options.chain.chain_id,
+            chainId: this.options.chain.chainId,
             sender: this.options.address,
             admin: this.options.address,
             codeId,
@@ -229,7 +229,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     // Create reward distribution.
     messages.push(
       makeExecuteSmartContractMessage({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         sender: this.options.address,
         contractAddress: distributor,
         msg: {
@@ -269,7 +269,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       messages.push(
         type === TokenType.Native
           ? makeExecuteSmartContractMessage({
-              chainId: this.options.chain.chain_id,
+              chainId: this.options.chain.chainId,
               sender: this.options.address,
               contractAddress: distributor,
               msg: {
@@ -287,7 +287,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
             })
           : // Execute CW20 send message.
             makeExecuteSmartContractMessage({
-              chainId: this.options.chain.chain_id,
+              chainId: this.options.chain.chainId,
               sender: this.options.address,
               contractAddress: denomOrAddress,
               msg: {
@@ -308,7 +308,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     if (!hooks.includes(distributor)) {
       messages.push(
         makeExecuteSmartContractMessage({
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           sender: this.options.address,
           contractAddress: hookCaller,
           msg: {
@@ -580,7 +580,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
 
     const token = await this.options.queryClient.fetchQuery(
       tokenQueries.info(this.options.queryClient, {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         type,
         denomOrAddress,
       })

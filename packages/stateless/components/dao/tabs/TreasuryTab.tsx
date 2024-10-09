@@ -73,7 +73,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
 }: TreasuryTabProps<T, N>) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
     config: { noIndexer },
   } = useSupportedChainContext()
   const { chainId: daoChainId, coreAddress, accounts } = useDao()

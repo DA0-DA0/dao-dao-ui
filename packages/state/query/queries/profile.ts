@@ -75,7 +75,7 @@ export const fetchProfileInfo = async (
       .catch(() => null)
     if (stargazeName) {
       profile.name =
-        stargazeName + '.' + getChainForChainId(chainId).bech32_prefix
+        stargazeName + '.' + getChainForChainId(chainId).bech32Prefix
       profile.nameSource = 'stargaze'
     }
   }

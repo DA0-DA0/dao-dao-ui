@@ -11,7 +11,7 @@ export const WithdrawTokenSwap: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
     address,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
 
   const { watch } = useFormContext()

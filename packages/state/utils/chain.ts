@@ -17,7 +17,7 @@ export const makeGetSignerOptions =
     const chain =
       typeof chainOrName === 'string'
         ? getChainForChainName(chainOrName)
-        : chainOrName
+        : getChainForChainName(chainOrName.chain_name)
 
     // Chains without fee tokens configured will error.
     let gasPrice

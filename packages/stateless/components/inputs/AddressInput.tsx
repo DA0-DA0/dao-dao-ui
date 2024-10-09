@@ -34,7 +34,7 @@ export const AddressInput = <
   hideEntity,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),

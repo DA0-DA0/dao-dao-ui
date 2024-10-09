@@ -8,7 +8,7 @@ import { useLoadingVotingModuleInfo } from './useLoadingVotingModuleInfo'
 
 export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const loadingMembers = useLoadingVotingModuleInfo({
     fetchMembers: true,

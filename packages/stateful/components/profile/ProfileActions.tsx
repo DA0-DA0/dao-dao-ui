@@ -58,7 +58,7 @@ export const ProfileActions = () => {
   })
 
   const [_meTransactionAtom, setWalletTransactionAtom] = useRecoilState(
-    meTransactionAtom(chain.chain_id)
+    meTransactionAtom(chain.chainId)
   )
 
   const formMethods = useForm<AccountTxForm>({
@@ -146,13 +146,13 @@ export const ProfileActions = () => {
 
         const signingCosmWasmClient =
           await SigningCosmWasmClient.connectWithSigner(
-            getRpcForChainId(chain.chain_id),
+            getRpcForChainId(chain.chainId),
             signer,
-            makeGetSignerOptions(queryClient)(chain)
+            makeGetSignerOptions(queryClient)(chain.chainName)
           )
 
         const encodeObjects = data.map((msg) =>
-          cwMsgToEncodeObject(chain.chain_id, msg, walletAddress)
+          cwMsgToEncodeObject(chain.chainId, msg, walletAddress)
         )
         const tx = await signingCosmWasmClient.signAndBroadcast(
           walletAddress,

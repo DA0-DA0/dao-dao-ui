@@ -67,7 +67,7 @@ export const DaoApproverProposalContentDisplay = ({
 
   const { approvalDao, preProposeApprovalContract } = prePropose.config
 
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { data: daoInfo } = useSuspenseQuery(
     daoQueries.info(useQueryClient(), {
       chainId,

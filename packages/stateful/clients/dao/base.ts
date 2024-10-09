@@ -1,10 +1,10 @@
-import { Chain } from '@chain-registry/types'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import { daoQueries } from '@dao-dao/state/query'
 import {
   Account,
   AmountWithTimestamp,
+  AnyChain,
   ContractVersion,
   DaoCardLazyData,
   DaoInfo,
@@ -46,7 +46,7 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Chain of the DAO.
    */
-  abstract get chain(): Chain
+  abstract get chain(): AnyChain
 
   /**
    * Core address of the DAO.

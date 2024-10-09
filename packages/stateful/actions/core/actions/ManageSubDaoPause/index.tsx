@@ -61,7 +61,7 @@ export class ManageSubDaoPauseAction extends ActionBase<ManageSubDaoPauseData> {
 
   constructor(options: ActionOptions) {
     if (
-      options.chain.chain_id !== ChainId.NeutronMainnet ||
+      options.chain.chainId !== ChainId.NeutronMainnet ||
       options.context.type !== ActionContextType.Dao ||
       (options.address !== NEUTRON_GOVERNANCE_DAO &&
         options.address !== NEUTRON_SECURITY_SUBDAO)
@@ -84,7 +84,7 @@ export class ManageSubDaoPauseAction extends ActionBase<ManageSubDaoPauseData> {
     pauseBlocks,
   }: ManageSubDaoPauseData): UnifiedCosmosMsg {
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: address,
       msg: pausing

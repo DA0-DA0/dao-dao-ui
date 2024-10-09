@@ -16,7 +16,7 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
 
   const { watch, setValue, setError, clearErrors, trigger } =

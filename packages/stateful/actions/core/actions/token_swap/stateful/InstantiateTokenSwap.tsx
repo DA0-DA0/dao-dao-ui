@@ -35,7 +35,7 @@ export const InstantiateTokenSwap: ActionComponent<
 > = (props) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     address: selfAddress,
     chainContext,
   } = useActionOptions()
@@ -179,7 +179,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   Omit<InstantiateTokenSwapOptions, 'counterpartyTokenBalances'>
 > = (props) => {
   const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
   } = useActionOptions()
   const nativeToken = getNativeTokenForChainId(chainId)
 

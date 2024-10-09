@@ -38,7 +38,7 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
   async setup() {
     this.defaults = await this.options.queryClient.fetchQuery(
       daoDaoCoreQueries.config(this.options.queryClient, {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         contractAddress: this.options.address,
       })
     )
@@ -51,7 +51,7 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: this.options.address,
       msg: {

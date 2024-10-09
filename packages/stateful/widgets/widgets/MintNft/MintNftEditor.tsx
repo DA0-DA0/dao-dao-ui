@@ -40,7 +40,7 @@ export const MintNftEditor = ({
   const { t } = useTranslation()
   const {
     address,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
   } = useActionOptions()
 
   const { watch, setValue, register, control } = useFormContext<MintNftData>()

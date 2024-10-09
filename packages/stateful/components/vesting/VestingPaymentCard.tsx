@@ -48,7 +48,7 @@ export const VestingPaymentCard = ({
   vestingInfo: fallbackInfo,
 }: StatefulVestingPaymentCardProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
 
   const {

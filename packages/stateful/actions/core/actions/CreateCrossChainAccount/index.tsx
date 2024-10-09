@@ -47,10 +47,7 @@ export class CreateCrossChainAccountAction extends ActionBase<CreateCrossChainAc
   }
 
   encode({ chainId }: CreateCrossChainAccountData): UnifiedCosmosMsg[] {
-    return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
-      chainId
-    )
+    return maybeMakePolytoneExecuteMessages(this.options.chain.chainId, chainId)
   }
 
   match([

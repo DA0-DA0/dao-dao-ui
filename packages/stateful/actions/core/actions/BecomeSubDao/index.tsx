@@ -48,7 +48,7 @@ export class BecomeSubDaoAction extends ActionBase<BecomeSubDaoData> {
 
   encode({ admin }: BecomeSubDaoData): UnifiedCosmosMsg {
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: this.options.address,
       msg: {

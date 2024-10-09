@@ -38,7 +38,7 @@ export const WalletUi = (props: WalletModalProps) => {
 
   // Get main wallet repo.
   const mainWalletRepo = getWalletRepo(
-    maybeGetChainForChainId(mainWalletChainId)?.chain_name ||
+    maybeGetChainForChainId(mainWalletChainId)?.chainName ||
       walletRepo.chainName
   )
 
@@ -134,7 +134,7 @@ export const WalletUi = (props: WalletModalProps) => {
                 .filter(Boolean)
                 .map((chainId) =>
                   convertChain(
-                    getChainForChainId(chainId),
+                    getChainForChainId(chainId).chainRegistry!,
                     [maybeGetAssetListForChainId(chainId)].filter(
                       (al): al is AssetList => !!al
                       // Temp fix for mismatched package types.

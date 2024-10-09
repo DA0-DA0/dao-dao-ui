@@ -11,7 +11,7 @@ import { VALENCE_SUPPORTED_CHAINS } from './constants/chains'
 // Whether or not the current action context supports Valence accounts.
 export const actionContextSupportsValence = ({
   context,
-  chain: { chain_id: chainId },
+  chain: { chainId },
 }: ActionOptions): boolean =>
   // Must either be on the valence allowlist or already have a Valence account.
   context.accounts.some(

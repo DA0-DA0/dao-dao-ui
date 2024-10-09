@@ -56,7 +56,8 @@ export const followingDaosSelector = selectorFamily<
           const dao = deserializeDaoSource(daoSource)
 
           // Only get followed DAOs that match the current network type.
-          const { network_type } = maybeGetChainForChainId(dao.chainId) ?? {}
+          const { network_type } =
+            maybeGetChainForChainId(dao.chainId)?.chainRegistry ?? {}
           return network_type && (network_type === 'mainnet') === MAINNET
             ? dao
             : []

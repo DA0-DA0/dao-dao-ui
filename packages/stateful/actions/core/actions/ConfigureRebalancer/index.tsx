@@ -457,7 +457,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     )
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeWasmMessage({
         wasm: {

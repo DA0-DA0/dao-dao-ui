@@ -46,7 +46,7 @@ export const useCreateCw1Whitelist = ({
   const {
     address: walletAddress,
     getSigningClient,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
   } = useWallet({
     chainId: _chainId,
   })

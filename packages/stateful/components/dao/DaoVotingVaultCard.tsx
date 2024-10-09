@@ -9,7 +9,7 @@ import { StatefulDaoVotingVaultCardProps } from '@dao-dao/types'
 import { useQueryLoadingDataWithError, useWallet } from '../../hooks'
 
 export const DaoVotingVaultCard = (props: StatefulDaoVotingVaultCardProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { address } = useWallet()
 
   const loadingWalletVotingPower = useQueryLoadingDataWithError(

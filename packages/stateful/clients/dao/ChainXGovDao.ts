@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import {
   FetchQueryOptions,
   QueryClient,
@@ -6,7 +5,7 @@ import {
 } from '@tanstack/react-query'
 
 import { chainQueries, daoQueries } from '@dao-dao/state/query'
-import { DaoInfo } from '@dao-dao/types'
+import { AnyChain, DaoInfo } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -67,7 +66,7 @@ export class ChainXGovDao extends DaoBase {
     return this.options.chainId
   }
 
-  get chain(): Chain {
+  get chain(): AnyChain {
     return getChainForChainId(this.chainId)
   }
 

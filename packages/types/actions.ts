@@ -1,5 +1,4 @@
 // eslint-disable-next-line regex/invalid
-import { Chain } from '@chain-registry/types'
 import { QueryClient } from '@tanstack/react-query'
 import { ComponentType, ReactNode } from 'react'
 import { FieldErrors } from 'react-hook-form'
@@ -7,6 +6,7 @@ import { TFunction } from 'react-i18next'
 
 import { Account } from './account'
 import {
+  AnyChain,
   ConfiguredChainContext,
   IChainContext,
   SupportedChainContext,
@@ -424,7 +424,7 @@ export type ActionChainContext =
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
-  chain: Chain
+  chain: AnyChain
   chainContext: ActionChainContext
   // The address of the sender/actor.
   // DAO core address if context.type === Dao

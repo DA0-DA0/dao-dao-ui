@@ -43,13 +43,13 @@ export const AddressInput = <
     formValue &&
     formValue.length >= 3 &&
     // Don't search name if it's an address.
-    !isValidBech32Address(formValue, currentChain.bech32_prefix)
+    !isValidBech32Address(formValue, currentChain.bech32Prefix)
 
   const searchProfilesLoading = useQueryLoadingDataWithError(
     profileQueries.searchByNamePrefix(
       hasFormValue && props.type !== 'contract'
         ? {
-            chainId: currentChain.chain_id,
+            chainId: currentChain.chainId,
             namePrefix: formValue,
           }
         : undefined
@@ -63,10 +63,10 @@ export const AddressInput = <
       ? waitForNone(
           [
             // Current chain.
-            currentChain.chain_id,
+            currentChain.chainId,
             // Chains that have polytone connections with the current chain.
             ...POLYTONE_CONFIG_PER_CHAIN.filter(([, destChains]) =>
-              Object.keys(destChains).includes(currentChain.chain_id)
+              Object.keys(destChains).includes(currentChain.chainId)
             ).map(([chainId]) => chainId),
           ].map((chainId) =>
             searchDaosSelector({
@@ -85,7 +85,7 @@ export const AddressInput = <
       ...(!searchProfilesLoading.loading && !searchProfilesLoading.errored
         ? searchProfilesLoading.data.map(({ address }) =>
             entityQueries.info(queryClient, {
-              chainId: currentChain.chain_id,
+              chainId: currentChain.chainId,
               address,
             })
           )
@@ -110,11 +110,11 @@ export const AddressInput = <
         // accounts (polytone probably) on the current chain.
         entities.filter(
           (entity) =>
-            entity.chainId === currentChain.chain_id ||
+            entity.chainId === currentChain.chainId ||
             (entity.type === EntityType.Dao &&
               getAccountAddress({
                 accounts: entity.daoInfo.accounts,
-                chainId: currentChain.chain_id,
+                chainId: currentChain.chainId,
               }))
         ),
     }),

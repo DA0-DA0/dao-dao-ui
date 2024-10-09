@@ -49,7 +49,7 @@ export class WithdrawFromRebalancerAction extends SpendAction {
       ...this.defaults,
       fromChainId: this.valenceAccount.chainId,
       from: this.valenceAccount.address,
-      toChainId: this.options.chain.chain_id,
+      toChainId: this.options.chain.chainId,
       to: this.options.address,
     }
   }
@@ -64,7 +64,7 @@ export class WithdrawFromRebalancerAction extends SpendAction {
     return (
       decoded.fromChainId === this.valenceAccount.chainId &&
       decoded.from === this.valenceAccount.address &&
-      decoded.toChainId === this.options.chain.chain_id &&
+      decoded.toChainId === this.options.chain.chainId &&
       decoded.to === this.options.address
     )
   }

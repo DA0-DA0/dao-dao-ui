@@ -13,7 +13,7 @@ export const PayEntityDisplay = ({
   coins,
   ...props
 }: StatefulPayEntityDisplayProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const tokens = useQueryTokens(
     coins.map(({ denom }) => ({

@@ -41,7 +41,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { watch, setValue } = useFormContext<CreateIcaData>()
-  const { chain_id: sourceChainId } = useChain()
+  const { chainId: sourceChainId } = useChain()
   const { context, chainContext } = useActionOptions()
 
   const destinationChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')

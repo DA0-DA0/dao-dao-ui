@@ -50,7 +50,7 @@ export const ProposalVetoConfigurer = ({
   className,
 }: ProposalVetoConfigProps) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const { control, register, setValue, getValues } =
     useFormContext<ProposalVetoConfig>()

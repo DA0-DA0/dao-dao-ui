@@ -24,7 +24,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { address } = useActionOptions()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
   const { register } = useFormContext()
 
   return (

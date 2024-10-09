@@ -84,7 +84,7 @@ export class ResumeRewardDistributionAction extends ActionBase<ResumeRewardDistr
               daoRewardsDistributorExtraQueries.distributions(
                 this.options.queryClient,
                 {
-                  chainId: this.options.chain.chain_id,
+                  chainId: this.options.chain.chainId,
                   address,
                 }
               )
@@ -154,7 +154,7 @@ export class ResumeRewardDistributionAction extends ActionBase<ResumeRewardDistr
       }),
       // Resume the distribution with the saved emission rate.
       makeExecuteSmartContractMessage({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         sender: this.options.address,
         contractAddress: address,
         msg: {

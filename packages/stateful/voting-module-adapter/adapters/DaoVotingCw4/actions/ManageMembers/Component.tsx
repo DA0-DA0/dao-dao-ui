@@ -56,7 +56,7 @@ export const ManageMembersComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, setValue, watch, control, getValues } =
     useFormContext<ManageMembersData>()

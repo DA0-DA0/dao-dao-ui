@@ -35,7 +35,7 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { name: daoName } = useDao()
   const {
     address: walletAddress,

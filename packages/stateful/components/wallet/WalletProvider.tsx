@@ -175,13 +175,13 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     <ChainProvider
       allowedIframeParentOrigins={ALLOWED_IFRAME_PARENT_ORIGINS}
       assetLists={assets}
-      chains={chains}
+      chains={chains.flatMap((c) => c.chainRegistry || [])}
       endpointOptions={{
         // Load all custom chain endpoints into wallet provider.
         endpoints: Object.entries(CHAIN_ENDPOINTS).reduce(
           (acc, [chainId, { rpc, rest }]) => ({
             ...acc,
-            [getChainForChainId(chainId).chain_name]: {
+            [getChainForChainId(chainId).chainName]: {
               rpc: [rpc],
               rest: [rest],
               isLazy: true,
@@ -226,7 +226,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     useWallet()
 
   // Auto-connect to current chain if switched chains and no longer connected.
-  const previousChain = usePrevious(chain.chain_name)
+  const previousChain = usePrevious(chain.chainName)
   const previousConnected = usePrevious(isWalletConnected)
   const previousWalletName = usePrevious(wallet?.name)
   const walletRepoRef = useUpdatingRef(walletRepo)
@@ -236,7 +236,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
       previousConnected &&
       previousWalletName &&
       !isWalletConnected &&
-      previousChain !== chain.chain_name &&
+      previousChain !== chain.chainName &&
       !reconnectingRef.current
     ) {
       reconnectingRef.current = true
@@ -251,7 +251,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     previousConnected,
     isWalletConnected,
     previousChain,
-    chain.chain_name,
+    chain.chainName,
     previousWalletName,
     walletRepoRef,
   ])

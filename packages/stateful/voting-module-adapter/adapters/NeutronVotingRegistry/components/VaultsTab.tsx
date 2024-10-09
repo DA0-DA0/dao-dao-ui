@@ -6,7 +6,7 @@ import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useVotingModuleInfo } from '../hooks'
 
 export const VaultsTab = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const { votingRegistryAddress, loadingVaults } = useVotingModuleInfo()
   const loadingTotalVotingPower = useQueryLoadingDataWithError(
     neutronVotingRegistryQueries.totalPowerAtHeight({

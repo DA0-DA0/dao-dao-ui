@@ -38,7 +38,7 @@ import {
 const Component: ActionComponent = (props) => {
   const {
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
 
   const { t } = useTranslation()
@@ -47,7 +47,7 @@ const Component: ActionComponent = (props) => {
   const { watch } = useFormContext()
 
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
-  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+  const { bech32Prefix } = getChainForChainId(chainId)
 
   const adding = watch(fieldNamePrefix + 'adding')
   const tokenAddress = watch(fieldNamePrefix + 'address')
@@ -164,7 +164,7 @@ export class ManageCw20Action extends ActionBase<ManageCw20Data> {
     this.manageStorageItemsAction = manageStorageItemsAction
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       adding: true,
       address: '',
     }
@@ -179,7 +179,7 @@ export class ManageCw20Action extends ActionBase<ManageCw20Data> {
       setting: adding,
       // Use cross-chain prefix if necessary.
       key:
-        chainId === this.options.chain.chain_id
+        chainId === this.options.chain.chainId
           ? CW20_ITEM_KEY_PREFIX + address
           : POLYTONE_CW20_ITEM_KEY_PREFIX + chainId + ':' + address,
       value: '1',

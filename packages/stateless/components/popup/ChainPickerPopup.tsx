@@ -44,7 +44,7 @@ export const ChainPickerPopup = ({
       chains.type === 'supported'
         ? getSupportedChains()
             .filter(({ chainId }) => !chains.excludeChainIds?.includes(chainId))
-            .map(({ chain: { chain_id } }) => chain_id)
+            .map(({ chain }) => chain.chainId)
         : chains.type === 'configured'
         ? getConfiguredChains()
             .filter(
@@ -52,7 +52,7 @@ export const ChainPickerPopup = ({
                 !chains.excludeChainIds?.includes(chainId) &&
                 (!chains.onlyGov || !noGov)
             )
-            .map(({ chain: { chain_id } }) => chain_id)
+            .map(({ chain }) => chain.chainId)
         : chains.chainIds
 
     const _chainOptions = chainIds.map(

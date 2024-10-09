@@ -24,7 +24,7 @@ const VOTES_PER_PAGE = 20
 
 export const ProposalVotes = (props: BaseProposalVotesProps) => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
   } = useProposalModuleAdapterOptions()

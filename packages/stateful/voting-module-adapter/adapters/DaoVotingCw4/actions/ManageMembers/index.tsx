@@ -93,7 +93,7 @@ export class ManageMembersAction extends ActionBase<ManageMembersData> {
     }
 
     return makeExecuteSmartContractMessage({
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       sender: this.options.address,
       contractAddress: this.cw4GroupAddress,
       msg: {

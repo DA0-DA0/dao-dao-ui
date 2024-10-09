@@ -37,7 +37,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
   const { t } = useTranslation()
   const {
     context,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, setValue, watch } = useFormContext<FeeShareData>()
 

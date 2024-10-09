@@ -1,8 +1,8 @@
-import { Chain } from '@chain-registry/types'
 import { Decimal } from '@cosmjs/math'
 import { GasPrice } from '@cosmjs/stargate'
 import { QueryClient } from '@tanstack/react-query'
 
+import { AnyChain } from '@dao-dao/types'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import { GAS_OVERRIDES, maybeGetNativeTokenForChainId } from '@dao-dao/utils'
 
@@ -22,11 +22,11 @@ export class DynamicGasPrice implements GasPrice {
 
   public constructor(
     private readonly queryClient: QueryClient,
-    private readonly chain: Chain
+    private readonly chain: AnyChain
   ) {
     const override =
-      this.chain.chain_id in GAS_OVERRIDES
-        ? GAS_OVERRIDES[this.chain.chain_id as keyof typeof GAS_OVERRIDES]
+      this.chain.chainId in GAS_OVERRIDES
+        ? GAS_OVERRIDES[this.chain.chainId as keyof typeof GAS_OVERRIDES]
         : undefined
 
     if (override) {
@@ -36,13 +36,13 @@ export class DynamicGasPrice implements GasPrice {
       }
     } else {
       const feeDenom = maybeGetNativeTokenForChainId(
-        this.chain.chain_id
+        this.chain.chainId
       )?.denomOrAddress
       if (!feeDenom) {
-        throw new Error(`Chain ${chain.chain_id} has no fee token`)
+        throw new Error(`Chain ${chain.chainId} has no fee token`)
       }
 
-      const feeToken = this.chain.fees?.fee_tokens.find(
+      const feeToken = this.chain.chainRegistry?.fees?.fee_tokens.find(
         ({ denom }) => denom === feeDenom
       )
 
@@ -63,7 +63,7 @@ export class DynamicGasPrice implements GasPrice {
   get dynamicGasPrice(): DecCoin | undefined {
     return this.queryClient.getQueryData(
       chainQueries.dynamicGasPrice({
-        chainId: this.chain.chain_id,
+        chainId: this.chain.chainId,
       }).queryKey
     )
   }

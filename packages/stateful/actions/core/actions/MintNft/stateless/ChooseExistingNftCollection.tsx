@@ -22,7 +22,7 @@ export const ChooseExistingNftCollection: ActionComponent<
   options: { chooseLoading, onChooseExistingContract, existingCollections },
 }) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
   const { register, watch, setValue } = useFormContext()
 
   const collectionAddress = watch(fieldNamePrefix + 'collectionAddress')

@@ -92,7 +92,7 @@ const InnerComponentWrapper: ActionComponent<
   const {
     options: { address },
   } = props
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const isDao = useQueryLoadingData(
     contractQueries.isDao(
@@ -194,7 +194,7 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       address: '',
       msgs: [],
     }
@@ -202,7 +202,7 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
 
   encode({ chainId, address, msgs }: AuthzExecData): UnifiedCosmosMsg[] {
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: {

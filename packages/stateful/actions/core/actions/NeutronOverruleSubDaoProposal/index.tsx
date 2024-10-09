@@ -46,7 +46,7 @@ export class NeutronOverruleSubDaoProposalAction extends ActionBase<NeutronOverr
   constructor(options: ActionOptions) {
     // Only usable in Neutron-fork SubDAOs.
     if (
-      options.chain.chain_id !== ChainId.NeutronMainnet ||
+      options.chain.chainId !== ChainId.NeutronMainnet ||
       options.context.type !== ActionContextType.Dao ||
       options.context.dao.coreVersion !== ContractVersion.V2AlphaNeutronFork
     ) {
@@ -93,7 +93,7 @@ export class NeutronOverruleSubDaoProposalAction extends ActionBase<NeutronOverr
         } ||
           !(await this.options.queryClient.fetchQuery(
             contractQueries.isContract(this.options.queryClient, {
-              chainId: this.options.chain.chain_id,
+              chainId: this.options.chain.chainId,
               address: decodedMessage.wasm.execute.contract_addr,
               nameOrNames: ContractName.NeutronCwdSubdaoTimelockSingle,
             })

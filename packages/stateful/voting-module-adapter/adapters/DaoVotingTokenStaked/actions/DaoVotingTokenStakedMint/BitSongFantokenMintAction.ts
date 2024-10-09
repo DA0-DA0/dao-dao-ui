@@ -56,7 +56,7 @@ export class BitSongFantokenMintAction extends ActionBase<MintData> {
 
     const fantoken = await this.options.queryClient.fetchQuery(
       tokenQueries.bitSongFantoken({
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         denom: this.governanceToken.denomOrAddress,
       })
     )

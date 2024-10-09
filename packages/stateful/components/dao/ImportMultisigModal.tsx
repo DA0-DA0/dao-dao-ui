@@ -20,7 +20,7 @@ import { EntityDisplay } from '../EntityDisplay'
 export const ImportMultisigModal = (
   props: StatefulImportMultisigModalProps
 ) => {
-  const { chain_id: currentChainId } = useChain()
+  const { chainId: currentChainId } = useChain()
   const form = useForm<ImportMultisigForm>({
     defaultValues: {
       chainId: currentChainId,
@@ -34,7 +34,7 @@ export const ImportMultisigModal = (
       useQueryClient(),
       chainId &&
         address &&
-        isValidBech32Address(address, getChainForChainId(chainId).bech32_prefix)
+        isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
         ? {
             chainId,
             address,

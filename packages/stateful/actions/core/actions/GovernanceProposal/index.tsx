@@ -118,7 +118,7 @@ const InnerComponent = ({
   const expedited = watch((props.fieldNamePrefix + 'expedited') as 'expedited')
 
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     context,
   } = useActionOptions()
   const encodeContext = useActionEncodeContext()
@@ -285,15 +285,15 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
       // Neutron does not use the x/gov module. If this is a DAO on Neutron, see
       // if it has polytone accounts on any other chain. If it does, default to
       // one of them. Otherwise, hide the action since it cannot be used.
-      options.chain.chain_id === ChainId.NeutronMainnet ||
-      options.chain.chain_id === ChainId.NeutronTestnet
+      options.chain.chainId === ChainId.NeutronMainnet ||
+      options.chain.chainId === ChainId.NeutronTestnet
         ? options.context.type === ActionContextType.Dao
           ? options.context.dao.accounts.find(
               (a) => a.type === AccountType.Polytone
             )?.chainId
           : undefined
         : // If not on Neutron, default to current chain.
-          options.chain.chain_id
+          options.chain.chainId
 
     if (!defaultChainId) {
       throw new Error('Could not find chain to vote on.')
@@ -435,7 +435,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
         })
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       msg
     )

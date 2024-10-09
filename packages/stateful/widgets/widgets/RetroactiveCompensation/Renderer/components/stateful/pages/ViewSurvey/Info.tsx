@@ -14,7 +14,7 @@ import { ViewSurveyPageProps } from './types'
 
 export const Info = ({ status, isMember }: ViewSurveyPageProps) => {
   const dao = useDao()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const postRequest = usePostRequest()
 

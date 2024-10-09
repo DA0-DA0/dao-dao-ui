@@ -177,18 +177,18 @@ export const InnerPfpkNftSelectionModal = ({
   // them for uploading a profile photo.
   const uploadWallet = useWallet({
     chainId:
-      !isSecretNetwork(chain.chain_id) &&
-      getSupportedChainConfig(chain.chain_id)?.codeIds?.Cw721Base
-        ? chain.chain_id
+      !isSecretNetwork(chain.chainId) &&
+      getSupportedChainConfig(chain.chainId)?.codeIds?.Cw721Base
+        ? chain.chainId
         : ChainId.JunoMainnet,
     // Attempt connection to upload wallet chain when image selector is visible.
     attemptConnection: showImageSelector,
   })
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
-      uploadWallet.chain.chain_id,
+      uploadWallet.chain.chainId,
       // Should be defined since we chose a chain ID above with this set.
-      getSupportedChainConfig(uploadWallet.chain.chain_id)?.codeIds.Cw721Base ||
+      getSupportedChainConfig(uploadWallet.chain.chainId)?.codeIds.Cw721Base ||
         -1
     )
 
@@ -249,7 +249,7 @@ export const InnerPfpkNftSelectionModal = ({
       // On success, hide image selector, select new collection and token ID,
       // and refresh NFT list.
       setShowImageSelector(false)
-      setSelectedKey(getNftKey(chain.chain_id, contractAddress, cid))
+      setSelectedKey(getNftKey(chain.chainId, contractAddress, cid))
       refreshBalances()
     } catch (err) {
       console.error(err)
@@ -262,7 +262,7 @@ export const InnerPfpkNftSelectionModal = ({
       setUploadingImage(false)
     }
   }, [
-    chain.chain_id,
+    chain.chainId,
     image,
     instantiateAndExecute,
     instantiateAndExecuteReady,
@@ -379,7 +379,7 @@ export const InnerPfpkNftSelectionModal = ({
               ? t('button.save')
               : t('button.connectToChain', {
                   chainName: getDisplayNameForChainId(
-                    uploadWallet.chain.chain_id
+                    uploadWallet.chain.chainId
                   ),
                 })
           }

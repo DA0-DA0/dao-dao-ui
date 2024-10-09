@@ -70,7 +70,7 @@ export class CreateNftCollectionAction extends ActionBase<CreateNftCollectionAct
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       name: '',
       symbol: '',
     }
@@ -101,7 +101,7 @@ export class CreateNftCollectionAction extends ActionBase<CreateNftCollectionAct
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeWasmMessage({
         wasm: {

@@ -430,9 +430,9 @@ const InnerNewGovProposal = ({
         }
 
         const signingClient = await SigningStargateClient.connectWithSigner(
-          getRpcForChainId(chain.chain_id),
+          getRpcForChainId(chain.chainId),
           signer,
-          makeGetSignerOptions(queryClient)(chain)
+          makeGetSignerOptions(queryClient)(chain.chainName)
         )
 
         const { events } = await signingClient.signAndBroadcast(
@@ -701,7 +701,7 @@ const InnerNewGovProposal = ({
             address={
               // If wallet not connected, use placeholder wallet so it still
               // loads.
-              walletAddress || getNullWalletForChain(chain.chain_id)
+              walletAddress || getNullWalletForChain(chain.chainId)
             }
           >
             <action.Component

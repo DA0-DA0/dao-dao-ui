@@ -70,7 +70,7 @@ export const TierCard = ({
   } = props
 
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const {
     fields: members,

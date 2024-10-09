@@ -107,8 +107,8 @@ export const NftSelectionModal = ({
       },
       ...nftChains.map(
         (chain): TypedOption<FilterFn<{ chainId: string }>> => ({
-          label: getDisplayNameForChainId(chain.chain_id),
-          value: (nft) => nft.chainId === chain.chain_id,
+          label: getDisplayNameForChainId(chain.chainId),
+          value: (nft) => nft.chainId === chain.chainId,
         })
       ),
     ],

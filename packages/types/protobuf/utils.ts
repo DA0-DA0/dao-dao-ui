@@ -6,13 +6,12 @@
 // to @dao-dao/utils when telescope internally handles a type registry that can
 // encode the nested types like we do below.
 
-import { Chain } from '@chain-registry/types'
 import { AminoMsg } from '@cosmjs/amino'
 import { fromBase64, fromBech32, toBase64, toBech32 } from '@cosmjs/encoding'
 import { EncodeObject, GeneratedType, Registry } from '@cosmjs/proto-signing'
 import { AminoTypes } from '@cosmjs/stargate'
 
-import { ChainId, DecodedStargateMsg } from '../chain'
+import { AnyChain, ChainId, DecodedStargateMsg } from '../chain'
 import {
   VoteOption as CwVoteOption,
   StargateMsg,
@@ -102,7 +101,7 @@ export const cwMsgToProtobuf = (
 
 // Convert protobuf to its CosmWasm message equivalent.
 export const protobufToCwMsg = (
-  chain: Chain,
+  chain: AnyChain,
   ...params: Parameters<typeof decodeRawProtobufMsg>
 ): {
   msg: UnifiedCosmosMsg
@@ -403,7 +402,7 @@ export const cwMsgToEncodeObject = (
 // `makeStargateMessage` needs a non-recursively encoded message due to
 // technicalities with nested protobufs.
 export const decodedStargateMsgToCw = (
-  chain: Chain,
+  chain: AnyChain,
   { typeUrl, value }: DecodedStargateMsg['stargate']
 ): {
   msg: UnifiedCosmosMsg
@@ -494,13 +493,13 @@ export const decodedStargateMsgToCw = (
         wasm: {
           execute: {
             code_hash: value.callbackCodeHash,
-            contract_addr: toBech32(chain.bech32_prefix, value.contract),
+            contract_addr: toBech32(chain.bech32Prefix, value.contract),
             msg: toBase64(value.msg),
             send: value.sentFunds,
           },
         },
       }
-      sender = toBech32(chain.bech32_prefix, value.sender)
+      sender = toBech32(chain.bech32Prefix, value.sender)
       break
     case MsgInstantiateContract.typeUrl:
       msg = {
@@ -529,7 +528,7 @@ export const decodedStargateMsgToCw = (
           },
         },
       }
-      sender = toBech32(chain.bech32_prefix, value.sender)
+      sender = toBech32(chain.bech32Prefix, value.sender)
       break
     case MsgInstantiateContract2.typeUrl:
       msg = {

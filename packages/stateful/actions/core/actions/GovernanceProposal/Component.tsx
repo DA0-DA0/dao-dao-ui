@@ -114,7 +114,7 @@ export const GovernanceProposalComponent: ActionComponent<
 
   const {
     chainId,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
     nativeToken,
   } = useChainContext()
 

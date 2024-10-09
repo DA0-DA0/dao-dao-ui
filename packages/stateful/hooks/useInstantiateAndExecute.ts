@@ -82,7 +82,7 @@ export const useInstantiateAndExecute = (
       }
 
       // Ensure active chain is not Secret Network.
-      if (isSecretNetwork(chain.chain_id)) {
+      if (isSecretNetwork(chain.chainId)) {
         throw new Error('Secret Network does not support instantiate2.')
       }
 
@@ -93,7 +93,7 @@ export const useInstantiateAndExecute = (
         checksum.data,
         address,
         toUtf8(salt),
-        chain.bech32_prefix
+        chain.bech32Prefix
       )
       const messages: UnifiedCosmosMsg[] = [
         // Instantiate the contract.
@@ -123,9 +123,7 @@ export const useInstantiateAndExecute = (
       const signingClient = await getSigningClient()
       const response = (await signingClient.signAndBroadcast(
         address,
-        messages.map((msg) =>
-          cwMsgToEncodeObject(chain.chain_id, msg, address)
-        ),
+        messages.map((msg) => cwMsgToEncodeObject(chain.chainId, msg, address)),
         CHAIN_GAS_MULTIPLIER
         // cosmos-kit has an older version of the package. This is a workaround.
       )) as DeliverTxResponse

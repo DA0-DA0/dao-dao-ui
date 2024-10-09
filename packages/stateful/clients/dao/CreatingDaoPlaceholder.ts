@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import {
   FetchQueryOptions,
   QueryClient,
@@ -7,6 +6,7 @@ import {
 
 import {
   AccountType,
+  AnyChain,
   ContractVersion,
   DaoInfo,
   IProposalModuleBase,
@@ -90,7 +90,7 @@ export class CreatingDaoPlaceholder extends DaoBase {
     return this.options.chainId
   }
 
-  get chain(): Chain {
+  get chain(): AnyChain {
     return getChainForChainId(this.chainId)
   }
 

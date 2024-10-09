@@ -68,7 +68,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
     const action = this
     this.Component = function Component(props) {
       const {
-        chain: { chain_id: chainId },
+        chain: { chainId },
       } = useActionOptions()
 
       const { watch } = useFormContext<FundRewardDistributionData>()
@@ -120,7 +120,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
               daoRewardsDistributorExtraQueries.distributions(
                 this.options.queryClient,
                 {
-                  chainId: this.options.chain.chain_id,
+                  chainId: this.options.chain.chainId,
                   address,
                 }
               )
@@ -156,7 +156,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
 
     return distribution.token.type === TokenType.Native
       ? makeExecuteSmartContractMessage({
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           sender: this.options.address,
           contractAddress: address,
           msg: {
@@ -172,7 +172,7 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
           ],
         }) // Execute CW20 send message.
       : makeExecuteSmartContractMessage({
-          chainId: this.options.chain.chain_id,
+          chainId: this.options.chain.chainId,
           sender: this.options.address,
           contractAddress: distribution.token.denomOrAddress,
           msg: {

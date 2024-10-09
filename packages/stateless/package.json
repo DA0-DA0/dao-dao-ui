@@ -20,7 +20,6 @@
     "@walletconnect/browser-utils": "^1.8.0",
     "a11y-react-emoji": "^1.2.0",
     "browser-image-compression": "^2.0.2",
-    "chain-registry": "^1.59.4",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.0.1",
@@ -47,8 +46,8 @@
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.41.3",
-    "@cosmos-kit/core": "^2.11.0",
+    "@chain-registry/types": "0.45.86",
+    "@cosmos-kit/core": "^2.13.1",
     "@dao-dao/config": "2.5.0-rc.3",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",

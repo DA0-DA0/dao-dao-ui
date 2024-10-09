@@ -37,7 +37,7 @@ import {
 // (i.e. sequence) and unnecessary fields (i.e. publicKey, memo) to simulate
 // these messages from a DAO address.
 export const useSimulateCosmosMsgs = (senderAddress: string) => {
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const polytoneProxies = useRecoilValue(
     isValidBech32Address(senderAddress, bech32Prefix)

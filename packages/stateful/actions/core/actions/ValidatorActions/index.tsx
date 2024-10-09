@@ -45,8 +45,8 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
 
     // Neutron does not have validators.
     if (
-      options.chain.chain_id === ChainId.NeutronMainnet ||
-      options.chain.chain_id === ChainId.NeutronTestnet
+      options.chain.chainId === ChainId.NeutronMainnet ||
+      options.chain.chainId === ChainId.NeutronTestnet
     ) {
       throw new Error('Validator actions are not available on Neutron')
     }
@@ -60,7 +60,7 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
 
   setup() {
     this.defaults = {
-      chainId: this.options.chain.chain_id,
+      chainId: this.options.chain.chainId,
       validatorActionTypeUrl: VALIDATOR_ACTION_TYPES[0].typeUrl,
       createMsg: JSON.stringify(
         {
@@ -79,10 +79,10 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
           minSelfDelegation: '1',
           delegatorAddress: getChainAddressForActionOptions(
             this.options,
-            this.options.chain.chain_id
+            this.options.chain.chainId
           ),
           validatorAddress: this.getValidatorAddress(
-            this.options.chain.chain_id
+            this.options.chain.chainId
           ),
           pubkey: {
             typeUrl: PubKey.typeUrl,
@@ -91,7 +91,7 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
             },
           },
           value: {
-            denom: getNativeTokenForChainId(this.options.chain.chain_id)
+            denom: getNativeTokenForChainId(this.options.chain.chainId)
               .denomOrAddress,
             amount: '1000000',
           },
@@ -111,7 +111,7 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
           commissionRate: '0.05',
           minSelfDelegation: '1',
           validatorAddress: this.getValidatorAddress(
-            this.options.chain.chain_id
+            this.options.chain.chainId
           ),
         },
         null,
@@ -123,7 +123,7 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
   getValidatorAddress(chainId: string) {
     return toValidatorAddress(
       getChainAddressForActionOptions(this.options, chainId) || '',
-      getChainForChainId(chainId).bech32_prefix
+      getChainForChainId(chainId).bech32Prefix
     )
   }
 
@@ -184,7 +184,7 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       msg
     )

@@ -12,7 +12,7 @@ import { ButtonLink } from '../ButtonLink'
 import { DaoCard } from '../dao/DaoCard'
 
 export const GovSubDaosTab = () => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
 
   const subDaos = useLoadingDaos({
     loading: false,

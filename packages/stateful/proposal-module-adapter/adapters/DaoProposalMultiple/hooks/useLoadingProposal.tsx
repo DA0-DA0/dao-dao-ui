@@ -32,7 +32,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(

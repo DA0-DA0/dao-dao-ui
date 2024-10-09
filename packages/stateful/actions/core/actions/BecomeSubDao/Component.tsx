@@ -25,7 +25,7 @@ export const BecomeSubDaoComponent: ActionComponent<
 > = ({ fieldNamePrefix, errors, isCreating, options: { AddressInput } }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
 
   const { register } = useFormContext<BecomeSubDaoData>()

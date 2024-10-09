@@ -19,7 +19,7 @@ export const useLoadingPreProposeApprovalProposal =
   (): LoadingData<PreProposeApprovalProposalWithMeteadata> => {
     const { t } = useTranslation()
     const {
-      chain: { chain_id: chainId },
+      chain: { chainId },
       proposalModule: { prePropose },
       proposalNumber,
     } = useProposalModuleAdapterOptions()

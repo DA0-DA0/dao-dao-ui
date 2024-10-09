@@ -14,7 +14,7 @@ export const useMsgExecutesContract = (
   innerMsgStructure: Structure = {}
 ): boolean => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
 
   const isWasmExecuteMessage = objectMatchesStructure(msg, {

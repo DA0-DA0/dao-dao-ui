@@ -12,7 +12,7 @@ import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 export const makeGetProposalInfo =
   ({
-    chain: { chain_id: chainId },
+    chain: { chainId },
     proposalModule,
     proposalNumber,
     isPreProposeApprovalProposal,

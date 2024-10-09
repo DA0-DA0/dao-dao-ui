@@ -62,7 +62,7 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = ({
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { chainId, bech32Prefix } = useChain()
 
   const { watch, setValue, register, control } = useFormContext()
   const {

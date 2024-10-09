@@ -124,7 +124,7 @@ const getVestingSourcesFromWidgetData = (
       // same chain as the DAO. If widget data is undefined, this is being
       // used by a wallet.
       {
-        [options.chain.chain_id]: {
+        [options.chain.chainId]: {
           owner: options.address,
           factory: widgetData.factory,
           version: widgetData.version,
@@ -183,7 +183,7 @@ const Component: ComponentType<
 > = ({ widgetData, ...props }) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: nativeChainId },
+    chain: { chainId: nativeChainId },
   } = useActionOptions()
 
   const { setValue, watch, setError, clearErrors, trigger } =
@@ -499,10 +499,10 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
       // Cannot use begin if no widget setup, so default to cancel if no data.
       mode: this.widgetData ? 'begin' : 'cancel',
       begin: {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         amount: '1',
         type: TokenType.Native,
-        denomOrAddress: getNativeTokenForChainId(this.options.chain.chain_id)
+        denomOrAddress: getNativeTokenForChainId(this.options.chain.chainId)
           .denomOrAddress,
         recipient: '',
         startDate: `${start.toISOString().split('T')[0]} 12:00 AM`,
@@ -529,11 +529,11 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
         ],
       },
       cancel: {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         address: '',
       },
       registerSlash: {
-        chainId: this.options.chain.chain_id,
+        chainId: this.options.chain.chainId,
         address: '',
         validator: '',
         time: '',
@@ -587,7 +587,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
             ? this.options.queryClient
                 .fetchQuery(
                   cwPayrollFactoryQueries.ownership(this.options.queryClient, {
-                    chainId: this.options.chain.chain_id,
+                    chainId: this.options.chain.chainId,
                     contractAddress: this.widgetData.factory,
                   })
                 )
@@ -785,7 +785,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       cosmosMsg
     )

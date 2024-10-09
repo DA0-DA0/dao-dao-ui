@@ -44,7 +44,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { register, setValue, getValues } = useFormContext<MintData>()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { bech32Prefix } = useChain()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded

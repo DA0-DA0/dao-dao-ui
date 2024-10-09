@@ -39,8 +39,8 @@ export class FeeShareAction extends ActionBase<FeeShareData> {
   constructor(options: ActionOptions) {
     // Only supported on Juno.
     if (
-      options.chain.chain_id !== ChainId.JunoMainnet &&
-      options.chain.chain_id !== ChainId.JunoTestnet
+      options.chain.chainId !== ChainId.JunoMainnet &&
+      options.chain.chainId !== ChainId.JunoTestnet
     ) {
       throw new Error('Fee share is only supported on Juno')
     }

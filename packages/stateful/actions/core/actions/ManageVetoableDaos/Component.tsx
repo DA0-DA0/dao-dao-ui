@@ -96,7 +96,7 @@ export const ManageVetoableDaosComponent: ActionComponent<
                 type="contract"
                 validation={[
                   validateRequired,
-                  makeValidateAddress(chain.bech32_prefix),
+                  makeValidateAddress(chain.bech32Prefix),
                 ]}
               />
             </ChainProvider>

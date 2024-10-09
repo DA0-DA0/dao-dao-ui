@@ -114,19 +114,19 @@ const main = async () => {
   ])
 
   const srcSigner = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
-    prefix: srcChain.bech32_prefix,
+    prefix: srcChain.bech32Prefix,
   })
   const srcSender = (await srcSigner.getAccounts())[0].address
 
   const destSigner = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
-    prefix: destChain.bech32_prefix,
+    prefix: destChain.bech32Prefix,
   })
   const destSender = (await destSigner.getAccounts())[0].address
 
   log()
   log(
     chalk.underline(
-      `Connecting ${srcChain.chain_name} to ${destChain.chain_name} with ${srcSender} and ${destSender}...`
+      `Connecting ${srcChain.chainName} to ${destChain.chainName} with ${srcSender} and ${destSender}...`
     )
   )
 
@@ -166,7 +166,7 @@ const main = async () => {
     SigningCosmWasmClient.connectWithSigner(
       getRpcForChainId(srcChainId),
       srcSigner,
-      makeGetSignerOptions(queryClient)(srcChain.chain_name)
+      makeGetSignerOptions(queryClient)(srcChain.chainName)
     ),
     ibcProtoRpcClientRouter.connect(srcChainId),
     IbcClient.connectWithSigner(
@@ -174,7 +174,7 @@ const main = async () => {
       srcSigner,
       srcSender,
       {
-        gasPrice: makeGetSignerOptions(queryClient)(srcChain.chain_name)
+        gasPrice: makeGetSignerOptions(queryClient)(srcChain.chainName)
           .gasPrice!,
         // How long it waits in between checking for a new block.
         estimatedBlockTime: 3000,
@@ -187,7 +187,7 @@ const main = async () => {
     SigningCosmWasmClient.connectWithSigner(
       getRpcForChainId(destChainId),
       destSigner,
-      makeGetSignerOptions(queryClient)(destChain.chain_name)
+      makeGetSignerOptions(queryClient)(destChain.chainName)
     ),
     ibcProtoRpcClientRouter.connect(destChainId),
     IbcClient.connectWithSigner(
@@ -195,7 +195,7 @@ const main = async () => {
       destSigner,
       destSender,
       {
-        gasPrice: makeGetSignerOptions(queryClient)(destChain.chain_name)
+        gasPrice: makeGetSignerOptions(queryClient)(destChain.chainName)
           .gasPrice!,
         // How long it waits in between checking for a new block.
         estimatedBlockTime: 3000,

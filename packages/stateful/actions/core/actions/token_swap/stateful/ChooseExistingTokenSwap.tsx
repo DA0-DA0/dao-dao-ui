@@ -25,7 +25,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
   const {
     address,
     context,
-    chain: { chain_id: chainId },
+    chain: { chainId },
   } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 

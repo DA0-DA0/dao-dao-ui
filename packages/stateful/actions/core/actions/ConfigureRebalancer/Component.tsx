@@ -121,7 +121,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useSupportedChainContext()
 
   const {

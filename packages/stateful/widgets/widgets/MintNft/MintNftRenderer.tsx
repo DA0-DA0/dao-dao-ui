@@ -28,7 +28,7 @@ export const MintNftRenderer = ({
   },
 }: WidgetRendererProps<MintNftData>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const {
     address: walletAddress = '',
     getSigningClient,

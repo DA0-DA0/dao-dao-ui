@@ -42,7 +42,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   options: { govToken, AddressInput },
 }) => {
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { bech32Prefix },
   } = useActionOptions()
   const { register, setValue, getValues } = useFormContext<MintData>()
 

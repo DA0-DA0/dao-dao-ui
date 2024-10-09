@@ -87,7 +87,7 @@ const getSubDaos = async (
 
 const Component: ActionComponent = (props) => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chainId },
     address,
     context,
   } = useActionOptions()
@@ -164,7 +164,7 @@ export class UpgradeV1ToV2Action extends ActionBase<UpgradeV1ToV2Data> {
 
     this.subDaos = await getSubDaos(
       this.options.queryClient,
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       this.options.address
     )
 

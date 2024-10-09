@@ -15,7 +15,7 @@ export const GovActionsProvider = ({
   loader,
   children,
 }: GovActionsProviderProps) => {
-  const { chain_id: chainId } = useChain()
+  const { chainId } = useChain()
   const queryClient = useQueryClient()
   const govParams = useQueryLoadingDataWithError(
     chainQueries.govParams(queryClient, {

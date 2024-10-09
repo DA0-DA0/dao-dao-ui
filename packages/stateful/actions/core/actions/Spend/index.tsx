@@ -99,7 +99,7 @@ const StatefulSpendComponent: ComponentType<
   const {
     context,
     address,
-    chain: { chain_id: currentChainId },
+    chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch, setValue, getValues } = useFormContext<SpendData>()
   const queryClient = useQueryClient()
@@ -121,7 +121,7 @@ const StatefulSpendComponent: ComponentType<
 
   const validRecipient =
     !!recipient &&
-    isValidBech32Address(recipient, getChainForChainId(toChainId).bech32_prefix)
+    isValidBech32Address(recipient, getChainForChainId(toChainId).bech32Prefix)
 
   const isIbc = !!fromChainId && !!toChainId && fromChainId !== toChainId
   // Only defined if valid PFM memo and chains all have PFM enabled.
@@ -159,7 +159,7 @@ const StatefulSpendComponent: ComponentType<
             props.isCreating
               ? isValidBech32Address(
                   denom,
-                  maybeGetChainForChainId(fromChainId)?.bech32_prefix
+                  maybeGetChainForChainId(fromChainId)?.bech32Prefix
                 )
               : isCw20
           )
@@ -548,12 +548,12 @@ export class SpendAction extends ActionBase<SpendData> {
     })
 
     const nativeToken = maybeGetNativeTokenForChainId(
-      this.options.chain.chain_id
+      this.options.chain.chainId
     )
 
     this.defaults = {
-      fromChainId: this.options.chain.chain_id,
-      toChainId: this.options.chain.chain_id,
+      fromChainId: this.options.chain.chainId,
+      toChainId: this.options.chain.chainId,
       from: this.options.address,
       to: '',
       amount: '1',
@@ -787,14 +787,14 @@ export class SpendAction extends ActionBase<SpendData> {
 
     return spendAccount.type === AccountType.Ica
       ? maybeMakeIcaExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           fromChainId,
           this.options.address,
           spendAccount.address,
           msg
         )
       : maybeMakePolytoneExecuteMessages(
-          this.options.chain.chain_id,
+          this.options.chain.chainId,
           fromChainId,
           msg
         )
@@ -989,7 +989,7 @@ export class SpendAction extends ActionBase<SpendData> {
               chainId,
               decodedMessage.stargate.value.sourceChannel
             ).destinationChain.chain_name
-          ).chain_id
+          ).chainId
       const to = pfmChainPath
         ? getPfmFinalReceiverFromMemo(pfmMemo)
         : decodedMessage.stargate.value.receiver

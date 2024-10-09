@@ -79,7 +79,7 @@ export class ExecuteProposalAction extends ActionBase<ExecuteProposalData> {
     })
 
     this.defaults = {
-      chainId: options.chain.chain_id,
+      chainId: options.chain.chainId,
       coreAddress: '',
       proposalModuleAddress: '',
       proposalId: -1,
@@ -97,7 +97,7 @@ export class ExecuteProposalAction extends ActionBase<ExecuteProposalData> {
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeExecuteSmartContractMessage({
         chainId,

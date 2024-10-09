@@ -219,7 +219,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
     }
 
     return maybeMakePolytoneExecuteMessages(
-      this.options.chain.chain_id,
+      this.options.chain.chainId,
       chainId,
       makeStargateMessage({
         stargate: {

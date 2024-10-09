@@ -28,27 +28,27 @@ export const useLoadingGovProposal = (
 
   const loadingProposal = useQueryLoadingDataWithError(
     chainQueries.govProposal(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       proposalId: Number(proposalId),
     })
   )
 
   const loadingProposalTally = useQueryLoadingDataWithError(
     chainQueries.govProposalTally(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
       proposalId: Number(proposalId),
     })
   )
 
   const loadingGovParams = useQueryLoadingDataWithError(
     chainQueries.govParams(queryClient, {
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
     })
   )
 
   const loadingTotalNativeStakedBalance = useQueryLoadingDataWithError(
     chainQueries.totalNativeStakedBalance({
-      chainId: chain.chain_id,
+      chainId: chain.chainId,
     })
   )
 

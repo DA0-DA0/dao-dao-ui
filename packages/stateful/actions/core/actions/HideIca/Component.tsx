@@ -28,7 +28,7 @@ export const HideIcaComponent: ActionComponent<HideIcaOptions> = ({
   const { t } = useTranslation()
   const { setValue, watch } = useFormContext<HideIcaData>()
   const {
-    chain: { chain_id: sourceChainId },
+    chain: { chainId: sourceChainId },
   } = useActionOptions()
 
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')

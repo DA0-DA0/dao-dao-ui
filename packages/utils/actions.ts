@@ -99,7 +99,7 @@ export const getChainAddressForActionOptions = (
   chainId: string
 ): string | undefined =>
   // If on same chain, return address.
-  chain.chain_id === chainId
+  chain.chainId === chainId
     ? address
     : // If on different chain, return DAO's polytone proxy address.
     context.type === ActionContextType.Dao

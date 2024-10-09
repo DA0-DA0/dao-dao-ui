@@ -54,7 +54,7 @@ const ProposalDepositInput = ({
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chainId, bech32Prefix },
     nativeToken,
   } = useChainContext()
 

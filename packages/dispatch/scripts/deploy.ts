@@ -101,10 +101,9 @@ const main = async () => {
   const queryClient = await makeReactQueryClient()
 
   const {
-    chain_name: chainName,
-    bech32_prefix: bech32Prefix,
-    network_type: networkType,
-    slip44,
+    chainName,
+    bech32Prefix,
+    chainRegistry: { network_type: networkType, slip44 } = {},
   } = getChainForChainId(chainId)
 
   await queryClient.prefetchQuery(chainQueries.dynamicGasPrice({ chainId }))
