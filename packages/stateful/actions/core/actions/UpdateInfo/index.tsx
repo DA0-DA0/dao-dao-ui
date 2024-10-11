@@ -1,11 +1,6 @@
 import { daoDaoCoreQueries } from '@dao-dao/state'
 import { ActionBase, InfoEmoji } from '@dao-dao/stateless'
-import {
-  ActionContextType,
-  ChainId,
-  ContractVersion,
-  UnifiedCosmosMsg,
-} from '@dao-dao/types'
+import { ActionContextType, ChainId, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionKey,
   ActionMatch,
@@ -13,6 +8,7 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import {
+  isNeutronForkVersion,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -58,8 +54,7 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
         update_config: {
           config:
             this.options.context.dao.chainId === ChainId.NeutronMainnet &&
-            this.options.context.dao.coreVersion ===
-              ContractVersion.V2AlphaNeutronFork
+            isNeutronForkVersion(this.options.context.dao.coreVersion)
               ? // The Neutron fork DAO has a different config structure.
                 {
                   name: data.name,

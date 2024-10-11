@@ -2,7 +2,6 @@ import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import { ActionBase, NumbersEmoji } from '@dao-dao/stateless'
 import {
-  ContractVersion,
   DepositRefundPolicy,
   Feature,
   TokenType,
@@ -25,6 +24,7 @@ import {
   convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
   getNativeTokenForChainId,
+  isNeutronForkVersion,
   makeExecuteSmartContractMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -62,7 +62,7 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       // Neutron fork SubDAOs don't support multiple choice proposals due to the
       // timelock/overrule system only being designed for single choice
       // proposals.
-      options.context.dao.coreVersion === ContractVersion.V2AlphaNeutronFork ||
+      isNeutronForkVersion(options.context.dao.coreVersion) ||
       options.chainContext.type !== ActionChainContextType.Supported
     ) {
       throw new Error('Invalid context for enabling multiple choice proposals')

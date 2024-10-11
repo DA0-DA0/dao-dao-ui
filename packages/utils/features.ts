@@ -76,3 +76,11 @@ export const versionGte = (
     return false
   }
 }
+
+/**
+ * Checks whether or not the given version is a Neutron fork version.
+ */
+export const isNeutronForkVersion = (version: ContractVersion): boolean =>
+  version === ContractVersion.V2AlphaNeutronFork1 ||
+  version === ContractVersion.V2AlphaNeutronFork2 ||
+  version === ContractVersion.V2AlphaNeutronFork3

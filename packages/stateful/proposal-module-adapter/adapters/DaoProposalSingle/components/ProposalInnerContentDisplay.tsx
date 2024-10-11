@@ -15,7 +15,6 @@ import {
   ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
   ChainId,
-  ContractVersion,
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
@@ -57,7 +56,7 @@ const InnerProposalInnerContentDisplay = ({
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
-  const { chainId, coreVersion } = useDao()
+  const { chainId } = useDao()
 
   const actionMessagesToDisplay = useMemo(() => {
     let messages = proposal.msgs
@@ -65,10 +64,7 @@ const InnerProposalInnerContentDisplay = ({
 
     // Unwrap `timelock_proposal` execute in Neutron SubDAOs.
     try {
-      if (
-        chainId === ChainId.NeutronMainnet &&
-        coreVersion === ContractVersion.V2AlphaNeutronFork
-      ) {
+      if (chainId === ChainId.NeutronMainnet) {
         if (
           decodedMessages.length === 1 &&
           objectMatchesStructure(decodedMessages[0], {
@@ -115,7 +111,7 @@ const InnerProposalInnerContentDisplay = ({
     }
 
     return messages
-  }, [chainId, coreVersion, proposal.msgs])
+  }, [chainId, proposal.msgs])
 
   const { description, metadata } = extractProposalDescriptionAndMetadata(
     proposal.description
