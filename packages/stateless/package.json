@@ -50,6 +50,7 @@
     "@cosmos-kit/core": "^2.13.1",
     "@dao-dao/config": "2.5.0-rc.3",
     "@storybook/react": "^6.5.10",
+    "@types/codemirror": "^5.60.15",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/react": "^17.0.37",
     "@types/react-csv": "^1.1.3",
