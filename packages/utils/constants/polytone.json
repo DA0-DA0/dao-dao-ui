@@ -233,6 +233,15 @@
       "remoteConnection": "connection-1",
       "voice": "migaloo19dfxncujs33vtw2r5jscm7z7xt2lj7de8ar84z8c6h2l8hkysezq9n2shr"
     },
+    "neutron-1": {
+      "listener": "juno1ave7447jy6kt5nsaxljdcujhx2mmn2kcfjjda3fp7yy5qewnf5zssgch2l",
+      "localChannel": "channel-620",
+      "localConnection": "connection-530",
+      "note": "juno1yt5kcplze0sark8f55fklk70uay3863t5q3j3a8kgvs3rlmjya9qys0d2y",
+      "remoteConnection": "connection-95",
+      "remoteChannel": "channel-5241",
+      "voice": "neutron15c0d3k8nf5t82zzkl8l7he3smx033hsr9dvzjeeuj7e8n46rqy5se0pn3e"
+    },
     "omniflixhub-1": {
       "listener": "juno1ts88k8s6he69uew3y89pg7l9e3zjqplctj4nwg6jw40d9le3r4esvp42s9",
       "localChannel": "channel-566",
