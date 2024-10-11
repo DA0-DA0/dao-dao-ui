@@ -51,13 +51,7 @@ export const ValenceAccountDisplay = <T extends TokenCardInfo>({
         <div className="flex flex-row items-center gap-1">
           <p className="title-text">{t('title.rebalancer')}</p>
 
-          <TooltipInfoIcon
-            size="sm"
-            title={
-              // TODO(rebalancer): Add description.
-              'What is the Rebalancer'
-            }
-          />
+          <TooltipInfoIcon size="sm" title={t('info.rebalancerDescription')} />
         </div>
 
         {!!configureRebalancerHref && (
