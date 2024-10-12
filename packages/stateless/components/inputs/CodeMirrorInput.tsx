@@ -2,7 +2,6 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
 import clsx from 'clsx'
-import { EditorConfiguration } from 'codemirror'
 import dynamic from 'next/dynamic'
 import {
   Control,
@@ -61,7 +60,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   const editorTheme =
     themeContext.theme !== 'dark' ? 'default' : 'material-ocean'
 
-  const cmOptions: EditorConfiguration = {
+  const cmOptions = {
     mode: {
       name: 'javascript',
       json: true,
@@ -69,8 +68,10 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
     theme: editorTheme,
     lineNumbers: false,
     lineWrapping: true,
+    autoCloseBrackets: false,
     tabSize: 2,
     gutters: ['CodeMirror-lint-markers'],
+    lint: true,
     readOnly,
   }
 
