@@ -6,7 +6,7 @@ services:
       args:
         - BUILDPLATFORM
         - TARGETPLATFORM
-    image: ${IMAGE_NAME}
+    image: ${SDA_IMAGE}
     platform: linux/amd64
   dapp:
     build:
@@ -15,5 +15,5 @@ services:
       args:
         - BUILDPLATFORM
         - TARGETPLATFORM
-    image: ${IMAGE_NAME}
+    image: ${DAPP_IMAGE}
     platform: linux/amd64
