@@ -21,7 +21,7 @@ WORKDIR /app/apps/dapp
 # Install the dependencies specifically for dapp
 RUN yarn install --network-timeout 900000
 
-# Build the SDA, make sure build doesnt crash 
+# Build the DAPP, make sure build doesnt crash 
 ENV NODE_OPTIONS=--max_old_space_size=8192
 
 # default
