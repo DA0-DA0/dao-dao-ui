@@ -137,7 +137,10 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     }
 
     if (
-      proposalModule.prePropose.contractName !== ContractName.PreProposeSingle
+      proposalModule.prePropose.contractName !==
+        ContractName.PreProposeSingle &&
+      proposalModule.prePropose.contractName !==
+        ContractName.PreProposeApprovalSingle
     ) {
       throw new Error(
         `Cannot update config for pre-propose module with name: ${proposalModule.prePropose.contractName}`

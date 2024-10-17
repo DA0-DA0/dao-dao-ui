@@ -401,7 +401,13 @@ export const ActionLibraryRow = ({
       {action.status === 'error' &&
         action.error &&
         action.error instanceof Error && (
-          <TooltipInfoIcon size="lg" title={action.error} warning />
+          <TooltipInfoIcon
+            size="lg"
+            title={processError(action.error, {
+              forceCapture: false,
+            })}
+            warning
+          />
         )}
 
       {action.status === 'loading' && <Loader fill={false} size={32} />}
