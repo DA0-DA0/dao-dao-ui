@@ -160,6 +160,17 @@ export const ProposalVotes = <Vote extends unknown = any>({
               {t('info.votesRefreshAutomatically')}
             </p>
           )}
+
+          {!!getAllVotes && (
+            <Button
+              className="caption-text mt-1 italic"
+              loading={loadingAllVotes}
+              onClick={downloadVotes}
+              variant="none"
+            >
+              {t('button.downloadVotesCsv')}
+            </Button>
+          )}
         </div>
 
         <div
@@ -252,17 +263,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
         ) : null}
 
         {footer}
-
-        {!!getAllVotes && (
-          <Button
-            className="caption-text mt-6 self-end pr-1 text-right italic"
-            loading={loadingAllVotes}
-            onClick={downloadVotes}
-            variant="none"
-          >
-            {t('button.downloadVotesCsv')}
-          </Button>
-        )}
       </div>
 
       {!!getAllVotes && allVotes && (
