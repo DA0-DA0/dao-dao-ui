@@ -269,9 +269,11 @@ export const useStakingInfo = ({
   })
 
   const loadingWalletUnstakedNfts = useCachedLoadingWithError(
-    !loadingWalletUnstakedOnfts.loading && !loadingWalletUnstakedOnfts.errored
+    !loadingWalletUnstakedOnfts.loading &&
+      !loadingWalletUnstakedOnfts.errored &&
+      loadingWalletUnstakedOnfts.data.length === 1
       ? waitForAll(
-          loadingWalletUnstakedOnfts.data.map(({ id }) =>
+          loadingWalletUnstakedOnfts.data[0].onfts.map(({ id }) =>
             nftCardInfoSelector({
               chainId: votingModule.chainId,
               collection: collectionAddress,

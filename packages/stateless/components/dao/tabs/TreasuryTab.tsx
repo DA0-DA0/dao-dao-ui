@@ -341,10 +341,7 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
         />
       )}
 
-      {/* OmniFlix Hub NFTs are not yet supported. */}
-      {currentChainId !== ChainId.OmniflixHubMainnet && (
-        <NftSection NftCard={NftCard} className="mt-10" nfts={allNfts} />
-      )}
+      <NftSection NftCard={NftCard} className="mt-10" nfts={allNfts} />
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal

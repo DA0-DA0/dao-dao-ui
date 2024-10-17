@@ -4,6 +4,7 @@ import {
   ChainId,
   GenericToken,
   LazyNftCardInfo,
+  LoadingDataWithError,
   LoadingNfts,
   NftCardInfo,
   NftUriData,
@@ -13,6 +14,7 @@ import {
 import {
   MAINNET,
   STARGAZE_URL_BASE,
+  combineLoadingDataWithErrors,
   getNftKey,
   nftCardInfoFromStargazeIndexerNft,
   transformIpfsUrlToHttpsIfNecessary,
@@ -426,6 +428,38 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
         })
       )
 
+      const queryClient = get(queryClientAtom)
+      const allOnfts =
+        chainId === ChainId.OmniflixHubMainnet ||
+        chainId === ChainId.OmniflixHubTestnet
+          ? await queryClient.fetchQuery(
+              omniflixQueries.allOnfts(queryClient, {
+                chainId,
+                owner: coreAddress,
+              })
+            )
+          : []
+
+      const startingAllNfts: LoadingNfts<LazyNftCardInfo> = allOnfts.length
+        ? {
+            [chainId]: {
+              loading: false,
+              errored: false,
+              updating: false,
+              data: allOnfts.flatMap(({ collection, onfts }) =>
+                onfts.map(
+                  (onft): LazyNftCardInfo => ({
+                    key: getNftKey(chainId, collection.id, onft.id),
+                    chainId,
+                    tokenId: onft.id,
+                    collectionAddress: collection.id,
+                  })
+                )
+              ),
+            },
+          }
+        : {}
+
       return Object.entries(allNfts).reduce(
         (acc, [chainId, { owners, collectionAddresses }]) => {
           collectionAddresses = Array.from(new Set(collectionAddresses))
@@ -461,28 +495,37 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
                 : []
           )
 
+          const newChainLoadingNfts: LoadingDataWithError<LazyNftCardInfo[]> =
+            nftCollectionTokenIds.length > 0 &&
+            nftCollectionTokenIds.every(
+              (loadable) => loadable.state === 'loading'
+            )
+              ? {
+                  loading: true,
+                  errored: false,
+                }
+              : {
+                  loading: false,
+                  errored: false,
+                  updating: nftCollectionTokenIds.some(
+                    (loadable) => loadable.state === 'loading'
+                  ),
+                  data: lazyNftCardProps,
+                }
+
+          const existingChainLoadingNfts = acc[chainId] ? [acc[chainId]] : []
+
+          const loadingNfts = combineLoadingDataWithErrors(
+            newChainLoadingNfts,
+            ...existingChainLoadingNfts
+          )
+
           return {
             ...acc,
-            [chainId]:
-              nftCollectionTokenIds.length > 0 &&
-              nftCollectionTokenIds.every(
-                (loadable) => loadable.state === 'loading'
-              )
-                ? {
-                    loading: true,
-                    errored: false,
-                  }
-                : {
-                    loading: false,
-                    errored: false,
-                    updating: nftCollectionTokenIds.some(
-                      (loadable) => loadable.state === 'loading'
-                    ),
-                    data: lazyNftCardProps,
-                  },
+            [chainId]: loadingNfts,
           }
         },
-        {} as LoadingNfts<LazyNftCardInfo>
+        startingAllNfts
       )
     },
 })

@@ -107,21 +107,29 @@ export const fetchAllOnfts = async (
   queryClient: QueryClient,
   {
     chainId,
-    id,
+    id = '',
     owner,
   }: {
     chainId: string
-    id: string
+    /**
+     * Optionally filter by collection.
+     */
+    id?: string
     /**
      * Optionally filter by owner, returning only those owned by this address.
      */
     owner?: string
   }
-): Promise<ONFT[]> => {
+): Promise<
+  {
+    collection: OnftCollectionInfo
+    onfts: ONFT[]
+  }[]
+> => {
   const client = await omniflixProtoRpcClientRouter.connect(chainId)
 
   if (owner) {
-    const onftIds = (
+    const collections = (
       await getAllRpcResponse(
         client.onft.v1beta1.ownerONFTs,
         {
@@ -130,21 +138,31 @@ export const fetchAllOnfts = async (
         },
         'owner'
       )
-    ).flatMap((owner) => owner?.idCollections.flatMap((c) => c.onftIds) || [])
+    ).flatMap((owner) => owner?.idCollections || [])
 
     return await Promise.all(
-      onftIds.map((tokenId) =>
-        queryClient.fetchQuery(
-          omniflixQueries.onft({
+      collections.map(async ({ denomId, onftIds }) => ({
+        collection: await queryClient.fetchQuery(
+          omniflixQueries.onftCollectionInfo({
             chainId,
-            collectionId: id,
-            tokenId,
+            id: denomId,
           })
-        )
-      )
+        ),
+        onfts: await Promise.all(
+          onftIds.map((tokenId) =>
+            queryClient.fetchQuery(
+              omniflixQueries.onft({
+                chainId,
+                collectionId: denomId,
+                tokenId,
+              })
+            )
+          )
+        ),
+      }))
     )
   } else {
-    const onfts = (
+    const collections = (
       await getAllRpcResponse(
         client.onft.v1beta1.collection,
         {
@@ -152,21 +170,37 @@ export const fetchAllOnfts = async (
         },
         'collection'
       )
-    ).flatMap((collection) => collection?.onfts || [])
+    ).flatMap((collection) =>
+      collection?.denom
+        ? {
+            collection: collection.denom,
+            onfts: collection.onfts,
+          }
+        : []
+    )
 
-    // Pre-cache loaded ONFTs.
-    onfts.forEach((onft: ONFT) => {
+    // Pre-cache loaded collections and ONFTs.
+    collections.forEach(({ collection, onfts }) => {
       queryClient.setQueryData(
-        omniflixQueries.onft({
+        omniflixQueries.onftCollectionInfo({
           chainId,
-          collectionId: id,
-          tokenId: onft.id,
+          id: collection.id,
         }).queryKey,
-        onft
+        collection
       )
+      onfts.forEach((onft) => {
+        queryClient.setQueryData(
+          omniflixQueries.onft({
+            chainId,
+            collectionId: collection.id,
+            tokenId: onft.id,
+          }).queryKey,
+          onft
+        )
+      })
     })
 
-    return onfts
+    return collections
   }
 }
 
