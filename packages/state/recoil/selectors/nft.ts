@@ -513,7 +513,7 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
                   data: lazyNftCardProps,
                 }
 
-          const existingChainLoadingNfts = acc[chainId] ? [acc[chainId]] : []
+          const existingChainLoadingNfts = acc[chainId] ? [acc[chainId]!] : []
 
           const loadingNfts = combineLoadingDataWithErrors(
             newChainLoadingNfts,
