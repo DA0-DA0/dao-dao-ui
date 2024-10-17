@@ -1,0 +1,59 @@
+---
+version: "2.0"
+services:
+  dapp:
+    image: da0-da0/dao-app-dapp:v0.0.2
+    expose:
+      - port: 3000
+        as: 80
+        accept:
+          - daodao.zone
+          - www.daodao.zone
+        to:
+          - global: true
+  sda:
+    image: da0-da0/dao-app-sda:v0.0.2
+    expose:
+      - port: 3000
+        as: 80
+        accept:
+          - sda.daodao.zone
+          - www.sda.daodao.zone
+        to:
+          - global: true
+profiles:
+  compute:
+    dapp:
+      resources:
+        cpu:
+          units: 4
+        memory:
+          size: 16GB
+        storage:
+          - size: 120GB
+    sda:
+      resources:
+        cpu:
+          units: 4
+        memory:
+          size: 16GB
+        storage:
+          - size: 120GB
+  placement:
+    dcloud:
+      pricing:
+        dapp:
+          denom: uakt
+          amount: 10000
+        sda:
+          denom: uakt
+          amount: 10000
+deployment:
+  dapp:
+    dcloud:
+      profile: dapp
+      count: 1
+  sda:
+    dcloud:
+      profile: sda
+      count: 1
