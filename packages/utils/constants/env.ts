@@ -23,9 +23,6 @@ export const NEUTRON_SECURITY_SUBDAO = MAINNET
   ? 'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc'
   : 'neutron1zv35zgj7d6khqxfl3tx95scjljz0rvmkxcsxmggqxrltkm8ystsqvt0qc7'
 
-export const DAO_DAO_DAO_ADDRESS = process.env
-  .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
-
 // https://dashboard.web3auth.io
 export const WEB3AUTH_CLIENT_ID = process.env
   .NEXT_PUBLIC_WEB3AUTH_CLIENT_ID as string
@@ -58,11 +55,8 @@ export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
 
 // Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
-export const DISCORD_NOTIFIER_CLIENT_ID = process.env
-  .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string
 export const DISCORD_NOTIFIER_API_BASE = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
-export const DISCORD_NOTIFIER_REDIRECT_URI = SITE_URL + '/discord'
 
 // Inbox API (https://github.com/DA0-DA0/inbox-cf-worker)
 export const INBOX_API_BASE = process.env.NEXT_PUBLIC_INBOX_API_BASE as string
