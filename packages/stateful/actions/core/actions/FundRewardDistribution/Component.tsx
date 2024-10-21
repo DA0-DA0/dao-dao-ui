@@ -1,14 +1,12 @@
-import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  FilterableItemPopup,
+  DaoRewardDistributionPicker,
   InputErrorMessage,
   InputLabel,
-  InputThemedText,
   NumericInput,
   PercentButton,
   StatusCard,
@@ -20,14 +18,7 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  getFallbackImage,
-  getHumanReadableRewardDistributionLabel,
-  toAccessibleImageUrl,
-  tokensEqual,
-  validatePositive,
-  validateRequired,
-} from '@dao-dao/utils'
+import { tokensEqual, validatePositive, validateRequired } from '@dao-dao/utils'
 
 export type FundRewardDistributionData = {
   address: string
@@ -94,65 +85,21 @@ export const FundRewardDistributionComponent: ActionComponent<
     selectedDistribution?.token.decimals ?? 0
   )
 
-  const selectedDistributionDisplay = selectedDistribution && (
-    <>
-      <div
-        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${toAccessibleImageUrl(
-            selectedDistribution.token.imageUrl ||
-              getFallbackImage(selectedDistribution.token.denomOrAddress)
-          )})`,
-        }}
-      ></div>
-
-      {getHumanReadableRewardDistributionLabel(t, selectedDistribution)}
-    </>
-  )
-
   return (
     <>
       <div className="flex flex-col gap-2 self-start">
         <InputLabel name={t('title.distribution')} primary />
 
-        {isCreating ? (
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={distributions.map((distribution) => ({
-              key: distribution.address + distribution.id,
-              selected: selectedDistribution === distribution,
-              iconUrl:
-                distribution.token.imageUrl ||
-                getFallbackImage(distribution.token.denomOrAddress),
-              label: getHumanReadableRewardDistributionLabel(t, distribution),
-              ...distribution,
-            }))}
-            onSelect={({ address, id }) => {
-              setValue((fieldNamePrefix + 'address') as 'address', address)
-              setValue((fieldNamePrefix + 'id') as 'id', id)
-            }}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'self-start',
-                variant: !address ? 'primary' : 'ghost_outline',
-                size: 'lg',
-                children: selectedDistribution ? (
-                  <>
-                    {selectedDistributionDisplay}
-                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
-                  </>
-                ) : (
-                  t('button.chooseDistribution')
-                ),
-              },
-            }}
-          />
-        ) : (
-          <InputThemedText className="!py-2 !px-3">
-            {selectedDistributionDisplay}
-          </InputThemedText>
-        )}
+        <DaoRewardDistributionPicker
+          disabled={!isCreating}
+          distributions={distributions}
+          onSelect={({ address, id }) => {
+            setValue((fieldNamePrefix + 'address') as 'address', address)
+            setValue((fieldNamePrefix + 'id') as 'id', id)
+          }}
+          selectButtonVariant={!address ? 'primary' : 'ghost_outline'}
+          selectedDistribution={selectedDistribution}
+        />
       </div>
 
       {selectedDistribution && (
@@ -163,6 +110,7 @@ export const FundRewardDistributionComponent: ActionComponent<
             <NumericInput
               containerClassName={clsx(!isCreating && 'self-start')}
               disabled={!isCreating}
+              error={errors?.amount}
               fieldName={(fieldNamePrefix + 'amount') as 'amount'}
               getValues={getValues}
               min={HugeDecimal.one.toHumanReadableNumber(
@@ -241,12 +189,3 @@ export const FundRewardDistributionComponent: ActionComponent<
     </>
   )
 }
-
-const FILTERABLE_KEYS = [
-  'label',
-  'address',
-  'id',
-  'chainId',
-  'token.symbol',
-  'token.denomOrAddress',
-]

@@ -208,6 +208,49 @@ export const listAllDaoRewardDistributorPendingRewards = async (
 }
 
 /**
+ * Fetch all DAO reward distributions.
+ */
+export const fetchAllDaoRewardDistributions = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    daoAddress,
+  }: {
+    chainId: string
+    daoAddress: string
+  }
+): Promise<DaoRewardDistribution[]> => {
+  // Active distributors for a DAO.
+  const distributors = (
+    await queryClient.fetchQuery(
+      daoDaoCoreQueries.listAllItems(queryClient, {
+        chainId,
+        contractAddress: daoAddress,
+        args: {
+          prefix: getRewardDistributorStorageItemKey(''),
+        },
+      })
+    )
+  ).map(([, value]) => value)
+
+  // Fetch all distributions with pending rewards from all distributors.
+  const distributions = (
+    await Promise.all(
+      distributors.map((address) =>
+        queryClient.fetchQuery(
+          daoRewardsDistributorExtraQueries.distributions(queryClient, {
+            chainId,
+            address,
+          })
+        )
+      )
+    )
+  ).flat()
+
+  return distributions
+}
+
+/**
  * Fetch all DAO reward distributions and pending rewards for an account.
  */
 export const fetchPendingDaoRewards = async (
@@ -364,6 +407,17 @@ export const daoRewardsDistributorExtraQueries = {
       ],
       queryFn: () =>
         listAllDaoRewardDistributorPendingRewards(queryClient, options),
+    }),
+  /**
+   * Fetch all DAO reward distributions.
+   */
+  allDistributions: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchAllDaoRewardDistributions>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['daoRewardsDistributorExtra', 'allDistributions', options],
+      queryFn: () => fetchAllDaoRewardDistributions(queryClient, options),
     }),
   /**
    * Fetch all DAO reward distributions and pending rewards for an account.

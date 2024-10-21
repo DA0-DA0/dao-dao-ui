@@ -16,9 +16,9 @@ import { executeSmartContracts, processError } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError, useWallet } from '../../hooks'
 
-export const DaoRewardsDistributorClaimCard = ({
-  ...props
-}: StatefulDaoRewardsDistributorClaimCardProps) => {
+export const DaoRewardsDistributorClaimCard = (
+  props: StatefulDaoRewardsDistributorClaimCardProps
+) => {
   const { t } = useTranslation()
   const dao = useDao()
   const { address, isWalletConnected, getSigningClient } = useWallet()

@@ -8,7 +8,8 @@ import { Coin, DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate'
 import { parseRawLog } from '@cosmjs/stargate/build/logs'
 import { toUtf8 } from 'secretjs'
 
-import { ContractVersion } from '@dao-dao/types'
+import { HugeDecimal } from '@dao-dao/math'
+import { ContractVersion, GenericToken, TokenType } from '@dao-dao/types'
 import {
   MsgExecuteContract,
   MsgInstantiateContract,
@@ -18,6 +19,7 @@ import {
 import { getChainForChainId } from './chain'
 import { findEventsAttributeValue } from './client'
 import { CHAIN_GAS_MULTIPLIER } from './constants'
+import { encodeJsonToBase64 } from './messages'
 import { SecretSigningCosmWasmClient } from './secret'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
@@ -167,6 +169,57 @@ export const executeSmartContract = async (
     fee,
     memo,
   })
+
+/**
+ * Execute a smart contract message with tokens from any supported client.
+ */
+export const executeSmartContractWithToken = async ({
+  client,
+  sender,
+  contractAddress,
+  msg,
+  token,
+  amount,
+  fee = CHAIN_GAS_MULTIPLIER,
+  memo = undefined,
+}: {
+  client:
+    | SupportedSigningCosmWasmClient
+    | (() => Promise<SupportedSigningCosmWasmClient>)
+  sender: string
+  contractAddress: string
+  msg: object
+  token: GenericToken
+  amount: HugeDecimal
+  fee?: number
+  memo?: string
+}): Promise<ExecuteResult> => {
+  return executeSmartContracts({
+    client,
+    sender,
+    instructions: [
+      // Wrap in CW20 send if necessary.
+      token.type === TokenType.Cw20
+        ? {
+            contractAddress: token.denomOrAddress,
+            msg: {
+              send: {
+                amount,
+                contract: contractAddress,
+                msg: encodeJsonToBase64(msg),
+              },
+            },
+          }
+        : {
+            contractAddress,
+            msg,
+            funds: amount.toCoins(token.denomOrAddress),
+          },
+    ],
+    fee,
+    memo,
+  })
+}
 
 /**
  * Execute one or more smart contract messages from any supported client.
