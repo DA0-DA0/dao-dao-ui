@@ -10,6 +10,8 @@ export interface ModalProps {
   header?: {
     title: string
     subtitle?: string
+    supertitle?: string
+    imageUrl?: string
   }
   headerContent?: ReactNode
   footerContent?: ReactNode

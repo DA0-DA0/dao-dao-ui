@@ -5,6 +5,13 @@
 // 5.12345 --> 5.1234%
 // 0.15    --> 0.15%
 // 23.4852 --> 23.49%
+
+import { TFunction } from 'react-i18next'
+
+import { Expiration } from '@dao-dao/types'
+
+import { convertExpirationToDate } from './conversion'
+
 // 23.4952 --> 23.5%
 export const formatPercentOf100 = (
   percentOf100: number | string,
@@ -91,3 +98,24 @@ export const toFixedDown = (value: number, digits: number) => {
   const matches = stringifiedValue.match(re)
   return matches ? parseFloat(matches[1]) : value
 }
+
+/**
+ * Format an expiration as human readable.
+ */
+export const formatExpiration = (t: TFunction, expiration: Expiration) =>
+  'never' in expiration
+    ? t('info.na')
+    : 'at_height' in expiration
+    ? t('info.blockHeightValue', {
+        height: expiration.at_height.toLocaleString(),
+      })
+    : formatDateTimeTz(
+        // always returns date when 'at_time' is used
+        convertExpirationToDate(
+          // Unused
+          0,
+          expiration,
+          // Unused
+          0
+        )!
+      )

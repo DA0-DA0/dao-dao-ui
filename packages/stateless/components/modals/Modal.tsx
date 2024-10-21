@@ -126,34 +126,51 @@ export const Modal = ({
                 )}
               >
                 {header && (
-                  <>
-                    <p
-                      className={clsx(
-                        'header-text',
-                        header.subtitle && 'mb-1',
-                        // If close button displaying, add more right padding.
-                        !hideCloseButton && 'pr-12',
-                        titleClassName
-                      )}
-                    >
-                      {header.title}
-                    </p>
-                    {!!header.subtitle && (
+                  <div className="flex flex-row gap-3 items-center">
+                    {!!header.imageUrl && (
                       <div
+                        className="shrink-0 bg-center bg-cover bg-no-repeat w-10 h-10 rounded-full overflow-hidden"
+                        style={{
+                          backgroundImage: `url(${header.imageUrl})`,
+                        }}
+                      />
+                    )}
+
+                    <div className="grow shrink-0 flex flex-col gap-1">
+                      {!!header.supertitle && (
+                        <p className="caption-text text-sm -mb-1">
+                          {header.supertitle}
+                        </p>
+                      )}
+
+                      <p
                         className={clsx(
-                          'space-y-1',
+                          'header-text',
+                          header.subtitle && 'mb-1',
                           // If close button displaying, add more right padding.
-                          !hideCloseButton && 'pr-12'
+                          !hideCloseButton && 'pr-12',
+                          titleClassName
                         )}
                       >
-                        {header.subtitle.split('\n').map((line, index) => (
-                          <p key={index} className="body-text">
-                            {line}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                        {header.title}
+                      </p>
+                      {!!header.subtitle && (
+                        <div
+                          className={clsx(
+                            'space-y-1',
+                            // If close button displaying, add more right padding.
+                            !hideCloseButton && 'pr-12'
+                          )}
+                        >
+                          {header.subtitle.split('\n').map((line, index) => (
+                            <p key={index} className="body-text">
+                              {line}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
 
                 {headerContent}

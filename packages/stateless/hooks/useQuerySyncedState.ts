@@ -66,7 +66,7 @@ export const useQuerySyncedState = <T = string | number>({
       return
     }
 
-    if (value === defaultValue) {
+    if (value === defaultValue || value === undefined) {
       if (!(param in router.query)) {
         return
       }

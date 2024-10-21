@@ -1,4 +1,4 @@
-import { ArrowDropDown, Payments } from '@mui/icons-material'
+import { Payments } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
@@ -6,6 +6,7 @@ import { DaoRewardsDistributorClaimCardProps } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
+import { Collapsible } from '../Collapsible'
 import { ErrorPage } from '../error'
 import { TokenAmountDisplay } from '../token'
 import { TooltipInfoIcon } from '../tooltip'
@@ -97,74 +98,74 @@ export const DaoRewardsDistributorClaimCard = ({
           <ErrorPage error={rewards.error} />
         ) : (
           rewards.data.length > 0 && (
-            <div className="flex flex-col gap-3 border-t border-border-secondary pt-4">
-              <div className="flex flex-row items-center gap-2">
-                <ArrowDropDown className="!h-5 !w-5 text-icon-tertiary" />
-                <p className="body-text text-text-tertiary">
-                  {t('title.breakdown')}
-                </p>
-              </div>
-
-              <div className="flex flex-col pl-[0.5625rem]">
-                {rewards.data.map(
-                  ({ token, balance, usdValue, timestamp }, index) => (
+            <Collapsible
+              containerClassName="!gap-1 border-t border-border-secondary pt-2"
+              contentContainerClassName="styled-scrollbar flex flex-col pl-[0.625rem] overflow-y-auto max-h-64 -mr-3.5 pr-3.5 -mb-4 pb-4"
+              defaultCollapsed
+              label={t('title.breakdown')}
+              labelClassName="!body-text !text-text-tertiary"
+              noContentIndent
+              noHeaderIndent
+            >
+              {rewards.data.map(
+                ({ token, balance, usdValue, timestamp }, index) => (
+                  <div
+                    key={token.denomOrAddress}
+                    className={clsx(
+                      'flex flex-row pl-4 items-stretch border-border-secondary border-l-2',
+                      // padding between above item's bottom border
+                      index > 0 && 'pt-2',
+                      // padding above first and below last items within
+                      // container
+                      index === 0 && 'pt-1',
+                      index === rewards.data.length - 1 && 'pb-1'
+                    )}
+                  >
                     <div
-                      key={token.denomOrAddress}
                       className={clsx(
-                        'flex flex-row pl-4 items-stretch border-border-secondary border-l-2',
-                        // padding between above item's bottom border
-                        index > 0 && 'pt-2',
-                        // padding above first and below last items within
-                        // container
-                        index === 0 && 'pt-1',
-                        index === rewards.data.length - 1 && 'pb-1'
+                        'flex flex-row grow items-center justify-between min-w-0 gap-8',
+                        // bottom border between items, with padding that
+                        // matches top padding in the item below it
+                        index !== rewards.data.length - 1 &&
+                          'border-dashed border-b border-border-secondary pb-2'
                       )}
                     >
-                      <div
-                        className={clsx(
-                          'flex flex-row grow items-center justify-between',
-                          // bottom border between items, with padding that
-                          // matches top padding in the item below it
-                          index !== rewards.data.length - 1 &&
-                            'border-dashed border-b border-border-secondary pb-2'
-                        )}
-                      >
-                        <TokenAmountDisplay
-                          amount={balance}
-                          className="text-text-body"
-                          decimals={token.decimals}
-                          hideSymbol
-                          iconUrl={
-                            token.imageUrl ||
-                            getFallbackImage(token.denomOrAddress)
-                          }
-                          showAllDecimals
-                          showFullAmount
-                          suffix={'  $' + token.symbol}
-                          suffixClassName="whitespace-pre text-text-tertiary"
-                        />
+                      <TokenAmountDisplay
+                        amount={balance}
+                        className="text-text-body"
+                        decimals={token.decimals}
+                        hideSymbol
+                        iconUrl={
+                          token.imageUrl ||
+                          getFallbackImage(token.denomOrAddress)
+                        }
+                        showAllDecimals
+                        showFullAmount
+                        suffix={'  $' + token.symbol}
+                        suffixClassName="whitespace-pre text-text-tertiary"
+                      />
 
-                        <TokenAmountDisplay
-                          amount={usdValue}
-                          className={clsx(
-                            '!text-sm',
-                            usdValue > 0
-                              ? '!text-text-interactive-valid'
-                              : '!text-text-tertiary'
-                          )}
-                          dateFetched={timestamp}
-                          decimals={2}
-                          hideSymbol
-                          minAmount={0.01}
-                          prefix="$"
-                          showAllDecimals
-                        />
-                      </div>
+                      <TokenAmountDisplay
+                        amount={usdValue}
+                        className={clsx(
+                          '!text-sm',
+                          usdValue > 0
+                            ? '!text-text-interactive-valid'
+                            : '!text-text-tertiary'
+                        )}
+                        dateFetched={timestamp}
+                        decimals={2}
+                        hideSymbol
+                        minAmount={0.01}
+                        prefix="$"
+                        showAllDecimals
+                        wrapperClassName="shrink-0"
+                      />
                     </div>
-                  )
-                )}
-              </div>
-            </div>
+                  </div>
+                )
+              )}
+            </Collapsible>
           )
         ))}
     </div>

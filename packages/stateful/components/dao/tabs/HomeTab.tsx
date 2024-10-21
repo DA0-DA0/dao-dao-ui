@@ -22,8 +22,8 @@ import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { CreateDaoPermit } from '../CreateDaoPermit'
+import { DaoRewardsDistributorActiveDistributionsCard } from '../DaoRewardsDistributorActiveDistributionsCard'
 import { DaoRewardsDistributorClaimCard } from '../DaoRewardsDistributorClaimCard'
-import { DaoRewardsDistributorFundCard } from '../DaoRewardsDistributorFundCard'
 import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
@@ -118,7 +118,7 @@ export const HomeTab = () => {
 
             <div className="flex flex-col gap-2">
               <DaoRewardsDistributorClaimCard />
-              <DaoRewardsDistributorFundCard />
+              <DaoRewardsDistributorActiveDistributionsCard />
             </div>
           </div>
         )}
