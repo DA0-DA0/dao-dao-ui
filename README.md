@@ -82,6 +82,14 @@ If something is misconfigured, check out the docs for
 | [`types`](./packages/types)         | Types used across packages.                                                                           |
 | [`utils`](./packages/utils)         | Utility functions used across packages.                                                               |
 
+## Docker 
+set the image name & tag. build the image:
+
+```sh
+# Ensure BUILDPLATFORM is set to your machines platform, and TARGETPLATFORM is set for platform intended to run image:
+SDA_IMAGE=da0-da0/dao-app-sda:v0.0.2 DAPP_IMAGE=da0-da0/dao-app-dapp:v0.0.2 docker-compose build --build-arg BUILDPLATFORM=linux/arm64 --build-arg TARGETPLATFORM=linux/amd64
+```
+
 ## Contributing
 
 Interested in contributing to DAO DAO? Check out

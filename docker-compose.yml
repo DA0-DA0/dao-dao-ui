@@ -1,0 +1,19 @@
+services:
+  sda:
+    build:
+      context: .
+      dockerfile: apps/sda/Dockerfile
+      args:
+        - BUILDPLATFORM
+        - TARGETPLATFORM
+    image: ${SDA_IMAGE}
+    platform: linux/amd64
+  dapp:
+    build:
+      context: .
+      dockerfile: apps/dapp/Dockerfile
+      args:
+        - BUILDPLATFORM
+        - TARGETPLATFORM
+    image: ${DAPP_IMAGE}
+    platform: linux/amd64
