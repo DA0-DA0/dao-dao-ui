@@ -20,8 +20,7 @@ export const DaoRewardsDistributorActiveDistributionsCard = (
     daoRewardsDistributorExtraQueries.allDistributions(queryClient, {
       chainId,
       daoAddress: coreAddress,
-    }),
-    (distributions) => distributions.filter(({ open_funding }) => open_funding)
+    })
   )
 
   if (
