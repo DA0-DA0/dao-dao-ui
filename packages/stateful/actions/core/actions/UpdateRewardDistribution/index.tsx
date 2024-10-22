@@ -188,11 +188,12 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
       this.distributors.some(
         (d) => d.address === decodedMessage.wasm.execute.contract_addr
       ) &&
-      // Ensure only two keys (id and emission_rate) are present. This ensures
-      // that voting_module and hook_caller are unchanged. Otherwise, this may
-      // be a malicious actor trying to sneakily use a different voting module
-      // that distributes rewards to different recipients.
-      Object.keys(decodedMessage.wasm.execute.msg.update).length === 2
+      // Ensure vp_contract and hook_caller are unchanged, since we don't allow
+      // changing them in the UI. Otherwise, this may be a malicious actor
+      // trying to sneakily use a different voting module that distributes
+      // rewards to different recipients.
+      !decodedMessage.wasm.execute.msg.update.vp_contract &&
+      !decodedMessage.wasm.execute.msg.update.hook_caller
     )
   }
 
