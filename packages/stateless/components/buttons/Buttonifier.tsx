@@ -65,7 +65,11 @@ export const getButtonifiedClassNames = ({
     // Rounded if circular.
     {
       'aspect-square rounded-full': circular,
-      'rounded-md': !circular && !noRounding,
+      'rounded-md':
+        !circular &&
+        !noRounding &&
+        variant !== 'none' &&
+        variant !== 'underline',
     },
 
     // Pulse if loading for a variant that we don't display the loader.
