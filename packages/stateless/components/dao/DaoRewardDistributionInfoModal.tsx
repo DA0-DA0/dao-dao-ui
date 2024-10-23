@@ -134,7 +134,8 @@ export const DaoRewardDistributionInfoModal = ({
       }}
       onClose={() => {
         onClose()
-        setShowingDistribute(false)
+        // Wait for the modal to close before hiding this to prevent flickering.
+        setTimeout(() => setShowingDistribute(false), 500)
       }}
       titleClassName="!title-text"
       visible={visible}
