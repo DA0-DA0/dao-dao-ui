@@ -1,4 +1,4 @@
-import { DaoRewardDistributor } from '@dao-dao/types'
+import { DaoRewardDistribution, DaoRewardDistributor } from '@dao-dao/types'
 
 import {
   DAO_REWARD_DISTRIBUTOR_ITEM_NAMESPACE,
@@ -50,3 +50,10 @@ export const getDaoRewardDistributors = (
       address,
     })
   )
+
+/**
+ * Get unique key to identify a distribution.
+ */
+export const getUniqueRewardDistributionKey = (
+  distribution: DaoRewardDistribution
+): string => [distribution.address, distribution.id].join(':')

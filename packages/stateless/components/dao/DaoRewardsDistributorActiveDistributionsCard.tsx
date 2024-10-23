@@ -5,6 +5,7 @@ import { DaoRewardsDistributorActiveDistributionsCardProps } from '@dao-dao/type
 import {
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
+  getUniqueRewardDistributionKey,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
@@ -20,7 +21,7 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
 }: DaoRewardsDistributorActiveDistributionsCardProps) => {
   const { t } = useTranslation()
 
-  const [selectedId, setSelectedId] = useQuerySyncedState<string | undefined>({
+  const [selected, setSelected] = useQuerySyncedState<string | undefined>({
     param: 'distribution',
     defaultValue: undefined,
   })
@@ -28,8 +29,8 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
   const selectedDistribution =
     distributions.loading || distributions.errored
       ? undefined
-      : selectedId
-      ? distributions.data.find((d) => d.id.toString() === selectedId)
+      : selected
+      ? distributions.data.find((d) => getUniqueRewardDistributionKey(d))
       : undefined
 
   return (
@@ -57,7 +58,9 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
             {distributions.data.map((distribution) => (
               <Button
                 key={distribution.id}
-                onClick={() => setSelectedId(distribution.id.toString())}
+                onClick={() =>
+                  setSelected(getUniqueRewardDistributionKey(distribution))
+                }
                 variant="ghost"
               >
                 <div
@@ -81,7 +84,7 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
 
       <DaoRewardDistributionInfoModal
         distribution={selectedDistribution}
-        onClose={() => setSelectedId(undefined)}
+        onClose={() => setSelected(undefined)}
       />
     </>
   )
