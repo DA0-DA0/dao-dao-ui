@@ -30,7 +30,9 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
     distributions.loading || distributions.errored
       ? undefined
       : selected
-      ? distributions.data.find((d) => getUniqueRewardDistributionKey(d))
+      ? distributions.data.find(
+          (d) => selected === getUniqueRewardDistributionKey(d)
+        )
       : undefined
 
   return (
