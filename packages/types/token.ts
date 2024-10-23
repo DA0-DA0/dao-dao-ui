@@ -264,3 +264,16 @@ export type AstroportToken = {
   totalLiquidityUSD: number
   dayVolumeUSD: number
 }
+
+export type WhiteWhalePool = {
+  pool_id: string
+  chain_name: string
+  displayName: string
+  displayLogo1: string
+  displayLogo2: string
+  volume_24h: number
+  volume_7d: number
+  TVL: string
+  Price: string
+  APR: number
+}

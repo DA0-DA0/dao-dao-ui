@@ -7,12 +7,14 @@ import {
   GenericTokenSource,
   GenericTokenWithUsdPrice,
   TokenType,
+  WhiteWhalePool,
 } from '@dao-dao/types'
 import { FanToken } from '@dao-dao/types/protobuf/codegen/bitsong/fantoken/v1beta1/fantoken'
 import {
   ASTROPORT_PRICES_API,
   MAINNET,
   OSMOSIS_API_BASE,
+  WHITE_WHALE_PRICES_API,
   bitsongProtoRpcClientRouter,
   convertChainRegistryAssetToGenericToken,
   getChainForChainName,
@@ -555,6 +557,51 @@ export const fetchAstroportPrice = async (
 }
 
 /**
+ * Fetch the White Whale price for a token.
+ */
+export const fetchWhiteWhalePrice = async (
+  queryClient: QueryClient,
+  options: GenericTokenSource
+): Promise<GenericTokenWithUsdPrice> => {
+  // Get WHALE USD price from Osmosis.
+  const whaleUsdPrice = await queryClient.fetchQuery(
+    tokenQueries.osmosisPrice(queryClient, {
+      type: TokenType.Native,
+      chainId: ChainId.MigalooMainnet,
+      denomOrAddress: 'uwhale',
+    })
+  )
+
+  if (whaleUsdPrice.usdPrice === undefined) {
+    throw new Error('No Osmosis WHALE price found')
+  }
+
+  const token = await queryClient.fetchQuery(
+    tokenQueries.info(queryClient, options)
+  )
+
+  const pools: WhiteWhalePool[] = await (
+    await fetch(WHITE_WHALE_PRICES_API)
+  ).json()
+
+  // Find SYMBOL-WHALE pool.
+  const pool = pools.find((pool) => pool.pool_id === `${token.symbol}-WHALE`)
+  if (!pool) {
+    throw new Error('No White Whale pool found')
+  }
+
+  // Amount of WHALE for 1 token.
+  const priceInWhale = Number(pool.Price)
+  const usdPrice = priceInWhale * whaleUsdPrice.usdPrice
+
+  return {
+    token,
+    usdPrice,
+    timestamp: new Date(),
+  }
+}
+
+/**
  * Fetch the USD price for a token.
  */
 export const fetchUsdPrice = async (
@@ -569,6 +616,7 @@ export const fetchUsdPrice = async (
     tokenQueries.coinGeckoPrice,
     tokenQueries.osmosisPrice,
     tokenQueries.astroportPrice,
+    tokenQueries.whiteWhalePrice,
   ]
 
   const errors: Error[] = []
@@ -666,6 +714,17 @@ export const tokenQueries = {
     queryOptions({
       queryKey: ['token', 'astroportPrice', options],
       queryFn: () => fetchAstroportPrice(queryClient, options),
+    }),
+  /**
+   * Fetch the White Whale price for a token.
+   */
+  whiteWhalePrice: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchWhiteWhalePrice>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['token', 'whiteWhalePrice', options],
+      queryFn: () => fetchWhiteWhalePrice(queryClient, options),
     }),
   /**
    * Fetch the USD price for a token.
