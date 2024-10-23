@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   GenericTokenSource,
@@ -128,13 +129,19 @@ export const getPfmFinalReceiverFromMemo = (memo: PfmMemo): string =>
 export const sortTokensValueDescending: SortFn<
   Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>
 > = (a, b) => {
-  // If loading or no price, show at bottom.
+  const aBalance = a.lazyInfo.loading
+    ? a.unstakedBalance
+    : a.lazyInfo.data.totalBalance
   const aPrice =
     a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
       : a.lazyInfo.data.totalBalance.times(
           a.lazyInfo.data.usdUnitPrice.usdPrice
         )
+
+  const bBalance = b.lazyInfo.loading
+    ? b.unstakedBalance
+    : b.lazyInfo.data.totalBalance
   const bPrice =
     b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
@@ -143,19 +150,19 @@ export const sortTokensValueDescending: SortFn<
         )
 
   // If prices are equal, sort alphabetically by symbol.
-  return aPrice === bPrice
-    ? a.token.symbol
-        .toLocaleLowerCase()
-        .localeCompare(b.token.symbol.toLocaleLowerCase())
-    : aPrice === undefined
+  const symbolComparison = a.token.symbol
+    .toLocaleLowerCase()
+    .localeCompare(b.token.symbol.toLocaleLowerCase())
+
+  return aPrice && bPrice && aPrice.eq(bPrice)
+    ? symbolComparison
+    : !aPrice && bPrice?.isPositive()
     ? 1
-    : bPrice === undefined
+    : !bPrice && aPrice?.isPositive()
     ? -1
-    : aPrice.eq(bPrice)
-    ? 0
-    : aPrice.gt(bPrice)
-    ? -1
-    : 1
+    : aPrice && bPrice
+    ? compareHugeDecimalDescending(aPrice, bPrice) || symbolComparison
+    : compareHugeDecimalDescending(aBalance, bBalance) || symbolComparison
 }
 
 /**
@@ -164,13 +171,19 @@ export const sortTokensValueDescending: SortFn<
 export const sortTokensValueAscending: SortFn<
   Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>
 > = (a, b) => {
-  // If loading or no price, show at bottom.
+  const aBalance = a.lazyInfo.loading
+    ? a.unstakedBalance
+    : a.lazyInfo.data.totalBalance
   const aPrice =
     a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
       : a.lazyInfo.data.totalBalance.times(
           a.lazyInfo.data.usdUnitPrice.usdPrice
         )
+
+  const bBalance = b.lazyInfo.loading
+    ? b.unstakedBalance
+    : b.lazyInfo.data.totalBalance
   const bPrice =
     b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice?.usdPrice
       ? undefined
@@ -179,17 +192,23 @@ export const sortTokensValueAscending: SortFn<
         )
 
   // If prices are equal, sort alphabetically by symbol.
-  return aPrice === bPrice
-    ? a.token.symbol
-        .toLocaleLowerCase()
-        .localeCompare(b.token.symbol.toLocaleLowerCase())
-    : aPrice === undefined
+  const symbolComparison = a.token.symbol
+    .toLocaleLowerCase()
+    .localeCompare(b.token.symbol.toLocaleLowerCase())
+
+  return aPrice && bPrice && aPrice.eq(bPrice)
+    ? symbolComparison
+    : !aPrice && bPrice?.isPositive()
     ? 1
-    : bPrice === undefined
+    : !bPrice && aPrice?.isPositive()
     ? -1
-    : aPrice.eq(bPrice)
-    ? 0
-    : aPrice.gt(bPrice)
-    ? 1
-    : -1
+    : aPrice && bPrice
+    ? compareHugeDecimalAscending(aPrice, bPrice) || symbolComparison
+    : compareHugeDecimalAscending(aBalance, bBalance) || symbolComparison
 }
+
+const compareHugeDecimalAscending = (a: HugeDecimal, b: HugeDecimal): number =>
+  a.eq(b) ? 0 : a.gt(b) ? 1 : -1
+
+const compareHugeDecimalDescending = (a: HugeDecimal, b: HugeDecimal): number =>
+  a.eq(b) ? 0 : a.gt(b) ? -1 : 1
