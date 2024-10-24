@@ -136,7 +136,7 @@ export const Modal = ({
                       />
                     )}
 
-                    <div className="grow shrink-0 flex flex-col gap-1">
+                    <div className="grow shrink-0 flex flex-col gap-1 max-w-full">
                       {!!header.supertitle && (
                         <p className="caption-text text-sm -mb-1">
                           {header.supertitle}
