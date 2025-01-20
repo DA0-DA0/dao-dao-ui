@@ -659,7 +659,6 @@ export class TestSuite {
     }
 
     if (!config.codeIds.CwAdminFactory) {
-      console.log(config)
       throw new Error(
         `CwAdminFactory code ID still not found for chain ${this.chainId}`
       )
@@ -682,7 +681,7 @@ export class TestSuite {
     const contracts = await this.client.getContracts(
       config.codeIds.CwAdminFactory
     )
-    if (deployContracts.length > 0) {
+    if (contracts.length > 0) {
       config.factoryContractAddress = contracts[0]
     } else {
       console.log('Deploying new factory contract...')
@@ -705,39 +704,47 @@ export class TestSuite {
 
     const deploySets = DeploySet.getAutoDeploySets(this.chainId)
     const contracts = deploySets.flatMap((deploySet) => deploySet.contracts)
+    const missingContracts = (
+      await Promise.all(
+        contracts.map(async (contract) =>
+          (await this.codeIdConfig.getCodeId({
+            chainId: this.chainId,
+            name: contract.name,
+            version: this.contractVersion,
+          })) === null
+            ? contract
+            : []
+        )
+      )
+    ).flat()
+
+    if (!missingContracts.length) {
+      return
+    }
 
     // Make a signer for each contract so we can parallelize the uploads.
-    const signers = await this.makeSigners(contracts.length, {
+    const signers = await this.makeSigners(missingContracts.length, {
       amount: 100_000,
       noLock: true,
     })
 
     await Promise.all(
-      contracts.map(async (contract, index) => {
+      missingContracts.map(async (contract, index) => {
         const signer = signers[index]
 
-        // Upload the contract if code ID not already set.
-        if (
-          !this.codeIdConfig.getCodeId({
-            chainId: this.chainId,
-            name: contract.name,
-            version: this.contractVersion,
-          })
-        ) {
-          const codeId = await contract.upload({
-            client: await signer.getSigningClient(),
-            sender: signer.address,
-            contractDirs,
-          })
+        const codeId = await contract.upload({
+          client: await signer.getSigningClient(),
+          sender: signer.address,
+          contractDirs,
+        })
 
-          // Save the code ID.
-          await this.codeIdConfig.setCodeId({
-            chainId: this.chainId,
-            version: this.contractVersion,
-            name: contract.name,
-            codeId,
-          })
-        }
+        // Save the code ID.
+        await this.codeIdConfig.setCodeId({
+          chainId: this.chainId,
+          version: this.contractVersion,
+          name: contract.name,
+          codeId,
+        })
       })
     )
   }
