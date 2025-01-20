@@ -676,8 +676,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://rest-lb.neutron.org',
   },
   [ChainId.NeutronTestnet]: {
-    rpc: 'https://rpc-falcron.pion-1.ntrn.tech',
-    rest: 'https://rest-falcron.pion-1.ntrn.tech',
+    rpc: 'https://rpc-lb-pion.ntrn.tech',
+    rest: 'https://rest-lb-pion.ntrn.tech',
   },
   [ChainId.CosmosHubMainnet]: {
     rpc: 'https://cosmos-rpc.polkachu.com',

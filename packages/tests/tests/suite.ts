@@ -805,6 +805,8 @@ export class TestSuite {
     title: string,
     msgs: UnifiedCosmosMsg[] = []
   ) {
+    await proposer.ensureHasTokens(10_000)
+
     const proposalModule = dao.proposalModules.find(
       (m) => m instanceof SingleChoiceProposalModule
     ) as SingleChoiceProposalModule
@@ -841,12 +843,17 @@ export class TestSuite {
   async voteOnSingleChoiceProposal(
     proposalModule: SingleChoiceProposalModule,
     proposalNumber: number,
-    voters: TestSuiteSigner | TestSuiteSigner[],
+    _voters: TestSuiteSigner | TestSuiteSigner[],
     vote: 'yes' | 'no' | 'abstain'
   ) {
+    const voters = [_voters].flat()
+    for (const voter of voters) {
+      await voter.ensureHasTokens(10_000)
+    }
+
     // Vote on the proposal in batches of 100.
     await batch({
-      list: [voters].flat(),
+      list: voters,
       batchSize: 100,
       task: (voter) =>
         proposalModule.vote({
@@ -874,6 +881,8 @@ export class TestSuite {
     proposalNumber: number,
     proposer: TestSuiteSigner
   ) {
+    await proposer.ensureHasTokens(100_000)
+
     await proposalModule.execute({
       proposalId: proposalNumber,
       signingClient: proposer.getSigningClient,
@@ -937,6 +946,8 @@ export class TestSuite {
     amount: number | string,
     denom: string
   ) {
+    await signer.ensureHasTokens(10_000)
+
     await new DaoVotingTokenStakedClient(
       await signer.getSigningClient(),
       signer.address,
@@ -952,6 +963,8 @@ export class TestSuite {
     signer: TestSuiteSigner,
     amount: number | string
   ) {
+    await signer.ensureHasTokens(10_000)
+
     await new DaoVotingTokenStakedClient(
       await signer.getSigningClient(),
       signer.address,
@@ -965,6 +978,8 @@ export class TestSuite {
    * Register as a delegate.
    */
   async registerAsDelegate(contract: string, delegate: TestSuiteSigner) {
+    await delegate.ensureHasTokens(10_000)
+
     await new DaoVoteDelegationClient(
       await delegate.getSigningClient(),
       delegate.address,
@@ -976,6 +991,8 @@ export class TestSuite {
    * Unregister as a delegate.
    */
   async unregisterAsDelegate(contract: string, delegate: TestSuiteSigner) {
+    await delegate.ensureHasTokens(10_000)
+
     await new DaoVoteDelegationClient(
       await delegate.getSigningClient(),
       delegate.address,
@@ -992,6 +1009,8 @@ export class TestSuite {
     delegate: string,
     percent: string
   ) {
+    await delegator.ensureHasTokens(10_000)
+
     await new DaoVoteDelegationClient(
       await delegator.getSigningClient(),
       delegator.address,
@@ -1010,6 +1029,8 @@ export class TestSuite {
     delegator: TestSuiteSigner,
     delegate: string
   ) {
+    await delegator.ensureHasTokens(10_000)
+
     await new DaoVoteDelegationClient(
       await delegator.getSigningClient(),
       delegator.address,
