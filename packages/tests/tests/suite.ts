@@ -716,20 +716,28 @@ export class TestSuite {
       contracts.map(async (contract, index) => {
         const signer = signers[index]
 
-        // Upload the contract.
-        const codeId = await contract.upload({
-          client: await signer.getSigningClient(),
-          sender: signer.address,
-          contractDirs,
-        })
+        // Upload the contract if code ID not already set.
+        if (
+          !this.codeIdConfig.getCodeId({
+            chainId: this.chainId,
+            name: contract.name,
+            version: this.contractVersion,
+          })
+        ) {
+          const codeId = await contract.upload({
+            client: await signer.getSigningClient(),
+            sender: signer.address,
+            contractDirs,
+          })
 
-        // Save the code ID.
-        await this.codeIdConfig.setCodeId({
-          chainId: this.chainId,
-          version: this.contractVersion,
-          name: contract.name,
-          codeId,
-        })
+          // Save the code ID.
+          await this.codeIdConfig.setCodeId({
+            chainId: this.chainId,
+            version: this.contractVersion,
+            name: contract.name,
+            codeId,
+          })
+        }
       })
     )
   }

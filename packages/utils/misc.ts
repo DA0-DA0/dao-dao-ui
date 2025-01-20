@@ -42,19 +42,29 @@ export const makeManuallyResolvedPromise =
  * attempts.
  *
  * @param tries Number of times to attempt to execute the callback.
- * @param callback Function to execute.
+ * @param callback Function to execute. It will be passed a `bail` function that
+ * can be used to bail out of the retry loop.
  * @param delayMs Number of milliseconds to wait between attempts.
  * @returns Result of the callback.
  */
 export const retry = async <T extends unknown>(
   tries: number,
-  callback: (attempt: number) => Promise<T>,
+  callback: (
+    attempt: number,
+    bail: (error?: Error | string) => void
+  ) => Promise<T>,
   delayMs?: number
 ): Promise<T> => {
   let attempt = 1
+
+  const bail = (error: Error | string = 'Bailed out of retry loop') => {
+    attempt = tries
+    throw typeof error === 'string' ? new Error(error) : error
+  }
+
   while (true) {
     try {
-      return await callback(attempt)
+      return await callback(attempt, bail)
     } catch (err) {
       attempt++
       if (attempt > tries) {

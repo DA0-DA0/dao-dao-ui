@@ -14,6 +14,7 @@ import {
   findEventsAttributeValue,
   getRpcForChainId,
   gzipCompress,
+  retry,
 } from '@dao-dao/utils'
 
 export const instantiateContract = async ({
@@ -183,58 +184,75 @@ export const uploadContract = async ({
         value: msgStoreCode,
       }
 
-  let transactionHash
-  try {
-    transactionHash = await client.signAndBroadcastSync(
-      sender,
-      [msg],
-      CHAIN_GAS_MULTIPLIER
-    )
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      err.message.includes('authorization not found')
-    ) {
-      log(chalk.red, 'no authz permission granted')
-      throw new Error('No authz permission granted')
-    } else {
-      log(chalk.red, 'failed')
-      throw err
-    }
-  }
-
-  log(chalk.greenBright, transactionHash)
-
-  // Poll for TX.
-  let events
-  let tries = 50
-  while (tries > 0) {
-    try {
-      events = (await client.getTx(transactionHash))?.events
-      if (events) {
-        break
+  return retry(
+    3,
+    async (_, bail) => {
+      let transactionHash
+      try {
+        transactionHash = await client.signAndBroadcastSync(
+          sender,
+          [msg],
+          CHAIN_GAS_MULTIPLIER
+        )
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes('authorization not found')
+        ) {
+          log(chalk.red, 'no authz permission granted')
+          // If no authz, bail immediately and don't retry, since it will never
+          // succeed.
+          throw bail('No authz permission granted')
+        } else {
+          log(chalk.red, 'failed')
+          throw err
+        }
       }
-    } catch {}
 
-    tries--
-    await new Promise((resolve) => setTimeout(resolve, 300))
-  }
+      log(chalk.greenBright, transactionHash)
 
-  if (!events) {
-    log(chalk.red, 'TX not found')
-    throw new Error('TX not found')
-  }
+      // Poll for TX.
+      let tx
+      let tries = 50
+      while (tries > 0) {
+        try {
+          tx = await client.getTx(transactionHash)
+          if (tx) {
+            break
+          }
+        } catch {}
 
-  const codeId = findEventsAttributeValue(events, 'store_code', 'code_id')
+        tries--
+        await new Promise((resolve) => setTimeout(resolve, 300))
+      }
 
-  if (!codeId) {
-    log(chalk.red, 'not found')
-    throw new Error(`Code ID not found for ${id} in TX ${transactionHash}`)
-  }
+      if (!tx) {
+        log(chalk.red, 'TX not found')
+        throw new Error('TX not found')
+      }
 
-  log(chalk.green, codeId)
+      if (tx.code) {
+        log(chalk.red, 'TX failed')
+        throw new Error(`Upload failed for ${id} in TX ${transactionHash}`)
+      }
 
-  return Number(codeId)
+      const codeId = findEventsAttributeValue(
+        tx.events,
+        'store_code',
+        'code_id'
+      )
+
+      if (!codeId) {
+        log(chalk.red, 'not found')
+        throw new Error(`Code ID not found for ${id} in TX ${transactionHash}`)
+      }
+
+      log(chalk.green, codeId)
+
+      return Number(codeId)
+    },
+    1_000
+  )
 }
 
 export const getBlockMaxGas = async ({
