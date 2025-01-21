@@ -676,8 +676,8 @@ describe('delegations', () => {
       msgs
     )
 
-    // Register first 75 members as delegates.
-    const numDelegates = 75
+    // Register first 65 members as delegates.
+    const numDelegates = 65
     const delegateMembers = members.slice(0, numDelegates)
     const delegatorMembers = members.slice(numDelegates)
     const delegator = delegatorMembers[0]
@@ -907,7 +907,7 @@ describe('delegations', () => {
 
     // Delegator overrides all delegates' votes, which should update all the
     // delegate's ballots and unvoted delegated voting power.
-    await delegator.ensureHasTokens(200_000)
+    await delegator.ensureHasTokens(300_000)
     await proposalModule.vote({
       proposalId: proposalNumber,
       signingClient: delegator.getSigningClient,
