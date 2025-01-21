@@ -106,25 +106,26 @@ export const batch = async <T extends unknown>({
 } & (
   | {
       grouped?: false
-      task: (item: T, attempt: number) => Promise<any>
+      task: (item: T, attempt: number, index: number) => Promise<any>
     }
   | {
       grouped: true
-      task: (items: T[], attempt: number) => Promise<any>
+      task: (items: T[], attempt: number, index: number) => Promise<any>
     }
 )): Promise<void> => {
   for (let i = 0; i < list.length; i += batchSize) {
     const items = list.slice(i, i + batchSize)
     if (args.grouped) {
+      const index = i / batchSize
       await (tries
-        ? retry(tries, (attempt) => args.task(items, attempt), delayMs)
-        : args.task(items, 1))
+        ? retry(tries, (attempt) => args.task(items, attempt, index), delayMs)
+        : args.task(items, 1, index))
     } else {
       await Promise.all(
-        items.map((item) =>
+        items.map((item, index) =>
           tries
-            ? retry(tries, (attempt) => args.task(item, attempt), delayMs)
-            : args.task(item, 1)
+            ? retry(tries, (attempt) => args.task(item, attempt, index), delayMs)
+            : args.task(item, 1, index)
         )
       )
     }

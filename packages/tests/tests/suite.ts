@@ -93,6 +93,11 @@ export class TestSuite {
    */
   private nextMnemonicIndex: number = 0
 
+  /**
+   * The timer fetching the dynamic gas price on the existing chain.
+   */
+  private dynamicGasPriceInterval: NodeJS.Timeout | undefined
+
   constructor(
     public readonly chain: AnyChain,
     /**
@@ -273,8 +278,8 @@ export class TestSuite {
         retries: {
           forever: true,
           minTimeout: 100,
+          maxTimeout: 1000,
           factor: 1.1,
-          randomize: true,
         },
       })
 
@@ -311,6 +316,16 @@ export class TestSuite {
       faucetSigner,
       makeGetSignerOptions(suite.queryClient)(chain.chainName)
     )
+
+    await suite.queryClient.prefetchQuery(
+      chainQueries.dynamicGasPrice({ chainId })
+    )
+    // Start the dynamic gas price timer, refreshing every 10 seconds.
+    suite.dynamicGasPriceInterval = setInterval(() => {
+      suite.queryClient.refetchQueries(
+        chainQueries.dynamicGasPrice({ chainId })
+      )
+    }, 3_000)
 
     return suite
   }
@@ -357,13 +372,13 @@ export class TestSuite {
   }
 
   /**
-   * Generate a signer and potentially provide it with at least 10,000 tokens
+   * Generate a signer and potentially provide it with at least 100,000 tokens
    * (in microunits) from the faucet.
    */
   async makeSigner({
     mnemonic,
     noFaucet = false,
-    balance = 10_000,
+    balance = 100_000,
   }: {
     /**
      * If undefined, will generate a random mnemonic.
@@ -374,7 +389,7 @@ export class TestSuite {
      */
     noFaucet?: boolean
     /**
-     * Amount of tokens to ensure are available. Defaults to 10,000 in
+     * Amount of tokens to ensure are available. Defaults to 100,000 in
      * microunits.
      */
     balance?: number
@@ -389,8 +404,8 @@ export class TestSuite {
         retries: {
           forever: true,
           minTimeout: 100,
+          maxTimeout: 1000,
           factor: 1.1,
-          randomize: true,
         },
       })
 
@@ -429,12 +444,17 @@ export class TestSuite {
 
     const address = (await signer.getAccounts())[0].address
 
-    const getSigningClient = () =>
-      SigningCosmWasmClient.connectWithSigner(
-        this.rpcEndpoint,
-        signer,
-        makeGetSignerOptions(this.queryClient)(this.chainName)
-      )
+    let signingClient: SigningCosmWasmClient | undefined
+    const getSigningClient = async () => {
+      if (!signingClient) {
+        signingClient = await SigningCosmWasmClient.connectWithSigner(
+          this.rpcEndpoint,
+          signer,
+          makeGetSignerOptions(this.queryClient)(this.chainName)
+        )
+      }
+      return signingClient
+    }
 
     const ensureHasTokens: TestSuiteSigner['ensureHasTokens'] = (...params) =>
       this.ensureHasTokens(address, ...params)
@@ -498,8 +518,8 @@ export class TestSuite {
             retries: {
               forever: true,
               minTimeout: 100,
+              maxTimeout: 1000,
               factor: 1.1,
-              randomize: true,
             },
           })
 
@@ -615,8 +635,8 @@ export class TestSuite {
       retries: {
         forever: true,
         minTimeout: 100,
+        maxTimeout: 1000,
         factor: 1.1,
-        randomize: true,
       },
     })
 
@@ -713,6 +733,17 @@ export class TestSuite {
 
     // Release lock.
     await releaseLock()
+  }
+
+  /**
+   * Teardown the test suite.
+   */
+  async teardown() {
+    // Stop the dynamic gas price timer if it is running.
+    if (this.dynamicGasPriceInterval) {
+      clearInterval(this.dynamicGasPriceInterval)
+      this.dynamicGasPriceInterval = undefined
+    }
   }
 
   private async uploadContracts() {
@@ -863,21 +894,26 @@ export class TestSuite {
     vote: 'yes' | 'no' | 'abstain'
   ) {
     const voters = [_voters].flat()
-    for (const voter of voters) {
-      await voter.ensureHasTokens(10_000)
-    }
 
     // Vote on the proposal in batches of 100.
     await batch({
       list: voters,
       batchSize: 100,
-      task: (voter) =>
-        proposalModule.vote({
-          proposalId: proposalNumber,
-          signingClient: voter.getSigningClient,
-          sender: voter.address,
-          vote,
-        }),
+      task: async (voter) => {
+        await voter.ensureHasTokens(50_000)
+        return proposalModule
+          .vote({
+            proposalId: proposalNumber,
+            signingClient: voter.getSigningClient,
+            sender: voter.address,
+            vote,
+          })
+          .catch((err) =>
+            isErrorWithSubstring(err, 'already voted')
+              ? undefined
+              : Promise.reject(err)
+          )
+      },
       tries: 3,
       delayMs: 1000,
     })

@@ -22,6 +22,7 @@ import {
   batch,
   findWasmAttributeValue,
   instantiateSmartContract,
+  isErrorWithSubstring,
   mustGetSupportedChainConfig,
 } from '@dao-dao/utils'
 
@@ -178,20 +179,23 @@ describe('delegations', () => {
           CHAIN_GAS_MULTIPLIER
         ),
       tries: 3,
-      delayMs: 1_000,
+      delayMs: 5_000,
     })
 
     // Stake 50 tokens for each member.
-    await Promise.all(
-      members.map((member) =>
+    await batch({
+      list: members,
+      batchSize: 100,
+      task: (member) =>
         suite.stakeNativeTokens(
           votingModule.address,
           member,
           50,
           govToken.denomOrAddress
-        )
-      )
-    )
+        ),
+      tries: 3,
+      delayMs: 5_000,
+    })
 
     // Wait a block to ensure the staking is complete.
     await suite.waitOneBlock()
@@ -257,7 +261,7 @@ describe('delegations', () => {
     await suite.createAndExecuteSingleChoiceProposal(
       dao,
       members[0],
-      members,
+      members.slice(0, members.length / 2 + 1),
       'Set up delegations',
       msgs
     )
@@ -298,16 +302,32 @@ describe('delegations', () => {
     // delegate, the second delegates 50% of their voting power to the first two
     // delegates, the third delegates 33% of their voting power to the first
     // three delegates, and so on.
-    await Promise.all(
-      delegatorMembers.map(async (delegator, index) => {
+    await batch({
+      list: delegatorMembers,
+      batchSize: 100,
+      task: async (delegator, _, index) => {
+        await delegator.ensureHasTokens(100_000)
+
         const numDelegates = (index % delegates.length) + 1
         const percent = (Math.floor(100 / numDelegates) / 100).toString()
 
-        for (const { delegate } of delegates.slice(0, numDelegates)) {
-          await suite.delegate(delegationAddress, delegator, delegate, percent)
-        }
-      })
-    )
+        return (await delegator.getSigningClient()).executeMultiple(
+          delegator.address,
+          delegates.slice(0, numDelegates).map(({ delegate }) => ({
+            contractAddress: delegationAddress,
+            msg: {
+              delegate: {
+                delegate,
+                percent,
+              },
+            },
+          })),
+          CHAIN_GAS_MULTIPLIER
+        )
+      },
+      tries: 3,
+      delayMs: 5_000,
+    })
 
     // Wait a block to ensure the delegations are registered.
     await suite.waitOneBlock()
@@ -382,26 +402,30 @@ describe('delegations', () => {
       BigInt(50 * delegateMembers.length).toString()
     )
 
-    // Vote no with 51 delegators to definitively reject the proposal,
-    // overriding their delegates' votes.
+    // Vote no with a majority of delegators to definitively reject the
+    // proposal, overriding their delegates' votes.
     proposal = await suite.voteOnSingleChoiceProposal(
       proposalModule,
       proposalNumber,
-      delegatorMembers.slice(0, 51),
+      delegatorMembers.slice(0, members.length / 2 + 1),
       'no'
     )
 
     expect(proposal.status).toBe(ProposalStatusEnum.Rejected)
     // Partial yes votes from delegates were overridden by their delegators.
     expect(Number(proposal.votes.yes)).toBeLessThan(delegatesYesVp)
-    // 51 delegators voted no.
-    expect(proposal.votes.no).toBe(BigInt(50 * 51).toString())
+    // A majority of delegators voted no.
+    expect(proposal.votes.no).toBe(
+      BigInt(50 * (members.length / 2 + 1)).toString()
+    )
     // Just delegates voted yes.
     expect(proposal.individual_votes.yes).toBe(
       BigInt(50 * delegateMembers.length).toString()
     )
-    // 51 delegators voted no.
-    expect(proposal.individual_votes.no).toBe(BigInt(50 * 51).toString())
+    // A majority of delegators voted no.
+    expect(proposal.individual_votes.no).toBe(
+      BigInt(50 * (members.length / 2 + 1)).toString()
+    )
   })
 
   it.only('should create a large token-based DAO with delegations and test gas limits', async () => {
@@ -535,8 +559,9 @@ describe('delegations', () => {
       list: members,
       batchSize: 200,
       grouped: true,
-      task: (recipients) =>
-        creatorSigningClient.signAndBroadcast(
+      task: async (recipients) => {
+        await creator.ensureHasTokens(100_000)
+        return creatorSigningClient.signAndBroadcast(
           creator.address,
           recipients.map(({ address }) => ({
             typeUrl: MsgSend.typeUrl,
@@ -547,9 +572,10 @@ describe('delegations', () => {
             }),
           })),
           CHAIN_GAS_MULTIPLIER
-        ),
+        )
+      },
       tries: 3,
-      delayMs: 1_000,
+      delayMs: 5_000,
     })
 
     // Stake half tokens for each member in batches of 100.
@@ -558,15 +584,29 @@ describe('delegations', () => {
     await batch({
       list: members,
       batchSize: 100,
-      task: (member) =>
-        suite.stakeNativeTokens(
+      task: async (member) => {
+        // Ensure tokens not already staked.
+        const { power: staked } = await suite.queryClient.fetchQuery(
+          votingModule.getVotingPowerQuery(member.address)
+        )
+
+        if (staked === initialStaked.toString()) {
+          return
+        }
+
+        if (staked !== '0') {
+          throw new Error('unexpected staked voting power')
+        }
+
+        await suite.stakeNativeTokens(
           votingModule.address,
           member,
           initialStaked,
           govToken.denomOrAddress
-        ),
+        )
+      },
       tries: 3,
-      delayMs: 1_000,
+      delayMs: 5_000,
     })
 
     // Wait a block to ensure the staking is complete.
@@ -636,8 +676,8 @@ describe('delegations', () => {
       msgs
     )
 
-    // Register first 65 members as delegates.
-    const numDelegates = 65
+    // Register first 75 members as delegates.
+    const numDelegates = 75
     const delegateMembers = members.slice(0, numDelegates)
     const delegatorMembers = members.slice(numDelegates)
     const delegator = delegatorMembers[0]
@@ -648,7 +688,7 @@ describe('delegations', () => {
       batchSize: 100,
       task: (member) => suite.registerAsDelegate(delegationAddress, member),
       tries: 3,
-      delayMs: 1_000,
+      delayMs: 5_000,
     })
 
     // Wait a block to ensure the delegations are registered.
@@ -690,24 +730,25 @@ describe('delegations', () => {
       list: delegateMembers,
       batchSize: 25,
       grouped: true,
-      task: (delegates) =>
-        delegatorSigningClient
-          .executeMultiple(
-            delegator.address,
-            delegates.map(({ address }) => ({
-              contractAddress: delegationAddress,
-              msg: {
-                delegate: {
-                  delegate: address,
-                  percent: percentDelegated.toString(),
-                },
+      task: async (delegates) => {
+        await delegator.ensureHasTokens(100_000)
+        await delegatorSigningClient.executeMultiple(
+          delegator.address,
+          delegates.map(({ address }) => ({
+            contractAddress: delegationAddress,
+            msg: {
+              delegate: {
+                delegate: address,
+                percent: percentDelegated.toString(),
               },
-            })),
-            CHAIN_GAS_MULTIPLIER
-          )
-          .then(() => suite.waitOneBlock()),
+            },
+          })),
+          CHAIN_GAS_MULTIPLIER
+        )
+        await suite.waitOneBlock()
+      },
       tries: 3,
-      delayMs: 1_000,
+      delayMs: 5_000,
     })
 
     // Wait a block to ensure the delegations are registered.
@@ -735,6 +776,7 @@ describe('delegations', () => {
     )
 
     // Stake the other half of the tokens, which should update all delegations.
+    await delegator.ensureHasTokens(100_000)
     await suite.stakeNativeTokens(
       votingModule.address,
       delegator,
@@ -767,6 +809,7 @@ describe('delegations', () => {
     )
 
     // Undo the half stake so that all members are equal again.
+    await delegator.ensureHasTokens(100_000)
     await suite.unstakeNativeTokens(
       votingModule.address,
       delegator,
@@ -829,15 +872,23 @@ describe('delegations', () => {
     await batch({
       list: delegateMembers,
       batchSize: 100,
-      task: (delegate) =>
-        proposalModule.vote({
-          proposalId: proposalNumber,
-          signingClient: delegate.getSigningClient,
-          sender: delegate.address,
-          vote: 'yes',
-        }),
+      task: async (delegate) => {
+        await delegate.ensureHasTokens(50_000)
+        return proposalModule
+          .vote({
+            proposalId: proposalNumber,
+            signingClient: delegate.getSigningClient,
+            sender: delegate.address,
+            vote: 'yes',
+          })
+          .catch((err) =>
+            isErrorWithSubstring(err, 'already voted')
+              ? undefined
+              : Promise.reject(err)
+          )
+      },
       tries: 3,
-      delayMs: 1000,
+      delayMs: 5_000,
     })
 
     // Verify votes have been tallied with their personal voting power and the
@@ -856,6 +907,7 @@ describe('delegations', () => {
 
     // Delegator overrides all delegates' votes, which should update all the
     // delegate's ballots and unvoted delegated voting power.
+    await delegator.ensureHasTokens(200_000)
     await proposalModule.vote({
       proposalId: proposalNumber,
       signingClient: delegator.getSigningClient,

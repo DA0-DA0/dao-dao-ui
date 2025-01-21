@@ -1,4 +1,4 @@
-import { beforeAll } from 'vitest'
+import { afterAll, beforeAll } from 'vitest'
 
 import { ChainId, ContractVersion } from '@dao-dao/types'
 
@@ -12,4 +12,8 @@ beforeAll(async () => {
     ContractVersion.V270Alpha2
   )
   await suite.ensureChainSetUp()
+})
+
+afterAll(async () => {
+  await suite.teardown()
 })
