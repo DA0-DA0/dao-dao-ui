@@ -47,13 +47,12 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "Debug Delegations Integration Tests",
+      "name": "Debug Integration Tests",
       "type": "node",
       "request": "launch",
       "outputCapture": "std",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/vitest",
-      "cwd": "${workspaceFolder}/packages/tests",
-      "args": ["delegations"]
+      "cwd": "${workspaceFolder}/packages/tests"
     }
   ]
 }
