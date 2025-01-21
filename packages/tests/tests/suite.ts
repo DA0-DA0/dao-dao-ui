@@ -267,23 +267,28 @@ export class TestSuite {
       denom = nativeToken.denomOrAddress,
       amount = 10_000
     ) => {
-      const faucetSigner = await DirectSecp256k1HdWallet.fromMnemonic(
-        faucetMnemonic,
-        { prefix: chain.bech32Prefix }
-      )
-      const faucetSignerAddress = (await faucetSigner.getAccounts())[0].address
-      const signingClient = await SigningCosmWasmClient.connectWithSigner(
-        rpcEndpoint,
-        faucetSigner,
-        makeGetSignerOptions(suite.queryClient)(chain.chainName)
-      )
+      // Establish lock before sending tokens since the faucet signer is shared
+      // across tests.
+      const releaseLock = await lockfile.lock(MNEMONIC_FILE_PATH, {
+        retries: {
+          forever: true,
+          minTimeout: 100,
+          factor: 1.1,
+          randomize: true,
+        },
+      })
 
-      await signingClient.sendTokens(
-        faucetSignerAddress,
-        address,
-        coins(amount, denom),
-        CHAIN_GAS_MULTIPLIER
-      )
+      try {
+        await faucetSigningClient.sendTokens(
+          faucetSignerAddress,
+          address,
+          coins(amount, denom),
+          CHAIN_GAS_MULTIPLIER
+        )
+      } finally {
+        // Release lock.
+        await releaseLock()
+      }
     }
 
     const suite = new TestSuite(
@@ -294,6 +299,17 @@ export class TestSuite {
       tapFaucet,
       client,
       contractVersion
+    )
+
+    const faucetSigner = await DirectSecp256k1HdWallet.fromMnemonic(
+      faucetMnemonic,
+      { prefix: chain.bech32Prefix }
+    )
+    const faucetSignerAddress = (await faucetSigner.getAccounts())[0].address
+    const faucetSigningClient = await SigningCosmWasmClient.connectWithSigner(
+      rpcEndpoint,
+      faucetSigner,
+      makeGetSignerOptions(suite.queryClient)(chain.chainName)
     )
 
     return suite
