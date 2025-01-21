@@ -402,8 +402,8 @@ export class TestSuite {
           .split('\n')
           .filter(Boolean)
 
-        // If no mnemonic is available, generate a new one and save it. Otherwise
-        // reuse the next available mnemonic.
+        // If no mnemonic is available, generate a new one and save it.
+        // Otherwise reuse the next available mnemonic.
         if (this.nextMnemonicIndex >= mnemonics.length) {
           mnemonic = generateMnemonic()
           mnemonics.push(mnemonic)
@@ -561,8 +561,8 @@ export class TestSuite {
               }),
             }))
 
-        // Retrieve account number, sequence, and fee only once to avoid redundant
-        // queries. Use first batch to estimate gas.
+        // Retrieve account number, sequence, and fee only once to avoid
+        // redundant queries. Use first batch to estimate gas.
         const { accountNumber, sequence } =
           await faucetSignerClient.getSequence(faucetSigner.address)
         const gasEstimation = await faucetSignerClient.simulate(
