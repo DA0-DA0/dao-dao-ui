@@ -7,20 +7,34 @@ import { ContractVersion } from './features'
 import { SkipChain } from './skip'
 import { GenericToken, TokenType } from './token'
 
-export type AnyChain = {
+export type AnyChainBase = {
   chainId: string
   chainName: string
   bech32Prefix: string
   prettyName: string
+  imageUrl?: string
   /**
    * Chain registry definition if exists.
    */
   chainRegistry?: Chain
+  skipChain?: SkipChain
+}
+
+export type AnyChainSkip = AnyChainBase & {
   /**
    * Skip chain definition if fetched via Skip API.
    */
-  skipChain?: SkipChain
+  skipChain: SkipChain
 }
+
+export type AnyChainChainRegistry = AnyChainBase & {
+  /**
+   * Chain registry definition if exists.
+   */
+  chainRegistry: Chain
+}
+
+export type AnyChain = AnyChainSkip | AnyChainChainRegistry
 
 export type IChainContext = {
   chainId: string
@@ -100,6 +114,9 @@ export enum ChainId {
   OmniflixHubTestnet = 'flixnet-4',
   SecretMainnet = 'secret-4',
   SecretTestnet = 'pulsar-3',
+
+  // Ethereum
+  EthereumMainnet = '1',
 }
 
 export type BaseChainConfig = {

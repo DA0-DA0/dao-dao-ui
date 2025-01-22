@@ -28,10 +28,17 @@ export const querySnapper = async <T = any>({
   const response = await fetch(url)
 
   if (response.status >= 300) {
-    throw new Error(
+    const text = await (await response.text().catch(() => '')).trim()
+
+    console.error(
       `Error querying snapper for ${query} with params ${params.toString()}: ${
         response.status
-      } ${await response.text().catch(() => '')}`.trim()
+      } ${response.statusText} ${text}`.trim()
+    )
+
+    throw new Error(
+      text ||
+        `Unknown Snapper query error: ${response.status} ${response.statusText}`
     )
   }
 

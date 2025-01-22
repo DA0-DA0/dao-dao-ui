@@ -1,11 +1,16 @@
-import { Check, InfoOutlined, WarningRounded } from '@mui/icons-material'
+import {
+  Check,
+  Dangerous,
+  InfoOutlined,
+  WarningRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 
 import { Loader } from './logo'
 
 export type StatusCardProps = {
-  style: 'info' | 'loading' | 'success' | 'warning'
+  style: 'info' | 'loading' | 'success' | 'warning' | 'error'
   size?: 'xs' | 'sm' | 'default'
   content?: ReactNode
   children?: ReactNode
@@ -40,15 +45,23 @@ export const StatusCard = ({
         ? Check
         : style === 'warning'
           ? WarningRounded
-          : undefined
+          : style === 'error'
+            ? Dangerous
+            : undefined
   const iconColor =
     style === 'info'
       ? 'text-icon-secondary'
       : style === 'warning'
         ? 'text-icon-interactive-warning'
-        : undefined
+        : style === 'error'
+          ? 'text-icon-interactive-error'
+          : undefined
   const textColor =
-    style === 'warning' ? '!text-text-interactive-warning-body' : undefined
+    style === 'warning'
+      ? '!text-text-interactive-warning-body'
+      : style === 'error'
+        ? '!text-text-interactive-error'
+        : undefined
 
   return (
     <div
@@ -58,7 +71,7 @@ export const StatusCard = ({
         onClick &&
           'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70',
         size === 'xs' ? 'bg-background-tertiary' : 'bg-background-secondary',
-        size === 'default' ? 'gap-4 p-4' : 'gap-3 p-3',
+        size === 'default' ? 'gap-3 p-4' : 'gap-2 p-3',
         className
       )}
       onClick={onClick}

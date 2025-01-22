@@ -57,7 +57,7 @@ export const TokenInput = <
   const { t } = useTranslation()
 
   const selectedToken =
-    tokens.loading || !_selectedToken
+    tokens.loading || ('errored' in tokens && tokens.errored) || !_selectedToken
       ? undefined
       : tokens.data.find((token) => tokensEqual(token, _selectedToken))
 
@@ -69,6 +69,7 @@ export const TokenInput = <
   // All tokens from same chain.
   const allTokensOnSameChain =
     !tokens.loading &&
+    !('errored' in tokens && tokens.errored) &&
     tokens.data.every((token) => token.chainId === tokens.data[0].chainId)
 
   const selectedTokenDisplay = useMemo(
@@ -144,6 +145,7 @@ export const TokenInput = <
   // selected token is equal to it.
   const selectDisabled =
     disabled ||
+    ('errored' in tokens && tokens.errored) ||
     (!tokens.loading &&
       tokens.data.length === 1 &&
       selectedToken &&
@@ -159,43 +161,45 @@ export const TokenInput = <
     | (FilterableItem & {
         _custom: true
       })
-  )[] = tokens.loading
-    ? []
-    : [
-        ...(allowCustomToken
-          ? [
-              {
-                key: '_custom',
-                label: t('info.enterCustomToken'),
-                Icon: Edit,
-                _custom: true as const,
-                iconClassName: 'ml-1 mb-1',
-                contentContainerClassName: '!gap-3',
-              },
-            ]
-          : []),
-        ...tokens.data
-          .filter(
-            (token) => !hideTokens?.some((hidden) => tokensEqual(hidden, token))
-          )
-          .map((token, index) => ({
-            key: index + token.denomOrAddress,
-            label: token.symbol,
-            iconUrl: transformIpfsUrlToHttpsIfNecessary(
-              token.imageUrl || getFallbackImage(token.denomOrAddress)
-            ),
-            ...token,
-            rightNode: (
-              <p className="caption-text max-w-[5rem] truncate">
-                {allTokensOnSameChain
-                  ? token.denomOrAddress
-                  : getDisplayNameForChainId(token.chainId)}
-              </p>
-            ),
-            iconClassName: '!h-8 !w-8',
-            contentContainerClassName: '!gap-3',
-          })),
-      ]
+  )[] =
+    tokens.loading || ('errored' in tokens && tokens.errored)
+      ? []
+      : [
+          ...(allowCustomToken
+            ? [
+                {
+                  key: '_custom',
+                  label: t('info.enterCustomToken'),
+                  Icon: Edit,
+                  _custom: true as const,
+                  iconClassName: 'ml-1 mb-1',
+                  contentContainerClassName: '!gap-3',
+                },
+              ]
+            : []),
+          ...tokens.data
+            .filter(
+              (token) =>
+                !hideTokens?.some((hidden) => tokensEqual(hidden, token))
+            )
+            .map((token, index) => ({
+              key: index + token.denomOrAddress,
+              label: token.symbol,
+              iconUrl: transformIpfsUrlToHttpsIfNecessary(
+                token.imageUrl || getFallbackImage(token.denomOrAddress)
+              ),
+              ...token,
+              rightNode: (
+                <p className="caption-text max-w-[5rem] truncate">
+                  {allTokensOnSameChain
+                    ? token.denomOrAddress
+                    : getDisplayNameForChainId(token.chainId)}
+                </p>
+              ),
+              iconClassName: '!h-8 !w-8',
+              contentContainerClassName: '!gap-3',
+            })),
+        ]
 
   // Memoize reference so renderer never changes.
   const onCustomTokenChangeRef = useUpdatingRef(onCustomTokenChange)

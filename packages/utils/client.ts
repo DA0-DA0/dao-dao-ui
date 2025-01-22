@@ -8,6 +8,7 @@ import {
   Tendermint37Client,
   connectComet,
 } from '@cosmjs/tendermint-rpc'
+import { ethers } from 'ethers'
 
 import {
   OmniFlix,
@@ -156,6 +157,18 @@ export const stargateClientRouter = new ChainClientRouter({
 
       return await StargateClient.create(tmClient)
     }),
+})
+
+/**
+ * Router for connecting to an Ethereum client.
+ */
+export const ethereumClientRouter = new ChainClientRouter({
+  handleConnect: async (chainId: string) =>
+    retry(
+      10,
+      async (attempt) =>
+        new ethers.JsonRpcProvider(getRpcForChainId(chainId, attempt - 1))
+    ),
 })
 
 /*

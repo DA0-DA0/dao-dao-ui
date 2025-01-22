@@ -53,7 +53,6 @@
     "clsx": "^1.1.1",
     "file-saver": "^2.0.5",
     "fuse.js": "^6.6.2",
-    "graz": "^0.1.31",
     "i18next": "^21.8.10",
     "json5": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
@@ -75,9 +74,7 @@
     "recoil": "^0.7.2",
     "remove-markdown": "^0.5.0",
     "secretjs": "^1.12.5",
-    "use-deep-compare-effect": "^1.8.1",
-    "viem": "^2.22.8",
-    "wagmi": "^2.14.7"
+    "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
     "@chain-registry/types": "0.45.86",
@@ -85,6 +82,7 @@
     "@dao-dao/config": "2.6.0-rc.1",
     "@dao-dao/cosmiframe": "0.1.0",
     "@dao-dao/types": "2.6.0-rc.1",
+    "@skip-go/client": "^0.16.5",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/lodash.clonedeep": "^4.5.0",

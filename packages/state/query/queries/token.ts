@@ -1,4 +1,5 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { ethers } from 'ethers'
 
 import {
   ChainId,
@@ -13,6 +14,7 @@ import {
   MAINNET,
   bitsongProtoRpcClientRouter,
   convertChainRegistryAssetToGenericToken,
+  ethereumClientRouter,
   getChainForChainName,
   getFallbackImage,
   getIbcTransferInfoFromChannel,
@@ -111,6 +113,39 @@ export const fetchTokenInfo = async (
               )
             : null,
       }
+    }
+  }
+
+  if (type === TokenType.Erc20) {
+    const provider = await ethereumClientRouter.connect(chainId)
+
+    const strategyBaseContract = new ethers.Contract(
+      denomOrAddress,
+      [
+        'function decimals() view returns (uint8)',
+        'function symbol() view returns (string)',
+      ],
+      provider
+    )
+    const [decimals, symbol] = (await Promise.all([
+      strategyBaseContract.decimals(),
+      strategyBaseContract.symbol(),
+    ])) as [bigint, string]
+
+    return {
+      chainId,
+      type,
+      denomOrAddress,
+      symbol,
+      decimals: Number(decimals),
+      imageUrl: getFallbackImage(denomOrAddress),
+      source: await queryClient.fetchQuery(
+        tokenQueries.source(queryClient, {
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      ),
     }
   }
 
@@ -293,6 +328,14 @@ export const fetchTokenSource = async (
   queryClient: QueryClient,
   { chainId, type, denomOrAddress }: GenericTokenSource
 ): Promise<GenericTokenSource> => {
+  if (type === TokenType.Erc20) {
+    return {
+      chainId,
+      type,
+      denomOrAddress,
+    }
+  }
+
   // Check if Skip API has the info.
   const skipAsset = await queryClient
     .fetchQuery(

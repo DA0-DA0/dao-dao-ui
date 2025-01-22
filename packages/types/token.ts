@@ -30,6 +30,10 @@ export enum TokenType {
    * OmniFlix ONFT.
    */
   Onft = 'onft',
+  /**
+   * Ethereum ERC20 token.
+   */
+  Erc20 = 'erc20',
 }
 
 export type GenericTokenSource = Pick<

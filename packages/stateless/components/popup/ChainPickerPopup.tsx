@@ -39,41 +39,66 @@ export const ChainPickerPopup = ({
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
 
-  const chainOptions = useMemo(
+  const chainOptions: FilterableItem[] = useMemo(
     () => {
+      if (
+        ('loading' in chains && chains.loading) ||
+        ('errored' in chains && chains.errored)
+      ) {
+        return []
+      }
+
+      const loadedChains = 'data' in chains ? chains.data : chains
+
       const chainIds =
-        chains.type === 'supported'
+        loadedChains.type === 'supported'
           ? getSupportedChains()
               .filter(
-                ({ chainId }) => !chains.excludeChainIds?.includes(chainId)
+                ({ chainId }) =>
+                  !loadedChains.excludeChainIds?.includes(chainId)
               )
               .map(({ chain }) => chain.chainId)
-          : chains.type === 'configured'
+          : loadedChains.type === 'configured'
             ? getConfiguredChains()
                 .filter(
                   ({ chainId, noGov }) =>
-                    !chains.excludeChainIds?.includes(chainId) &&
-                    (!chains.onlyGov || !noGov)
+                    !loadedChains.excludeChainIds?.includes(chainId) &&
+                    (!loadedChains.onlyGov || !noGov)
                 )
                 .map(({ chain }) => chain.chainId)
-            : chains.chainIds
+            : loadedChains.type === 'custom'
+              ? loadedChains.chainIds
+              : []
 
-      const _chainOptions = chainIds.map(
-        (chainId): FilterableItem => ({
-          key: chainId,
-          label:
-            labelMode === 'chain'
-              ? getDisplayNameForChainId(chainId)
-              : getNativeTokenForChainId(chainId).symbol,
-          iconUrl: toAccessibleImageUrl(
-            (labelMode === 'chain'
-              ? getImageUrlForChainId(chainId)
-              : getNativeTokenForChainId(chainId).imageUrl) ||
-              getFallbackImage(chainId)
-          ),
-          ...commonOptionClassFields,
-        })
-      )
+      const _chainOptions =
+        loadedChains.type === 'custom_chains'
+          ? loadedChains.chains.map(
+              (chain): FilterableItem => ({
+                key: chain.chainId,
+                label:
+                  labelMode === 'chain'
+                    ? chain.prettyName
+                    : getNativeTokenForChainId(chain.chainId).symbol,
+                iconUrl: chain.imageUrl || getFallbackImage(chain.chainId),
+                ...commonOptionClassFields,
+              })
+            )
+          : chainIds.map(
+              (chainId): FilterableItem => ({
+                key: chainId,
+                label:
+                  labelMode === 'chain'
+                    ? getDisplayNameForChainId(chainId)
+                    : getNativeTokenForChainId(chainId).symbol,
+                iconUrl: toAccessibleImageUrl(
+                  (labelMode === 'chain'
+                    ? getImageUrlForChainId(chainId)
+                    : getNativeTokenForChainId(chainId).imageUrl) ||
+                    getFallbackImage(chainId)
+                ),
+                ...commonOptionClassFields,
+              })
+            )
 
       // Add none option to the top.
       if (showNone) {
@@ -130,8 +155,8 @@ export const ChainPickerPopup = ({
               'justify-between text-icon-primary',
               headerMode ? '!gap-1' : '!gap-4'
             ),
-            loading,
-            disabled,
+            loading: loading || ('loading' in chains && chains.loading),
+            disabled: disabled || ('errored' in chains && chains.errored),
             size: 'lg',
             variant: headerMode ? 'none' : 'ghost_outline',
             children: (
