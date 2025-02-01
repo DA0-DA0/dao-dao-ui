@@ -1,4 +1,4 @@
-import { Chain, IBCInfo } from '@chain-registry/types'
+import { Chain, IBCInfo, AssetList } from '@chain-registry/types'
 import {
   assets as chainRegistryAssets,
   chains as chainRegistryChains,
@@ -56,7 +56,7 @@ export const convertSkipChainToAnyChain = (chain: SkipChain): AnyChain => ({
 let chains: AnyChain[] = chainRegistryChains.map(
   convertChainRegistryChainToAnyChain
 )
-const assets = [...chainRegistryAssets]
+const assets = [...chainRegistryAssets] as AssetList[]
 
 // BitSong Testnet
 const bitSongTestnetChain = convertChainRegistryChainToAnyChain({

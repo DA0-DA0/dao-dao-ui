@@ -11,7 +11,7 @@
     "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
-    "@chain-registry/types": "0.45.86",
+    "@chain-registry/types": "0.46.15",
     "@cosmos-kit/web3auth": "^2.15.0",
     "@dao-dao/math": "2.6.0-rc.1",
     "next-i18next": "^11.0.0",

@@ -164,7 +164,6 @@ export const getImageUrlForChainId = (chainId: string): string => {
     maybeGetChainForChainId(chainId)?.chainRegistry ?? {}
   const chainImageUrl =
     logo_URIs?.png ??
-    logo_URIs?.jpeg ??
     logo_URIs?.svg ??
     images?.[0]?.png ??
     images?.[0]?.svg
