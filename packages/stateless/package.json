@@ -47,8 +47,8 @@
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.45.86",
-    "@cosmos-kit/core": "^2.13.1",
+    "@chain-registry/types": "0.50.61",
+    "@cosmos-kit/core": "^2.15.5",
     "@dao-dao/config": "2.6.0-rc.1",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",
