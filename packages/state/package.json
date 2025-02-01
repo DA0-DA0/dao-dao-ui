@@ -31,7 +31,7 @@
     "secretjs": "^1.12.5"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.45.86",
+    "@chain-registry/types": "0.50.61",
     "@dao-dao/config": "2.6.0-rc.1",
     "@dao-dao/types": "2.6.0-rc.1",
     "@graphql-codegen/cli": "^5.0.0",
