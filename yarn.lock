@@ -2142,11 +2142,6 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.11.tgz#68efa85ba5ed4d451218a515a06239594b4125dd"
   integrity sha512-ASeCtZ3i6g4buyP/43qRnkJo2w50bpX6hsZOapkwOYqAGY83ZE+NZMUcv0UUsiVBHKqC3hAWTLjFNF5q7GR4Gg==
 
-"@chain-registry/types@0.50.61", "@chain-registry/types@^0.50.61":
-  version "0.50.61"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.61.tgz#3b43d087ecb8819089165679746d626aa0530d09"
-  integrity sha512-YAuW2XUTVX4iEF4zRQpiSxeD3kCMJZwLYT0PzEDYOBBXDIv7y6Wr1V3o9aaajau0i0SfMknjlV0uHAiaOAqFAA==
-
 "@chain-registry/types@^0.46.11":
   version "0.46.15"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.15.tgz#f4c0219fb7060d97cb224b55f349adb1d436aac9"
@@ -2156,6 +2151,11 @@
   version "0.46.9"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.9.tgz#03928a7c1890ddfbb6f77466c1802846fa5fa757"
   integrity sha512-78QrVN6rEZ9TtMMqu8Jy1Fc4JBHhay0tkbFDSIoCN64OExgJEC4XtGlIhbARryLTn6scHPBZhIVxFFGh1oKU2Q==
+
+"@chain-registry/types@^0.50.61":
+  version "0.50.61"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.61.tgz#3b43d087ecb8819089165679746d626aa0530d09"
+  integrity sha512-YAuW2XUTVX4iEF4zRQpiSxeD3kCMJZwLYT0PzEDYOBBXDIv7y6Wr1V3o9aaajau0i0SfMknjlV0uHAiaOAqFAA==
 
 "@chain-registry/utils@^1.46.1", "@chain-registry/utils@^1.47.9":
   version "1.47.9"

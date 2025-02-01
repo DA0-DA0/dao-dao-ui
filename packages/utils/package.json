@@ -43,7 +43,7 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.50.61",
+    "@chain-registry/types": "0.45.86",
     "@cosmjs/proto-signing": "^0.32.3",
     "@dao-dao/config": "2.6.0-rc.1",
     "@tanstack/react-query": "^5.40.0",
