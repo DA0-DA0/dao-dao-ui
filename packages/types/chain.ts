@@ -10,7 +10,7 @@ import { GenericToken, TokenType } from './token'
 export type AnyChain = {
   chainId: string
   chainName: string
-  bech32Prefix: string
+  bech32Prefix?: string
   prettyName: string
   /**
    * Chain registry definition if exists.
