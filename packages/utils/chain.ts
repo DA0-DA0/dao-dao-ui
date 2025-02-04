@@ -10,12 +10,14 @@ import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
   AnyChain,
+  AnyChainSkip,
   BaseChainConfig,
   ChainId,
   ConfiguredChain,
   ContractVersion,
   DaoInfo,
   GenericToken,
+  SkipChain,
   SupportedChain,
   SupportedChainConfig,
   TokenType,
@@ -78,7 +80,9 @@ export const getRpcForChainId = (
 
   const rpcs = [
     // Try cosmos.directory RPC first.
-    { address: 'https://rpc.cosmos.directory/' + chain.chainName },
+    ...(chain.chainRegistry?.chain_type === 'cosmos'
+      ? [{ address: 'https://rpc.cosmos.directory/' + chain.chainName }]
+      : []),
     // Fallback to chain registry.
     ...(chain?.chainRegistry?.apis?.rpc ?? []),
   ]
@@ -750,3 +754,13 @@ export const getPublicKeyTypeForChain = (chainId: string): string => {
       return '/cosmos.crypto.secp256k1.PubKey'
   }
 }
+
+export const convertSkipChainToAnyChain = (chain: SkipChain): AnyChainSkip => ({
+  chainId: chain.chain_id,
+  chainName: chain.chain_name,
+  bech32Prefix: chain.bech32_prefix,
+  prettyName: chain.pretty_name ?? chain.chain_name,
+  imageUrl: chain.logo_uri,
+  chainRegistry: maybeGetChainForChainId(chain.chain_id)?.chainRegistry,
+  skipChain: chain,
+})

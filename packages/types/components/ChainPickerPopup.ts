@@ -1,45 +1,56 @@
 import { ComponentType } from 'react'
 
+import { AnyChain } from '../chain'
+import { LoadingDataWithError } from '../misc'
 import { PopupTrigger } from './Popup'
+
+export type ChainPickerPopupChains =
+  | {
+      /**
+       * Supported chains have native DAO DAO deployments.
+       */
+      type: 'supported'
+      /**
+       * Chain IDs to exclude.
+       */
+      excludeChainIds?: string[]
+    }
+  | {
+      /**
+       * Configured chains include supported chains and others which show up
+       * in the UI in various places, such as the governance UI.
+       */
+      type: 'configured'
+      /**
+       * Chain IDs to exclude.
+       */
+      excludeChainIds?: string[]
+      /**
+       * Only include chains with a governance module. This uses the `noGov`
+       * flag in chain config.
+       */
+      onlyGov?: boolean
+    }
+  | {
+      /**
+       * Set any chain IDs explicitly.
+       */
+      type: 'custom'
+      chainIds: string[]
+    }
+  | {
+      /**
+       * Set any chains explicitly.
+       */
+      type: 'custom_chains'
+      chains: AnyChain[]
+    }
 
 export type ChainPickerPopupProps = {
   /**
    * The chains to include in the picker.
    */
-  chains:
-    | {
-        /**
-         * Supported chains have native DAO DAO deployments.
-         */
-        type: 'supported'
-        /**
-         * Chain IDs to exclude.
-         */
-        excludeChainIds?: string[]
-      }
-    | {
-        /**
-         * Configured chains include supported chains and others which show up
-         * in the UI in various places, such as the governance UI.
-         */
-        type: 'configured'
-        /**
-         * Chain IDs to exclude.
-         */
-        excludeChainIds?: string[]
-        /**
-         * Only include chains with a governance module. This uses the `noGov`
-         * flag in chain config.
-         */
-        onlyGov?: boolean
-      }
-    | {
-        /**
-         * Set any chains explicitly
-         */
-        type: 'custom'
-        chainIds: string[]
-      }
+  chains: ChainPickerPopupChains | LoadingDataWithError<ChainPickerPopupChains>
   /**
    * The selected chain ID. If undefined, will select the none option if exists.
    */

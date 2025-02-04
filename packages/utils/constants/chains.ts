@@ -7,13 +7,13 @@ import {
 
 import {
   AnyChain,
+  AnyChainChainRegistry,
   BaseChainConfig,
   ChainId,
   CodeHashConfig,
   CodeIdConfig,
   ContractVersion,
   PolytoneConfig,
-  SkipChain,
   SupportedChainConfig,
   TokenType,
 } from '@dao-dao/types'
@@ -36,20 +36,18 @@ const ALL_POLYTONE = _ALL_POLYTONE as unknown as Partial<
 
 export const convertChainRegistryChainToAnyChain = (
   chain: Chain
-): AnyChain => ({
+): AnyChainChainRegistry => ({
   chainId: chain.chain_id,
   chainName: chain.chain_name,
   bech32Prefix: chain.bech32_prefix,
   prettyName: chain.pretty_name ?? chain.chain_name,
+  imageUrl:
+    chain.logo_URIs?.svg ||
+    chain.logo_URIs?.png ||
+    chain.logo_URIs?.jpeg ||
+    chain.images?.[0]?.svg ||
+    chain.images?.[0]?.png,
   chainRegistry: chain,
-})
-
-export const convertSkipChainToAnyChain = (chain: SkipChain): AnyChain => ({
-  chainId: chain.chain_id,
-  chainName: chain.chain_name,
-  bech32Prefix: chain.bech32_prefix,
-  prettyName: chain.pretty_name ?? chain.chain_name,
-  skipChain: chain,
 })
 
 //! ----- Modified chain-registry -----
@@ -722,6 +720,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.SecretTestnet]: {
     rpc: 'https://rpc.pulsar.scrttestnet.com',
     rest: 'https://api.pulsar.scrttestnet.com',
+  },
+  [ChainId.EthereumMainnet]: {
+    rpc: 'https://ethereum-rpc.publicnode.com',
+    rest: '',
   },
 }
 

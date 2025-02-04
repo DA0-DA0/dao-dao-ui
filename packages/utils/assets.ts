@@ -1,6 +1,6 @@
 import { Asset } from '@chain-registry/types'
 
-import { GenericToken, TokenType } from '@dao-dao/types'
+import { GenericToken, SkipAsset, TokenType } from '@dao-dao/types'
 
 import { getChainForChainId } from './chain'
 import { assets } from './constants'
@@ -71,6 +71,46 @@ export const convertChainRegistryAssetToGenericToken = (
     chainId,
     type: type_asset === 'cw20' ? TokenType.Cw20 : TokenType.Native,
     denomOrAddress: type_asset === 'cw20' ? base.replace('cw20:', '') : base,
+  },
+})
+
+/**
+ * Convert Skip asset to GenericToken.
+ */
+export const convertSkipAssetToGenericToken = ({
+  denom,
+  chain_id,
+  origin_denom,
+  origin_chain_id,
+  is_cw20,
+  token_contract,
+  is_evm,
+  symbol,
+  name,
+  logo_uri,
+  decimals,
+  description,
+}: SkipAsset): GenericToken & {
+  id: string
+  description?: string
+  denomAliases?: string[]
+} => ({
+  chainId: chain_id,
+  id: denom,
+  type: is_cw20 ? TokenType.Cw20 : is_evm ? TokenType.Erc20 : TokenType.Native,
+  denomOrAddress: token_contract || denom,
+  symbol,
+  decimals,
+  imageUrl: logo_uri || getFallbackImage(token_contract || denom),
+  description: (name && name !== symbol ? name : description) || undefined,
+  source: {
+    chainId: origin_chain_id,
+    type: is_cw20
+      ? TokenType.Cw20
+      : is_evm
+        ? TokenType.Erc20
+        : TokenType.Native,
+    denomOrAddress: origin_denom,
   },
 })
 

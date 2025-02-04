@@ -9,7 +9,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import { LoadingData } from '../misc'
+import { LoadingData, LoadingDataWithError } from '../misc'
 import { GenericToken, TokenType } from '../token'
 import { NumericInputProps } from './NumericInput'
 
@@ -49,7 +49,7 @@ export type TokenInputProps<
    *
    * The pair of `type` and `denomOrAddress` must be unique for each token.
    */
-  tokens: LoadingData<T[]>
+  tokens: LoadingData<T[]> | LoadingDataWithError<T[]>
   /**
    * Optionally hide these tokens from the dropdown. This is useful to hide
    * tokens that have already been selected.

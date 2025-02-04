@@ -1,13 +1,18 @@
+import type { MsgsDirectResponse } from '@skip-go/client'
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
-  AnyChain,
+  AnyChainSkip,
+  GenericToken,
   GenericTokenSource,
   SkipAsset,
   SkipChain,
   TokenType,
 } from '@dao-dao/types'
-import { convertSkipChainToAnyChain } from '@dao-dao/utils'
+import {
+  convertSkipAssetToGenericToken,
+  convertSkipChainToAnyChain,
+} from '@dao-dao/utils'
 
 import { indexerQueries } from './indexer'
 
@@ -21,7 +26,7 @@ export const fetchSkipChain = async (
   }: {
     chainId: string
   }
-): Promise<AnyChain> => {
+): Promise<AnyChainSkip> => {
   const chain = await queryClient.fetchQuery(
     indexerQueries.snapper<SkipChain>({
       query: 'skip-chain',
@@ -36,6 +41,28 @@ export const fetchSkipChain = async (
   }
 
   return convertSkipChainToAnyChain(chain)
+}
+
+/**
+ * Fetch all Skip chains.
+ */
+export const fetchAllSkipChains = async (
+  queryClient: QueryClient
+): Promise<AnyChainSkip[]> => {
+  const chains = await queryClient.fetchQuery(
+    indexerQueries.snapper<SkipChain[]>({
+      query: 'skip-chains',
+      parameters: {
+        all: true,
+      },
+    })
+  )
+
+  return (
+    chains
+      ?.map(convertSkipChainToAnyChain)
+      .sort((a, b) => a.prettyName.localeCompare(b.prettyName)) ?? []
+  )
 }
 
 /**
@@ -61,6 +88,30 @@ export const fetchSkipAsset = async (
   }
 
   return asset
+}
+
+/**
+ * Fetch all Skip assets as generic tokens.
+ *
+ * Returns a map of chainId to assets.
+ */
+export const fetchAllSkipAssets = async (
+  queryClient: QueryClient
+): Promise<Record<string, GenericToken[]>> => {
+  const assets = await queryClient.fetchQuery(
+    indexerQueries.snapper<Record<string, { assets: SkipAsset[] }>>({
+      query: 'skip-all-assets',
+    })
+  )
+
+  return Object.fromEntries(
+    Object.entries(assets ?? {}).map(([chainId, { assets }]) => [
+      chainId,
+      assets
+        .map(convertSkipAssetToGenericToken)
+        .sort((a, b) => a.symbol.localeCompare(b.symbol)),
+    ])
+  )
 }
 
 /**
@@ -112,6 +163,73 @@ export const fetchSkipChainPfmEnabled = async (
   )
 }
 
+/**
+ * Fetch the route and messages for a transfer via Skip Go.
+ */
+export const fetchSkipGoMsgsDirect = async (
+  queryClient: QueryClient,
+  {
+    fromChainId,
+    fromTokenType,
+    fromDenomOrAddress,
+    toChainId,
+    toTokenType,
+    toDenomOrAddress,
+    amount,
+    slippageTolerancePercent,
+    timeoutSeconds,
+    addresses,
+    smartRelay,
+    allowSwaps,
+  }: {
+    fromChainId: string
+    fromTokenType: TokenType
+    fromDenomOrAddress: string
+    toChainId: string
+    toTokenType: TokenType
+    toDenomOrAddress: string
+    amount: string
+    slippageTolerancePercent: number
+    timeoutSeconds: number
+    addresses: Record<string, string>
+    smartRelay: boolean
+    allowSwaps: boolean
+  }
+): Promise<MsgsDirectResponse> => {
+  const fromDenom =
+    fromTokenType === TokenType.Cw20
+      ? 'cw20:' + fromDenomOrAddress
+      : fromDenomOrAddress
+  const toDenom =
+    toTokenType === TokenType.Cw20
+      ? 'cw20:' + toDenomOrAddress
+      : toDenomOrAddress
+
+  const data = await queryClient.fetchQuery(
+    indexerQueries.snapper<MsgsDirectResponse>({
+      query: 'skip-go-msgs-direct',
+      parameters: {
+        fromChainId,
+        fromDenom,
+        toChainId,
+        toDenom,
+        amountIn: amount,
+        slippageTolerancePercent,
+        timeoutSeconds,
+        addresses: JSON.stringify(addresses),
+        smartRelay,
+        allowSwaps,
+      },
+    })
+  )
+
+  if (!data) {
+    throw new Error('No Skip Go msgs direct found')
+  }
+
+  return data
+}
+
 export const skipQueries = {
   /**
    * Fetch Skip chain.
@@ -125,6 +243,14 @@ export const skipQueries = {
       queryFn: () => fetchSkipChain(queryClient, options),
     }),
   /**
+   * Fetch all Skip chains.
+   */
+  chains: (queryClient: QueryClient) =>
+    queryOptions({
+      queryKey: ['skip', 'chains'],
+      queryFn: () => fetchAllSkipChains(queryClient),
+    }),
+  /**
    * Fetch Skip asset.
    */
   asset: (
@@ -134,6 +260,14 @@ export const skipQueries = {
     queryOptions({
       queryKey: ['skip', 'asset', options],
       queryFn: () => fetchSkipAsset(queryClient, options),
+    }),
+  /**
+   * Fetch all Skip assets.
+   */
+  allAssets: (queryClient: QueryClient) =>
+    queryOptions({
+      queryKey: ['skip', 'allAssets'],
+      queryFn: () => fetchAllSkipAssets(queryClient),
     }),
   /**
    * Fetch Skip recommended asset.
@@ -171,5 +305,16 @@ export const skipQueries = {
     queryOptions({
       queryKey: ['skip', 'chainPfmEnabled', options],
       queryFn: () => fetchSkipChainPfmEnabled(queryClient, options),
+    }),
+  /**
+   * Fetch the route and messages for a transfer via Skip Go.
+   */
+  skipGoMsgsDirect: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchSkipGoMsgsDirect>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['skip', 'skipGoMsgsDirect', options],
+      queryFn: () => fetchSkipGoMsgsDirect(queryClient, options),
     }),
 }

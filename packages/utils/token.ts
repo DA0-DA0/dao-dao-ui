@@ -15,6 +15,10 @@ import {
 import { getChainForChainName, getIbcTransferInfoFromChannel } from './chain'
 import { objectMatchesStructure } from './objectMatchesStructure'
 
+export const TokenTypeValues = Object.values(TokenType)
+export const isTokenType = (value: string): value is TokenType =>
+  TokenTypeValues.includes(value as TokenType)
+
 export const tokensEqual = (
   a: LooseGenericToken,
   b: LooseGenericToken
