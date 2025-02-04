@@ -83,6 +83,11 @@ export const APPS: App[] = [
       ? 'https://app.atlasdao.zone'
       : 'https://testapp.atlasdao.zone',
   },
+  {
+    name: 'Eris Protocol',
+    imageUrl: '/apps/eris.png',
+    url: 'https://www.erisprotocol.com',
+  },
 
   // Must be last for index matching. Enables custom URL input.
   {

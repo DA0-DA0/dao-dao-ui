@@ -39,7 +39,6 @@ import {
   MAINNET,
   POLYTONE_CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
-  getAccount,
   getSupportedChainConfig,
   polytoneNoteProxyMapToChainIdMap,
 } from '@dao-dao/utils'
@@ -783,16 +782,23 @@ export const nativeCw20TokensWithBalancesSelector = selectorFamily<
     },
 })
 
-// Get cw20 tokens stored in the items list for a specific polytone proxy chain.
-export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
+// Get cw20 tokens stored in the items list for a specific chain (polytone and
+// ICA).
+export const crossChainCw20TokensWithBalancesSelector = selectorFamily<
   GenericTokenBalanceWithOwner[],
   QueryClientParams & {
-    polytoneChainId: string
+    crossChainId: string
+    crossChainAddress: string
   }
 >({
-  key: 'daoDaoCorePolytoneCw20TokensWithBalances',
+  key: 'daoDaoCoreCrossChainCw20TokensWithBalances',
   get:
-    ({ chainId: mainChainId, contractAddress, polytoneChainId }) =>
+    ({
+      chainId: mainChainId,
+      contractAddress,
+      crossChainId,
+      crossChainAddress,
+    }) =>
     ({ get }) => {
       const accounts = get(
         accountsSelector({
@@ -801,40 +807,38 @@ export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
         })
       )
 
-      const polytoneAccount = getAccount({
-        accounts,
-        chainId: polytoneChainId,
-        types: [AccountType.Polytone],
-      })
-      if (!polytoneAccount) {
+      const account = accounts.find(
+        (a) => a.chainId === crossChainId && a.address === crossChainAddress
+      )
+      if (!account) {
         return []
       }
 
-      const polytoneCw20Tokens =
+      const cw20Tokens =
         get(
           allPolytoneCw20TokensSelector({
             chainId: mainChainId,
             contractAddress,
           })
-        )[polytoneChainId]?.tokens || []
+        )[crossChainId]?.tokens || []
 
       const [tokens, balances] = get(
         waitForAll([
           waitForAll(
-            polytoneCw20Tokens.map((denomOrAddress) =>
+            cw20Tokens.map((denomOrAddress) =>
               genericTokenSelector({
                 type: TokenType.Cw20,
-                chainId: polytoneChainId,
+                chainId: account.chainId,
                 denomOrAddress,
               })
             )
           ),
           waitForAllSettled(
-            polytoneCw20Tokens.map((tokenContract) =>
+            cw20Tokens.map((tokenContract) =>
               Cw20BaseSelectors.balanceSelector({
-                chainId: polytoneChainId,
+                chainId: account.chainId,
                 contractAddress: tokenContract,
-                params: [{ address: polytoneAccount.address }],
+                params: [{ address: account.address }],
               })
             )
           ),
@@ -845,7 +849,7 @@ export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
         (loadable, index): GenericTokenBalanceWithOwner | [] =>
           loadable.state === 'hasValue'
             ? {
-                owner: polytoneAccount,
+                owner: account,
                 token: tokens[index],
                 balance: loadable.contents.balance,
               }

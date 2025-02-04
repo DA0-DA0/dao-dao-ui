@@ -125,10 +125,10 @@ export enum CommonError {
   InvalidAddress = 'Invalid address.',
   InsufficientFees = "Insufficient fees. Reconnect your wallet, ensure you're on the right chain, and try again.",
   InsufficientFunds = 'Insufficient funds.',
+  InsufficientFundsOverflow = 'Insufficient funds (Error: "Overflow: Cannot Sub with...").',
   GetClientFailed = 'Failed to get client. Try refreshing the page or reconnecting your wallet.',
   Network = 'Network error. Ensure you are connected to the internet, refresh the page, or try again later. If your network is working, the blockchain nodes may be having problems.',
   Unauthorized = 'Unauthorized.',
-  InsufficientForProposalDeposit = 'Insufficient unstaked deposit tokens. Ensure you have enough unstaked deposit tokens to pay for the proposal deposit.',
   PendingTransaction = 'You have another pending transaction. Please try again in 10 seconds.',
   TextEncodingDecodingError = 'Text encoding/decoding error. Invalid character present in text.',
   TxnSentTimeout = 'Transaction sent but has not yet been detected. Refresh this page to view its changes or check back later.',
@@ -198,7 +198,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
     'codespace: sdk, code: 4',
   ],
-  [CommonError.InsufficientForProposalDeposit]: ['Overflow: Cannot Sub with'],
+  [CommonError.InsufficientFundsOverflow]: ['Overflow: Cannot Sub with'],
   [CommonError.PendingTransaction]: ['account sequence mismatch'],
   [CommonError.TextEncodingDecodingError]: ['out of printable ASCII range'],
   [CommonError.TxnSentTimeout]: [

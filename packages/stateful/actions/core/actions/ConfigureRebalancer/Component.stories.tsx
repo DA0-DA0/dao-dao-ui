@@ -9,6 +9,7 @@ import {
 import { ChainId, TokenType } from '@dao-dao/types'
 import { getNativeIbcUsdc, getNativeTokenForChainId } from '@dao-dao/utils'
 
+import { Trans } from '../../../../components'
 import {
   ConfigureRebalancerComponent,
   ConfigureRebalancerData,
@@ -264,6 +265,7 @@ Default.args = {
     },
     minBalanceToken: undefined,
     AddressInput,
+    Trans,
   },
   isCreating: true,
   errors: {},

@@ -242,7 +242,8 @@ export const GovProposalList = ({ className }: { className: string }) => {
               {
                 title: t('title.history'),
                 proposals: historyProposals,
-                total: historyCount,
+                // If failed to load count, or count is 0, don't show.
+                total: Math.max(0, historyCount) || undefined,
               },
             ]
       }

@@ -124,7 +124,11 @@ export const batch = async <T extends unknown>({
       await Promise.all(
         items.map((item, index) =>
           tries
-            ? retry(tries, (attempt) => args.task(item, attempt, index), delayMs)
+            ? retry(
+                tries,
+                (attempt) => args.task(item, attempt, index),
+                delayMs
+              )
             : args.task(item, 1, index)
         )
       )

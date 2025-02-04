@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import {
   CodeMirrorInput,
   FilterableItemPopup,
+  FormSwitchCard,
   RawActionsRendererMessages,
   useChain,
 } from '@dao-dao/stateless'
@@ -20,6 +21,10 @@ import {
 
 export type CustomData = {
   message: string
+  /**
+   * Decode from Amino before encoding custom message to Stargate.
+   */
+  amino?: boolean
 }
 
 export const CustomComponent: ActionComponent = ({
@@ -32,6 +37,8 @@ export const CustomComponent: ActionComponent = ({
   const { chainId } = useChain()
 
   const message = watch((fieldNamePrefix + 'message') as 'message')
+  const amino = watch((fieldNamePrefix + 'amino') as 'amino')
+
   // Parse message for display if not creating.
   const rawMessages = useMemo(() => {
     if (isCreating) {
@@ -94,11 +101,14 @@ export const CustomComponent: ActionComponent = ({
           (value: string) => {
             try {
               const parsed = JSON5.parse(value)
-              const msgs = Array.isArray(parsed) ? parsed : [parsed]
 
-              msgs.forEach((msg) =>
-                validateCosmosMsgForChain(chainId, makeCosmosMsg(msg))
-              )
+              // Validate Cosmos msg if not decoding from Amino.
+              if (!amino) {
+                const msgs = Array.isArray(parsed) ? parsed : [parsed]
+                msgs.forEach((msg) =>
+                  validateCosmosMsgForChain(chainId, makeCosmosMsg(msg))
+                )
+              }
             } catch (err) {
               console.error('Custom error', err)
               return err instanceof Error ? err.message : `${err}`
@@ -107,6 +117,14 @@ export const CustomComponent: ActionComponent = ({
             return true
           },
         ]}
+      />
+
+      <FormSwitchCard
+        containerClassName="self-start"
+        fieldName={(fieldNamePrefix + 'amino') as 'amino'}
+        label={t('form.decodeFromAmino')}
+        setValue={setValue}
+        watch={watch}
       />
 
       {errors?.message ? (

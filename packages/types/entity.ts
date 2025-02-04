@@ -8,6 +8,8 @@ export enum EntityType {
   Module = 'module',
   // cw1-whitelist with multiple entities inside
   Cw1Whitelist = 'cw1-whitelist',
+  // cryptographic multisig with multiple entities inside
+  CryptographicMultisig = 'cryptographic-multisig',
 }
 
 // Generalizable entity representation.
@@ -37,6 +39,10 @@ export type Entity = {
     }
   | {
       type: EntityType.Cw1Whitelist
+      entities: Entity[]
+    }
+  | {
+      type: EntityType.CryptographicMultisig
       entities: Entity[]
     }
 )

@@ -40,6 +40,7 @@ import {
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
+  isErrorWithSubstring,
   isNonexistentQueryError,
   isValidBech32Address,
   kujiraProtoRpcClientRouter,
@@ -912,18 +913,26 @@ export const fetchGovProposals = async (
           )) || []
         total = v1Proposals.length
       } else {
-        const response = await client.gov.v1.proposals({
-          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-          voter: '',
-          depositor: '',
-          pagination: {
-            key: new Uint8Array(),
-            offset: BigInt(offset || 0),
-            limit: BigInt(limit || 0),
-            countTotal: true,
-            reverse: true,
-          },
-        })
+        const getResponse = (countTotal: boolean) =>
+          client.gov.v1.proposals({
+            proposalStatus:
+              status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+            voter: '',
+            depositor: '',
+            pagination: {
+              key: new Uint8Array(),
+              offset: BigInt(offset || 0),
+              limit: BigInt(limit || 0),
+              countTotal,
+              reverse: true,
+            },
+          })
+        const response = await getResponse(true).catch((err) =>
+          // some RPCs disallow count_total. If so, just don't count.
+          isErrorWithSubstring(err, 'count_total is disallowed')
+            ? getResponse(false)
+            : Promise.reject(err)
+        )
         v1Proposals = response.proposals
         total = Number(response.pagination?.total || 0)
       }
@@ -957,20 +966,28 @@ export const fetchGovProposals = async (
         )) || []
       total = v1Beta1Proposals.length
     } else {
-      const response = await client.gov.v1beta1.proposals(
-        {
-          proposalStatus: status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
-          voter: '',
-          depositor: '',
-          pagination: {
-            key: new Uint8Array(),
-            offset: BigInt(offset || 0),
-            limit: BigInt(limit || 0),
-            countTotal: true,
-            reverse: true,
+      const getResponse = (countTotal: boolean) =>
+        client.gov.v1beta1.proposals(
+          {
+            proposalStatus:
+              status || ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
+            voter: '',
+            depositor: '',
+            pagination: {
+              key: new Uint8Array(),
+              offset: BigInt(offset || 0),
+              limit: BigInt(limit || 0),
+              countTotal,
+              reverse: true,
+            },
           },
-        },
-        true
+          true
+        )
+      const response = await getResponse(true).catch((err) =>
+        // some RPCs disallow count_total. If so, just don't count.
+        isErrorWithSubstring(err, 'count_total is disallowed')
+          ? getResponse(false)
+          : Promise.reject(err)
       )
       v1Beta1Proposals = response.proposals
       total = Number(response.pagination?.total || 0)
@@ -1274,16 +1291,23 @@ export const fetchGovProposalVotes = async (
 }> => {
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
 
-  const { votes, pagination } = await client.gov.v1beta1.votes({
-    proposalId: BigInt(proposalId),
-    pagination: {
-      key: new Uint8Array(),
-      offset: BigInt(offset),
-      limit: BigInt(limit),
-      countTotal: true,
-      reverse: true,
-    },
-  })
+  const getResponse = (countTotal: boolean) =>
+    client.gov.v1beta1.votes({
+      proposalId: BigInt(proposalId),
+      pagination: {
+        key: new Uint8Array(),
+        offset: BigInt(offset),
+        limit: BigInt(limit),
+        countTotal,
+        reverse: true,
+      },
+    })
+  const { votes, pagination } = await getResponse(true).catch((err) =>
+    // some RPCs disallow count_total. If so, just don't count.
+    isErrorWithSubstring(err, 'count_total is disallowed')
+      ? getResponse(false)
+      : Promise.reject(err)
+  )
 
   const stakes = await Promise.all(
     votes.map(({ voter }) =>

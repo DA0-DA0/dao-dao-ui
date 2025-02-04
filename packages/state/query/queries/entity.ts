@@ -8,6 +8,7 @@ import {
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
+import { accountQueries } from './account'
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
 import { cw1WhitelistExtraQueries } from './contracts/Cw1Whitelist.extra'
@@ -60,6 +61,7 @@ export const fetchEntityInfo = async (
     entityFromPolytoneProxy,
     walletProfile,
     cw1WhitelistAdminEntities,
+    cryptographicMultisigEntities,
   ] = await Promise.all([
     // Attempt to load DAO.
     queryClient
@@ -159,6 +161,29 @@ export const fetchEntityInfo = async (
         )
       })
       .catch(() => undefined),
+    // Attempt to load cryptographic multisig entities.
+    queryClient
+      .fetchQuery(
+        accountQueries.cryptographicMultisig({
+          chainId,
+          address,
+        })
+      )
+      .then(({ config }) =>
+        Promise.all(
+          config.members.map((member) =>
+            queryClient.fetchQuery(
+              entityQueries.info(queryClient, {
+                chainId,
+                address: member.address,
+                // Add address to ignore list to prevent infinite loops.
+                ignoreEntities: [...(ignoreEntities || []), address],
+              })
+            )
+          )
+        )
+      )
+      .catch(() => undefined),
   ])
 
   if (daoInfo) {
@@ -180,6 +205,15 @@ export const fetchEntityInfo = async (
       name: null,
       imageUrl: getFallbackImage(address),
       entities: cw1WhitelistAdminEntities,
+    }
+  } else if (cryptographicMultisigEntities) {
+    return {
+      type: EntityType.CryptographicMultisig,
+      chainId,
+      address,
+      name: null,
+      imageUrl: getFallbackImage(address),
+      entities: cryptographicMultisigEntities,
     }
   } else {
     // Default to wallet.

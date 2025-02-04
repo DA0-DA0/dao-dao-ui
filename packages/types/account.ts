@@ -68,6 +68,7 @@ export type CryptographicMultisigAccount = CommonAccount & {
      */
     members: {
       address: string
+      hexPublicKey?: string
       weight: number
     }[]
     /**

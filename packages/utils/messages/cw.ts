@@ -19,6 +19,8 @@ import {
   UnifiedCosmosMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
+import { Cosmos_authzv1beta1Authorization_FromAmino } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { MsgGrant } from '@dao-dao/types/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import {
   MsgRegisterInterchainAccount,
   MsgSendTx,
@@ -321,6 +323,37 @@ export const makeCosmosMsg = (msg: any): UnifiedCosmosMsg => {
       },
     })
   ) {
+    if (
+      msg.stargate.typeUrl === MsgGrant.typeUrl &&
+      // Amino encoding.
+      objectMatchesStructure(msg.stargate.value, {
+        grant: {
+          authorization: {
+            type: {},
+            value: {},
+          },
+        },
+      })
+    ) {
+      msg = {
+        stargate: {
+          typeUrl: msg.stargate.typeUrl,
+          value: {
+            ...msg.stargate.value,
+            grant: {
+              ...msg.stargate.value.grant,
+              // encode as Any if an object
+              authorization:
+                msg.stargate.value.grant.authorization instanceof Uint8Array
+                  ? msg.stargate.value.grant.authorization
+                  : Cosmos_authzv1beta1Authorization_FromAmino(
+                      msg.stargate.value.grant.authorization
+                    ),
+            },
+          },
+        },
+      }
+    }
     msg = makeStargateMessage(msg)
   }
 

@@ -15,6 +15,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
+  "chainId": "<CHAIN ID>",
   "type": "<TYPE>",
   "validator": "<VALIDATOR ADDRESS>",
   // Only used when redelegating.

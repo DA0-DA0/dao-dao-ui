@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 
 import { ActionBase, RobotEmoji } from '@dao-dao/stateless'
-import { UnifiedCosmosMsg } from '@dao-dao/types'
+import { UnifiedCosmosMsg, makeStargateMessageFromAmino } from '@dao-dao/types'
 import {
   ActionKey,
   ActionMatch,
@@ -18,6 +18,7 @@ export class CustomAction extends ActionBase<CustomData> {
 
   protected _defaults: CustomData = {
     message: '{}',
+    amino: false,
   }
 
   constructor(options: ActionOptions) {
@@ -32,12 +33,16 @@ export class CustomAction extends ActionBase<CustomData> {
     })
   }
 
-  encode({ message }: CustomData): UnifiedCosmosMsg | UnifiedCosmosMsg[] {
+  encode({
+    message,
+    amino,
+  }: CustomData): UnifiedCosmosMsg | UnifiedCosmosMsg[] {
+    const maker = amino ? makeStargateMessageFromAmino : makeCosmosMsg
     const messageOrMessages = JSON5.parse(message)
     if (Array.isArray(messageOrMessages)) {
-      return messageOrMessages.map((message) => makeCosmosMsg(message))
+      return messageOrMessages.map((message) => maker(message))
     } else {
-      return makeCosmosMsg(messageOrMessages)
+      return maker(messageOrMessages)
     }
   }
 

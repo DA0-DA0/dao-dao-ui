@@ -1,9 +1,11 @@
 import clsx from 'clsx'
+import cloneDeep from 'lodash.clonedeep'
 import { nanoid } from 'nanoid'
 import {
   ComponentType,
   MutableRefObject,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -60,10 +62,24 @@ export const ActionsEditor = ({
   // All actions from the form.
   const actionData = watch(actionDataFieldName) || []
 
-  const { append, insert, remove } = useFieldArray({
+  const { append, insert, remove, move } = useFieldArray({
     name: actionDataFieldName,
     control,
   })
+
+  // Remove actions with no valid action for the given key.
+  useEffect(() => {
+    actionData
+      .flatMap((action, index) =>
+        !(action.actionKey in actionMap) ? [index] : []
+      )
+      // Remove in descending order so indexes don't change.
+      .sort((a, b) => b - a)
+      .forEach((index) => remove(index))
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionData.length, actionMap, remove])
+
   const addAction = useCallback(
     async (data: ActionKeyAndDataNoId, insertIndex?: number) => {
       const action = actionMap[data.actionKey]
@@ -121,6 +137,7 @@ export const ActionsEditor = ({
               clearErrors={clearErrors}
               idsSeenRef={idsSeenRef}
               index={index}
+              moveTo={(to) => move(index, to)}
               remove={remove}
               scrollToNewActions={scrollToNewActions}
             />
@@ -166,6 +183,7 @@ type ActionEditorProps = {
   }>
   remove: (index: number) => void
   addAction: Required<ActionComponentProps>['addAction']
+  moveTo: (index: number) => void
 }
 
 const ActionEditor = ({
@@ -180,6 +198,7 @@ const ActionEditor = ({
   clearErrors,
   remove,
   addAction,
+  moveTo,
 }: ActionEditorProps) => {
   const { _id, actionKey, data } = actionData[index]
   const action = actionMap[actionKey]
@@ -204,7 +223,26 @@ const ActionEditor = ({
 
   return (
     <div className="relative" id={`A${index + 1}`}>
-      <ActionCard action={action} onRemove={onRemove}>
+      <ActionCard
+        action={action}
+        onAddNew={
+          action.ready
+            ? () =>
+                addAction(
+                  { actionKey, data: cloneDeep(action.defaults) },
+                  index + 1
+                )
+            : undefined
+        }
+        onDuplicate={() =>
+          addAction({ actionKey, data: cloneDeep(data) }, index + 1)
+        }
+        onMoveDown={
+          index < actionData.length - 1 ? () => moveTo(index + 1) : undefined
+        }
+        onMoveUp={index > 0 ? () => moveTo(index - 1) : undefined}
+        onRemove={onRemove}
+      >
         <div
           className="animate-fade-in flex min-w-0 grow flex-col gap-4"
           ref={(node) => {

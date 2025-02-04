@@ -1,6 +1,6 @@
 # Custom
 
-Execute any Cosmos message supported by CosmWasm.
+Execute any Cosmos message.
 
 ## Bulk import format
 
@@ -15,6 +15,10 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "message": "<COSMOS MESSAGE>"
+  "message": "<COSMOS MESSAGE>",
+  "amino": <BOOLEAN>
 }
 ```
+
+If `amino` is true, the message will be decoded from Amino and encoded into
+Stargate. Otherwise, it will be encoded into Stargate directly.

@@ -264,14 +264,18 @@ export const fetchCryptographicMultisigAccount = async ({
     throw new Error('Unsupported multisig.')
   }
 
-  const addresses = await Promise.all(
-    publicKeys.map((key) =>
-      // Safe to use since we validated the public key curve above.
-      secp256k1PublicKeyToBech32Address(
-        toHex(Secp256k1PubKey.decode(key.value).key),
-        bech32Prefix
-      )
-    )
+  const members = await Promise.all(
+    publicKeys.map(async (key) => {
+      const hexPublicKey = toHex(Secp256k1PubKey.decode(key.value).key)
+      return {
+        // Safe to use since we validated the public key curve above.
+        address: await secp256k1PublicKeyToBech32Address(
+          hexPublicKey,
+          bech32Prefix
+        ),
+        hexPublicKey,
+      }
+    })
   )
 
   return {
@@ -279,8 +283,9 @@ export const fetchCryptographicMultisigAccount = async ({
     chainId,
     address,
     config: {
-      members: addresses.map((address) => ({
+      members: members.map(({ address, hexPublicKey }) => ({
         address,
+        hexPublicKey,
         weight: 1,
       })),
       threshold: {
@@ -288,7 +293,7 @@ export const fetchCryptographicMultisigAccount = async ({
           threshold: BigInt(threshold).toString(),
         },
       },
-      totalWeight: addresses.length,
+      totalWeight: members.length,
     },
   }
 }

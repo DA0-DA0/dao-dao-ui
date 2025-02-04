@@ -63,6 +63,7 @@ import {
   tokensEqual,
 } from '@dao-dao/utils'
 
+import { Trans } from '../../../../components'
 import { AddressInput } from '../../../../components/AddressInput'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
@@ -252,6 +253,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
               ? undefined
               : minBalanceToken.data,
             AddressInput,
+            Trans,
           }}
         />
       </ChainProvider>

@@ -201,14 +201,15 @@ export const genericTokenBalancesSelector = selectorFamily<
                           }
                         ),
                       ]
-                    : // Get polytone cw20s if they exist.
+                    : // Get cross-chain cw20s if they exist.
                       chainId !== mainChainId
                       ? [
-                          DaoDaoCoreSelectors.polytoneCw20TokensWithBalancesSelector(
+                          DaoDaoCoreSelectors.crossChainCw20TokensWithBalancesSelector(
                             {
                               chainId: mainChainId,
                               contractAddress: mainAddress,
-                              polytoneChainId: chainId,
+                              crossChainId: chainId,
+                              crossChainAddress: address,
                             }
                           ),
                         ]
@@ -228,6 +229,8 @@ export const genericTokenBalancesSelector = selectorFamily<
             )
           : []
       )[0]
+
+      console.log(address, cw20TokenBalances)
 
       return [
         ...nativeTokenBalances.map((native) => ({

@@ -835,6 +835,31 @@ export const makeStargateMessage = ({
   },
 })
 
+// Encodes a message from its Amino JSON representation into a `StargateMsg`
+// that `CosmWasm` understands.
+export const makeStargateMessageFromAmino = (msg: AminoMsg): StargateMsg => {
+  if (!('type' in msg)) {
+    throw new Error(
+      '`type` field missing from Amino message, formatted like `cosmos-sdk/...`'
+    )
+  }
+  if (!('value' in msg)) {
+    throw new Error('`value` field missing from Amino message')
+  }
+
+  const { typeUrl, value } = getAminoTypes().fromAmino({
+    type: msg.type,
+    value: prepareProtobufJson(msg.value),
+  })
+
+  return {
+    stargate: {
+      type_url: typeUrl,
+      value: toBase64(encodeProtobufValue(typeUrl, value)),
+    },
+  }
+}
+
 // Decodes an encoded protobuf message from CosmWasm's `StargateMsg` into its
 // JSON representation.
 export const decodeStargateMessage = (

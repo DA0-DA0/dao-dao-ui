@@ -487,6 +487,19 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               isSmartContract: false,
             } satisfies WalletAccount,
           }
+        } else if (appEntity.type === EntityType.CryptographicMultisig) {
+          console.log('appEntityyy', appEntity)
+          return {
+            type: 'success',
+            value: {
+              address: appEntity.address,
+              algo: 'secp256k1',
+              pubkey: EMPTY_PUB_KEY,
+              username: appEntity.name || appEntity.address,
+              isNanoLedger: false,
+              isSmartContract: false,
+            } satisfies WalletAccount,
+          }
         }
 
         return {
@@ -502,7 +515,11 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           }
         }
 
-        if (appEntity.type === EntityType.Wallet) {
+        if (
+          appEntity.type === EntityType.Wallet ||
+          appEntity.type === EntityType.CryptographicMultisig
+        ) {
+          console.log('appEntity simpe', appEntity)
           if (chainId !== appEntity.chainId) {
             return {
               type: 'error',
@@ -626,6 +643,22 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
                 ? fromBech32(bech32Address).data
                 : new Uint8Array([]),
               bech32Address,
+              isNanoLedger: false,
+              isSmartContract: false,
+              isKeystone: false,
+            },
+          }
+        } else if (appEntity.type === EntityType.CryptographicMultisig) {
+          console.log('appEntity', appEntity)
+          return {
+            type: 'success',
+            value: {
+              name: appEntity.name,
+              algo: 'secp256k1',
+              pubkey: EMPTY_PUB_KEY,
+              pubKey: EMPTY_PUB_KEY,
+              address: fromBech32(appEntity.address).data,
+              bech32Address: appEntity.address,
               isNanoLedger: false,
               isSmartContract: false,
               isKeystone: false,

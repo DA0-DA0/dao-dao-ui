@@ -200,6 +200,13 @@ export const NumericInput = <
                 )
               })
         }
+        onWheel={(e) => {
+          // Disallow mouse wheel on number inputs that change value.
+          if (e.currentTarget === document.activeElement) {
+            e.currentTarget.blur()
+          }
+          e.preventDefault()
+        }}
         type="number"
         value={value}
         {...props}

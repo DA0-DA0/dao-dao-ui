@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
+  ButtonLink,
   ErrorPage,
   FormCheckbox,
   IconButton,
@@ -32,6 +33,7 @@ import {
   GenericTokenWithUsdPrice,
   LoadingData,
   LoadingDataWithError,
+  TransProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceRebalancer'
@@ -114,6 +116,7 @@ export type ConfigureRebalancerOptions = {
   prices: LoadingDataWithError<GenericTokenWithUsdPrice[]>
   minBalanceToken: GenericToken | undefined
   AddressInput: ComponentType<AddressInputProps<ConfigureRebalancerData>>
+  Trans: ComponentType<TransProps>
 }
 
 export const ConfigureRebalancerComponent: ActionComponent<
@@ -131,6 +134,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
     prices,
     minBalanceToken,
     AddressInput,
+    Trans,
   },
 }) => {
   const { t } = useTranslation()
@@ -269,6 +273,25 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
   return (
     <>
+      <p className="secondary-text max-w-prose">
+        <Trans i18nKey="info.rebalancerMainDescription">
+          The Rebalancer enables automated balance sheet and treasury
+          management. Use the Rebalancer to efficiently convert tokens for
+          scheduled payments or manage your asset portfolio. The Rebalancer is
+          custom-built to address the needs of blockchains, protocols, and DAOs.
+          Check out the{' '}
+          <ButtonLink
+            containerClassName="inline-block"
+            href="https://github.com/timewave-computer/rebalancer/blob/main/guides/daodao_rebalancer_user_guide.md"
+            size="none"
+            variant="underline"
+          >
+            user guide
+          </ButtonLink>{' '}
+          for more information.
+        </Trans>
+      </p>
+
       {creatingNewValenceAccount && (
         <div className="flex flex-col gap-2 mb-2">
           <InputLabel name={t('form.initialBalances')} primary />
