@@ -1,5 +1,7 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { EncodeObject } from '@cosmjs/proto-signing'
+import {
+  CustomTxOptions,
+  SigningCosmWasmClient,
+} from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
 import { CheckedDepositInfo, Coin, Duration } from '../contracts/common'
@@ -73,6 +75,7 @@ export interface IProposalModuleBase<
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
     funds?: Coin[]
+    txOptions?: CustomTxOptions
   }): Promise<{
     proposalNumber: number
     proposalId: string
@@ -86,6 +89,7 @@ export interface IProposalModuleBase<
     vote: Vote
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void>
 
   /**
@@ -96,7 +100,7 @@ export interface IProposalModuleBase<
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
     memo?: string
-    nonCriticalExtensionOptions?: EncodeObject[]
+    txOptions?: CustomTxOptions
   }): Promise<void>
 
   /**
@@ -106,6 +110,7 @@ export interface IProposalModuleBase<
     proposalId: number
     getSigningClient: () => Promise<SigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void>
 
   /**

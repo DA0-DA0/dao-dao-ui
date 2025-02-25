@@ -7,10 +7,10 @@
 import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
+  CustomTxOptions,
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { EncodeObject } from '@cosmjs/proto-signing'
 
 import {
   Coin,
@@ -209,7 +209,8 @@ export interface CwProposalSingleV1Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   vote: (
     {
@@ -221,7 +222,8 @@ export interface CwProposalSingleV1Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   execute: (
     {
@@ -231,7 +233,8 @@ export interface CwProposalSingleV1Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   close: (
     {
@@ -241,7 +244,8 @@ export interface CwProposalSingleV1Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   updateConfig: (
     {
@@ -344,7 +348,8 @@ export class CwProposalSingleV1Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -358,7 +363,8 @@ export class CwProposalSingleV1Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   vote = async (
@@ -371,7 +377,8 @@ export class CwProposalSingleV1Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -384,7 +391,8 @@ export class CwProposalSingleV1Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   execute = async (
@@ -396,7 +404,7 @@ export class CwProposalSingleV1Client
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     _funds?: Coin[],
-    nonCriticalExtensionOptions?: EncodeObject[]
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -409,7 +417,7 @@ export class CwProposalSingleV1Client
       fee,
       memo,
       _funds,
-      nonCriticalExtensionOptions
+      options
     )
   }
   close = async (
@@ -420,7 +428,8 @@ export class CwProposalSingleV1Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -432,7 +441,8 @@ export class CwProposalSingleV1Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   updateConfig = async (

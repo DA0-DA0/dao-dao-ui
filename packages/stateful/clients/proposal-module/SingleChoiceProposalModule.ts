@@ -1,4 +1,4 @@
-import { EncodeObject } from '@cosmjs/proto-signing'
+import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
@@ -181,12 +181,14 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     getSigningClient,
     sender,
     funds,
+    txOptions,
   }: {
     data: NewProposalData
     vote?: Vote
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
     funds?: Coin[]
+    txOptions?: CustomTxOptions
   }): Promise<{
     proposalNumber: number
     proposalId: string
@@ -225,7 +227,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         data as any,
         undefined,
         undefined,
-        funds
+        funds,
+        txOptions
       )
 
       proposalNumber = Number(
@@ -255,7 +258,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         },
         undefined,
         undefined,
-        funds
+        funds,
+        txOptions
       )
 
       isPreProposeApprovalProposal =
@@ -294,7 +298,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         data as any,
         undefined,
         undefined,
-        funds
+        funds,
+        txOptions
       )
 
       proposalNumber = Number(
@@ -326,11 +331,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     vote,
     getSigningClient,
     sender,
+    txOptions,
   }: {
     proposalId: number
     vote: Vote
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
 
@@ -339,10 +346,16 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         ? CwProposalSingleV1Client
         : DaoProposalSingleV2Client
 
-    await new Client(client, sender, this.address).vote({
-      proposalId,
-      vote,
-    })
+    await new Client(client, sender, this.address).vote(
+      {
+        proposalId,
+        vote,
+      },
+      undefined,
+      undefined,
+      undefined,
+      txOptions
+    )
 
     await this.queryClient.refetchQueries({
       queryKey: this.getVoteQuery({
@@ -357,13 +370,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     getSigningClient,
     sender,
     memo,
-    nonCriticalExtensionOptions,
+    txOptions,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
     memo?: string
-    nonCriticalExtensionOptions?: EncodeObject[]
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
 
@@ -379,7 +392,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       undefined,
       memo,
       undefined,
-      nonCriticalExtensionOptions
+      txOptions
     )
   }
 
@@ -387,10 +400,12 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
     getSigningClient,
     sender,
+    txOptions,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
 
@@ -399,9 +414,15 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         ? CwProposalSingleV1Client
         : DaoProposalSingleV2Client
 
-    await new Client(client, sender, this.address).close({
-      proposalId,
-    })
+    await new Client(client, sender, this.address).close(
+      {
+        proposalId,
+      },
+      undefined,
+      undefined,
+      undefined,
+      txOptions
+    )
   }
 
   getProposalQuery({

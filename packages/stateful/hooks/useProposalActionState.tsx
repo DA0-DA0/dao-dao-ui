@@ -13,6 +13,7 @@ import {
   DaoProposalSingleCommonSelectors,
   makeGetSignerOptions,
 } from '@dao-dao/state'
+import { chainQueries } from '@dao-dao/state/query'
 import {
   ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
@@ -38,6 +39,7 @@ import {
 
 import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterContext } from '../proposal-module-adapter'
+import { useQueryLoadingDataWithError } from './query'
 import { useMembership } from './useMembership'
 import { UseProposalRelayStateReturn } from './useProposalRelayState'
 import { useWallet } from './useWallet'
@@ -88,6 +90,20 @@ export const useProposalActionState = ({
   } = useWallet()
   const { isMember = false } = useMembership()
   const plausible = usePlausible<PlausibleEvents>()
+
+  const feeGrants = useQueryLoadingDataWithError(
+    walletAddress
+      ? chainQueries.feeGrantsByGrantee({
+          chainId: proposalModule.chainId,
+          address: walletAddress,
+          basic: true,
+        })
+      : undefined
+  )
+  const feeGranter =
+    !feeGrants.loading && !feeGrants.errored
+      ? feeGrants.data[0]?.granter
+      : undefined
 
   const config = useRecoilValue(
     DaoProposalSingleCommonSelectors.configSelector({
@@ -163,17 +179,22 @@ export const useProposalActionState = ({
         getSigningClient: signingClientGetter,
         sender: walletAddress,
         memo: metadata?.memo || (allowMemoOnExecute && memo ? memo : undefined),
-        nonCriticalExtensionOptions:
-          metadata?.gaiaMetaprotocolsExtensionData?.map(
-            ({ protocolId, protocolVersion, data }) => ({
-              typeUrl: ExtensionData.typeUrl,
-              value: ExtensionData.fromPartial({
-                protocolId,
-                protocolVersion,
-                data: toUtf8(data),
-              }),
-            })
-          ),
+        txOptions: {
+          ...(!!metadata?.gaiaMetaprotocolsExtensionData?.length && {
+            nonCriticalExtensionOptions:
+              metadata.gaiaMetaprotocolsExtensionData.map(
+                ({ protocolId, protocolVersion, data }) => ({
+                  typeUrl: ExtensionData.typeUrl,
+                  value: ExtensionData.fromPartial({
+                    protocolId,
+                    protocolVersion,
+                    data: toUtf8(data),
+                  }),
+                })
+              ),
+          }),
+          feeGranter,
+        },
       })
 
       plausible('daoProposalExecute', {
@@ -213,6 +234,7 @@ export const useProposalActionState = ({
     t,
     plausible,
     dao,
+    feeGranter,
   ])
 
   const onClose = useCallback(async () => {
@@ -227,6 +249,9 @@ export const useProposalActionState = ({
         proposalId: proposalNumber,
         getSigningClient,
         sender: walletAddress,
+        txOptions: {
+          feeGranter,
+        },
       })
 
       plausible('daoProposalClose', {
@@ -259,6 +284,7 @@ export const useProposalActionState = ({
     onCloseSuccess,
     plausible,
     dao,
+    feeGranter,
   ])
 
   const showRelayStatus =

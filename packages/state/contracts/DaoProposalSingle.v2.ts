@@ -7,10 +7,10 @@
 import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
+  CustomTxOptions,
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { EncodeObject } from '@cosmjs/proto-signing'
 
 import {
   Addr,
@@ -232,7 +232,8 @@ export interface DaoProposalSingleV2Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   vote: (
     {
@@ -246,7 +247,8 @@ export interface DaoProposalSingleV2Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   updateRationale: (
     {
@@ -268,7 +270,8 @@ export interface DaoProposalSingleV2Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   veto: (
     {
@@ -288,7 +291,8 @@ export interface DaoProposalSingleV2Interface
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ) => Promise<ExecuteResult>
   updateConfig: (
     {
@@ -410,7 +414,8 @@ export class DaoProposalSingleV2Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -426,7 +431,8 @@ export class DaoProposalSingleV2Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   vote = async (
@@ -441,7 +447,8 @@ export class DaoProposalSingleV2Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -455,7 +462,8 @@ export class DaoProposalSingleV2Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   updateRationale = async (
@@ -493,7 +501,7 @@ export class DaoProposalSingleV2Client
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     _funds?: Coin[],
-    nonCriticalExtensionOptions?: EncodeObject[]
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -506,7 +514,7 @@ export class DaoProposalSingleV2Client
       fee,
       memo,
       _funds,
-      nonCriticalExtensionOptions
+      options
     )
   }
   veto = async (
@@ -540,7 +548,8 @@ export class DaoProposalSingleV2Client
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
-    _funds?: Coin[]
+    _funds?: Coin[],
+    options?: CustomTxOptions
   ): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -552,7 +561,8 @@ export class DaoProposalSingleV2Client
       },
       fee,
       memo,
-      _funds
+      _funds,
+      options
     )
   }
   updateConfig = async (

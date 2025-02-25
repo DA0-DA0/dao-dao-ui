@@ -2,11 +2,12 @@ import { usePlausible } from 'next-plausible'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { chainQueries } from '@dao-dao/state/query'
 import { PlausibleEvents } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { processError } from '@dao-dao/utils'
 
-import { useWallet } from '../../../../hooks'
+import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
 import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
@@ -35,6 +36,20 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
     setCastingVote(false)
   }, [vote])
 
+  const feeGrants = useQueryLoadingDataWithError(
+    walletAddress
+      ? chainQueries.feeGrantsByGrantee({
+          chainId: proposalModule.chainId,
+          address: walletAddress,
+          basic: true,
+        })
+      : undefined
+  )
+  const feeGranter =
+    !feeGrants.loading && !feeGrants.errored
+      ? feeGrants.data[0]?.granter
+      : undefined
+
   const castVote = useCallback(
     async (vote: MultipleChoiceVote) => {
       if (!isWalletConnected) {
@@ -50,6 +65,9 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
           vote,
           getSigningClient,
           sender: walletAddress,
+          txOptions: {
+            feeGranter,
+          },
         })
 
         plausible('daoProposalVote', {
@@ -82,6 +100,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
       walletAddress,
       onSuccess,
       plausible,
+      feeGranter,
     ]
   )
 

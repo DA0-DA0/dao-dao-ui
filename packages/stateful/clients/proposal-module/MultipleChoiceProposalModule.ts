@@ -1,4 +1,4 @@
-import { EncodeObject } from '@cosmjs/proto-signing'
+import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
 import {
@@ -201,12 +201,14 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     getSigningClient,
     sender,
     funds,
+    txOptions,
   }: {
     data: NewProposalData
     vote?: MultipleChoiceVote
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
     funds?: Coin[]
+    txOptions?: CustomTxOptions
   }): Promise<{
     proposalNumber: number
     proposalId: string
@@ -247,7 +249,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         },
         undefined,
         undefined,
-        funds
+        funds,
+        txOptions
       )
 
       proposalNumber = Number(
@@ -271,7 +274,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         data as any,
         undefined,
         undefined,
-        funds
+        funds,
+        txOptions
       )
 
       proposalNumber = Number(
@@ -300,18 +304,26 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     vote,
     getSigningClient,
     sender,
+    txOptions,
   }: {
     proposalId: number
     vote: MultipleChoiceVote
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
 
-    await new DaoProposalMultipleClient(client, sender, this.address).vote({
-      proposalId,
-      vote,
-    })
+    await new DaoProposalMultipleClient(client, sender, this.address).vote(
+      {
+        proposalId,
+        vote,
+      },
+      undefined,
+      undefined,
+      undefined,
+      txOptions
+    )
 
     await this.queryClient.refetchQueries({
       queryKey: this.getVoteQuery({
@@ -326,13 +338,13 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     getSigningClient,
     sender,
     memo,
-    nonCriticalExtensionOptions,
+    txOptions,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
     memo?: string
-    nonCriticalExtensionOptions?: EncodeObject[]
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
     await new DaoProposalMultipleClient(client, sender, this.address).execute(
@@ -342,7 +354,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       undefined,
       memo,
       undefined,
-      nonCriticalExtensionOptions
+      txOptions
     )
   }
 
@@ -350,15 +362,23 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
     getSigningClient,
     sender,
+    txOptions,
   }: {
     proposalId: number
     getSigningClient: () => Promise<SupportedSigningCosmWasmClient>
     sender: string
+    txOptions?: CustomTxOptions
   }): Promise<void> {
     const client = await getSigningClient()
-    await new DaoProposalMultipleClient(client, sender, this.address).close({
-      proposalId,
-    })
+    await new DaoProposalMultipleClient(client, sender, this.address).close(
+      {
+        proposalId,
+      },
+      undefined,
+      undefined,
+      undefined,
+      txOptions
+    )
   }
 
   getProposalQuery({

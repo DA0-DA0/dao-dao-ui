@@ -21,6 +21,10 @@ import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1bet
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
+  BasicAllowance,
+  Grant,
+} from '@dao-dao/types/protobuf/codegen/cosmos/feegrant/v1beta1/feegrant'
+import {
   ProposalStatus,
   TallyResult,
   Vote,
@@ -1320,6 +1324,33 @@ export const fetchWalletHexPublicKey = async ({
   return toHex(fromBase64(account.pubkey.value))
 }
 
+/**
+ * Fetch feegrants granted to an address, optionally only those that are basic.
+ */
+export const fetchFeeGrantsByGrantee = async ({
+  chainId,
+  address,
+  basic = false,
+}: {
+  chainId: string
+  address: string
+  /**
+   * Filter by basic allowances only. Defaults to false.
+   */
+  basic?: boolean
+}): Promise<Grant[]> => {
+  const client = await cosmosProtoRpcClientRouter.connect(chainId)
+  const { allowances } = await client.feegrant.v1beta1.allowances({
+    grantee: address,
+  })
+  return allowances.filter(
+    (g) =>
+      !basic ||
+      (g.allowance?.$typeUrl === BasicAllowance.typeUrl &&
+        (!g.allowance.expiration || g.allowance.expiration > new Date()))
+  )
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -1575,5 +1606,16 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'walletHexPublicKey', options],
       queryFn: () => fetchWalletHexPublicKey(options),
+    }),
+  /**
+   * Fetch feegrants granted to an address, optionally only those that are
+   * basic.
+   */
+  feeGrantsByGrantee: (
+    options: Parameters<typeof fetchFeeGrantsByGrantee>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'feeGrantsByGrantee', options],
+      queryFn: () => fetchFeeGrantsByGrantee(options),
     }),
 }
