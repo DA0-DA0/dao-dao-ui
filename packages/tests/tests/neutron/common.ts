@@ -9,7 +9,7 @@ export let suite: TestSuite
 beforeAll(async () => {
   suite = await TestSuite.initExisting(
     ChainId.NeutronTestnet,
-    ContractVersion.V270Alpha2
+    ContractVersion.V270
   )
   await suite.ensureChainSetUp()
 })

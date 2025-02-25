@@ -22,7 +22,7 @@ export const VoteDelegationWidget: Widget<VoteDelegationWidgetData> = {
   IconFilled: EscalatorWarningRounded,
   location: WidgetLocation.Manual,
   visibilityContext: WidgetVisibilityContext.Always,
-  minVersion: ContractVersion.V270Alpha2,
+  minVersion: ContractVersion.V270,
   // supportsDaoCreation: true,
   defaultValues: {
     address: '',

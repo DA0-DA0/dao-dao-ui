@@ -1211,7 +1211,7 @@
       "DaoVotingCw721Staked": 8030,
       "DaoVotingTokenStaked": 8032
     },
-    "2.7.0-alpha.2": {
+    "2.7.0": {
       "Cw1Whitelist": 4618,
       "Cw4Group": 4619,
       "Cw721Base": 4620,
