@@ -1,6 +1,7 @@
 import { Wallet } from '@cosmos-kit/core'
 import { ComponentType } from 'react'
 
+import { Entity } from '../entity'
 import { LoadingData } from '../misc'
 import { UnifiedProfile } from '../profile'
 import { ButtonLinkProps } from './Buttonifier'
@@ -15,6 +16,10 @@ export type NavWalletConnectedProps = {
    * The unified profile data.
    */
   profile: LoadingData<UnifiedProfile>
+  /**
+   * The entity.
+   */
+  entity: LoadingData<Entity>
   /**
    * Disconnect the wallet.
    */

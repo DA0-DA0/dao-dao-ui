@@ -24,6 +24,7 @@ export const makeSurvey = (): Survey => ({
   uuid: (surveyId++).toString(),
   status: SurveyStatus.AcceptingContributions,
   name: 'DAO DAO Contributor Drop November 2022',
+  creatorPublicKey: 'creatorPublicKey',
   contributionsOpenAt: '2022-11-21T08:00:00.000Z',
   contributionsCloseRatingsOpenAt: '2022-12-09T08:00:00.000Z',
   ratingsCloseAt: '2022-12-16T08:00:00.000Z',

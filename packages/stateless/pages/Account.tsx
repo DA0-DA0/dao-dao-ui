@@ -28,7 +28,7 @@ export type AccountProps = {
   AccountWallet: ComponentType
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   ButtonLink: ComponentType<ButtonLinkProps>
-} & Pick<WalletProfileHeaderProps, 'profile'>
+} & Pick<WalletProfileHeaderProps, 'profile' | 'entity'>
 
 export const Account = ({
   address,

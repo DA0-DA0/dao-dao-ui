@@ -57,6 +57,11 @@ export abstract class DaoBase implements IDaoBase {
   abstract get coreAddress(): string
 
   /**
+   * DAO proposal save local storage key.
+   */
+  abstract get proposalSaveLocalStorageKey(): string
+
+  /**
    * DAO source object.
    */
   get source(): DaoSource {

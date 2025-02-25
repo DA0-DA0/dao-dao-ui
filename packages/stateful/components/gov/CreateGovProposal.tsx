@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { CreateProposal, useDaoIfAvailable } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
 
-import { GovActionsProvider } from '../../actions'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { NewGovProposal } from './NewGovProposal'
 
@@ -32,12 +31,10 @@ export const CreateGovProposal = () => {
         clear={() => clearRef.current()}
         copyDraftLink={() => copyDraftLinkRef.current()}
         newProposal={
-          <GovActionsProvider>
-            <NewGovProposal
-              clearRef={clearRef}
-              copyDraftLinkRef={copyDraftLinkRef}
-            />
-          </GovActionsProvider>
+          <NewGovProposal
+            clearRef={clearRef}
+            copyDraftLinkRef={copyDraftLinkRef}
+          />
         }
       />
     </>

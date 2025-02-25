@@ -293,9 +293,13 @@ export class CodeIdConfig {
     try {
       this.load()
 
-      const versionsDescending = this._codeIds[chainId]
-        ? Object.keys(this._codeIds[chainId]).sort(semverCompare).reverse()
-        : []
+      if (!this._codeIds[chainId]) {
+        return null
+      }
+
+      const versionsDescending = Object.keys(this._codeIds[chainId])
+        .sort(semverCompare)
+        .reverse()
 
       const name = contractNameToJsonConfigName(_name)
       for (const version of versionsDescending) {

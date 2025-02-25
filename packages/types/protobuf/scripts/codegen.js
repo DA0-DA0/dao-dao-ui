@@ -129,6 +129,8 @@ telescope({
           'interchain_security.ccv.consumer.v1',
           'interchain_security.ccv.provider.v1',
           'Switcheo.carbon.cdp',
+          'slinky.marketmap.v1',
+          'slinky.oracle.v1',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

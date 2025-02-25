@@ -48,6 +48,28 @@ export const APPS: App[] = [
     url: 'https://app.calculated.fi/?chain=osmosis-1',
   },
   {
+    name: 'Kleomedes',
+    imageUrl: '/apps/kleomedes.png',
+    url: 'https://dashboard.kleomed.es',
+  },
+  {
+    name: 'Migaloo Command',
+    imageUrl: '/apps/migaloo.png',
+    url: 'https://app.migaloo.zone',
+  },
+  {
+    name: 'Atlas',
+    imageUrl: '/apps/atlas.jpg',
+    url: MAINNET
+      ? 'https://app.atlasdao.zone'
+      : 'https://testapp.atlasdao.zone',
+  },
+  {
+    name: 'Eris Protocol',
+    imageUrl: '/apps/eris.png',
+    url: 'https://www.erisprotocol.com',
+  },
+  {
     name: 'FIN',
     platform: 'Kujira',
     imageUrl: '/apps/fin.png',
@@ -70,23 +92,6 @@ export const APPS: App[] = [
     platform: 'Kujira',
     imageUrl: '/apps/pilot.png',
     url: 'https://pilot.kujira.network',
-  },
-  {
-    name: 'Kleomedes',
-    imageUrl: '/apps/kleomedes.png',
-    url: 'https://dashboard.kleomed.es',
-  },
-  {
-    name: 'Atlas',
-    imageUrl: '/apps/atlas.jpg',
-    url: MAINNET
-      ? 'https://app.atlasdao.zone'
-      : 'https://testapp.atlasdao.zone',
-  },
-  {
-    name: 'Eris Protocol',
-    imageUrl: '/apps/eris.png',
-    url: 'https://www.erisprotocol.com',
   },
 
   // Must be last for index matching. Enables custom URL input.

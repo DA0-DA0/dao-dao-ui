@@ -18,7 +18,6 @@ import {
 import { LoadingDataWithError, TokenCardInfo } from '@dao-dao/types'
 import { getNativeTokenForChainId, loadableToLoadingData } from '@dao-dao/utils'
 
-import { GovActionsProvider } from '../../actions'
 import { GovTokenLine } from './GovTokenLine'
 
 export const GovCommunityPoolTab = () => {
@@ -146,36 +145,27 @@ export const GovCommunityPoolTab = () => {
         <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
       </div>
 
-      <GovActionsProvider
-        loader={
-          <div>
-            <TokenLineHeader />
-            <LineLoaders lines={10} type="token" />
-          </div>
-        }
-      >
-        {tokens.loading ? (
-          <div className="space-y-1">
-            <TokenLineHeader />
-            <LineLoaders lines={10} type="token" />
-          </div>
-        ) : tokens.errored ? (
-          <ErrorPage error={tokens.error} />
-        ) : (
-          <div className="space-y-1">
-            <TokenLineHeader />
+      {tokens.loading ? (
+        <div className="space-y-1">
+          <TokenLineHeader />
+          <LineLoaders lines={10} type="token" />
+        </div>
+      ) : tokens.errored ? (
+        <ErrorPage error={tokens.error} />
+      ) : (
+        <div className="space-y-1">
+          <TokenLineHeader />
 
-            {sortedTokens.map((props: TokenCardInfo, index) => (
-              <GovTokenLine
-                {...props}
-                key={props.token.chainId + props.token.denomOrAddress}
-                hideChainIcon
-                transparentBackground={index % 2 !== 0}
-              />
-            ))}
-          </div>
-        )}
-      </GovActionsProvider>
+          {sortedTokens.map((props: TokenCardInfo, index) => (
+            <GovTokenLine
+              {...props}
+              key={props.token.chainId + props.token.denomOrAddress}
+              hideChainIcon
+              transparentBackground={index % 2 !== 0}
+            />
+          ))}
+        </div>
+      )}
     </>
   )
 }

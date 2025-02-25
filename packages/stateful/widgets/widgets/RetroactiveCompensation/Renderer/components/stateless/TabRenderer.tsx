@@ -70,20 +70,22 @@ export const TabRenderer = ({
         </Tooltip>
       </div>
 
-      {/* Back button. */}
-      {pagePath !== PagePath.Home && (
-        <ButtonLink
-          containerClassName="self-start"
-          href={getDaoPath(coreAddress, WidgetId.RetroactiveCompensation)}
-          shallow
-          variant="secondary"
-        >
-          <ArrowBackRounded className="!h-4 !w-4" />
-          {t('button.back')}
-        </ButtonLink>
-      )}
+      <div className="flex flex-col gap-6 relative">
+        {/* Back button. */}
+        {pagePath !== PagePath.Home && (
+          <ButtonLink
+            containerClassName="self-start"
+            href={getDaoPath(coreAddress, WidgetId.RetroactiveCompensation)}
+            shallow
+            variant="secondary"
+          >
+            <ArrowBackRounded className="!h-4 !w-4" />
+            {t('button.back')}
+          </ButtonLink>
+        )}
 
-      <Page />
+        <Page />
+      </div>
     </div>
   )
 }

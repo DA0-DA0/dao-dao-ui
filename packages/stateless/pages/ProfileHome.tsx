@@ -30,6 +30,7 @@ export type ProfileHomeProps = {
   WalletProfileHeaderProps,
   | 'openProfileNftUpdate'
   | 'profile'
+  | 'entity'
   | 'updateProfile'
   | 'mergeProfileType'
   | 'openMergeProfilesModal'

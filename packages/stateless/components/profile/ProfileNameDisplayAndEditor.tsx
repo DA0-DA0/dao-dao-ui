@@ -21,6 +21,10 @@ import { Tooltip, TooltipInfoIcon } from '../tooltip'
 
 export type ProfileNameDisplayAndEditorProps = {
   profile: LoadingData<UnifiedProfile>
+  /**
+   * Override the name to display when not editing.
+   */
+  nameOverride?: string
   compact?: boolean
   updateProfile?: PfpkProfileUpdateFunction
   className?: string
@@ -32,6 +36,7 @@ export type ProfileNameDisplayAndEditorProps = {
 export const ProfileNameDisplayAndEditor = ({
   compact,
   profile,
+  nameOverride,
   updateProfile,
   className,
   header,
@@ -69,7 +74,8 @@ export const ProfileNameDisplayAndEditor = ({
     }
   }, [canEdit, editingName, updateProfile])
 
-  const noNameSet = !profile.loading && profile.data.name === null
+  const noNameSet =
+    !profile.loading && profile.data.name === null && !nameOverride
 
   const nameClassName = clsx('title-text', header && '!text-2xl !font-bold')
   // Height should match text line-height.
@@ -161,7 +167,7 @@ export const ProfileNameDisplayAndEditor = ({
           <p
             className={clsx(
               nameClassName,
-              profile.loading && 'animate-pulse',
+              !nameOverride && profile.loading && 'animate-pulse',
               noNameSet
                 ? [
                     '!font-normal !italic !text-text-secondary',
@@ -170,13 +176,14 @@ export const ProfileNameDisplayAndEditor = ({
                 : '!text-text-body'
             )}
           >
-            {profile.loading
-              ? '...'
-              : noNameSet
-                ? canEdit
-                  ? t('button.setDisplayName')
-                  : t('info.noDisplayName')
-                : profile.data.name}
+            {nameOverride ||
+              (profile.loading
+                ? '...'
+                : noNameSet
+                  ? canEdit
+                    ? t('button.setDisplayName')
+                    : t('info.noDisplayName')
+                  : profile.data.name)}
           </p>
 
           {!canEdit && !profile.loading && noNameSet && !hideNoNameTooltip && (

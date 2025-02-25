@@ -49,6 +49,7 @@ import {
   Tooltip,
   useActionOptions,
   useConfiguredChainContext,
+  useDao,
   useDaoNavHelpers,
   useHoldingKey,
   useLoadingPromise,
@@ -112,6 +113,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
   const router = useRouter()
   const chainContext = useConfiguredChainContext()
   const queryClient = useQueryClient()
+  const { proposalSaveLocalStorageKey } = useDao()
 
   const { address: walletAddress = '' } = useWallet()
   const { profile } = useProfile()
@@ -151,9 +153,8 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
     deps: [governanceProposalAction],
   })
 
-  const localStorageKey = `gov_${chainContext.chainId}`
   const latestProposalSave = useRecoilValue(
-    latestProposalSaveAtom(localStorageKey)
+    latestProposalSaveAtom(proposalSaveLocalStorageKey)
   )
 
   // Set once prefill has been assessed, indicating NewProposal can load now.
@@ -243,17 +244,12 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
         ...latestProposalSave,
         ...usePrefill,
       }}
-      localStorageKey={localStorageKey}
       realDefaults={governanceProposalAction.defaults}
     />
   )
 }
 
 type InnerNewGovProposalProps = {
-  /**
-   * The local storage key to use for saving the current form.
-   */
-  localStorageKey: string
   /**
    * The default values to use form the form on initial load, taking into
    * account save state and prefill.
@@ -278,7 +274,6 @@ type InnerNewGovProposalProps = {
 }
 
 const InnerNewGovProposal = ({
-  localStorageKey,
   defaults,
   realDefaults,
   action,
@@ -292,6 +287,7 @@ const InnerNewGovProposal = ({
     useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const queryClient = useQueryClient()
+  const { proposalSaveLocalStorageKey } = useDao()
 
   const { context } = useActionOptions()
   if (context.type !== ActionContextType.Gov) {
@@ -311,7 +307,7 @@ const InnerNewGovProposal = ({
     useRecoilState(proposalCreatedCardPropsAtom)
 
   const setLatestProposalSave = useSetRecoilState(
-    latestProposalSaveAtom(localStorageKey)
+    latestProposalSaveAtom(proposalSaveLocalStorageKey)
   )
 
   const formMethods = useForm<GovernanceProposalActionData>({
@@ -575,7 +571,7 @@ const InnerNewGovProposal = ({
   ])
 
   const [drafts, setDrafts] = useRecoilState(
-    proposalDraftsAtom(localStorageKey)
+    proposalDraftsAtom(proposalSaveLocalStorageKey)
   )
   const [draftIndex, setDraftIndex] = useState<number>()
   const draft =

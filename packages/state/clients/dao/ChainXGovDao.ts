@@ -73,6 +73,10 @@ export class ChainXGovDao extends DaoBase {
     return mustGetConfiguredChainConfig(this.options.chainId).name
   }
 
+  get proposalSaveLocalStorageKey(): string {
+    return `gov_${this.chainId}`
+  }
+
   getVotingPowerQuery(
     address?: string
   ): FetchQueryOptions<VotingPowerAtHeightResponse> {

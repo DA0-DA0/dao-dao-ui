@@ -87,7 +87,7 @@ export const DaoHeader = ({
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-4 gap-y-2">
             <p className="hero-text text-2xl xs:text-3xl md:text-4xl">{name}</p>
             {follow && (
-              // Only show following toggle on desktop. Mobile shows in header.
+              // Following toggle next to name on desktop.
               <FollowingToggle {...follow} className="hidden md:block" />
             )}
           </div>
@@ -126,6 +126,14 @@ export const DaoHeader = ({
                 </Button>
               )}
             </div>
+          )}
+
+          {follow && (
+            // Following toggle below description on mobile.
+            <FollowingToggle
+              {...follow}
+              className="mt-2 self-start block md:hidden"
+            />
           )}
         </div>
       </div>

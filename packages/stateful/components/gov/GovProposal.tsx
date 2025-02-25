@@ -20,7 +20,6 @@ import {
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import { mustGetConfiguredChainConfig } from '@dao-dao/utils'
 
-import { GovActionsProvider } from '../../actions'
 import {
   useLoadingGovProposal,
   useOnCurrentDaoWebSocketMessage,
@@ -156,11 +155,7 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
             ? GovVotesCast
             : undefined
         }
-        contentDisplay={
-          <GovActionsProvider>
-            <GovProposalContentDisplay proposal={proposal} />
-          </GovActionsProvider>
-        }
+        contentDisplay={<GovProposalContentDisplay proposal={proposal} />}
         voteTally={<GovProposalVoteTally proposalId={proposalId} />}
       />
     </>

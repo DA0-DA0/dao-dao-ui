@@ -25,7 +25,11 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { useQueryLoadingData, useQueryLoadingDataWithError } from '../../hooks'
+import {
+  useEntity,
+  useQueryLoadingData,
+  useQueryLoadingDataWithError,
+} from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -73,6 +77,7 @@ export const Account: NextPage = () => {
     }),
     makeEmptyUnifiedProfile(configuredChain.chainId, accountAddress)
   )
+  const { entity } = useEntity(accountAddress)
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
@@ -140,6 +145,7 @@ export const Account: NextPage = () => {
           ButtonLink={ButtonLink}
           SuspenseLoader={SuspenseLoader}
           address={accountAddress}
+          entity={entity}
           hexPublicKey={hexPublicKey}
           profile={profile}
         />

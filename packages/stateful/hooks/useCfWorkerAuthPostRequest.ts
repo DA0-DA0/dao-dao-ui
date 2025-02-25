@@ -21,7 +21,9 @@ const lastSuccessfulNonceForApiAndPublicKey: Record<
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
   defaultSignatureType: string,
-  // Optionally override the current chain context.
+  /**
+   * Optionally override the current chain context.
+   */
   chainId?: string
 ) => {
   const { t } = useTranslation()
@@ -119,8 +121,14 @@ export const useCfWorkerAuthPostRequest = (
       endpoint: string,
       data?: Record<string, unknown>,
       signatureType = defaultSignatureType,
-      // Override the current chain.
-      overrideChainId?: string
+      /**
+       * Override the current chain.
+       */
+      overrideChainId?: string,
+      /**
+       * Optionally override the request method. Defaults to POST.
+       */
+      method = 'POST'
     ): Promise<R> => {
       const hexPublicKey = await getHexPublicKey(overrideChainId)
 
@@ -167,7 +175,7 @@ export const useCfWorkerAuthPostRequest = (
 
       // Send request.
       const response = await fetch(apiBase + endpoint, {
-        method: 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -190,8 +198,9 @@ export const useCfWorkerAuthPostRequest = (
       lastSuccessfulNonceForApiAndPublicKey[apiBase + ':' + hexPublicKey] =
         nonce
 
-      // If response OK, return response body.
-      return await response.json()
+      // If response OK, return response body (unless 204 no content, in which
+      // case return undefined).
+      return response.status === 204 ? undefined : await response.json()
     },
     [
       defaultSignatureType,

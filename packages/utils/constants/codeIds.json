@@ -54,7 +54,7 @@
       "CwAdminFactory": 3221,
       "CwPayrollFactory": 3222,
       "CwTokenSwap": 3223,
-      "CwTokenfactoryIssuer": 3239,
+      "CwTokenfactoryIssuer": 3634,
       "CwVesting": 3235,
       "DaoDaoCore": 3224,
       "DaoPreProposeApprovalMultiple": 3225,
@@ -69,6 +69,30 @@
       "DaoVotingCw4": 3234,
       "DaoVotingCw721Staked": 3238,
       "DaoVotingTokenStaked": 3240
+    }
+  },
+  "bbn-test-5": {
+    "2.6.0": {
+      "Cw1Whitelist": 133,
+      "Cw20Base": 135,
+      "Cw20Stake": 150,
+      "Cw4Group": 134,
+      "CwAdminFactory": 136,
+      "CwPayrollFactory": 137,
+      "CwTokenSwap": 138,
+      "CwVesting": 149,
+      "DaoDaoCore": 139,
+      "DaoPreProposeApprovalMultiple": 140,
+      "DaoPreProposeApprovalSingle": 141,
+      "DaoPreProposeApprover": 142,
+      "DaoPreProposeMultiple": 143,
+      "DaoPreProposeSingle": 144,
+      "DaoProposalMultiple": 145,
+      "DaoProposalSingle": 146,
+      "DaoRewardsDistributor": 147,
+      "DaoVotingCw20Staked": 151,
+      "DaoVotingCw4": 148,
+      "DaoVotingTokenStaked": 152
     }
   },
   "bitsong-2b": {

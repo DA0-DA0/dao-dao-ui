@@ -85,6 +85,11 @@ export interface IDaoBase {
   bannerImageUrl: string | undefined
 
   /**
+   * DAO proposal save local storage key.
+   */
+  proposalSaveLocalStorageKey: string
+
+  /**
    * Whether or not the client has been initialized. This only matters for some
    * functions, depending on the implementation.
    */

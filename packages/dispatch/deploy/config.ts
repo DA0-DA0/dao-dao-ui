@@ -25,6 +25,7 @@ export const chainIdToIndexerGroupVarsName: Record<string, string> = {
   [ChainId.StargazeTestnet]: 'stargaze_testnet',
   [ChainId.TerraMainnet]: 'terra_mainnet',
   [ChainId.TerraClassicMainnet]: 'terraClassic_mainnet',
+  [ChainId.BabylonTestnet]: 'babylon_testnet',
 }
 
 /**

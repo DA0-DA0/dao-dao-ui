@@ -104,6 +104,10 @@ export const TabRenderer = ({
           ),
     combine: makeCombineQueryResultsIntoLoadingDataWithError({
       firstLoad: 'one',
+      // Ignore errors from any of the queries unless all of them error. This is
+      // a workaround since the indexer sometimes surfaces nonexistent
+      // addresses based on failed transactions.
+      errorIf: 'all',
       // De-dupe since the ownership queries will overlap with the factory list
       // queries.
       transform: (infos) =>

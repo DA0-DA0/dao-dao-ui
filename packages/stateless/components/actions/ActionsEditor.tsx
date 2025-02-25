@@ -200,7 +200,7 @@ const ActionEditor = ({
   addAction,
   moveTo,
 }: ActionEditorProps) => {
-  const { _id, actionKey, data } = actionData[index]
+  const { _id, actionKey, data, readOnly } = actionData[index]
   const action = actionMap[actionKey]
 
   // Make sure action is initialized before rendering.
@@ -263,6 +263,14 @@ const ActionEditor = ({
           <SuspenseLoader fallback={<Loader />}>
             {loading ? (
               <Loader className="min-h-32" size={48} />
+            ) : readOnly ? (
+              <action.Component
+                allActionsWithData={actionData}
+                data={data}
+                fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
+                index={index}
+                isCreating={false}
+              />
             ) : (
               <action.Component
                 addAction={addAction}

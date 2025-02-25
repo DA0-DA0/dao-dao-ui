@@ -33,6 +33,7 @@ export type Survey = {
   uuid: string
   status: SurveyStatus
   name: string
+  creatorPublicKey: string
   contributionsOpenAt: string
   contributionsCloseRatingsOpenAt: string
   ratingsCloseAt: string

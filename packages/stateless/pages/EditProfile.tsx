@@ -14,6 +14,7 @@ export type EditProfileProps = {
   WalletProfileHeaderProps,
   | 'openProfileNftUpdate'
   | 'profile'
+  | 'entity'
   | 'updateProfile'
   | 'mergeProfileType'
   | 'openMergeProfilesModal'

@@ -91,6 +91,15 @@ export const getIconButtonifiedClassNames = ({
       // Disabled
       'text-icon-interactive-disabled': disabled,
     },
+    // Highlight variant
+    variant === 'highlight' && {
+      'bg-transparent text-icon-primary !h-auto !w-auto !p-1': true,
+      // Default
+      'opacity-70 hover:opacity-100 active:opacity-90': !disabled && !focused,
+      'opacity-90': !disabled && focused,
+      // Disabled
+      'opacity-50': disabled,
+    },
     // Brand variant
     variant === 'brand' && {
       // Default

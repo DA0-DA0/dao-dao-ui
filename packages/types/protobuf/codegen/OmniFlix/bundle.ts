@@ -3,12 +3,12 @@ import * as _221 from "./onft/v1beta1/onft";
 import * as _222 from "./onft/v1beta1/params";
 import * as _223 from "./onft/v1beta1/query";
 import * as _224 from "./onft/v1beta1/tx";
-import * as _558 from "./onft/v1beta1/tx.amino";
-import * as _559 from "./onft/v1beta1/tx.registry";
-import * as _560 from "./onft/v1beta1/query.rpc.Query";
-import * as _561 from "./onft/v1beta1/tx.rpc.msg";
-import * as _710 from "./rpc.query";
-import * as _711 from "./rpc.tx";
+import * as _567 from "./onft/v1beta1/tx.amino";
+import * as _568 from "./onft/v1beta1/tx.registry";
+import * as _569 from "./onft/v1beta1/query.rpc.Query";
+import * as _570 from "./onft/v1beta1/tx.rpc.msg";
+import * as _727 from "./rpc.query";
+import * as _728 from "./rpc.tx";
 export namespace OmniFlix {
   export namespace onft {
     export const v1beta1 = {
@@ -17,14 +17,14 @@ export namespace OmniFlix {
       ..._222,
       ..._223,
       ..._224,
-      ..._558,
-      ..._559,
-      ..._560,
-      ..._561
+      ..._567,
+      ..._568,
+      ..._569,
+      ..._570
     };
   }
   export const ClientFactory = {
-    ..._710,
-    ..._711
+    ..._727,
+    ..._728
   };
 }

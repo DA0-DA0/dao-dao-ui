@@ -4,17 +4,29 @@ import { mergeProfilesVisibleAtom } from '@dao-dao/state'
 import { NavWallet as StatelessNavWallet } from '@dao-dao/stateless'
 import { StatefulNavWalletProps } from '@dao-dao/types'
 
-import { useInboxApiWithUi, useManageProfile, useWallet } from '../hooks'
+import {
+  useEntity,
+  useInboxApiWithUi,
+  useManageProfile,
+  useWallet,
+} from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { InboxMainItemRenderer } from './inbox'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const NavWallet = (props: StatefulNavWalletProps) => {
-  const { openView, isWalletConnected, wallet, disconnect } = useWallet()
+  const {
+    openView,
+    isWalletConnected,
+    wallet,
+    address = '',
+    disconnect,
+  } = useWallet()
   const {
     profile,
     merge: { options: profileMergeOptions },
   } = useManageProfile()
+  const { entity } = useEntity(address)
 
   const setMergeProfilesModalVisible = useSetRecoilState(
     mergeProfilesVisibleAtom
@@ -41,6 +53,7 @@ export const NavWallet = (props: StatefulNavWalletProps) => {
           InboxMainItemRenderer={InboxMainItemRenderer}
           connected
           disconnect={disconnect}
+          entity={entity}
           inbox={inbox}
           mergeProfileType={
             profileMergeOptions.length === 0

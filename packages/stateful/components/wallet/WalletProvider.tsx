@@ -60,6 +60,7 @@ const ALLOWED_IFRAME_PARENT_ORIGINS = [
   'https://daodao.zone',
   'https://dao.daodao.zone',
   'https://app.osmosis.zone',
+  'http://localhost:3000',
 ]
 // Support localhost dev env and vercel preview links.
 if (!ALLOWED_IFRAME_PARENT_ORIGINS.includes(SITE_URL)) {

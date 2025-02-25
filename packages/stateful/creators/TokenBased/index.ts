@@ -21,6 +21,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
   makeDefaultConfig: ({
     tokenCreationUnderDevelopment = false,
     noTokenFactory = false,
+    noTokenCreation = false,
     tokenDaoType = TokenType.Native,
   }) => ({
     tiers: [
@@ -35,7 +36,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
       },
     ],
     govTokenType:
-      tokenCreationUnderDevelopment || noTokenFactory
+      tokenCreationUnderDevelopment || noTokenFactory || noTokenCreation
         ? GovernanceTokenType.Existing
         : GovernanceTokenType.New,
     selectedTokenType:

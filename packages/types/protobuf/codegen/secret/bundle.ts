@@ -12,21 +12,21 @@ import * as _380 from "./registration/v1beta1/genesis";
 import * as _381 from "./registration/v1beta1/msg";
 import * as _382 from "./registration/v1beta1/query";
 import * as _383 from "./registration/v1beta1/types";
-import * as _668 from "./compute/v1beta1/msg.amino";
-import * as _669 from "./emergencybutton/v1beta1/tx.amino";
-import * as _670 from "./intertx/v1beta1/tx.amino";
-import * as _671 from "./compute/v1beta1/msg.registry";
-import * as _672 from "./emergencybutton/v1beta1/tx.registry";
-import * as _673 from "./intertx/v1beta1/tx.registry";
-import * as _674 from "./compute/v1beta1/query.rpc.Query";
-import * as _675 from "./emergencybutton/v1beta1/query.rpc.Query";
-import * as _676 from "./intertx/v1beta1/query.rpc.Query";
-import * as _677 from "./registration/v1beta1/query.rpc.Query";
-import * as _678 from "./compute/v1beta1/msg.rpc.msg";
-import * as _679 from "./emergencybutton/v1beta1/tx.rpc.msg";
-import * as _680 from "./intertx/v1beta1/tx.rpc.msg";
-import * as _720 from "./rpc.query";
-import * as _721 from "./rpc.tx";
+import * as _677 from "./compute/v1beta1/msg.amino";
+import * as _678 from "./emergencybutton/v1beta1/tx.amino";
+import * as _679 from "./intertx/v1beta1/tx.amino";
+import * as _680 from "./compute/v1beta1/msg.registry";
+import * as _681 from "./emergencybutton/v1beta1/tx.registry";
+import * as _682 from "./intertx/v1beta1/tx.registry";
+import * as _683 from "./compute/v1beta1/query.rpc.Query";
+import * as _684 from "./emergencybutton/v1beta1/query.rpc.Query";
+import * as _685 from "./intertx/v1beta1/query.rpc.Query";
+import * as _686 from "./registration/v1beta1/query.rpc.Query";
+import * as _687 from "./compute/v1beta1/msg.rpc.msg";
+import * as _688 from "./emergencybutton/v1beta1/tx.rpc.msg";
+import * as _689 from "./intertx/v1beta1/tx.rpc.msg";
+import * as _737 from "./rpc.query";
+import * as _738 from "./rpc.tx";
 export namespace secret {
   export namespace compute {
     export const v1beta1 = {
@@ -34,10 +34,10 @@ export namespace secret {
       ..._371,
       ..._372,
       ..._373,
-      ..._668,
-      ..._671,
-      ..._674,
-      ..._678
+      ..._677,
+      ..._680,
+      ..._683,
+      ..._687
     };
   }
   export namespace emergencybutton {
@@ -46,20 +46,20 @@ export namespace secret {
       ..._375,
       ..._376,
       ..._377,
-      ..._669,
-      ..._672,
-      ..._675,
-      ..._679
+      ..._678,
+      ..._681,
+      ..._684,
+      ..._688
     };
   }
   export namespace intertx {
     export const v1beta1 = {
       ..._378,
       ..._379,
-      ..._670,
-      ..._673,
-      ..._676,
-      ..._680
+      ..._679,
+      ..._682,
+      ..._685,
+      ..._689
     };
   }
   export namespace registration {
@@ -68,11 +68,11 @@ export namespace secret {
       ..._381,
       ..._382,
       ..._383,
-      ..._677
+      ..._686
     };
   }
   export const ClientFactory = {
-    ..._720,
-    ..._721
+    ..._737,
+    ..._738
   };
 }

@@ -15,18 +15,19 @@ import {
   getConfiguredChains,
 } from '@dao-dao/utils'
 
-import { useManageProfile, useWallet } from '../../hooks'
+import { useEntity, useManageProfile, useWallet } from '../../hooks'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { DisconnectWallet } from '../wallet'
 
 export const EditProfile = () => {
   const router = useRouter()
-  const { isWalletConnecting, isWalletConnected } = useWallet()
+  const { address = '', isWalletConnecting, isWalletConnected } = useWallet()
   const {
     profile,
     updateProfile: { go: updateProfile },
     merge: { options: profileMergeOptions },
   } = useManageProfile()
+  const { entity } = useEntity(address)
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Switch to a valid chain if not configured.
@@ -68,6 +69,7 @@ export const EditProfile = () => {
       {isWalletConnecting || isWalletConnected ? (
         <StatelessEditProfile
           DisconnectWallet={DisconnectWallet}
+          entity={entity}
           mergeProfileType={
             profileMergeOptions.length === 0
               ? undefined

@@ -119,8 +119,58 @@ assets.push({
   assets: assets.find((a) => a.chain_name === 'omniflixhub')?.assets ?? [],
 })
 
-// Remove thorchain and althea since they spam the console.
-const chainsToRemove = ['thorchain', 'althea']
+// Replace babylon testnet 3 with 5.
+// TODO: update to the latest chain registry which has the 5th testnet.
+const babylonTestnetChain = chains.find((c) => c.chainId === 'bbn-test3')
+if (babylonTestnetChain?.chainRegistry) {
+  babylonTestnetChain.chainId = ChainId.BabylonTestnet
+  babylonTestnetChain.prettyName = 'Babylon Testnet'
+  babylonTestnetChain.chainRegistry.chain_id = ChainId.BabylonTestnet
+  babylonTestnetChain.chainRegistry.pretty_name = 'Babylon Testnet'
+  babylonTestnetChain.chainRegistry.apis = {
+    rpc: [
+      {
+        address: 'https://babylon-testnet-rpc.nodes.guru',
+        provider: 'NodesGuru',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://babylon-testnet-api.nodes.guru',
+        provider: 'NodesGuru',
+      },
+    ],
+    grpc: [],
+  }
+  babylonTestnetChain.chainRegistry.explorers = [
+    {
+      kind: 'babylonscan',
+      url: 'https://babylon-testnet.l2scan.co',
+      tx_page: 'https://babylon-testnet.l2scan.co/tx/${txHash}',
+    },
+    {
+      kind: 'explorers.guru',
+      url: 'https://testnet.babylon.explorers.guru',
+      tx_page: 'https://testnet.babylon.explorers.guru/transaction/${txHash}',
+    },
+  ]
+  babylonTestnetChain.chainRegistry.fees = {
+    fee_tokens: [
+      {
+        denom: 'ubbn',
+        fixed_min_gas_price: 0.002,
+      },
+    ],
+  }
+}
+
+const chainsToRemove = [
+  // Remove thorchain and althea since they spam the console.
+  'thorchain',
+  'althea',
+  // Remove Babylon testnet 1 since it's not supported.
+  'babylontestnet1',
+]
 chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
 
 // Shrink Cosmos Hub ICS provider testnet name since Keplr thinks it's too long.
@@ -585,6 +635,26 @@ const BASE_SUPPORTED_CHAINS: Omit<
         tokenDaoType: TokenType.Cw20,
         latestVersion: ContractVersion.V242,
       },
+      {
+        chainId: ChainId.BabylonTestnet,
+        name: 'babylon',
+        mainnet: false,
+        accentColor: '#ce6533',
+        factoryContractAddress:
+          'bbn1jwx9r9hcdmcag2zka3dwsg4ekx965ega3wd9gl90pd46gcp7ecnqh3se4m',
+        explorerUrlTemplates: {
+          tx: 'https://babylon-testnet.l2scan.co/tx/REPLACE',
+          gov: 'https://babylon-testnet.l2scan.co/proposals',
+          wallet: 'https://babylon-testnet.l2scan.co/address/REPLACE',
+        },
+        tokenDaoType: TokenType.Cw20,
+        noTokenCreation: true,
+        latestVersion: ContractVersion.V260,
+        daoCreatorDisabled: {
+          // No NFTs on Babylon.
+          [NftBasedCreatorId]: 'unsupported',
+        },
+      },
     ]
 
 const convertConfiguredChainToSupportedChain = (
@@ -742,6 +812,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.SecretTestnet]: {
     rpc: 'https://rpc.pulsar.scrttestnet.com',
     rest: 'https://api.pulsar.scrttestnet.com',
+  },
+  [ChainId.BabylonTestnet]: {
+    rpc: 'https://babylon-testnet-rpc.polkachu.com',
+    rest: 'https://babylon-testnet-api.polkachu.com',
   },
 }
 

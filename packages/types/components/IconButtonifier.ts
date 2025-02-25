@@ -7,6 +7,7 @@ export interface IconButtonifierProps {
     | 'secondary'
     | 'ghost'
     | 'brand'
+    | 'highlight'
     | 'none'
   // Custom size requires manual setting of sizes.
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'

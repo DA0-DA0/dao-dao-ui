@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { WalletProfileHeaderProps } from '@dao-dao/types'
+import { EntityType, WalletProfileHeaderProps } from '@dao-dao/types'
 
 import { ProfileImage, ProfileNameDisplayAndEditor } from '../profile'
 import { StatusCard } from '../StatusCard'
@@ -9,6 +9,7 @@ import { StatusCard } from '../StatusCard'
 export const WalletProfileHeader = ({
   editable,
   profile,
+  entity,
   mergeProfileType,
   openMergeProfilesModal,
   updateProfile,
@@ -24,6 +25,14 @@ export const WalletProfileHeader = ({
     profile.data.nonce >= 0 &&
     !mergeProfileType
 
+  const imageUrl =
+    !entity || entity.loading
+      ? !profile || profile.loading
+        ? undefined
+        : profile.data.imageUrl
+      : entity.data.imageUrl
+  const loading = entity?.loading || profile?.loading
+
   return (
     <div
       className={clsx(
@@ -32,6 +41,9 @@ export const WalletProfileHeader = ({
       )}
     >
       {editable &&
+        entity &&
+        !entity.loading &&
+        entity.data.type !== EntityType.Dao &&
         profile &&
         !profile.loading &&
         profile.data.nonce > -1 &&
@@ -50,10 +62,8 @@ export const WalletProfileHeader = ({
         )}
 
       <ProfileImage
-        imageUrl={
-          !profile || profile.loading ? undefined : profile.data.imageUrl
-        }
-        loading={profile?.loading}
+        imageUrl={imageUrl}
+        loading={loading}
         onClick={canEditProfile ? openProfileNftUpdate : undefined}
         size="header"
       />
@@ -62,6 +72,13 @@ export const WalletProfileHeader = ({
         <ProfileNameDisplayAndEditor
           header
           hideNoNameTooltip
+          nameOverride={
+            (entity &&
+              !entity.loading &&
+              entity.data.type === EntityType.Dao &&
+              entity.data.name) ||
+            undefined
+          }
           profile={profile}
           updateProfile={canEditProfile ? updateProfile : undefined}
         />

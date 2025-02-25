@@ -26,7 +26,7 @@ import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
 import { getConfiguredChainConfig, getConfiguredChains } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/providers/wallet'
-import { useManageProfile } from '../../hooks'
+import { useEntity, useManageProfile } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import {
   ProfileActions,
@@ -73,6 +73,7 @@ export const ProfileHome = () => {
     updateProfile: { go: updateProfile },
     merge: { options: profileMergeOptions },
   } = useManageProfile()
+  const { entity } = useEntity(walletAddress || '')
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
   // Switch to a valid chain if not configured.
@@ -137,6 +138,7 @@ export const ProfileHome = () => {
           <StatelessProfileHome
             SuspenseLoader={SuspenseLoader}
             WalletActionsProvider={WalletActionsProvider}
+            entity={entity}
             mergeProfileType={
               profileMergeOptions.length === 0
                 ? undefined

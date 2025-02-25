@@ -1,15 +1,18 @@
 import { forwardRef } from 'react'
 
 import { ButtonLink as StatelessButtonLink } from '@dao-dao/stateless'
-import { ButtonLinkProps } from '@dao-dao/types'
+import { StatefulButtonLinkProps } from '@dao-dao/types'
 
 import { useUpdateNavigatingHref } from '../hooks/useUpdateNavigatingHref'
 
-export const ButtonLink = forwardRef<HTMLDivElement, ButtonLinkProps>(
-  function ButtonLink({ children, loading, onClick, href, ...props }, ref) {
+export const ButtonLink = forwardRef<HTMLDivElement, StatefulButtonLinkProps>(
+  function ButtonLink(
+    { children, loading, onClick, href, forceNoNavigating = false, ...props },
+    ref
+  ) {
     const { navigatingToHref, updateNavigatingHref } = useUpdateNavigatingHref()
 
-    const navigating = !!href && navigatingToHref === href
+    const navigating = !!href && navigatingToHref === href && !forceNoNavigating
 
     return (
       <StatelessButtonLink

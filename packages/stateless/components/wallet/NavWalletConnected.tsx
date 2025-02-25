@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoPageMode,
+  EntityType,
   NavWalletConnectedProps,
   PopupTriggerCustomComponent,
 } from '@dao-dao/types'
@@ -36,6 +37,7 @@ import { WalletLogo } from './WalletLogo'
 export const NavWalletConnected = ({
   wallet,
   profile,
+  entity,
   mergeProfileType,
   onMergeProfiles,
   disconnect,
@@ -52,6 +54,13 @@ export const NavWalletConnected = ({
 
   const [addressPopupVisible, setAddressPopupVisible] = useState(false)
 
+  const imageUrl = entity.loading
+    ? profile.loading
+      ? undefined
+      : profile.data.imageUrl
+    : entity.data.imageUrl
+  const loading = entity.loading || profile.loading
+
   const ProfileImagePopup: PopupTriggerCustomComponent = useCallback(
     ({ onClick }) => (
       <div
@@ -63,8 +72,8 @@ export const NavWalletConnected = ({
         onClick={mode === 'dock' ? undefined : onClick}
       >
         <ProfileImage
-          imageUrl={profile.loading ? undefined : profile.data.imageUrl}
-          loading={profile.loading}
+          imageUrl={imageUrl}
+          loading={loading}
           size={mode === 'dock' ? 'xs' : 'md'}
         />
 
@@ -87,30 +96,49 @@ export const NavWalletConnected = ({
         </Tooltip>
       </div>
     ),
-    [mode, t, wallet, profile]
+    [mode, t, wallet, imageUrl, loading]
   )
 
   const profileChainAddresses = useMemo(
     (): (FilterableItem & { chainId: string; address: string })[] =>
-      profile.loading
+      entity.loading || profile.loading
         ? []
-        : Object.entries(profile.data.chains)
-            .map(([chainId, { address }]) => ({
-              key: chainId,
-              label: getDisplayNameForChainId(chainId),
-              iconUrl: getImageUrlForChainId(chainId),
-              rightNode: (
-                <p className="caption-text self-end md:self-center">
-                  {abbreviateAddress(address, 6)}
-                </p>
-              ),
-              iconClassName: '!h-8 !w-8',
-              contentContainerClassName: '!gap-4',
-              chainId,
-              address,
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)),
-    [profile]
+        : (entity.data.type === EntityType.Dao
+            ? entity.data.daoInfo.accounts.map(
+                ({ type, chainId, address }) => ({
+                  key: chainId + ':' + address,
+                  label: getDisplayNameForChainId(chainId),
+                  iconUrl: getImageUrlForChainId(chainId),
+                  description: t(`accountTypeLabel.${type}`),
+                  rightNode: (
+                    <p className="caption-text self-end md:self-center">
+                      {abbreviateAddress(address, 6)}
+                    </p>
+                  ),
+                  iconClassName: '!h-8 !w-8',
+                  contentContainerClassName: '!gap-4',
+                  chainId,
+                  address,
+                })
+              )
+            : Object.entries(profile.data.chains).map(
+                ([chainId, { address }]) => ({
+                  key: chainId,
+                  label: getDisplayNameForChainId(chainId),
+                  iconUrl: getImageUrlForChainId(chainId),
+                  rightNode: (
+                    <p className="caption-text self-end md:self-center">
+                      {abbreviateAddress(address, 6)}
+                    </p>
+                  ),
+                  iconClassName: '!h-8 !w-8',
+                  contentContainerClassName: '!gap-4',
+                  chainId,
+                  address,
+                })
+              )
+          ).sort((a, b) => a.label.localeCompare(b.label)),
+    [t, entity, profile]
   )
 
   return (
@@ -138,8 +166,8 @@ export const NavWalletConnected = ({
                   : t('title.notifications'),
               props: {
                 Icon: NotificationsOutlined,
-                className: 'text-icon-secondary relative',
-                variant: 'ghost',
+                className: 'relative',
+                variant: 'highlight',
                 size: 'sm',
                 // Show badge when notifications exist.
                 children: !inbox.loading && inbox.items.length > 0 && (
@@ -168,6 +196,8 @@ export const NavWalletConnected = ({
         )}
 
       {mode !== 'dock' &&
+        !entity.loading &&
+        entity.data.type !== EntityType.Dao &&
         !profile.loading &&
         profile.data.nonce > -1 &&
         mergeProfileType && (

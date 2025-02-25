@@ -33,3 +33,12 @@ export interface ButtonifierProps {
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps
 export type ButtonLinkProps = ButtonifierProps & LinkWrapperProps
+export type StatefulButtonLinkProps = ButtonLinkProps & {
+  /**
+   * If true, the button will not load when navigating. This is likely only
+   * useful when manually showing the navigating state differently.
+   *
+   * Defaults to false.
+   */
+  forceNoNavigating?: boolean
+}

@@ -122,4 +122,8 @@ export class CreatingDaoPlaceholder extends DaoBase {
   async getProposalCount(): Promise<number> {
     return 0
   }
+
+  get proposalSaveLocalStorageKey(): string {
+    throw new Error('Not implemented')
+  }
 }

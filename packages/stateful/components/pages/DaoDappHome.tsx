@@ -1,10 +1,9 @@
-import { Add } from '@mui/icons-material'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   DaoDappTabbedHome,
-  FollowingToggle,
+  useActionsContext,
   useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -26,6 +25,7 @@ import {
   useMembership,
 } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
+import { ProposalActionShoppingCart } from '../dao/ProposalActionShoppingCart'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -41,9 +41,9 @@ export const InnerDaoDappHome = ({
   loadingTabs,
   ...props
 }: InnerDaoDappHomeProps) => {
-  const { t } = useTranslation()
   const dao = useDao()
-  const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
+  const { getDaoPath, router } = useDaoNavHelpers()
+  const { actionMap } = useActionsContext()
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
@@ -113,26 +113,11 @@ export const InnerDaoDappHome = ({
           dao,
         }}
         rightNode={
-          <>
-            {/* Show propose button on desktop. */}
-            <ButtonLink
-              className="hidden md:block"
-              contentContainerClassName="text-text-body text-base !gap-1.5"
-              href={getDaoProposalPath(dao.coreAddress, 'create')}
-              variant="ghost"
-            >
-              <Add className="!h-5 !w-5 !text-icon-primary" />
-              {t('button.propose')}
-            </ButtonLink>
-
-            {/* Show follow button on mobile. */}
-            <FollowingToggle
-              {...follow}
-              className="md:hidden"
-              contentContainerClassName="text-text-body text-sm"
-              variant="ghost"
-            />
-          </>
+          <ProposalActionShoppingCart
+            actionMap={actionMap}
+            dao={dao}
+            mode="nav"
+          />
         }
       />
 

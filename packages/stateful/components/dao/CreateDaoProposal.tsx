@@ -85,9 +85,11 @@ export const CreateDaoProposal = () => {
     ({ snapshot }) =>
       async () =>
         setLatestProposalSave(
-          await snapshot.getPromise(latestProposalSaveAtom(dao.coreAddress))
+          await snapshot.getPromise(
+            latestProposalSaveAtom(dao.proposalSaveLocalStorageKey)
+          )
         ),
-    [dao.coreAddress]
+    [dao.proposalSaveLocalStorageKey]
   )
   useEffect(() => {
     loadLatestProposalSave()
@@ -147,7 +149,7 @@ const InnerCreateDaoProposal = ({
   const { getValues, reset } = formMethods
 
   const setLatestProposalSave = useSetRecoilState(
-    latestProposalSaveAtom(dao.coreAddress)
+    latestProposalSaveAtom(dao.proposalSaveLocalStorageKey)
   )
 
   // Reset form to defaults and clear latest proposal save.
@@ -248,7 +250,7 @@ const InnerCreateDaoProposal = ({
   ])
 
   const [drafts, setDrafts] = useRecoilState(
-    proposalDraftsAtom(dao.coreAddress)
+    proposalDraftsAtom(dao.proposalSaveLocalStorageKey)
   )
   const [draftIndex, setDraftIndex] = useState<number>()
   const draft =
@@ -458,11 +460,11 @@ const InnerCreateDaoProposal = ({
 // storage periodically.
 const FormSaver = () => {
   const { watch, getValues } = useFormContext()
-  const { coreAddress } = useDao()
+  const { proposalSaveLocalStorageKey } = useDao()
 
   const proposalCreatedCardProps = useRecoilValue(proposalCreatedCardPropsAtom)
   const setLatestProposalSave = useSetRecoilState(
-    latestProposalSaveAtom(coreAddress)
+    latestProposalSaveAtom(proposalSaveLocalStorageKey)
   )
 
   const saveQueuedRef = useRef(false)

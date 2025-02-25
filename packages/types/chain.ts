@@ -100,6 +100,7 @@ export enum ChainId {
   OmniflixHubTestnet = 'flixnet-4',
   SecretMainnet = 'secret-4',
   SecretTestnet = 'pulsar-3',
+  BabylonTestnet = 'bbn-test-5',
 
   // Local testing chain powered by Starship.
   StarshipTestChain = 'starship-chain',
@@ -219,6 +220,11 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
    * false.
    */
   noTokenFactory?: boolean
+  /**
+   * Disallow creating new tokens for token-based DAOs and show a tooltip that
+   * token creation is not supported on this chain. Defaults to false.
+   */
+  noTokenCreation?: boolean
   /**
    * Token creation factory address to use during DAO creation.
    */

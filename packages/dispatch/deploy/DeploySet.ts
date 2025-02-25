@@ -198,6 +198,8 @@ export const deploySets: DeploySet[] = [
 
       ChainId.TerraMainnet,
       ChainId.TerraClassicMainnet,
+
+      ChainId.BabylonTestnet,
     ],
   }),
 
@@ -220,6 +222,8 @@ export const deploySets: DeploySet[] = [
 
         ChainId.TerraMainnet,
         ChainId.TerraClassicMainnet,
+
+        ChainId.BabylonTestnet,
       ],
     }
   ),
@@ -293,9 +297,14 @@ export const deploySets: DeploySet[] = [
 
   // token factory contract to deploy every time
   new DeploySet(
-    'token factory',
+    'token factory osmosis',
     'always',
-    [new DeploySetContract('cw_tokenfactory_issuer')],
+    [
+      new DeploySetContract(
+        'cw_tokenfactory_issuer-osmosis',
+        'cw_tokenfactory_issuer'
+      ),
+    ],
     {
       chainIds: [
         ChainId.JunoMainnet,
@@ -312,8 +321,6 @@ export const deploySets: DeploySet[] = [
 
         ChainId.OmniflixHubMainnet,
         ChainId.OmniflixHubTestnet,
-
-        ChainId.OraichainMainnet,
 
         ChainId.OsmosisMainnet,
         ChainId.OsmosisTestnet,
@@ -338,6 +345,21 @@ export const deploySets: DeploySet[] = [
     ],
     {
       chainIds: [ChainId.KujiraMainnet, ChainId.KujiraTestnet],
+    }
+  ),
+
+  // token factory cosmwasm contract to deploy every time
+  new DeploySet(
+    'token factory cosmwasm',
+    'always',
+    [
+      new DeploySetContract(
+        'cw_tokenfactory_issuer-cosmwasm',
+        'cw_tokenfactory_issuer'
+      ),
+    ],
+    {
+      chainIds: [ChainId.OraichainMainnet],
     }
   ),
 
@@ -381,6 +403,8 @@ export const deploySets: DeploySet[] = [
         ChainId.StargazeTestnet,
 
         ChainId.TerraMainnet,
+
+        ChainId.BabylonTestnet,
       ],
     }
   ),

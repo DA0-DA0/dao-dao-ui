@@ -422,12 +422,16 @@ export const GovernanceConfigurationInput = ({
             label: t('button.createAToken'),
             value: GovernanceTokenType.New,
             disabled:
-              config.tokenCreationUnderDevelopment || config.noTokenFactory,
+              config.tokenCreationUnderDevelopment ||
+              config.noTokenFactory ||
+              config.noTokenCreation,
             tooltip: config.tokenCreationUnderDevelopment
               ? t('info.tokenCreationUnderDevelopment')
               : config.noTokenFactory
                 ? t('info.tokenCreationNoTokenFactory')
-                : undefined,
+                : config.noTokenCreation
+                  ? t('info.tokenCreationNotAllowed')
+                  : undefined,
           },
           {
             label: t('button.useExistingToken'),

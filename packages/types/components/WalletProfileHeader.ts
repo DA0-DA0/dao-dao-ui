@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 
+import { Entity } from '../entity'
 import { LoadingData } from '../misc'
 import { PfpkProfileUpdateFunction, UnifiedProfile } from '../profile'
 
@@ -12,6 +13,10 @@ export type WalletProfileHeaderProps = {
    * The profile being displayed. If undefined, show logged in.
    */
   profile: LoadingData<UnifiedProfile> | undefined
+  /**
+   * The entity being displayed. If undefined, show logged in.
+   */
+  entity: LoadingData<Entity> | undefined
   /**
    * If set, show a tooltip that explains there are multiple profiles attached
    * to the current wallet and prompt to merge them. The type determines the

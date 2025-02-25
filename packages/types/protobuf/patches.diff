@@ -282,3 +282,18 @@ index cefd5a01c..9617817a2 100644
        return queryService.registrationKey(request, useInterfaces);
      },
      encryptedSeed(request: QueryEncryptedSeedRequest, useInterfaces: boolean = true): Promise<QueryEncryptedSeedResponse> {
+diff --git b/packages/types/protobuf/codegen/slinky/marketmap/v1/market.ts a/packages/types/protobuf/codegen/slinky/marketmap/v1/market.ts
+index b2d5c2380..2025c3fab 100644
+--- b/packages/types/protobuf/codegen/slinky/marketmap/v1/market.ts
++++ a/packages/types/protobuf/codegen/slinky/marketmap/v1/market.ts
+@@ -674,7 +674,9 @@ export const MarketMap = {
+     obj.markets = {};
+     if (message.markets) {
+       Object.entries(message.markets).forEach(([k, v]) => {
+-        obj.markets[k] = Market.toAmino(v);
++        if (v !== undefined) {
++          obj.markets[k] = Market.toAmino(v, useInterfaces);
++        }
+       });
+     }
+     return obj;
