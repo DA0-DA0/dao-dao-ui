@@ -9,7 +9,13 @@ import {
   getPassthroughProps,
 } from './Buttonifier'
 
-// Forward ref so we can use Tooltip with this element.
+/**
+ * ButtonLink component with consistent Button styling.
+ *
+ * Uses Buttonifier to maintain consistent styling with Button.
+ * Forwards refs to allow integration with Tooltip component.
+ * Provides link functionality via LinkWrapper.
+ */
 export const ButtonLink = forwardRef<HTMLDivElement, ButtonLinkProps>(
   function ButtonLink({ children, ...props }, ref) {
     return (

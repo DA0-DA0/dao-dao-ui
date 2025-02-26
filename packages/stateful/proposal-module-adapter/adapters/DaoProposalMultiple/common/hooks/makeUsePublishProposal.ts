@@ -6,6 +6,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { Cw20BaseSelectors, nativeDenomBalanceSelector } from '@dao-dao/state'
+import { chainQueries } from '@dao-dao/state/query'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { Feature, MultipleChoiceNewProposalData } from '@dao-dao/types'
 import {
@@ -19,6 +20,7 @@ import {
   Cw20BaseHooks,
   useAwaitNextBlock,
   useMembership,
+  useQueryLoadingDataWithError,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
@@ -47,6 +49,20 @@ export const makeUsePublishProposal =
       refreshBalances,
     } = useWallet()
     const { isMember = false } = useMembership()
+
+    const feeGrants = useQueryLoadingDataWithError(
+      walletAddress
+        ? chainQueries.feeGrantsByGrantee({
+            chainId: proposalModule.chainId,
+            address: walletAddress,
+            basic: true,
+          })
+        : undefined
+    )
+    const feeGranter =
+      !feeGrants.loading && !feeGrants.errored
+        ? feeGrants.data[0]?.granter
+        : undefined
 
     const depositInfo = useRecoilValueLoadable(depositInfoSelector)
     const depositInfoCw20TokenAddress =
@@ -322,6 +338,9 @@ export const makeUsePublishProposal =
           signingClient: getSigningClient,
           sender: walletAddress,
           funds: proposeFunds,
+          txOptions: {
+            feeGranter,
+          },
         })
 
         if (proposeFunds?.length) {
@@ -348,6 +367,7 @@ export const makeUsePublishProposal =
         prePropose?.address,
         awaitNextBlock,
         refreshBalances,
+        feeGranter,
       ]
     )
 
