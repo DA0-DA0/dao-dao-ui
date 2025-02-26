@@ -11,6 +11,7 @@ import {
   Addr,
   AdminNominationResponse,
   ArrayOfAddr,
+  ArrayOfCosmosMsgForEmpty,
   ArrayOfProposalModule,
   ArrayOfSubDao,
   Config,
@@ -174,6 +175,18 @@ export const daoDaoCoreQueryKeys = {
       {
         ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'info',
+        args,
+      },
+    ] as const,
+  initialActions: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
+        method: 'initial_actions',
         args,
       },
     ] as const,
@@ -598,6 +611,33 @@ export const daoDaoCoreQueries = {
     ...options,
   }),
   info: contractQueries.info,
+  initialActions: <TData = ArrayOfCosmosMsgForEmpty>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoDaoCoreInitialActionsQuery<TData>
+  ): UseQueryOptions<ArrayOfCosmosMsgForEmpty, Error, TData> => ({
+    queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoCore/initialActions',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoDaoCoreQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).initialActions()
+    },
+    ...options,
+  }),
   proposalModules: <TData = ArrayOfProposalModule>(
     queryClient: QueryClient,
     {
@@ -938,6 +978,8 @@ export interface DaoDaoCoreProposalModulesQuery<TData>
 }
 export interface DaoDaoCoreInfoQuery<TData>
   extends DaoDaoCoreReactQuery<InfoResponse, TData> {}
+export interface DaoDaoCoreInitialActionsQuery<TData>
+  extends DaoDaoCoreReactQuery<ArrayOfCosmosMsgForEmpty, TData> {}
 export interface DaoDaoCoreListItemsQuery<TData>
   extends DaoDaoCoreReactQuery<ListItemsResponse, TData> {
   args: {

@@ -13,6 +13,7 @@ import {
 
 import {
   ArrayOfAddr,
+  Config,
   Decimal,
   DelegatesResponse,
   DelegationsResponse,
@@ -81,6 +82,7 @@ export interface DaoVoteDelegationReadOnlyInterface {
     limit?: number
     startAfter?: string
   }) => Promise<ArrayOfAddr>
+  config: () => Promise<Config>
 }
 export class DaoVoteDelegationQueryClient
   implements DaoVoteDelegationReadOnlyInterface
@@ -98,6 +100,7 @@ export class DaoVoteDelegationQueryClient
       this.unvotedDelegatedVotingPower.bind(this)
     this.proposalModules = this.proposalModules.bind(this)
     this.votingPowerHookCallers = this.votingPowerHookCallers.bind(this)
+    this.config = this.config.bind(this)
   }
   info = async (): Promise<InfoResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -200,6 +203,11 @@ export class DaoVoteDelegationQueryClient
       },
     })
   }
+  config = async (): Promise<Config> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      config: {},
+    })
+  }
 }
 export interface DaoVoteDelegationInterface
   extends DaoVoteDelegationReadOnlyInterface {
@@ -264,9 +272,11 @@ export interface DaoVoteDelegationInterface
   updateConfig: (
     {
       delegationValidityBlocks,
+      maxDelegations,
       vpCapPercent,
     }: {
       delegationValidityBlocks: OptionalUpdateForUint64
+      maxDelegations?: number
       vpCapPercent: OptionalUpdateForDecimal
     },
     fee?: number | StdFee | 'auto',
@@ -467,9 +477,11 @@ export class DaoVoteDelegationClient
   updateConfig = async (
     {
       delegationValidityBlocks,
+      maxDelegations,
       vpCapPercent,
     }: {
       delegationValidityBlocks: OptionalUpdateForUint64
+      maxDelegations?: number
       vpCapPercent: OptionalUpdateForDecimal
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
@@ -482,6 +494,7 @@ export class DaoVoteDelegationClient
       {
         update_config: {
           delegation_validity_blocks: delegationValidityBlocks,
+          max_delegations: maxDelegations,
           vp_cap_percent: vpCapPercent,
         },
       },

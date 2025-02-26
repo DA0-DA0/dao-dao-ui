@@ -8,6 +8,7 @@ import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
 
 import {
   ArrayOfAddr,
+  Config,
   DelegatesResponse,
   DelegationsResponse,
   InfoResponse,
@@ -115,6 +116,18 @@ export const daoVoteDelegationQueryKeys = {
       {
         ...daoVoteDelegationQueryKeys.address(chainId, contractAddress)[0],
         method: 'voting_power_hook_callers',
+        args,
+      },
+    ] as const,
+  config: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoVoteDelegationQueryKeys.address(chainId, contractAddress)[0],
+        method: 'config',
         args,
       },
     ] as const,
@@ -365,6 +378,33 @@ export const daoVoteDelegationQueries = {
     },
     ...options,
   }),
+  config: <TData = Config>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoVoteDelegationConfigQuery<TData>
+  ): UseQueryOptions<Config, Error, TData> => ({
+    queryKey: daoVoteDelegationQueryKeys.config(chainId, contractAddress),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoVoteDelegation/config',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoVoteDelegationQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).config()
+    },
+    ...options,
+  }),
 }
 export interface DaoVoteDelegationReactQuery<TResponse, TData = TResponse> {
   chainId: string
@@ -376,6 +416,8 @@ export interface DaoVoteDelegationReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
+export interface DaoVoteDelegationConfigQuery<TData>
+  extends DaoVoteDelegationReactQuery<Config, TData> {}
 export interface DaoVoteDelegationVotingPowerHookCallersQuery<TData>
   extends DaoVoteDelegationReactQuery<ArrayOfAddr, TData> {
   args: {

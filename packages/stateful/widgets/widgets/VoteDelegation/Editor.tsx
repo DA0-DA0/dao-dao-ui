@@ -56,6 +56,7 @@ export const Editor = ({
           dao: dao.coreAddress,
           // 90 days assuming 3 seconds per block.
           delegation_validity_blocks: (90 * 24 * 3600) / 3,
+          max_delegations: 50,
           no_sync_proposal_modules: false,
           // a delegate can only utilize at most 10% of total voting power, even
           // if they are delegated more.

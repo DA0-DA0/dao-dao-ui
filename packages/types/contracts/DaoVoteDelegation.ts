@@ -8,6 +8,7 @@ export type Decimal = string
 export interface InstantiateMsg {
   dao?: string | null
   delegation_validity_blocks?: number | null
+  max_delegations?: number | null
   no_sync_proposal_modules?: boolean | null
   vp_cap_percent?: Decimal | null
   vp_hook_callers?: string[] | null
@@ -45,6 +46,7 @@ export type ExecuteMsg =
   | {
       update_config: {
         delegation_validity_blocks: OptionalUpdateForUint64
+        max_delegations?: number | null
         vp_cap_percent: OptionalUpdateForDecimal
       }
     }
@@ -103,6 +105,7 @@ export type Uint128 = string
 export type VoteHookMsg = {
   new_vote: {
     height: number
+    individual_power: Uint128
     is_first_vote: boolean
     power: Uint128
     proposal_id: number
@@ -162,7 +165,14 @@ export type QueryMsg =
         start_after?: string | null
       }
     }
+  | {
+      config: {}
+    }
 export interface MigrateMsg {}
+export interface Config {
+  delegation_validity_blocks?: number | null
+  max_delegations: number
+}
 export interface DelegatesResponse {
   delegates: DelegateResponse[]
 }

@@ -260,8 +260,16 @@ export type ModuleInstantiateInfo = {
   code_id: number
   label: string
   msg: Binary
-  // Added in V2.3. Make optional for backwards compatibility.
+  /**
+   * Added in V2.3. Make optional for backwards compatibility.
+   *
+   * Made optional in V2.7.
+   */
   funds?: Coin[]
+  /**
+   * Added in V2.7.
+   */
+  salt?: Binary | null
 }
 
 export interface ContractVersionInfo {

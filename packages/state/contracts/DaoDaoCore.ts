@@ -16,6 +16,7 @@ import {
   Addr,
   AdminNominationResponse,
   ArrayOfAddr,
+  ArrayOfCosmosMsgForEmpty,
   ArrayOfProposalModule,
   ArrayOfSubDao,
   Binary,
@@ -74,6 +75,7 @@ export interface DaoDaoCoreReadOnlyInterface {
     startAfter?: string
   }) => Promise<ListItemsResponse>
   info: () => Promise<InfoResponse>
+  initialActions: () => Promise<ArrayOfCosmosMsgForEmpty>
   proposalModules: ({
     limit,
     startAfter,
@@ -128,6 +130,7 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
     this.getItem = this.getItem.bind(this)
     this.listItems = this.listItems.bind(this)
     this.info = this.info.bind(this)
+    this.initialActions = this.initialActions.bind(this)
     this.proposalModules = this.proposalModules.bind(this)
     this.activeProposalModules = this.activeProposalModules.bind(this)
     this.proposalModuleCount = this.proposalModuleCount.bind(this)
@@ -205,6 +208,11 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
       get_item: {
         key,
       },
+    })
+  }
+  initialActions = async (): Promise<ArrayOfCosmosMsgForEmpty> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      initial_actions: {},
     })
   }
   listItems = async ({

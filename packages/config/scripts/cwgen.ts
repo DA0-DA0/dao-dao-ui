@@ -221,14 +221,14 @@ codegen({
     const outPath = file.endsWith('.types.ts')
       ? path.join(__dirname, '../../types/contracts/', contractName + '.ts')
       : file.endsWith('.client.ts')
-      ? path.join(__dirname, '../../state/contracts/', contractName + '.ts')
-      : file.endsWith('.react-query.ts')
-      ? path.join(
-          __dirname,
-          '../../state/query/queries/contracts/',
-          contractName + '.ts'
-        )
-      : undefined
+        ? path.join(__dirname, '../../state/contracts/', contractName + '.ts')
+        : file.endsWith('.react-query.ts')
+          ? path.join(
+              __dirname,
+              '../../state/query/queries/contracts/',
+              contractName + '.ts'
+            )
+          : undefined
 
     if (!outPath) {
       throw new Error('unexpected file: ' + file)
