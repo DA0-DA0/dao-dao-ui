@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/dispatch",
-  "version": "2.6.0-rc.1",
+  "version": "2.7.0-rc.1",
   "license": "BSD-3-Clause-Clear",
   "private": true,
   "scripts": {
@@ -11,10 +11,10 @@
   },
   "devDependencies": {
     "@confio/relayer": "^0.12.0",
-    "@dao-dao/config": "2.6.0-rc.1",
-    "@dao-dao/state": "2.6.0-rc.1",
-    "@dao-dao/types": "2.6.0-rc.1",
-    "@dao-dao/utils": "2.6.0-rc.1",
+    "@dao-dao/config": "2.7.0-rc.1",
+    "@dao-dao/state": "2.7.0-rc.1",
+    "@dao-dao/types": "2.7.0-rc.1",
+    "@dao-dao/utils": "2.7.0-rc.1",
     "@types/proper-lockfile": "^4.1.4",
     "chalk": "^4",
     "commander": "^11.0.0",
