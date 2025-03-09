@@ -26,7 +26,7 @@ index 1dc291f1a..a90db9057 100644
        obj.msgs = message.msgs;
      }
 diff --git b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
-index 1c6ddf6ae..6565036dc 100644
+index 73a7a91b4..dbe313ffe 100644
 --- b/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 +++ a/packages/types/protobuf/codegen/cosmos/gov/v1/tx.ts
 @@ -1,4 +1,5 @@
@@ -35,7 +35,7 @@ index 1c6ddf6ae..6565036dc 100644
  import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
  import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
  import { VoteOption, WeightedVoteOption, WeightedVoteOptionAmino, WeightedVoteOptionSDKType, Params, ParamsAmino, ParamsSDKType } from "./gov";
-@@ -578,7 +579,8 @@ export const MsgSubmitProposal = {
+@@ -577,7 +578,8 @@ export const MsgSubmitProposal = {
    },
    fromAmino(object: MsgSubmitProposalAmino): MsgSubmitProposal {
      const message = createBaseMsgSubmitProposal();
@@ -45,7 +45,7 @@ index 1c6ddf6ae..6565036dc 100644
      message.initialDeposit = object.initial_deposit?.map(e => Coin.fromAmino(e)) || [];
      if (object.proposer !== undefined && object.proposer !== null) {
        message.proposer = object.proposer;
-@@ -599,10 +601,8 @@ export const MsgSubmitProposal = {
+@@ -598,10 +600,8 @@ export const MsgSubmitProposal = {
    },
    toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
      const obj: any = {};

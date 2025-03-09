@@ -12,7 +12,7 @@ export interface MsgTransfer {
   sourcePort: string;
   /** the channel by which the packet will be sent */
   sourceChannel: string;
-  /** the tokens to be transferred */
+  /** token to be transferred */
   token: Coin | undefined;
   /** the sender address */
   sender: string;
@@ -20,16 +20,20 @@ export interface MsgTransfer {
   receiver: string;
   /**
    * Timeout height relative to the current block height.
-   * The timeout is disabled when set to 0.
+   * If you are sending with IBC v1 protocol, either timeout_height or timeout_timestamp must be set.
+   * If you are sending with IBC v2 protocol, timeout_timestamp must be set, and timeout_height must be omitted.
    */
   timeoutHeight: Height | undefined;
   /**
    * Timeout timestamp in absolute nanoseconds since unix epoch.
-   * The timeout is disabled when set to 0.
+   * If you are sending with IBC v1 protocol, either timeout_height or timeout_timestamp must be set.
+   * If you are sending with IBC v2 protocol, timeout_timestamp must be set.
    */
   timeoutTimestamp: bigint;
   /** optional memo */
   memo: string;
+  /** optional encoding */
+  encoding: string;
 }
 export interface MsgTransferProtoMsg {
   typeUrl: "/ibc.applications.transfer.v1.MsgTransfer";
@@ -45,24 +49,28 @@ export interface MsgTransferAmino {
   source_port?: string;
   /** the channel by which the packet will be sent */
   source_channel?: string;
-  /** the tokens to be transferred */
-  token?: CoinAmino | undefined;
+  /** token to be transferred */
+  token: CoinAmino | undefined;
   /** the sender address */
   sender?: string;
   /** the recipient address on the destination chain */
   receiver?: string;
   /**
    * Timeout height relative to the current block height.
-   * The timeout is disabled when set to 0.
+   * If you are sending with IBC v1 protocol, either timeout_height or timeout_timestamp must be set.
+   * If you are sending with IBC v2 protocol, timeout_timestamp must be set, and timeout_height must be omitted.
    */
-  timeout_height?: HeightAmino | undefined;
+  timeout_height: HeightAmino | undefined;
   /**
    * Timeout timestamp in absolute nanoseconds since unix epoch.
-   * The timeout is disabled when set to 0.
+   * If you are sending with IBC v1 protocol, either timeout_height or timeout_timestamp must be set.
+   * If you are sending with IBC v2 protocol, timeout_timestamp must be set.
    */
   timeout_timestamp?: string;
   /** optional memo */
   memo?: string;
+  /** optional encoding */
+  encoding?: string;
 }
 export interface MsgTransferAminoMsg {
   type: "cosmos-sdk/MsgTransfer";
@@ -82,6 +90,7 @@ export interface MsgTransferSDKType {
   timeout_height: HeightSDKType | undefined;
   timeout_timestamp: bigint;
   memo: string;
+  encoding: string;
 }
 /** MsgTransferResponse defines the Msg/Transfer response type. */
 export interface MsgTransferResponse {
@@ -107,8 +116,8 @@ export interface MsgTransferResponseSDKType {
 }
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer address */
+  signer: string;
   /**
    * params defines the transfer parameters to update.
    * 
@@ -122,8 +131,8 @@ export interface MsgUpdateParamsProtoMsg {
 }
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParamsAmino {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority?: string;
+  /** signer address */
+  signer?: string;
   /**
    * params defines the transfer parameters to update.
    * 
@@ -137,7 +146,7 @@ export interface MsgUpdateParamsAminoMsg {
 }
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParamsSDKType {
-  authority: string;
+  signer: string;
   params: ParamsSDKType | undefined;
 }
 /**
@@ -172,7 +181,8 @@ function createBaseMsgTransfer(): MsgTransfer {
     receiver: "",
     timeoutHeight: Height.fromPartial({}),
     timeoutTimestamp: BigInt(0),
-    memo: ""
+    memo: "",
+    encoding: ""
   };
 }
 export const MsgTransfer = {
@@ -201,6 +211,9 @@ export const MsgTransfer = {
     }
     if (message.memo !== "") {
       writer.uint32(66).string(message.memo);
+    }
+    if (message.encoding !== "") {
+      writer.uint32(74).string(message.encoding);
     }
     return writer;
   },
@@ -235,6 +248,9 @@ export const MsgTransfer = {
         case 8:
           message.memo = reader.string();
           break;
+        case 9:
+          message.encoding = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -252,6 +268,7 @@ export const MsgTransfer = {
     message.timeoutHeight = object.timeoutHeight !== undefined && object.timeoutHeight !== null ? Height.fromPartial(object.timeoutHeight) : undefined;
     message.timeoutTimestamp = object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null ? BigInt(object.timeoutTimestamp.toString()) : BigInt(0);
     message.memo = object.memo ?? "";
+    message.encoding = object.encoding ?? "";
     return message;
   },
   fromAmino(object: MsgTransferAmino): MsgTransfer {
@@ -280,18 +297,22 @@ export const MsgTransfer = {
     if (object.memo !== undefined && object.memo !== null) {
       message.memo = object.memo;
     }
+    if (object.encoding !== undefined && object.encoding !== null) {
+      message.encoding = object.encoding;
+    }
     return message;
   },
   toAmino(message: MsgTransfer, useInterfaces: boolean = false): MsgTransferAmino {
     const obj: any = {};
     obj.source_port = message.sourcePort === "" ? undefined : message.sourcePort;
     obj.source_channel = message.sourceChannel === "" ? undefined : message.sourceChannel;
-    obj.token = message.token ? Coin.toAmino(message.token, useInterfaces) : undefined;
+    obj.token = message.token ? Coin.toAmino(message.token, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.receiver = message.receiver === "" ? undefined : message.receiver;
     obj.timeout_height = message.timeoutHeight ? Height.toAmino(message.timeoutHeight, useInterfaces) : {};
     obj.timeout_timestamp = message.timeoutTimestamp !== BigInt(0) ? message.timeoutTimestamp.toString() : undefined;
     obj.memo = message.memo === "" ? undefined : message.memo;
+    obj.encoding = message.encoding === "" ? undefined : message.encoding;
     return obj;
   },
   fromAminoMsg(object: MsgTransferAminoMsg): MsgTransfer {
@@ -387,15 +408,15 @@ export const MsgTransferResponse = {
 };
 function createBaseMsgUpdateParams(): MsgUpdateParams {
   return {
-    authority: "",
+    signer: "",
     params: Params.fromPartial({})
   };
 }
 export const MsgUpdateParams = {
   typeUrl: "/ibc.applications.transfer.v1.MsgUpdateParams",
   encode(message: MsgUpdateParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -410,7 +431,7 @@ export const MsgUpdateParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.authority = reader.string();
+          message.signer = reader.string();
           break;
         case 2:
           message.params = Params.decode(reader, reader.uint32(), useInterfaces);
@@ -424,14 +445,14 @@ export const MsgUpdateParams = {
   },
   fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    if (object.authority !== undefined && object.authority !== null) {
-      message.authority = object.authority;
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
     }
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromAmino(object.params);
@@ -440,7 +461,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

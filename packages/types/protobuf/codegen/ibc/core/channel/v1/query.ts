@@ -987,7 +987,7 @@ export interface QueryNextSequenceReceiveRequestSDKType {
   channel_id: string;
 }
 /**
- * QuerySequenceResponse is the request type for the
+ * QuerySequenceResponse is the response type for the
  * Query/QueryNextSequenceReceiveResponse RPC method
  */
 export interface QueryNextSequenceReceiveResponse {
@@ -1003,7 +1003,7 @@ export interface QueryNextSequenceReceiveResponseProtoMsg {
   value: Uint8Array;
 }
 /**
- * QuerySequenceResponse is the request type for the
+ * QuerySequenceResponse is the response type for the
  * Query/QueryNextSequenceReceiveResponse RPC method
  */
 export interface QueryNextSequenceReceiveResponseAmino {
@@ -1019,7 +1019,7 @@ export interface QueryNextSequenceReceiveResponseAminoMsg {
   value: QueryNextSequenceReceiveResponseAmino;
 }
 /**
- * QuerySequenceResponse is the request type for the
+ * QuerySequenceResponse is the response type for the
  * Query/QueryNextSequenceReceiveResponse RPC method
  */
 export interface QueryNextSequenceReceiveResponseSDKType {

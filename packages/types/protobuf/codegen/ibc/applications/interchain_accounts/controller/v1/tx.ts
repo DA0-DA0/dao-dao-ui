@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Order } from "../../../../core/channel/v1/channel";
 import { InterchainAccountPacketData, InterchainAccountPacketDataAmino, InterchainAccountPacketDataSDKType } from "../../v1/packet";
 import { Params, ParamsAmino, ParamsSDKType } from "./controller";
 import { BinaryReader, BinaryWriter } from "../../../../../binary";
@@ -7,6 +8,7 @@ export interface MsgRegisterInterchainAccount {
   owner: string;
   connectionId: string;
   version: string;
+  ordering: Order;
 }
 export interface MsgRegisterInterchainAccountProtoMsg {
   typeUrl: "/ibc.applications.interchain_accounts.controller.v1.MsgRegisterInterchainAccount";
@@ -17,6 +19,7 @@ export interface MsgRegisterInterchainAccountAmino {
   owner?: string;
   connection_id?: string;
   version?: string;
+  ordering?: Order;
 }
 export interface MsgRegisterInterchainAccountAminoMsg {
   type: "cosmos-sdk/MsgRegisterInterchainAccount";
@@ -27,6 +30,7 @@ export interface MsgRegisterInterchainAccountSDKType {
   owner: string;
   connection_id: string;
   version: string;
+  ordering: Order;
 }
 /** MsgRegisterInterchainAccountResponse defines the response for Msg/RegisterAccount */
 export interface MsgRegisterInterchainAccountResponse {
@@ -110,8 +114,8 @@ export interface MsgSendTxResponseSDKType {
 }
 /** MsgUpdateParams defines the payload for Msg/UpdateParams */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer address */
+  signer: string;
   /**
    * params defines the 27-interchain-accounts/controller parameters to update.
    * 
@@ -125,8 +129,8 @@ export interface MsgUpdateParamsProtoMsg {
 }
 /** MsgUpdateParams defines the payload for Msg/UpdateParams */
 export interface MsgUpdateParamsAmino {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority?: string;
+  /** signer address */
+  signer?: string;
   /**
    * params defines the 27-interchain-accounts/controller parameters to update.
    * 
@@ -140,7 +144,7 @@ export interface MsgUpdateParamsAminoMsg {
 }
 /** MsgUpdateParams defines the payload for Msg/UpdateParams */
 export interface MsgUpdateParamsSDKType {
-  authority: string;
+  signer: string;
   params: ParamsSDKType | undefined;
 }
 /** MsgUpdateParamsResponse defines the response for Msg/UpdateParams */
@@ -161,7 +165,8 @@ function createBaseMsgRegisterInterchainAccount(): MsgRegisterInterchainAccount 
   return {
     owner: "",
     connectionId: "",
-    version: ""
+    version: "",
+    ordering: 0
   };
 }
 export const MsgRegisterInterchainAccount = {
@@ -175,6 +180,9 @@ export const MsgRegisterInterchainAccount = {
     }
     if (message.version !== "") {
       writer.uint32(26).string(message.version);
+    }
+    if (message.ordering !== 0) {
+      writer.uint32(32).int32(message.ordering);
     }
     return writer;
   },
@@ -194,6 +202,9 @@ export const MsgRegisterInterchainAccount = {
         case 3:
           message.version = reader.string();
           break;
+        case 4:
+          message.ordering = (reader.int32() as any);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -206,6 +217,7 @@ export const MsgRegisterInterchainAccount = {
     message.owner = object.owner ?? "";
     message.connectionId = object.connectionId ?? "";
     message.version = object.version ?? "";
+    message.ordering = object.ordering ?? 0;
     return message;
   },
   fromAmino(object: MsgRegisterInterchainAccountAmino): MsgRegisterInterchainAccount {
@@ -219,6 +231,9 @@ export const MsgRegisterInterchainAccount = {
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
     }
+    if (object.ordering !== undefined && object.ordering !== null) {
+      message.ordering = object.ordering;
+    }
     return message;
   },
   toAmino(message: MsgRegisterInterchainAccount, useInterfaces: boolean = false): MsgRegisterInterchainAccountAmino {
@@ -226,6 +241,7 @@ export const MsgRegisterInterchainAccount = {
     obj.owner = message.owner === "" ? undefined : message.owner;
     obj.connection_id = message.connectionId === "" ? undefined : message.connectionId;
     obj.version = message.version === "" ? undefined : message.version;
+    obj.ordering = message.ordering === 0 ? undefined : message.ordering;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainAccountAminoMsg): MsgRegisterInterchainAccount {
@@ -507,15 +523,15 @@ export const MsgSendTxResponse = {
 };
 function createBaseMsgUpdateParams(): MsgUpdateParams {
   return {
-    authority: "",
+    signer: "",
     params: Params.fromPartial({})
   };
 }
 export const MsgUpdateParams = {
   typeUrl: "/ibc.applications.interchain_accounts.controller.v1.MsgUpdateParams",
   encode(message: MsgUpdateParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -530,7 +546,7 @@ export const MsgUpdateParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.authority = reader.string();
+          message.signer = reader.string();
           break;
         case 2:
           message.params = Params.decode(reader, reader.uint32(), useInterfaces);
@@ -544,14 +560,14 @@ export const MsgUpdateParams = {
   },
   fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    if (object.authority !== undefined && object.authority !== null) {
-      message.authority = object.authority;
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
     }
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromAmino(object.params);
@@ -560,7 +576,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },

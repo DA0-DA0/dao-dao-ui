@@ -77,23 +77,30 @@ export interface MsgConnectionOpenTry {
   /** Deprecated: this field is unused. Crossing hellos are no longer supported in core IBC. */
   /** @deprecated */
   previousConnectionId: string;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   clientState?: Any | undefined;
   counterparty: Counterparty | undefined;
   delayPeriod: bigint;
   counterpartyVersions: Version[];
   proofHeight: Height | undefined;
   /**
-   * proof of the initialization the connection on Chain A: `UNITIALIZED ->
+   * proof of the initialization the connection on Chain A: `UNINITIALIZED ->
    * INIT`
    */
   proofInit: Uint8Array;
-  /** proof of client state included in message */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proofClient: Uint8Array;
-  /** proof of client consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proofConsensus: Uint8Array;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   consensusHeight: Height | undefined;
   signer: string;
-  /** optional proof data for host state machines that are unable to introspect their own consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   hostConsensusStateProof: Uint8Array;
 }
 export interface MsgConnectionOpenTryProtoMsg {
@@ -109,23 +116,30 @@ export interface MsgConnectionOpenTryAmino {
   /** Deprecated: this field is unused. Crossing hellos are no longer supported in core IBC. */
   /** @deprecated */
   previous_connection_id?: string;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   client_state?: AnyAmino | undefined;
   counterparty?: CounterpartyAmino | undefined;
   delay_period?: string;
   counterparty_versions?: VersionAmino[];
   proof_height?: HeightAmino | undefined;
   /**
-   * proof of the initialization the connection on Chain A: `UNITIALIZED ->
+   * proof of the initialization the connection on Chain A: `UNINITIALIZED ->
    * INIT`
    */
   proof_init?: string;
-  /** proof of client state included in message */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proof_client?: string;
-  /** proof of client consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proof_consensus?: string;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   consensus_height?: HeightAmino | undefined;
   signer?: string;
-  /** optional proof data for host state machines that are unable to introspect their own consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   host_consensus_state_proof?: string;
 }
 export interface MsgConnectionOpenTryAminoMsg {
@@ -140,16 +154,21 @@ export interface MsgConnectionOpenTrySDKType {
   client_id: string;
   /** @deprecated */
   previous_connection_id: string;
+  /** @deprecated */
   client_state?: AnySDKType | undefined;
   counterparty: CounterpartySDKType | undefined;
   delay_period: bigint;
   counterparty_versions: VersionSDKType[];
   proof_height: HeightSDKType | undefined;
   proof_init: Uint8Array;
+  /** @deprecated */
   proof_client: Uint8Array;
+  /** @deprecated */
   proof_consensus: Uint8Array;
+  /** @deprecated */
   consensus_height: HeightSDKType | undefined;
   signer: string;
+  /** @deprecated */
   host_consensus_state_proof: Uint8Array;
 }
 /** MsgConnectionOpenTryResponse defines the Msg/ConnectionOpenTry response type. */
@@ -174,20 +193,27 @@ export interface MsgConnectionOpenAck {
   connectionId: string;
   counterpartyConnectionId: string;
   version?: Version | undefined;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   clientState?: Any | undefined;
   proofHeight: Height | undefined;
   /**
-   * proof of the initialization the connection on Chain B: `UNITIALIZED ->
+   * proof of the initialization the connection on Chain B: `UNINITIALIZED ->
    * TRYOPEN`
    */
   proofTry: Uint8Array;
-  /** proof of client state included in message */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proofClient: Uint8Array;
-  /** proof of client consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proofConsensus: Uint8Array;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   consensusHeight: Height | undefined;
   signer: string;
-  /** optional proof data for host state machines that are unable to introspect their own consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   hostConsensusStateProof: Uint8Array;
 }
 export interface MsgConnectionOpenAckProtoMsg {
@@ -202,20 +228,27 @@ export interface MsgConnectionOpenAckAmino {
   connection_id?: string;
   counterparty_connection_id?: string;
   version?: VersionAmino | undefined;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   client_state?: AnyAmino | undefined;
   proof_height?: HeightAmino | undefined;
   /**
-   * proof of the initialization the connection on Chain B: `UNITIALIZED ->
+   * proof of the initialization the connection on Chain B: `UNINITIALIZED ->
    * TRYOPEN`
    */
   proof_try?: string;
-  /** proof of client state included in message */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proof_client?: string;
-  /** proof of client consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   proof_consensus?: string;
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   consensus_height?: HeightAmino | undefined;
   signer?: string;
-  /** optional proof data for host state machines that are unable to introspect their own consensus state */
+  /** Deprecated: this field is unused. */
+  /** @deprecated */
   host_consensus_state_proof?: string;
 }
 export interface MsgConnectionOpenAckAminoMsg {
@@ -230,13 +263,18 @@ export interface MsgConnectionOpenAckSDKType {
   connection_id: string;
   counterparty_connection_id: string;
   version?: VersionSDKType | undefined;
+  /** @deprecated */
   client_state?: AnySDKType | undefined;
   proof_height: HeightSDKType | undefined;
   proof_try: Uint8Array;
+  /** @deprecated */
   proof_client: Uint8Array;
+  /** @deprecated */
   proof_consensus: Uint8Array;
+  /** @deprecated */
   consensus_height: HeightSDKType | undefined;
   signer: string;
+  /** @deprecated */
   host_consensus_state_proof: Uint8Array;
 }
 /** MsgConnectionOpenAckResponse defines the Msg/ConnectionOpenAck response type. */
@@ -318,8 +356,8 @@ export interface MsgConnectionOpenConfirmResponseAminoMsg {
 export interface MsgConnectionOpenConfirmResponseSDKType {}
 /** MsgUpdateParams defines the sdk.Msg type to update the connection parameters. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer address */
+  signer: string;
   /**
    * params defines the connection parameters to update.
    * 
@@ -333,8 +371,8 @@ export interface MsgUpdateParamsProtoMsg {
 }
 /** MsgUpdateParams defines the sdk.Msg type to update the connection parameters. */
 export interface MsgUpdateParamsAmino {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority?: string;
+  /** signer address */
+  signer?: string;
   /**
    * params defines the connection parameters to update.
    * 
@@ -348,7 +386,7 @@ export interface MsgUpdateParamsAminoMsg {
 }
 /** MsgUpdateParams defines the sdk.Msg type to update the connection parameters. */
 export interface MsgUpdateParamsSDKType {
-  authority: string;
+  signer: string;
   params: ParamsSDKType | undefined;
 }
 /** MsgUpdateParamsResponse defines the MsgUpdateParams response type. */
@@ -1217,15 +1255,15 @@ export const MsgConnectionOpenConfirmResponse = {
 };
 function createBaseMsgUpdateParams(): MsgUpdateParams {
   return {
-    authority: "",
+    signer: "",
     params: Params.fromPartial({})
   };
 }
 export const MsgUpdateParams = {
   typeUrl: "/ibc.core.connection.v1.MsgUpdateParams",
   encode(message: MsgUpdateParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -1240,7 +1278,7 @@ export const MsgUpdateParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.authority = reader.string();
+          message.signer = reader.string();
           break;
         case 2:
           message.params = Params.decode(reader, reader.uint32(), useInterfaces);
@@ -1254,14 +1292,14 @@ export const MsgUpdateParams = {
   },
   fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    if (object.authority !== undefined && object.authority !== null) {
-      message.authority = object.authority;
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
     }
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromAmino(object.params);
@@ -1270,7 +1308,7 @@ export const MsgUpdateParams = {
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
-    obj.authority = message.authority === "" ? undefined : message.authority;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
