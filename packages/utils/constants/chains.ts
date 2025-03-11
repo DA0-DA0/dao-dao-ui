@@ -161,9 +161,10 @@ if (babylonTestnetChain?.chainRegistry) {
 }
 
 const chainsToRemove = [
-  // Remove thorchain and althea since they spam the console.
+  // Remove thorchain, althea, and andromeda1 since they spam the console.
   'thorchain',
   'althea',
+  'andromeda1',
   // Remove Babylon testnet 1 since it's not supported.
   'babylontestnet1',
 ]

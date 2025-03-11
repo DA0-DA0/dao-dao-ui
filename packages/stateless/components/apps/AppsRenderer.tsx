@@ -128,6 +128,15 @@ export const AppsRenderer = ({
     }
   }
 
+  // If URL is set on mount, open automatically.
+  useEffect(() => {
+    if (isUrlValid(url) === true) {
+      openApp(url)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Add event handler to inform iframe that it's wrapped in DAO DAO if it asks.
   useEffect(() => {
     if (!iframe?.contentWindow) {
