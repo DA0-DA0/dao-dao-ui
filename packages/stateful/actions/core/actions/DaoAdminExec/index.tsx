@@ -42,6 +42,7 @@ import {
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   DaoAdminExecData,
   DaoAdminExecComponent as StatelessDaoAdminExecComponent,
@@ -271,17 +272,24 @@ export class DaoAdminExecAction extends ActionBase<DaoAdminExecData> {
     [
       {
         decodedMessage,
-        account: { chainId },
+        account: { chainId, address },
       },
     ]: ProcessedMessage[],
     context: ActionDecodeContext
   ): Promise<DaoAdminExecData> {
+    const { actions, options } = await fetchActionsWithOptions({
+      t: this.options.t,
+      queryClient: this.options.queryClient,
+      chainId,
+      address,
+    })
+
     const msgs = decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs
     // Match and decode all messages.
     const matcher = new ActionMatcher(
-      this.options,
+      options,
       context.messageProcessor,
-      context.actions
+      actions
     )
     const decoders = await matcher.match(msgs)
     const actionData = await Promise.all(

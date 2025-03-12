@@ -16,6 +16,7 @@ import {
   ContractVersion,
   DaoInfo,
   GenericToken,
+  IChainContext,
   SupportedChain,
   SupportedChainConfig,
   TokenType,
@@ -750,3 +751,14 @@ export const getPublicKeyTypeForChain = (chainId: string): string => {
       return '/cosmos.crypto.secp256k1.PubKey'
   }
 }
+
+/**
+ * Get chain context for chain ID.
+ */
+export const makeChainContext = (chainId: string): IChainContext => ({
+  chainId,
+  chain: getChainForChainId(chainId),
+  nativeToken: maybeGetNativeTokenForChainId(chainId),
+  base: getConfiguredChainConfig(chainId),
+  config: getSupportedChainConfig(chainId),
+})

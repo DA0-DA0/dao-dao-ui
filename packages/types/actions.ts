@@ -392,7 +392,7 @@ export type ActionContext = (
     }
 ) & {
   // All contexts should have a list of accounts.
-  accounts: Account[]
+  accounts: Account[] | readonly Account[]
 }
 
 /**

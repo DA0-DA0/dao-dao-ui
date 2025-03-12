@@ -35,6 +35,7 @@ import {
 import { SuspenseLoader } from '../../../../components'
 import { useActionEncodeContext } from '../../../context'
 import { WalletActionsProvider } from '../../../providers/wallet'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   IcaExecuteData,
   IcaExecuteComponent as StatelessIcaExecuteComponent,
@@ -286,13 +287,19 @@ export class IcaExecuteAction extends ActionBase<IcaExecuteData> {
     ]: ProcessedMessage[],
     context: ActionDecodeContext
   ): Promise<IcaExecuteData> {
+    const { actions, options } = await fetchActionsWithOptions({
+      t: this.options.t,
+      queryClient: this.options.queryClient,
+      chainId,
+      address,
+    })
     const msgs = wrappedMessages.map(({ message }) => message)
 
     // Match and decode all messages.
     const matcher = new ActionMatcher(
-      this.options,
+      options,
       context.messageProcessor,
-      context.actions
+      actions
     )
     const decoders = await matcher.match(msgs)
     const actionData = await Promise.all(

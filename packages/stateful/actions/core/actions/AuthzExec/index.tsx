@@ -19,6 +19,7 @@ import {
   ActionContextType,
   ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   ProcessedMessage,
@@ -48,6 +49,7 @@ import { useQueryLoadingData } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
 import { BaseActionsProvider } from '../../../providers/base'
 import { WalletActionsProvider } from '../../../providers/wallet'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   AuthzExecData,
   AuthzExecOptions,
@@ -284,16 +286,28 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
       }[]
     )
 
-    // Match and decode all messages.
-    const matcher = new ActionMatcher(
-      this.options,
-      context.messageProcessor,
-      context.actions
-    )
-    const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
-    const actionData = await Promise.all(
-      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
-    )
+    let actionData: ActionKeyAndData[] | undefined
+    // Action data is only relevant if there is only sender.
+    if (msgsPerSender.length === 1) {
+      const sender = msgsPerSender[0].sender
+      const { actions, options } = await fetchActionsWithOptions({
+        t: this.options.t,
+        queryClient: this.options.queryClient,
+        chainId,
+        address: sender,
+      })
+
+      // Match and decode all messages.
+      const matcher = new ActionMatcher(
+        options,
+        context.messageProcessor,
+        actions
+      )
+      const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
+      actionData = await Promise.all(
+        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+      )
+    }
 
     return {
       chainId,
