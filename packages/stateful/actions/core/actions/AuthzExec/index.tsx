@@ -287,26 +287,32 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
     )
 
     let actionData: ActionKeyAndData[] | undefined
-    // Action data is only relevant if there is only sender.
-    if (msgsPerSender.length === 1) {
-      const sender = msgsPerSender[0].sender
-      const { actions, options } = await fetchActionsWithOptions({
-        t: this.options.t,
-        queryClient: this.options.queryClient,
-        chainId,
-        address: sender,
-      })
+    try {
+      // Action data is only relevant if there is only sender.
+      if (msgsPerSender.length === 1) {
+        const sender = msgsPerSender[0].sender
+        const { actions, options } = await fetchActionsWithOptions({
+          t: this.options.t,
+          queryClient: this.options.queryClient,
+          chainId,
+          address: sender,
+        })
 
-      // Match and decode all messages.
-      const matcher = new ActionMatcher(
-        options,
-        context.messageProcessor,
-        actions
-      )
-      const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
-      actionData = await Promise.all(
-        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
-      )
+        // Match and decode all messages.
+        const matcher = new ActionMatcher(
+          options,
+          context.messageProcessor,
+          actions
+        )
+        const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
+        actionData = await Promise.all(
+          decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+        )
+      }
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
     }
 
     return {

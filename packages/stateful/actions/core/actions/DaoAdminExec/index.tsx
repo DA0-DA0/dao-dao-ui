@@ -18,6 +18,7 @@ import {
   ActionContextType,
   ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   DaoSource,
@@ -277,24 +278,32 @@ export class DaoAdminExecAction extends ActionBase<DaoAdminExecData> {
     ]: ProcessedMessage[],
     context: ActionDecodeContext
   ): Promise<DaoAdminExecData> {
-    const { actions, options } = await fetchActionsWithOptions({
-      t: this.options.t,
-      queryClient: this.options.queryClient,
-      chainId,
-      address,
-    })
-
     const msgs = decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs
-    // Match and decode all messages.
-    const matcher = new ActionMatcher(
-      options,
-      context.messageProcessor,
-      actions
-    )
-    const decoders = await matcher.match(msgs)
-    const actionData = await Promise.all(
-      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
-    )
+
+    let actionData: ActionKeyAndData[] | undefined
+    try {
+      const { actions, options } = await fetchActionsWithOptions({
+        t: this.options.t,
+        queryClient: this.options.queryClient,
+        chainId,
+        address,
+      })
+
+      // Match and decode all messages.
+      const matcher = new ActionMatcher(
+        options,
+        context.messageProcessor,
+        actions
+      )
+      const decoders = await matcher.match(msgs)
+      actionData = await Promise.all(
+        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+      )
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
+    }
 
     return {
       chainId,
