@@ -70,15 +70,18 @@ const AppsTabExecutor = ({
     }))
   }, [data, setProposalSave])
 
+  const loading = data.loading && !!actionCount
+
   return (
     <ProposalActionShoppingCart
       actionMap={actionMap}
       dao={dao}
       error={data.errored ? data.error : undefined}
-      loading={data.loading && actionCount}
+      hideOpenButton={loading}
+      loading={loading}
       modalSubtitleOverride={
         data.loading
-          ? t('info.addingActions', {
+          ? t('info.addingActionsCloseToCancel', {
               count: actionCount,
             })
           : undefined

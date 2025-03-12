@@ -60,6 +60,10 @@ export type ProposalActionShoppingCartProps = {
    * The close callback for the modal.
    */
   onClose?: () => void
+  /**
+   * Optionally hide the open button from the modal.
+   */
+  hideOpenButton?: boolean
 }
 
 export const ProposalActionShoppingCart = ({
@@ -70,6 +74,7 @@ export const ProposalActionShoppingCart = ({
   error,
   modalSubtitleOverride,
   onClose,
+  hideOpenButton = false,
 }: ProposalActionShoppingCartProps) => {
   const { t } = useTranslation()
   const { getDaoProposalPath } = useDaoNavHelpers()
@@ -204,10 +209,12 @@ export const ProposalActionShoppingCart = ({
       contentContainerClassName="!p-0"
       footerContainerClassName="flex flex-row justify-end"
       footerContent={
-        <ButtonLink href={createProposalHref} variant="secondary">
-          {t('button.open')}
-          <ArrowForwardIos className="!w-4 !h-4 !text-icon-primary" />
-        </ButtonLink>
+        !hideOpenButton && (
+          <ButtonLink href={createProposalHref} variant="secondary">
+            {t('button.open')}
+            <ArrowForwardIos className="!w-4 !h-4 !text-icon-primary" />
+          </ButtonLink>
+        )
       }
       header={{
         title: t('title.pendingProposal'),

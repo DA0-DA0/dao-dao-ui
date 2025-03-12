@@ -1,4 +1,4 @@
-import { ArrowOutward, Close, MenuOpen } from '@mui/icons-material'
+import { ArrowOutward, Close, Link, MenuOpen } from '@mui/icons-material'
 import clsx from 'clsx'
 import {
   ComponentType,
@@ -162,7 +162,12 @@ export const AppsRenderer = ({
         <div className="hd-screen wd-screen fixed top-0 left-0 z-[38] bg-background-base p-safe pt-safe-or-4">
           <div className="flex flex-col h-full w-full">
             <div className="flex flex-row justify-between items-center gap-8 px-safe-offset-4 pb-4 border-b border-border-base">
-              <p className="primary-text break-all max-w-prose grow">{url}</p>
+              <div className="flex flex-row gap-2 justify-start items-center grow">
+                <Link className="!h-5 !w-5 !text-icon-secondary -rotate-45" />
+                <p className="primary-text !text-text-secondary break-all max-w-prose grow">
+                  {url}
+                </p>
+              </div>
 
               <div className="flex flex-row gap-2 justify-end items-center shrink-0">
                 <Tooltip title={t('button.openAnotherApp')}>
