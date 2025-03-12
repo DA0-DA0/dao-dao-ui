@@ -4,6 +4,7 @@ import {
   ArrowUpward,
   Close,
   CopyAll,
+  Edit,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
@@ -16,6 +17,7 @@ import { Tooltip } from '../tooltip'
 
 export type ActionCardProps = {
   action: Action<any>
+  onEdit?: () => void
   onMoveUp?: () => void
   onMoveDown?: () => void
   onAddNew?: () => void
@@ -27,6 +29,7 @@ export type ActionCardProps = {
 
 export const ActionCard = ({
   action,
+  onEdit,
   onMoveUp,
   onMoveDown,
   onAddNew,
@@ -40,7 +43,7 @@ export const ActionCard = ({
   const showRemove = !action?.metadata.programmaticOnly && !!onRemove
   const showActions =
     !action?.metadata.programmaticOnly &&
-    (onMoveUp || onMoveDown || onDuplicate || onAddNew)
+    (onEdit || onMoveUp || onMoveDown || onDuplicate || onAddNew)
 
   return (
     <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
@@ -79,6 +82,17 @@ export const ActionCard = ({
 
       {showActions && (
         <div className="flex flex-row items-center justify-end gap-2 p-3">
+          {onEdit && (
+            <Tooltip title={t('button.edit')}>
+              <IconButton
+                Icon={Edit}
+                onClick={onEdit}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
+          )}
+
           {onMoveUp && (
             <Tooltip title={t('button.moveUp')}>
               <IconButton

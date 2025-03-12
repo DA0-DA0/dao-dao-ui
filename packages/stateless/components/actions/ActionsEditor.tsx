@@ -12,6 +12,7 @@ import {
 import {
   FieldErrors,
   UseFormClearErrors,
+  UseFormSetValue,
   useFieldArray,
   useFormContext,
 } from 'react-hook-form'
@@ -49,7 +50,7 @@ export const ActionsEditor = ({
   SuspenseLoader,
 }: ActionsEditorProps) => {
   const { t } = useTranslation()
-  const { control, watch, clearErrors } = useFormContext<{
+  const { setValue, control, watch, clearErrors } = useFormContext<{
     actionData: ActionKeyAndData[]
   }>()
   const { actionMap } = useActionsContext()
@@ -140,6 +141,7 @@ export const ActionsEditor = ({
               moveTo={(to) => move(index, to)}
               remove={remove}
               scrollToNewActions={scrollToNewActions}
+              setValue={setValue}
             />
           ))}
         </div>
@@ -184,6 +186,9 @@ type ActionEditorProps = {
   remove: (index: number) => void
   addAction: Required<ActionComponentProps>['addAction']
   moveTo: (index: number) => void
+  setValue: UseFormSetValue<{
+    actionData: ActionKeyAndData[]
+  }>
 }
 
 const ActionEditor = ({
@@ -199,6 +204,7 @@ const ActionEditor = ({
   remove,
   addAction,
   moveTo,
+  setValue,
 }: ActionEditorProps) => {
   const { _id, actionKey, data, readOnly } = actionData[index]
   const action = actionMap[actionKey]
@@ -236,6 +242,11 @@ const ActionEditor = ({
         }
         onDuplicate={() =>
           addAction({ actionKey, data: cloneDeep(data) }, index + 1)
+        }
+        onEdit={
+          readOnly
+            ? () => setValue(`${actionDataFieldName}.${index}.readOnly`, false)
+            : undefined
         }
         onMoveDown={
           index < actionData.length - 1 ? () => moveTo(index + 1) : undefined
