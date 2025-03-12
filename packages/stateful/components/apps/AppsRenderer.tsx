@@ -882,13 +882,7 @@ const InnerAppsRenderer = ({
         ? // Never resolve while matcher is not ready.
           new Promise<ActionKeyAndData[]>(() => {})
         : await Promise.all(
-            matcher.matches.map(
-              async (decoder, index): Promise<ActionKeyAndData> => ({
-                _id: index.toString(),
-                actionKey: decoder.action.key,
-                data: await decoder.decode(),
-              })
-            )
+            matcher.matches.map((decoder) => decoder.decodeIntoKeyAndData())
           ),
     deps: [matcher.status],
   })

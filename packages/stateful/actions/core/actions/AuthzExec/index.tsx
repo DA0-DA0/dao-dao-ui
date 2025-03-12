@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { contractQueries } from '@dao-dao/state'
 import {
   ActionBase,
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   InputLabel,
@@ -16,6 +17,7 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
   ActionMatch,
   ActionOptions,
@@ -194,7 +196,8 @@ const Component: ActionComponent = (props) => {
                 {...props}
                 options={{
                   address: sender,
-                  // Set so the component knows which sender message group to render.
+                  // Set so the component knows which sender message group to
+                  // render.
                   msgPerSenderIndex: index,
                 }}
               />
@@ -250,32 +253,47 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
     )
   }
 
-  decode([
-    {
-      decodedMessage,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): AuthzExecData {
+  async decode(
+    [
+      {
+        decodedMessage,
+        account: { chainId },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<AuthzExecData> {
     const execMsg = decodedMessage.stargate.value as MsgExec
 
+    const cwMsgs = execMsg.msgs.map((msg) =>
+      protobufToCwMsg(getChainForChainId(chainId), msg)
+    )
     // Group adjacent messages by sender, preserving message order.
-    const msgsPerSender = execMsg.msgs
-      .map((msg) => protobufToCwMsg(getChainForChainId(chainId), msg))
-      .reduce(
-        (acc, { msg, sender }) => {
-          const last = acc[acc.length - 1]
-          if (last && last.sender === sender) {
-            last.msgs.push(msg)
-          } else {
-            acc.push({ sender, msgs: [msg] })
-          }
-          return acc
-        },
-        [] as {
-          sender: string
-          msgs: UnifiedCosmosMsg[]
-        }[]
-      )
+    const msgsPerSender = cwMsgs.reduce(
+      (acc, { msg, sender }) => {
+        const last = acc[acc.length - 1]
+        if (last && last.sender === sender) {
+          last.msgs.push(msg)
+        } else {
+          acc.push({ sender, msgs: [msg] })
+        }
+        return acc
+      },
+      [] as {
+        sender: string
+        msgs: UnifiedCosmosMsg[]
+      }[]
+    )
+
+    // Match and decode all messages.
+    const matcher = new ActionMatcher(
+      this.options,
+      context.messageProcessor,
+      context.actions
+    )
+    const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
+    const actionData = await Promise.all(
+      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+    )
 
     return {
       chainId,
@@ -285,6 +303,7 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
       address: msgsPerSender.length === 1 ? msgsPerSender[0].sender : '',
       msgs: msgsPerSender.length === 1 ? msgsPerSender[0].msgs : [],
       _msgs: msgsPerSender,
+      _actionData: actionData,
     }
   }
 }

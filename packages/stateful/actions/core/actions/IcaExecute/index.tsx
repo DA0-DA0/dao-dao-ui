@@ -6,6 +6,7 @@ import { chainQueries } from '@dao-dao/state/query'
 import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import {
   ActionBase,
+  ActionMatcher,
   Button,
   ChainProvider,
   DaoSupportedChainPickerInput,
@@ -19,6 +20,7 @@ import {
 import {
   AccountType,
   ActionComponent,
+  ActionDecodeContext,
   ActionKey,
   ActionMatch,
   ActionOptions,
@@ -275,16 +277,33 @@ export class IcaExecuteAction extends ActionBase<IcaExecuteData> {
     return type === AccountType.Ica && decodedMessages.length > 0
   }
 
-  decode([
-    {
-      wrappedMessages,
-      account: { chainId, address },
-    },
-  ]: ProcessedMessage[]): IcaExecuteData {
+  async decode(
+    [
+      {
+        wrappedMessages,
+        account: { chainId, address },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<IcaExecuteData> {
+    const msgs = wrappedMessages.map(({ message }) => message)
+
+    // Match and decode all messages.
+    const matcher = new ActionMatcher(
+      this.options,
+      context.messageProcessor,
+      context.actions
+    )
+    const decoders = await matcher.match(msgs)
+    const actionData = await Promise.all(
+      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+    )
+
     return {
       chainId,
       icaRemoteAddress: address,
-      msgs: wrappedMessages.map(({ message }) => message),
+      msgs,
+      _actionData: actionData,
     }
   }
 }

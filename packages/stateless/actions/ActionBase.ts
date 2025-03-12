@@ -1,6 +1,7 @@
 import {
   Action,
   ActionComponent,
+  ActionDecodeContext,
   ActionEncodeContext,
   ActionKey,
   ActionMatch,
@@ -135,7 +136,8 @@ export abstract class ActionBase<
   ): ActionMatch | Promise<ActionMatch>
 
   abstract decode(
-    messages: ProcessedMessage[]
+    messages: ProcessedMessage[],
+    context: ActionDecodeContext
   ): Partial<Data> | Promise<Partial<Data>>
 
   transformImportData?(data: any): Data

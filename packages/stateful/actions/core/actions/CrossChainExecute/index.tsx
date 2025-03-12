@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   TelescopeEmoji,
@@ -12,6 +13,7 @@ import {
   AccountType,
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
   ActionMatch,
   ActionOptions,
@@ -142,15 +144,32 @@ export class CrossChainExecuteAction extends ActionBase<CrossChainExecuteData> {
     return type === AccountType.Polytone && decodedMessages.length > 0
   }
 
-  decode([
-    {
-      wrappedMessages,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): CrossChainExecuteData {
+  async decode(
+    [
+      {
+        wrappedMessages,
+        account: { chainId },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<CrossChainExecuteData> {
+    const msgs = wrappedMessages.map(({ message }) => message)
+
+    // Match and decode all messages.
+    const matcher = new ActionMatcher(
+      this.options,
+      context.messageProcessor,
+      context.actions
+    )
+    const decoders = await matcher.match(msgs)
+    const actionData = await Promise.all(
+      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+    )
+
     return {
       chainId,
-      msgs: wrappedMessages.map(({ message }) => message),
+      msgs,
+      _actionData: actionData,
     }
   }
 }

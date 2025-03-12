@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { daoQueries } from '@dao-dao/state'
 import {
   ActionBase,
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   InputLabel,
@@ -15,6 +16,7 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
   ActionMatch,
   ActionOptions,
@@ -265,16 +267,32 @@ export class DaoAdminExecAction extends ActionBase<DaoAdminExecData> {
     })
   }
 
-  decode([
-    {
-      decodedMessage,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): DaoAdminExecData {
+  async decode(
+    [
+      {
+        decodedMessage,
+        account: { chainId },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<DaoAdminExecData> {
+    const msgs = decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs
+    // Match and decode all messages.
+    const matcher = new ActionMatcher(
+      this.options,
+      context.messageProcessor,
+      context.actions
+    )
+    const decoders = await matcher.match(msgs)
+    const actionData = await Promise.all(
+      decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+    )
+
     return {
       chainId,
       coreAddress: decodedMessage.wasm.execute.contract_addr,
-      msgs: decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs,
+      msgs,
+      _actionData: actionData,
     }
   }
 }

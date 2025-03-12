@@ -1,5 +1,6 @@
 import {
   Action,
+  ActionDecodeContext,
   ActionMatchSuccess,
   ActionOptions,
   IActionMatcher,
@@ -25,12 +26,12 @@ export class ActionMatcher implements IActionMatcher {
   constructor(
     public options: ActionOptions,
     public messageProcessor: MessageProcessor,
-    actions: Action[]
+    actions: Action[] | readonly Action[]
   ) {
     this.actions = actions
   }
 
-  set actions(actions: Action[]) {
+  set actions(actions: Action[] | readonly Action[]) {
     // Sort by match priority.
     this._actions = [...actions].sort(
       (a, b) =>
@@ -87,6 +88,11 @@ export class ActionMatcher implements IActionMatcher {
     this._error = undefined
     this._matches = undefined
     this._messages = messages
+
+    const context: ActionDecodeContext = {
+      actions: this._actions,
+      messageProcessor: this.messageProcessor,
+    }
 
     try {
       const matches: ActionDecoder[] = []
@@ -187,6 +193,7 @@ export class ActionMatcher implements IActionMatcher {
         const count = matched.match === true ? 1 : matched.match
         matches.push(
           new ActionDecoder(
+            context,
             matched.action,
             processedMessages.slice(messageIndex, messageIndex + count)
           )

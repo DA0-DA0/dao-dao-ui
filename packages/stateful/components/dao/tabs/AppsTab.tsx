@@ -59,14 +59,7 @@ const AppsTabExecutor = ({
 
     setProposalSave((save) => ({
       ...save,
-      actionData: [
-        ...(save?.actionData || []),
-        ...data.data.map((d) => ({
-          ...d,
-          // Make actions read-only so they can't be edited.
-          readOnly: true,
-        })),
-      ],
+      actionData: [...(save?.actionData || []), ...data.data],
     }))
   }, [data, setProposalSave])
 
