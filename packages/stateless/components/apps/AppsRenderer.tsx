@@ -105,7 +105,7 @@ export const AppsRenderer = ({
   // Show app opener when app is already open.
   const [appOpenerVisible, setAppOpenerVisible] = useState(false)
 
-  const [url, setUrl] = useQuerySyncedState({
+  const [url, setUrl, wasInitializedFromQuery] = useQuerySyncedState({
     param: 'url',
     defaultValue: '',
   })
@@ -130,12 +130,12 @@ export const AppsRenderer = ({
 
   // If URL is set on mount, open automatically.
   useEffect(() => {
-    if (isUrlValid(url) === true) {
+    if (wasInitializedFromQuery && isUrlValid(url) === true) {
       openApp(url)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [wasInitializedFromQuery])
 
   // Add event handler to inform iframe that it's wrapped in DAO DAO if it asks.
   useEffect(() => {

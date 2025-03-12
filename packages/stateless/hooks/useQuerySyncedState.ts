@@ -13,6 +13,7 @@ export type UseQuerySyncedStateOptions<T extends unknown> = {
 export type UseQuerySyncedStateReturn<T extends unknown> = [
   T,
   Dispatch<SetStateAction<T>>,
+  boolean,
 ]
 
 /**
@@ -35,6 +36,7 @@ export const useQuerySyncedState = <T = string | number>({
 }: UseQuerySyncedStateOptions<T>): UseQuerySyncedStateReturn<T> => {
   const router = useRouter()
   const [value, setValue] = useState(defaultValue)
+  const [wasInitializedFromQuery, setWasInitializedFromQuery] = useState(false)
 
   // On site load, set initial value from query parameter.
   const pageInitialized = useRef(false)
@@ -57,6 +59,8 @@ export const useQuerySyncedState = <T = string | number>({
             ? Number(initialValue)
             : initialValue) as any
       )
+
+      setWasInitializedFromQuery(true)
     }
   }, [param, router.query, value])
 
@@ -91,5 +95,5 @@ export const useQuerySyncedState = <T = string | number>({
     )
   }, [value, router, param, defaultValue])
 
-  return [value, setValue]
+  return [value, setValue, wasInitializedFromQuery]
 }
