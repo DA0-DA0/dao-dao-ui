@@ -17,6 +17,7 @@ import { APPS, processError, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { useQuerySyncedState } from '../../hooks'
 import { Button, ButtonLink } from '../buttons'
+import { ErrorPage } from '../error'
 import { IconButton } from '../icon_buttons'
 import {
   InputErrorMessage,
@@ -24,6 +25,7 @@ import {
   SegmentedControls,
   TextInput,
 } from '../inputs'
+import { PageLoader } from '../logo'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { Modal } from '../modals'
 import { StatusCard } from '../StatusCard'
@@ -73,6 +75,10 @@ export type AppsRendererProps = {
    */
   loading?: boolean
   /**
+   * Whether or not the entity is updating.
+   */
+  updating?: boolean
+  /**
    * Error to display.
    */
   error?: string
@@ -107,6 +113,7 @@ export const AppsRenderer = ({
   AddressInput,
   chainPicker,
   loading,
+  updating,
   error: _error,
 }: AppsRendererProps) => {
   const { t } = useTranslation()
@@ -166,6 +173,8 @@ export const AppsRenderer = ({
     }
   }, [iframe])
 
+  const currentError = _error || error
+
   return fullScreen ? (
     <>
       {createPortal(
@@ -198,18 +207,24 @@ export const AppsRenderer = ({
               </div>
             </div>
 
-            <iframe
-              allow="clipboard-write"
-              className={clsx(
-                'grow',
-                !fullScreen && 'min-h-[75dvh] rounded-md'
-              )}
-              ref={(ref) => {
-                setIframe(ref)
-                iframeRef(ref)
-              }}
-              src={url}
-            ></iframe>
+            {loading ? (
+              <PageLoader />
+            ) : currentError ? (
+              <ErrorPage error={error} />
+            ) : (
+              <iframe
+                allow="clipboard-write"
+                className={clsx(
+                  'grow',
+                  !fullScreen && 'min-h-[75dvh] rounded-md'
+                )}
+                ref={(ref) => {
+                  setIframe(ref)
+                  iframeRef(ref)
+                }}
+                src={url}
+              ></iframe>
+            )}
           </div>
         </div>,
         document.body
@@ -226,9 +241,9 @@ export const AppsRenderer = ({
         <AppOpener
           AddressInput={AddressInput}
           chainPicker={chainPicker}
-          error={_error || error}
+          error={currentError}
           executionType={executionType}
-          loading={loading}
+          loading={loading || updating}
           openApp={openApp}
           otherAddress={otherAddress}
           setError={setError}
@@ -242,9 +257,9 @@ export const AppsRenderer = ({
     <AppOpener
       AddressInput={AddressInput}
       chainPicker={chainPicker}
-      error={_error || error}
+      error={currentError}
       executionType={executionType}
-      loading={loading}
+      loading={loading || updating}
       openApp={openApp}
       otherAddress={otherAddress}
       setError={setError}
