@@ -842,7 +842,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           executionType={executionType}
           fullScreen={fullScreen}
           iframeRef={myIframeRef}
-          loading={loadingAppEntity.loading}
+          loading={loadingAppEntity.loading || loadingAppEntity.updating}
           otherAddress={otherAddress}
           setExecutionType={setExecutionType}
           setFullScreen={setFullScreen}
