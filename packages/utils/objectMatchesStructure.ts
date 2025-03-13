@@ -10,7 +10,7 @@ export type Structure = {
  * Check if object contains the expected structure, with exact matching on array
  * lengths.
  */
-export const objectMatchesStructure = <T = any>(
+export const objectMatchesStructure = (
   object: any | undefined | null,
   structure: Structure,
   options: {
@@ -19,7 +19,7 @@ export const objectMatchesStructure = <T = any>(
   } = {
     ignoreNullUndefined: true,
   }
-): object is T => {
+): boolean => {
   if (!object || typeof object !== 'object' || Array.isArray(object)) {
     return false
   }
