@@ -68,6 +68,14 @@ export type AppsRendererProps = {
    * The chain picker node.
    */
   chainPicker: ReactNode
+  /**
+   * Whether or not to show a loading state which prevents opening apps.
+   */
+  loading?: boolean
+  /**
+   * Error to display.
+   */
+  error?: string
 }
 
 // Only allow URLs starting with `http(s)://`, to prevent XSS via `javascript:`
@@ -98,6 +106,8 @@ export const AppsRenderer = ({
   setOtherAddress,
   AddressInput,
   chainPicker,
+  loading,
+  error: _error,
 }: AppsRendererProps) => {
   const { t } = useTranslation()
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
@@ -216,8 +226,9 @@ export const AppsRenderer = ({
         <AppOpener
           AddressInput={AddressInput}
           chainPicker={chainPicker}
-          error={error}
+          error={_error || error}
           executionType={executionType}
+          loading={loading}
           openApp={openApp}
           otherAddress={otherAddress}
           setError={setError}
@@ -231,8 +242,9 @@ export const AppsRenderer = ({
     <AppOpener
       AddressInput={AddressInput}
       chainPicker={chainPicker}
-      error={error}
+      error={_error || error}
       executionType={executionType}
+      loading={loading}
       openApp={openApp}
       otherAddress={otherAddress}
       setError={setError}
@@ -251,6 +263,7 @@ type AppOpenerProps = Omit<
   openApp: (url: string) => void
   error: string | undefined
   setError: Dispatch<SetStateAction<string | undefined>>
+  loading?: boolean
 }
 
 const AppOpener = ({
@@ -264,6 +277,7 @@ const AppOpener = ({
   openApp,
   error,
   setError,
+  loading,
 }: AppOpenerProps) => {
   const { t } = useTranslation()
 
@@ -358,7 +372,6 @@ const AppOpener = ({
       <TextInput
         autoComplete="off"
         className="grow -mt-3"
-        error={error}
         onChange={(event) => {
           setInputUrl(event.target.value)
           setError(undefined)
@@ -372,7 +385,6 @@ const AppOpener = ({
         type="url"
         value={inputUrl}
       />
-      <InputErrorMessage className="!-mt-3" error={error} />
 
       <div className="flex flex-col gap-1 items-start">
         <InputLabel
@@ -411,12 +423,16 @@ const AppOpener = ({
 
       <Button
         center
+        disabled={!!error}
+        loading={loading}
         onClick={() => openApp(inputUrl)}
         size="lg"
         variant="brand"
       >
         {t('button.openApp')}
       </Button>
+
+      <InputErrorMessage className="!-mt-2" error={error} />
     </div>
   )
 }

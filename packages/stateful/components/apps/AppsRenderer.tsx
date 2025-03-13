@@ -58,6 +58,7 @@ import {
   isValidBech32Address,
   maybeMakeIcaExecuteMessages,
   maybeMakePolytoneExecuteMessages,
+  processError,
 } from '@dao-dao/utils'
 
 import { AuthzExecAction, DaoAdminExecAction } from '../../actions/core/actions'
@@ -831,9 +832,17 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               <WalletChainSwitcher type="configured" />
             )
           }
+          error={
+            loadingAppEntity.errored
+              ? processError(loadingAppEntity.error, {
+                  forceCapture: false,
+                })
+              : undefined
+          }
           executionType={executionType}
           fullScreen={fullScreen}
           iframeRef={myIframeRef}
+          loading={loadingAppEntity.loading}
           otherAddress={otherAddress}
           setExecutionType={setExecutionType}
           setFullScreen={setFullScreen}
