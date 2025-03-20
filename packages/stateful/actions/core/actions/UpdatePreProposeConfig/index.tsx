@@ -7,6 +7,7 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionEncodeContext,
   ActionKey,
   ActionMatch,
@@ -160,7 +161,8 @@ export class UpdatePreProposeConfigAction extends ActionBase<UpdatePreProposeCon
   }
 
   async decode(
-    messages: ProcessedMessage[]
+    messages: ProcessedMessage[],
+    context: ActionDecodeContext
   ): Promise<UpdatePreProposeConfigData> {
     const match = await this._match(messages)
     // Should never happen since `match` confirms one of these options match.
@@ -170,7 +172,7 @@ export class UpdatePreProposeConfigAction extends ActionBase<UpdatePreProposeCon
 
     return {
       proposalModuleAddress: match.option.proposalModule.address,
-      data: await match.option.action.decode(messages),
+      data: await match.option.action.decode(messages, context),
     }
   }
 }

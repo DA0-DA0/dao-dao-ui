@@ -333,7 +333,8 @@ export interface Action<
    * called if the action is ready.
    */
   decode: (
-    messages: ProcessedMessage[]
+    messages: ProcessedMessage[],
+    context: ActionDecodeContext
   ) => Partial<Data> | Promise<Partial<Data>>
   /**
    * Optional function to transform data from a bulk import into the action's
@@ -391,7 +392,7 @@ export type ActionContext = (
     }
 ) & {
   // All contexts should have a list of accounts.
-  accounts: Account[]
+  accounts: Account[] | readonly Account[]
 }
 
 /**
@@ -415,6 +416,20 @@ export type ActionEncodeContext =
       type: ActionContextType.Gov
       params: AllGovParams
     }
+
+/**
+ * Additional context passed to the decode function.
+ */
+export type ActionDecodeContext = {
+  /**
+   * List of all available actions.
+   */
+  actions: readonly Action[]
+  /**
+   * Action message processor.
+   */
+  messageProcessor: MessageProcessor
+}
 
 export enum ActionChainContextType {
   /**
@@ -572,6 +587,12 @@ export interface IActionDecoder<
    * @returns A promise that resolves to the decoded action data.
    */
   decode: () => Promise<Data>
+  /**
+   * Function to decode messages into action data and return the action key and
+   * data.
+   * @returns A promise that resolves to the action key and data.
+   */
+  decodeIntoKeyAndData: () => Promise<ActionKeyAndData>
   /**
    * Decoded action data. Throw an error if not yet decoded.
    */

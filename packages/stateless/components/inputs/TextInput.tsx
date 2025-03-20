@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { ComponentPropsWithoutRef } from 'react'
 import {
-  FieldError,
   FieldPathValue,
   FieldValues,
   Path,
@@ -17,7 +16,7 @@ export interface TextInputProps<
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  error?: FieldError
+  error?: any
   required?: boolean
   ghost?: boolean
 }

@@ -1,11 +1,12 @@
 //@ts-nocheck
-import { DenomTrace, DenomTraceAmino, DenomTraceSDKType, Params, ParamsAmino, ParamsSDKType } from "./transfer";
+import { Denom, DenomAmino, DenomSDKType } from "./token";
+import { Params, ParamsAmino, ParamsSDKType } from "./transfer";
 import { Coin, CoinAmino, CoinSDKType } from "../../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** GenesisState defines the ibc-transfer genesis state */
 export interface GenesisState {
   portId: string;
-  denomTraces: DenomTrace[];
+  denoms: Denom[];
   params: Params | undefined;
   /**
    * total_escrowed contains the total amount of tokens escrowed
@@ -20,7 +21,7 @@ export interface GenesisStateProtoMsg {
 /** GenesisState defines the ibc-transfer genesis state */
 export interface GenesisStateAmino {
   port_id?: string;
-  denom_traces?: DenomTraceAmino[];
+  denoms?: DenomAmino[];
   params?: ParamsAmino | undefined;
   /**
    * total_escrowed contains the total amount of tokens escrowed
@@ -35,14 +36,14 @@ export interface GenesisStateAminoMsg {
 /** GenesisState defines the ibc-transfer genesis state */
 export interface GenesisStateSDKType {
   port_id: string;
-  denom_traces: DenomTraceSDKType[];
+  denoms: DenomSDKType[];
   params: ParamsSDKType | undefined;
   total_escrowed: CoinSDKType[];
 }
 function createBaseGenesisState(): GenesisState {
   return {
     portId: "",
-    denomTraces: [],
+    denoms: [],
     params: Params.fromPartial({}),
     totalEscrowed: []
   };
@@ -53,8 +54,8 @@ export const GenesisState = {
     if (message.portId !== "") {
       writer.uint32(10).string(message.portId);
     }
-    for (const v of message.denomTraces) {
-      DenomTrace.encode(v!, writer.uint32(18).fork()).ldelim();
+    for (const v of message.denoms) {
+      Denom.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(26).fork()).ldelim();
@@ -75,7 +76,7 @@ export const GenesisState = {
           message.portId = reader.string();
           break;
         case 2:
-          message.denomTraces.push(DenomTrace.decode(reader, reader.uint32(), useInterfaces));
+          message.denoms.push(Denom.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
           message.params = Params.decode(reader, reader.uint32(), useInterfaces);
@@ -93,7 +94,7 @@ export const GenesisState = {
   fromPartial(object: Partial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.portId = object.portId ?? "";
-    message.denomTraces = object.denomTraces?.map(e => DenomTrace.fromPartial(e)) || [];
+    message.denoms = object.denoms?.map(e => Denom.fromPartial(e)) || [];
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     message.totalEscrowed = object.totalEscrowed?.map(e => Coin.fromPartial(e)) || [];
     return message;
@@ -103,7 +104,7 @@ export const GenesisState = {
     if (object.port_id !== undefined && object.port_id !== null) {
       message.portId = object.port_id;
     }
-    message.denomTraces = object.denom_traces?.map(e => DenomTrace.fromAmino(e)) || [];
+    message.denoms = object.denoms?.map(e => Denom.fromAmino(e)) || [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromAmino(object.params);
     }
@@ -113,10 +114,10 @@ export const GenesisState = {
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.port_id = message.portId === "" ? undefined : message.portId;
-    if (message.denomTraces) {
-      obj.denom_traces = message.denomTraces.map(e => e ? DenomTrace.toAmino(e, useInterfaces) : undefined);
+    if (message.denoms) {
+      obj.denoms = message.denoms.map(e => e ? Denom.toAmino(e, useInterfaces) : undefined);
     } else {
-      obj.denom_traces = message.denomTraces;
+      obj.denoms = message.denoms;
     }
     obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.totalEscrowed) {

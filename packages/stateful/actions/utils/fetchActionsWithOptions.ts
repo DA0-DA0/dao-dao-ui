@@ -1,0 +1,160 @@
+import { QueryClient } from '@tanstack/react-query'
+import { TFunction } from 'next-i18next'
+
+import { accountQueries, profileQueries } from '@dao-dao/state/query'
+import {
+  Action,
+  ActionContext,
+  ActionContextType,
+  ActionOptions,
+  EntityType,
+  ImplementedAction,
+} from '@dao-dao/types'
+import {
+  convertChainContextToActionChainContext,
+  getDaoWidgets,
+  makeChainContext,
+  makeEmptyUnifiedProfile,
+} from '@dao-dao/utils'
+
+import { getDao } from '../../clients'
+import { entityQueries } from '../../queries'
+import { matchAndLoadAdapter } from '../../voting-module-adapter'
+import { getWidgetById } from '../../widgets'
+import { getCoreActions } from '../core'
+
+/**
+ * Fetch actions with options for an account.
+ */
+export const fetchActionsWithOptions = async ({
+  t,
+  queryClient,
+  chainId,
+  address,
+}: {
+  t: TFunction
+  queryClient: QueryClient
+  chainId: string
+  address: string
+}) => {
+  const entity = await queryClient.fetchQuery(
+    entityQueries.info(queryClient, {
+      chainId,
+      address,
+    })
+  )
+
+  const dao =
+    entity.type === EntityType.Dao && !entity.polytoneProxy
+      ? getDao({
+          queryClient: queryClient,
+          chainId,
+          coreAddress: address,
+        })
+      : undefined
+  await dao?.init()
+
+  let context: ActionContext
+  if (dao) {
+    await dao.init()
+    context = {
+      type: ActionContextType.Dao,
+      dao,
+      accounts: dao.accounts,
+    }
+  } else {
+    const [profile, accounts] = await Promise.all([
+      queryClient
+        .fetchQuery(
+          profileQueries.unified(queryClient, {
+            chainId,
+            address,
+          })
+        )
+        .catch(() => makeEmptyUnifiedProfile(chainId, address)),
+      queryClient.fetchQuery(
+        accountQueries.list(queryClient, {
+          chainId,
+          address,
+        })
+      ),
+    ])
+
+    context = {
+      type: ActionContextType.Wallet,
+      profile,
+      accounts,
+    }
+  }
+
+  const chainContext = makeChainContext(chainId)
+  const options: ActionOptions = {
+    t,
+    chain: chainContext.chain,
+    chainContext: convertChainContextToActionChainContext(chainContext),
+    address,
+    context,
+    queryClient,
+  }
+
+  let actions: Action[]
+
+  const coreActions = getCoreActions()
+
+  // TODO: merge this logic and DAO/wallet actions providers.
+  if (dao) {
+    // Get voting module adapter actions.
+    let votingModuleActions: ImplementedAction[] = []
+    try {
+      votingModuleActions =
+        matchAndLoadAdapter(dao).adapter.fields.actions?.actions || []
+    } catch {
+      // If no adapter is found, ignore.
+    }
+
+    // Get widget actions.
+    const widgetActions = getDaoWidgets(dao.info.items).flatMap(
+      ({ id, values }) => {
+        const widget = getWidgetById(chainId, id)
+        if (!widget) {
+          return []
+        }
+
+        return widget.getActions?.(values || {}) || []
+      }
+    )
+
+    actions = [
+      ...[
+        ...coreActions,
+        ...votingModuleActions,
+        ...widgetActions.flatMap(({ actions }) => actions || []),
+      ].flatMap((Action) => {
+        // Action constructor throws error for invalid contexts.
+        try {
+          return new Action(options)
+        } catch {
+          return []
+        }
+      }),
+      ...widgetActions.flatMap(
+        ({ actionMakers }) =>
+          actionMakers?.flatMap((maker) => maker(options) || []) || []
+      ),
+    ]
+  } else {
+    actions = coreActions.flatMap((Action) => {
+      // Action constructor throws error for invalid contexts.
+      try {
+        return new Action(options)
+      } catch {
+        return []
+      }
+    })
+  }
+
+  return {
+    options,
+    actions,
+  }
+}

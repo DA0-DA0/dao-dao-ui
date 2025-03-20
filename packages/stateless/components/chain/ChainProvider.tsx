@@ -1,11 +1,6 @@
 import { ReactNode, useMemo } from 'react'
 
-import {
-  getChainForChainId,
-  getConfiguredChainConfig,
-  getSupportedChainConfig,
-  maybeGetNativeTokenForChainId,
-} from '@dao-dao/utils'
+import { makeChainContext } from '@dao-dao/utils'
 
 import { ChainContext } from '../../contexts/Chain'
 
@@ -15,17 +10,7 @@ export type ChainProviderProps = {
 }
 
 export const ChainProvider = ({ chainId, children }: ChainProviderProps) => {
-  const context = useMemo(
-    () => ({
-      chainId,
-      chain: getChainForChainId(chainId),
-      nativeToken: maybeGetNativeTokenForChainId(chainId),
-      base: getConfiguredChainConfig(chainId),
-      config: getSupportedChainConfig(chainId),
-    }),
-    [chainId]
-  )
-
+  const context = useMemo(() => makeChainContext(chainId), [chainId])
   return (
     <ChainContext.Provider value={context}>{children}</ChainContext.Provider>
   )

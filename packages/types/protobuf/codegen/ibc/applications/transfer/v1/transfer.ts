@@ -1,47 +1,5 @@
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 /**
- * DenomTrace contains the base denomination for ICS20 fungible tokens and the
- * source tracing information path.
- */
-export interface DenomTrace {
-  /**
-   * path defines the chain of port/channel identifiers used for tracing the
-   * source of the fungible token.
-   */
-  path: string;
-  /** base denomination of the relayed fungible token. */
-  baseDenom: string;
-}
-export interface DenomTraceProtoMsg {
-  typeUrl: "/ibc.applications.transfer.v1.DenomTrace";
-  value: Uint8Array;
-}
-/**
- * DenomTrace contains the base denomination for ICS20 fungible tokens and the
- * source tracing information path.
- */
-export interface DenomTraceAmino {
-  /**
-   * path defines the chain of port/channel identifiers used for tracing the
-   * source of the fungible token.
-   */
-  path?: string;
-  /** base denomination of the relayed fungible token. */
-  base_denom?: string;
-}
-export interface DenomTraceAminoMsg {
-  type: "cosmos-sdk/DenomTrace";
-  value: DenomTraceAmino;
-}
-/**
- * DenomTrace contains the base denomination for ICS20 fungible tokens and the
- * source tracing information path.
- */
-export interface DenomTraceSDKType {
-  path: string;
-  base_denom: string;
-}
-/**
  * Params defines the set of IBC transfer parameters.
  * NOTE: To prevent a single token from being transferred, set the
  * TransfersEnabled parameter to true and then set the bank module's SendEnabled
@@ -95,87 +53,38 @@ export interface ParamsSDKType {
   send_enabled: boolean;
   receive_enabled: boolean;
 }
-function createBaseDenomTrace(): DenomTrace {
-  return {
-    path: "",
-    baseDenom: ""
-  };
+/**
+ * Hop defines a port ID, channel ID pair specifying where tokens must be forwarded
+ * next in a multihop transfer.
+ */
+export interface Hop {
+  portId: string;
+  channelId: string;
 }
-export const DenomTrace = {
-  typeUrl: "/ibc.applications.transfer.v1.DenomTrace",
-  encode(message: DenomTrace, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.path !== "") {
-      writer.uint32(10).string(message.path);
-    }
-    if (message.baseDenom !== "") {
-      writer.uint32(18).string(message.baseDenom);
-    }
-    return writer;
-  },
-  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DenomTrace {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDenomTrace();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.path = reader.string();
-          break;
-        case 2:
-          message.baseDenom = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<DenomTrace>): DenomTrace {
-    const message = createBaseDenomTrace();
-    message.path = object.path ?? "";
-    message.baseDenom = object.baseDenom ?? "";
-    return message;
-  },
-  fromAmino(object: DenomTraceAmino): DenomTrace {
-    const message = createBaseDenomTrace();
-    if (object.path !== undefined && object.path !== null) {
-      message.path = object.path;
-    }
-    if (object.base_denom !== undefined && object.base_denom !== null) {
-      message.baseDenom = object.base_denom;
-    }
-    return message;
-  },
-  toAmino(message: DenomTrace, useInterfaces: boolean = false): DenomTraceAmino {
-    const obj: any = {};
-    obj.path = message.path === "" ? undefined : message.path;
-    obj.base_denom = message.baseDenom === "" ? undefined : message.baseDenom;
-    return obj;
-  },
-  fromAminoMsg(object: DenomTraceAminoMsg): DenomTrace {
-    return DenomTrace.fromAmino(object.value);
-  },
-  toAminoMsg(message: DenomTrace, useInterfaces: boolean = false): DenomTraceAminoMsg {
-    return {
-      type: "cosmos-sdk/DenomTrace",
-      value: DenomTrace.toAmino(message, useInterfaces)
-    };
-  },
-  fromProtoMsg(message: DenomTraceProtoMsg, useInterfaces: boolean = false): DenomTrace {
-    return DenomTrace.decode(message.value, undefined, useInterfaces);
-  },
-  toProto(message: DenomTrace): Uint8Array {
-    return DenomTrace.encode(message).finish();
-  },
-  toProtoMsg(message: DenomTrace): DenomTraceProtoMsg {
-    return {
-      typeUrl: "/ibc.applications.transfer.v1.DenomTrace",
-      value: DenomTrace.encode(message).finish()
-    };
-  }
-};
+export interface HopProtoMsg {
+  typeUrl: "/ibc.applications.transfer.v1.Hop";
+  value: Uint8Array;
+}
+/**
+ * Hop defines a port ID, channel ID pair specifying where tokens must be forwarded
+ * next in a multihop transfer.
+ */
+export interface HopAmino {
+  port_id?: string;
+  channel_id?: string;
+}
+export interface HopAminoMsg {
+  type: "cosmos-sdk/Hop";
+  value: HopAmino;
+}
+/**
+ * Hop defines a port ID, channel ID pair specifying where tokens must be forwarded
+ * next in a multihop transfer.
+ */
+export interface HopSDKType {
+  port_id: string;
+  channel_id: string;
+}
 function createBaseParams(): Params {
   return {
     sendEnabled: false,
@@ -254,6 +163,87 @@ export const Params = {
     return {
       typeUrl: "/ibc.applications.transfer.v1.Params",
       value: Params.encode(message).finish()
+    };
+  }
+};
+function createBaseHop(): Hop {
+  return {
+    portId: "",
+    channelId: ""
+  };
+}
+export const Hop = {
+  typeUrl: "/ibc.applications.transfer.v1.Hop",
+  encode(message: Hop, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.portId !== "") {
+      writer.uint32(10).string(message.portId);
+    }
+    if (message.channelId !== "") {
+      writer.uint32(18).string(message.channelId);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Hop {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseHop();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.portId = reader.string();
+          break;
+        case 2:
+          message.channelId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<Hop>): Hop {
+    const message = createBaseHop();
+    message.portId = object.portId ?? "";
+    message.channelId = object.channelId ?? "";
+    return message;
+  },
+  fromAmino(object: HopAmino): Hop {
+    const message = createBaseHop();
+    if (object.port_id !== undefined && object.port_id !== null) {
+      message.portId = object.port_id;
+    }
+    if (object.channel_id !== undefined && object.channel_id !== null) {
+      message.channelId = object.channel_id;
+    }
+    return message;
+  },
+  toAmino(message: Hop, useInterfaces: boolean = false): HopAmino {
+    const obj: any = {};
+    obj.port_id = message.portId === "" ? undefined : message.portId;
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    return obj;
+  },
+  fromAminoMsg(object: HopAminoMsg): Hop {
+    return Hop.fromAmino(object.value);
+  },
+  toAminoMsg(message: Hop, useInterfaces: boolean = false): HopAminoMsg {
+    return {
+      type: "cosmos-sdk/Hop",
+      value: Hop.toAmino(message, useInterfaces)
+    };
+  },
+  fromProtoMsg(message: HopProtoMsg, useInterfaces: boolean = false): Hop {
+    return Hop.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: Hop): Uint8Array {
+    return Hop.encode(message).finish();
+  },
+  toProtoMsg(message: Hop): HopProtoMsg {
+    return {
+      typeUrl: "/ibc.applications.transfer.v1.Hop",
+      value: Hop.encode(message).finish()
     };
   }
 };

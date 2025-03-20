@@ -1,10 +1,13 @@
 import {
   ActionAndData,
+  ActionChainContext,
+  ActionChainContextType,
   ActionContextType,
   ActionEncodeContext,
   ActionKeyAndData,
   ActionMap,
   ActionOptions,
+  IChainContext,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
 
@@ -111,3 +114,27 @@ export const getChainAddressForActionOptions = (
         context.type === ActionContextType.Wallet
         ? context.profile?.chains[chainId]?.address
         : undefined
+
+/**
+ * Convert chain context to action chain context.
+ */
+export const convertChainContextToActionChainContext = (
+  chainContext: IChainContext
+): ActionChainContext =>
+  chainContext.config
+    ? {
+        type: ActionChainContextType.Supported,
+        ...chainContext,
+        // Type-check.
+        config: chainContext.config,
+      }
+    : chainContext.base
+      ? {
+          type: ActionChainContextType.Configured,
+          ...chainContext,
+          config: chainContext.base,
+        }
+      : {
+          type: ActionChainContextType.Any,
+          ...chainContext,
+        }

@@ -6,6 +6,7 @@ import { chainQueries } from '@dao-dao/state/query'
 import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import {
   ActionBase,
+  ActionMatcher,
   Button,
   ChainProvider,
   DaoSupportedChainPickerInput,
@@ -19,7 +20,9 @@ import {
 import {
   AccountType,
   ActionComponent,
+  ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   ProcessedMessage,
@@ -33,6 +36,7 @@ import {
 import { SuspenseLoader } from '../../../../components'
 import { useActionEncodeContext } from '../../../context'
 import { WalletActionsProvider } from '../../../providers/wallet'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   IcaExecuteData,
   IcaExecuteComponent as StatelessIcaExecuteComponent,
@@ -275,16 +279,47 @@ export class IcaExecuteAction extends ActionBase<IcaExecuteData> {
     return type === AccountType.Ica && decodedMessages.length > 0
   }
 
-  decode([
-    {
-      wrappedMessages,
-      account: { chainId, address },
-    },
-  ]: ProcessedMessage[]): IcaExecuteData {
+  async decode(
+    [
+      {
+        wrappedMessages,
+        account: { chainId, address },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<IcaExecuteData> {
+    const msgs = wrappedMessages.map(({ message }) => message)
+
+    let actionData: ActionKeyAndData[] | undefined
+    try {
+      const { actions, options } = await fetchActionsWithOptions({
+        t: this.options.t,
+        queryClient: this.options.queryClient,
+        chainId,
+        address,
+      })
+
+      // Match and decode all messages.
+      const matcher = new ActionMatcher(
+        options,
+        context.messageProcessor,
+        actions
+      )
+      const decoders = await matcher.match(msgs)
+      actionData = await Promise.all(
+        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+      )
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
+    }
+
     return {
       chainId,
       icaRemoteAddress: address,
-      msgs: wrappedMessages.map(({ message }) => message),
+      msgs,
+      _actionData: actionData,
     }
   }
 }

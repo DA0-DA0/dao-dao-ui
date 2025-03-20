@@ -1,7 +1,7 @@
 import { Rpc } from "../../../../helpers";
 import { BinaryReader } from "../../../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryDenomTraceRequest, QueryDenomTraceResponse, QueryDenomTracesRequest, QueryDenomTracesResponse, QueryParamsRequest, QueryParamsResponse, QueryDenomHashRequest, QueryDenomHashResponse, QueryEscrowAddressRequest, QueryEscrowAddressResponse, QueryTotalEscrowForDenomRequest, QueryTotalEscrowForDenomResponse } from "./query";
+import { QueryDenomTraceRequest, QueryDenomTraceResponse, QueryDenomTracesRequest, QueryDenomTracesResponse, QueryParamsRequest, QueryParamsResponse, QueryDenomsRequest, QueryDenomsResponse, QueryDenomRequest, QueryDenomResponse, QueryDenomHashRequest, QueryDenomHashResponse, QueryEscrowAddressRequest, QueryEscrowAddressResponse, QueryTotalEscrowForDenomRequest, QueryTotalEscrowForDenomResponse } from "./query";
 /** Query provides defines the gRPC querier service. */
 export interface Query {
   /** DenomTrace queries a denomination trace information. */
@@ -10,6 +10,10 @@ export interface Query {
   denomTraces(request?: QueryDenomTracesRequest): Promise<QueryDenomTracesResponse>;
   /** Params queries all parameters of the ibc-transfer module. */
   params(request?: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Denoms queries all denominations */
+  denoms(request?: QueryDenomsRequest): Promise<QueryDenomsResponse>;
+  /** Denom queries a denomination */
+  denom(request: QueryDenomRequest): Promise<QueryDenomResponse>;
   /** DenomHash queries a denomination hash information. */
   denomHash(request: QueryDenomHashRequest): Promise<QueryDenomHashResponse>;
   /** EscrowAddress returns the escrow address for a particular port and channel id. */
@@ -24,6 +28,8 @@ export class QueryClientImpl implements Query {
     this.denomTrace = this.denomTrace.bind(this);
     this.denomTraces = this.denomTraces.bind(this);
     this.params = this.params.bind(this);
+    this.denoms = this.denoms.bind(this);
+    this.denom = this.denom.bind(this);
     this.denomHash = this.denomHash.bind(this);
     this.escrowAddress = this.escrowAddress.bind(this);
     this.totalEscrowForDenom = this.totalEscrowForDenom.bind(this);
@@ -44,6 +50,18 @@ export class QueryClientImpl implements Query {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "Params", data);
     return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
+  denoms(request: QueryDenomsRequest = {
+    pagination: undefined
+  }, useInterfaces: boolean = true): Promise<QueryDenomsResponse> {
+    const data = QueryDenomsRequest.encode(request).finish();
+    const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "Denoms", data);
+    return promise.then(data => QueryDenomsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
+  }
+  denom(request: QueryDenomRequest, useInterfaces: boolean = true): Promise<QueryDenomResponse> {
+    const data = QueryDenomRequest.encode(request).finish();
+    const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "Denom", data);
+    return promise.then(data => QueryDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
     const data = QueryDenomHashRequest.encode(request).finish();
@@ -73,6 +91,12 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     },
     params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
       return queryService.params(request, useInterfaces);
+    },
+    denoms(request?: QueryDenomsRequest, useInterfaces: boolean = true): Promise<QueryDenomsResponse> {
+      return queryService.denoms(request, useInterfaces);
+    },
+    denom(request: QueryDenomRequest, useInterfaces: boolean = true): Promise<QueryDenomResponse> {
+      return queryService.denom(request, useInterfaces);
     },
     denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
       return queryService.denomHash(request, useInterfaces);

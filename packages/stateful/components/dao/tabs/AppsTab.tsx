@@ -59,26 +59,22 @@ const AppsTabExecutor = ({
 
     setProposalSave((save) => ({
       ...save,
-      actionData: [
-        ...(save?.actionData || []),
-        ...data.data.map((d) => ({
-          ...d,
-          // Make actions read-only so they can't be edited.
-          readOnly: true,
-        })),
-      ],
+      actionData: [...(save?.actionData || []), ...data.data],
     }))
   }, [data, setProposalSave])
+
+  const loading = data.loading && !!actionCount
 
   return (
     <ProposalActionShoppingCart
       actionMap={actionMap}
       dao={dao}
       error={data.errored ? data.error : undefined}
-      loading={data.loading && actionCount}
+      hideOpenButton={loading}
+      loading={loading}
       modalSubtitleOverride={
         data.loading
-          ? t('info.addingActions', {
+          ? t('info.addingActionsCloseToCancel', {
               count: actionCount,
             })
           : undefined

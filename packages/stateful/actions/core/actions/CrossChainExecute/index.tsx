@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   TelescopeEmoji,
@@ -12,7 +13,9 @@ import {
   AccountType,
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   ProcessedMessage,
@@ -26,6 +29,7 @@ import {
 import { SuspenseLoader } from '../../../../components'
 import { useActionEncodeContext } from '../../../context'
 import { WalletActionsProvider } from '../../../providers/wallet'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   CrossChainExecuteData,
   CrossChainExecuteComponent as StatelessCrossChainExecuteComponent,
@@ -142,15 +146,46 @@ export class CrossChainExecuteAction extends ActionBase<CrossChainExecuteData> {
     return type === AccountType.Polytone && decodedMessages.length > 0
   }
 
-  decode([
-    {
-      wrappedMessages,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): CrossChainExecuteData {
+  async decode(
+    [
+      {
+        wrappedMessages,
+        account: { chainId, address },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<CrossChainExecuteData> {
+    const msgs = wrappedMessages.map(({ message }) => message)
+
+    let actionData: ActionKeyAndData[] | undefined
+    try {
+      const { actions, options } = await fetchActionsWithOptions({
+        t: this.options.t,
+        queryClient: this.options.queryClient,
+        chainId,
+        address,
+      })
+
+      // Match and decode all messages.
+      const matcher = new ActionMatcher(
+        options,
+        context.messageProcessor,
+        actions
+      )
+      const decoders = await matcher.match(msgs)
+      actionData = await Promise.all(
+        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+      )
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
+    }
+
     return {
       chainId,
-      msgs: wrappedMessages.map(({ message }) => message),
+      msgs,
+      _actionData: actionData,
     }
   }
 }

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { contractQueries } from '@dao-dao/state'
 import {
   ActionBase,
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   InputLabel,
@@ -16,7 +17,9 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   ProcessedMessage,
@@ -46,6 +49,7 @@ import { useQueryLoadingData } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
 import { BaseActionsProvider } from '../../../providers/base'
 import { WalletActionsProvider } from '../../../providers/wallet'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   AuthzExecData,
   AuthzExecOptions,
@@ -194,7 +198,8 @@ const Component: ActionComponent = (props) => {
                 {...props}
                 options={{
                   address: sender,
-                  // Set so the component knows which sender message group to render.
+                  // Set so the component knows which sender message group to
+                  // render.
                   msgPerSenderIndex: index,
                 }}
               />
@@ -250,32 +255,65 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
     )
   }
 
-  decode([
-    {
-      decodedMessage,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): AuthzExecData {
+  async decode(
+    [
+      {
+        decodedMessage,
+        account: { chainId },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<AuthzExecData> {
     const execMsg = decodedMessage.stargate.value as MsgExec
 
+    const cwMsgs = execMsg.msgs.map((msg) =>
+      protobufToCwMsg(getChainForChainId(chainId), msg)
+    )
     // Group adjacent messages by sender, preserving message order.
-    const msgsPerSender = execMsg.msgs
-      .map((msg) => protobufToCwMsg(getChainForChainId(chainId), msg))
-      .reduce(
-        (acc, { msg, sender }) => {
-          const last = acc[acc.length - 1]
-          if (last && last.sender === sender) {
-            last.msgs.push(msg)
-          } else {
-            acc.push({ sender, msgs: [msg] })
-          }
-          return acc
-        },
-        [] as {
-          sender: string
-          msgs: UnifiedCosmosMsg[]
-        }[]
-      )
+    const msgsPerSender = cwMsgs.reduce(
+      (acc, { msg, sender }) => {
+        const last = acc[acc.length - 1]
+        if (last && last.sender === sender) {
+          last.msgs.push(msg)
+        } else {
+          acc.push({ sender, msgs: [msg] })
+        }
+        return acc
+      },
+      [] as {
+        sender: string
+        msgs: UnifiedCosmosMsg[]
+      }[]
+    )
+
+    let actionData: ActionKeyAndData[] | undefined
+    try {
+      // Action data is only relevant if there is only sender.
+      if (msgsPerSender.length === 1) {
+        const sender = msgsPerSender[0].sender
+        const { actions, options } = await fetchActionsWithOptions({
+          t: this.options.t,
+          queryClient: this.options.queryClient,
+          chainId,
+          address: sender,
+        })
+
+        // Match and decode all messages.
+        const matcher = new ActionMatcher(
+          options,
+          context.messageProcessor,
+          actions
+        )
+        const decoders = await matcher.match(cwMsgs.map(({ msg }) => msg))
+        actionData = await Promise.all(
+          decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+        )
+      }
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
+    }
 
     return {
       chainId,
@@ -285,6 +323,7 @@ export class AuthzExecAction extends ActionBase<AuthzExecData> {
       address: msgsPerSender.length === 1 ? msgsPerSender[0].sender : '',
       msgs: msgsPerSender.length === 1 ? msgsPerSender[0].msgs : [],
       _msgs: msgsPerSender,
+      _actionData: actionData,
     }
   }
 }

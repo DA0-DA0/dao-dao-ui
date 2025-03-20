@@ -1,9 +1,12 @@
+import fs from 'fs'
+import path from 'path'
+
 import { IbcClient, Link, Logger } from '@confio/relayer'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import chalk from 'chalk'
 import { Command } from 'commander'
-import dotenv from 'dotenv'
+import toml from 'toml'
 
 import {
   chainQueries,
@@ -11,7 +14,7 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
-import { ChainId, PolytoneConnection } from '@dao-dao/types'
+import { ChainId } from '@dao-dao/types'
 import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   getNativeTokenForChainId,
@@ -23,19 +26,38 @@ import {
 
 import { getBlockMaxGas, instantiateContract } from '../utils'
 import { chains } from './config'
+import { PolytoneConfig } from './PolytoneConfig'
 
 const { log } = console
 
-const { parsed: { MNEMONIC } = {} } = dotenv.config()
+/**
+ * Path to the config file.
+ */
+const configPath = path.join(__dirname, '../../config.toml')
 
-if (!MNEMONIC) {
-  log(chalk.red('MNEMONIC not set'))
+if (!fs.existsSync(configPath)) {
+  log(chalk.red(`Config file not found at ${configPath}`))
   process.exit(1)
 }
+
+let config: any
+try {
+  config = toml.parse(fs.readFileSync(configPath, 'utf8'))
+} catch (err) {
+  log(chalk.red(`Error parsing ${configPath}: ${err}`))
+  process.exit(1)
+}
+
+const { mnemonics } = config
 
 const program = new Command()
 program.requiredOption('-s, --src <chain ID>', 'source chain ID')
 program.requiredOption('-d, --dest <chain ID>', 'destination chain ID')
+program.option(
+  '-m, --mnemonic <name>',
+  'use this configured mnemonic name for signing transactions',
+  'default'
+)
 program.option(
   '-c, --existing-connection <connection ID>',
   'existing source connection ID that connects to the destination. if not provided, will attempt to resolve this automatically if a transfer channel exists between the chains, failing otherwise.'
@@ -66,7 +88,14 @@ const {
   note: _note,
   listener: _listener,
   voice: _voice,
+  mnemonic: mnemonicName,
 } = program.opts()
+
+const mnemonic = mnemonics[mnemonicName]
+if (!mnemonic) {
+  log(chalk.red(`Mnemonic with name "${mnemonicName}" not found in config.`))
+  process.exit(1)
+}
 
 const main = async () => {
   const queryClient = await makeReactQueryClient()
@@ -78,6 +107,8 @@ const main = async () => {
       `Source chain ${srcChainId} note and/or listener code IDs not configured`
     )
   }
+
+  const polytoneConfig = new PolytoneConfig()
 
   const {
     voiceCodeId,
@@ -113,12 +144,12 @@ const main = async () => {
     ),
   ])
 
-  const srcSigner = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
+  const srcSigner = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: srcChain.bech32Prefix,
   })
   const srcSender = (await srcSigner.getAccounts())[0].address
 
-  const destSigner = await DirectSecp256k1HdWallet.fromMnemonic(MNEMONIC, {
+  const destSigner = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: destChain.bech32Prefix,
   })
   const destSender = (await destSigner.getAccounts())[0].address
@@ -521,17 +552,19 @@ const main = async () => {
   log()
   log(chalk.green('Done! UI config entry:'))
 
-  const config: PolytoneConnection = {
-    note,
-    listener,
-    voice,
-    localConnection: srcConnectionId,
-    remoteConnection: destConnectionId,
-    localChannel: channelPair.src.channelId,
-    remoteChannel: channelPair.dest.channelId,
-  }
-
-  log(JSON.stringify(config, null, 2))
+  await polytoneConfig.set({
+    srcChainId,
+    destChainId,
+    entry: {
+      note,
+      listener,
+      voice,
+      localConnection: srcConnectionId,
+      remoteConnection: destConnectionId,
+      localChannel: channelPair.src.channelId,
+      remoteChannel: channelPair.dest.channelId,
+    },
+  })
 }
 
 main()

@@ -63,38 +63,6 @@ export interface MerklePrefixSDKType {
   key_prefix: Uint8Array;
 }
 /**
- * MerklePath is the path used to verify commitment proofs, which can be an
- * arbitrary structured object (defined by a commitment type).
- * MerklePath is represented from root-to-leaf
- */
-export interface MerklePath {
-  keyPath: string[];
-}
-export interface MerklePathProtoMsg {
-  typeUrl: "/ibc.core.commitment.v1.MerklePath";
-  value: Uint8Array;
-}
-/**
- * MerklePath is the path used to verify commitment proofs, which can be an
- * arbitrary structured object (defined by a commitment type).
- * MerklePath is represented from root-to-leaf
- */
-export interface MerklePathAmino {
-  key_path?: string[];
-}
-export interface MerklePathAminoMsg {
-  type: "cosmos-sdk/MerklePath";
-  value: MerklePathAmino;
-}
-/**
- * MerklePath is the path used to verify commitment proofs, which can be an
- * arbitrary structured object (defined by a commitment type).
- * MerklePath is represented from root-to-leaf
- */
-export interface MerklePathSDKType {
-  key_path: string[];
-}
-/**
  * MerkleProof is a wrapper type over a chain of CommitmentProofs.
  * It demonstrates membership or non-membership for an element or set of
  * elements, verifiable in conjunction with a known commitment root. Proofs
@@ -267,77 +235,6 @@ export const MerklePrefix = {
     return {
       typeUrl: "/ibc.core.commitment.v1.MerklePrefix",
       value: MerklePrefix.encode(message).finish()
-    };
-  }
-};
-function createBaseMerklePath(): MerklePath {
-  return {
-    keyPath: []
-  };
-}
-export const MerklePath = {
-  typeUrl: "/ibc.core.commitment.v1.MerklePath",
-  encode(message: MerklePath, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    for (const v of message.keyPath) {
-      writer.uint32(10).string(v!);
-    }
-    return writer;
-  },
-  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MerklePath {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMerklePath();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.keyPath.push(reader.string());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MerklePath>): MerklePath {
-    const message = createBaseMerklePath();
-    message.keyPath = object.keyPath?.map(e => e) || [];
-    return message;
-  },
-  fromAmino(object: MerklePathAmino): MerklePath {
-    const message = createBaseMerklePath();
-    message.keyPath = object.key_path?.map(e => e) || [];
-    return message;
-  },
-  toAmino(message: MerklePath, useInterfaces: boolean = false): MerklePathAmino {
-    const obj: any = {};
-    if (message.keyPath) {
-      obj.key_path = message.keyPath.map(e => e);
-    } else {
-      obj.key_path = message.keyPath;
-    }
-    return obj;
-  },
-  fromAminoMsg(object: MerklePathAminoMsg): MerklePath {
-    return MerklePath.fromAmino(object.value);
-  },
-  toAminoMsg(message: MerklePath, useInterfaces: boolean = false): MerklePathAminoMsg {
-    return {
-      type: "cosmos-sdk/MerklePath",
-      value: MerklePath.toAmino(message, useInterfaces)
-    };
-  },
-  fromProtoMsg(message: MerklePathProtoMsg, useInterfaces: boolean = false): MerklePath {
-    return MerklePath.decode(message.value, undefined, useInterfaces);
-  },
-  toProto(message: MerklePath): Uint8Array {
-    return MerklePath.encode(message).finish();
-  },
-  toProtoMsg(message: MerklePath): MerklePathProtoMsg {
-    return {
-      typeUrl: "/ibc.core.commitment.v1.MerklePath",
-      value: MerklePath.encode(message).finish()
     };
   }
 };

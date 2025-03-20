@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { daoQueries } from '@dao-dao/state'
 import {
   ActionBase,
+  ActionMatcher,
   ChainProvider,
   DaoSupportedChainPickerInput,
   InputLabel,
@@ -15,7 +16,9 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionDecodeContext,
   ActionKey,
+  ActionKeyAndData,
   ActionMatch,
   ActionOptions,
   DaoSource,
@@ -40,6 +43,7 @@ import {
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
+import { fetchActionsWithOptions } from '../../../utils'
 import {
   DaoAdminExecData,
   DaoAdminExecComponent as StatelessDaoAdminExecComponent,
@@ -265,16 +269,47 @@ export class DaoAdminExecAction extends ActionBase<DaoAdminExecData> {
     })
   }
 
-  decode([
-    {
-      decodedMessage,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): DaoAdminExecData {
+  async decode(
+    [
+      {
+        decodedMessage,
+        account: { chainId, address },
+      },
+    ]: ProcessedMessage[],
+    context: ActionDecodeContext
+  ): Promise<DaoAdminExecData> {
+    const msgs = decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs
+
+    let actionData: ActionKeyAndData[] | undefined
+    try {
+      const { actions, options } = await fetchActionsWithOptions({
+        t: this.options.t,
+        queryClient: this.options.queryClient,
+        chainId,
+        address,
+      })
+
+      // Match and decode all messages.
+      const matcher = new ActionMatcher(
+        options,
+        context.messageProcessor,
+        actions
+      )
+      const decoders = await matcher.match(msgs)
+      actionData = await Promise.all(
+        decoders.map((decoder) => decoder.decodeIntoKeyAndData())
+      )
+    } catch (error) {
+      // If fail to load action data, log and ignore. This makes the action
+      // uneditable but this is not always an issue.
+      console.error(error)
+    }
+
     return {
       chainId,
       coreAddress: decodedMessage.wasm.execute.contract_addr,
-      msgs: decodedMessage.wasm.execute.msg.execute_admin_msgs.msgs,
+      msgs,
+      _actionData: actionData,
     }
   }
 }

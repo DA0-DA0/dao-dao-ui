@@ -132,6 +132,15 @@
       "remoteConnection": "connection-2",
       "voice": "juno13w4mgqg5qxy2x6kt4ke0ednuga0ja7duvnd3tnku4390udv9tnyqdp5mus"
     },
+    "migaloo-1": {
+      "listener": "cosmos1at4may3t6v4zk0wea7aecvuszly4ywrvp836g4r9jrjck8cvhekqsfygj0",
+      "localChannel": "channel-1329",
+      "localConnection": "connection-1092",
+      "note": "cosmos128mqyd7dmgz2t8ar94nh25zzjp7da2qxumynuc2gkvszmlp0ccjs78rdw8",
+      "remoteChannel": "channel-145",
+      "remoteConnection": "connection-111",
+      "voice": "migaloo120zkfl2xu9afdn0x7hm8v5mha8s4ehv0k3vrrfhz8efj7cw9k2xs4v6m9u"
+    },
     "neutron-1": {
       "listener": "cosmos15v8jqq6aqhsuykdgdevx3qqcj9lp4h27ypsycds4cmv6er9qv0vsy2vmrm",
       "localChannel": "channel-985",
@@ -344,6 +353,15 @@
       "remoteChannel": "channel-80",
       "remoteConnection": "connection-81",
       "voice": "chihuahua1ppjcxp24dw0s6nx94hsnlutxmsqqvds66u968w29x8xuwmw0gntqkcvtq0"
+    },
+    "cosmoshub-4": {
+      "listener": "migaloo1avazrrm80qqklvyp240rx4g20vzag43el3sef263jkvkplyl6gpsz60zz6",
+      "localChannel": "channel-147",
+      "localConnection": "connection-111",
+      "note": "migaloo139e600647w9ah478y8f2vfqcaly0kkz7hjlnuggcgcg8znv08xmquxdpny",
+      "remoteChannel": "channel-1331",
+      "remoteConnection": "connection-1092",
+      "voice": "cosmos1atqrkhskrrzzde242m798ypmun8xlmjmnuurvc33wg2355st467q7g4y83"
     },
     "injective-1": {
       "listener": "migaloo1v4sw52jhgzuhsr8fmt9an390xevvafec0gd320h2auvfnlr4tftsu99m73",

@@ -1,6 +1,13 @@
 import cloneDeep from 'lodash.clonedeep'
+import { nanoid } from 'nanoid'
 
-import { Action, IActionDecoder, ProcessedMessage } from '@dao-dao/types'
+import {
+  Action,
+  ActionDecodeContext,
+  ActionKeyAndData,
+  IActionDecoder,
+  ProcessedMessage,
+} from '@dao-dao/types'
 
 export class ActionDecoder<
   Data extends Record<string, any> = Record<string, any>,
@@ -11,6 +18,7 @@ export class ActionDecoder<
   private _data?: Data
 
   constructor(
+    public readonly context: ActionDecodeContext,
     public readonly action: Action<Data>,
     public readonly messages: ProcessedMessage[]
   ) {}
@@ -55,7 +63,7 @@ export class ActionDecoder<
     try {
       await this.action.init()
 
-      const decoded = await this.action.decode(this.messages)
+      const decoded = await this.action.decode(this.messages, this.context)
 
       this._data = {
         ...cloneDeep(this.action.defaults),
@@ -68,6 +76,14 @@ export class ActionDecoder<
       this._error = error instanceof Error ? error : new Error(`${error}`)
       this._status = 'error'
       throw error
+    }
+  }
+
+  async decodeIntoKeyAndData(): Promise<ActionKeyAndData> {
+    return {
+      _id: nanoid(),
+      actionKey: this.action.key,
+      data: await this.decode(),
     }
   }
 }

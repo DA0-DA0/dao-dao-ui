@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package ibc.core.channel.v1;
 
-option go_package = "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types";
+option go_package = "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types";
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 import "ibc/core/client/v1/client.proto";
 import "ibc/core/channel/v1/channel.proto";
-import "cosmos/msg/v1/msg.proto";
 
 // Msg defines the ibc/channel Msg service.
 service Msg {
@@ -55,6 +55,8 @@ enum ResponseResultType {
   RESPONSE_RESULT_TYPE_NOOP = 1 [(gogoproto.enumvalue_customname) = "NOOP"];
   // The message was executed successfully
   RESPONSE_RESULT_TYPE_SUCCESS = 2 [(gogoproto.enumvalue_customname) = "SUCCESS"];
+  // The message was executed unsuccessfully
+  RESPONSE_RESULT_TYPE_FAILURE = 3 [(gogoproto.enumvalue_customname) = "FAILURE"];
 }
 
 // MsgChannelOpenInit defines an sdk.Msg to initialize a channel handshake. It
@@ -163,11 +165,11 @@ message MsgChannelCloseConfirm {
 
   option (gogoproto.goproto_getters) = false;
 
-  string                    port_id      = 1;
-  string                    channel_id   = 2;
-  bytes                     proof_init   = 3;
-  ibc.core.client.v1.Height proof_height = 4 [(gogoproto.nullable) = false];
-  string                    signer       = 5;
+  string                    port_id                       = 1;
+  string                    channel_id                    = 2;
+  bytes                     proof_init                    = 3;
+  ibc.core.client.v1.Height proof_height                  = 4 [(gogoproto.nullable) = false];
+  string                    signer                        = 5;
 }
 
 // MsgChannelCloseConfirmResponse defines the Msg/ChannelCloseConfirm response
@@ -219,12 +221,12 @@ message MsgTimeoutOnClose {
 
   option (gogoproto.goproto_getters) = false;
 
-  Packet                    packet             = 1 [(gogoproto.nullable) = false];
-  bytes                     proof_unreceived   = 2;
-  bytes                     proof_close        = 3;
-  ibc.core.client.v1.Height proof_height       = 4 [(gogoproto.nullable) = false];
-  uint64                    next_sequence_recv = 5;
-  string                    signer             = 6;
+  Packet                    packet                        = 1 [(gogoproto.nullable) = false];
+  bytes                     proof_unreceived              = 2;
+  bytes                     proof_close                   = 3;
+  ibc.core.client.v1.Height proof_height                  = 4 [(gogoproto.nullable) = false];
+  uint64                    next_sequence_recv            = 5;
+  string                    signer                        = 6;
 }
 
 // MsgTimeoutOnCloseResponse defines the Msg/TimeoutOnClose response type.

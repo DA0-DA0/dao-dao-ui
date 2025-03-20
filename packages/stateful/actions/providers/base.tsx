@@ -9,14 +9,13 @@ import {
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
-  ActionChainContext,
-  ActionChainContextType,
   ActionContext,
   ActionMap,
   ActionOptions,
   ActionsProviderProps,
   IActionsContext,
 } from '@dao-dao/types'
+import { convertChainContextToActionChainContext } from '@dao-dao/utils'
 
 import {
   getCoreActionCategoryMakers,
@@ -43,28 +42,10 @@ export const BaseActionsProvider = ({
   const actionContextRef = useUpdatingRef(actionContext)
 
   const context: IActionsContext = useMemo(() => {
-    const actionChainContext: ActionChainContext = chainContext.config
-      ? {
-          type: ActionChainContextType.Supported,
-          ...chainContext,
-          // Type-check.
-          config: chainContext.config,
-        }
-      : chainContext.base
-        ? {
-            type: ActionChainContextType.Configured,
-            ...chainContext,
-            config: chainContext.base,
-          }
-        : {
-            type: ActionChainContextType.Any,
-            ...chainContext,
-          }
-
     const options: ActionOptions = {
       t,
       chain: chainContext.chain,
-      chainContext: actionChainContext,
+      chainContext: convertChainContextToActionChainContext(chainContext),
       address,
       context: actionContextRef.current,
       queryClient,

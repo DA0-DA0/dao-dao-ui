@@ -1,4 +1,4 @@
-import { CloseFullscreen, OpenInFull } from '@mui/icons-material'
+import { ArrowOutward, Close, Link, MenuOpen } from '@mui/icons-material'
 import clsx from 'clsx'
 import {
   ComponentType,
@@ -7,23 +7,31 @@ import {
   RefCallback,
   SetStateAction,
   useEffect,
-  useRef,
   useState,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
 import { AddressInputProps } from '@dao-dao/types'
-import { APPS, toAccessibleImageUrl } from '@dao-dao/utils'
+import { APPS, processError, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { useQuerySyncedState } from '../../hooks'
-import { Button } from '../buttons'
+import { Button, ButtonLink } from '../buttons'
+import { ErrorPage } from '../error'
 import { IconButton } from '../icon_buttons'
-import { SegmentedControls, TextInput } from '../inputs'
+import {
+  InputErrorMessage,
+  InputLabel,
+  SegmentedControls,
+  TextInput,
+} from '../inputs'
+import { PageLoader } from '../logo'
+import { MarkdownRenderer } from '../MarkdownRenderer'
+import { Modal } from '../modals'
 import { StatusCard } from '../StatusCard'
 import { Tooltip } from '../tooltip'
 
-export type AppsRendererExecutionType = 'normal' | 'authzExec' | 'daoAdminExec'
+export type AppsRendererExecutionType = 'default' | 'authzExec' | 'daoAdminExec'
 
 export type AppsRendererProps = {
   /**
@@ -47,11 +55,11 @@ export type AppsRendererProps = {
    */
   setExecutionType: Dispatch<SetStateAction<AppsRendererExecutionType>>
   /**
-   * The other (non-normal execution type) address.
+   * The other (non-default execution type) address.
    */
   otherAddress: string
   /**
-   * Set the other (non-normal execution type) address.
+   * Set the other (non-default execution type) address.
    */
   setOtherAddress: Dispatch<SetStateAction<string>>
   /**
@@ -62,6 +70,36 @@ export type AppsRendererProps = {
    * The chain picker node.
    */
   chainPicker: ReactNode
+  /**
+   * Whether or not to show a loading state which prevents opening apps.
+   */
+  loading?: boolean
+  /**
+   * Whether or not the entity is updating.
+   */
+  updating?: boolean
+  /**
+   * Error to display.
+   */
+  error?: string
+}
+
+// Only allow URLs starting with `http(s)://`, to prevent XSS via `javascript:`
+// URLs.
+const ALLOWED_URL_REGEX = /^https?:\/\/.+[^\.]$/
+
+const isUrlValid = (url: string): true | string => {
+  try {
+    if (!!url && !!new URL(url).href && ALLOWED_URL_REGEX.test(url)) {
+      return true
+    } else {
+      return 'Invalid URL.'
+    }
+  } catch (err) {
+    return processError(err, {
+      forceCapture: false,
+    })
+  }
 }
 
 export const AppsRenderer = ({
@@ -74,111 +112,47 @@ export const AppsRenderer = ({
   setOtherAddress,
   AddressInput,
   chainPicker,
+  loading,
+  updating,
+  error: _error,
 }: AppsRendererProps) => {
-  const [url, setUrl] = useQuerySyncedState({
+  const { t } = useTranslation()
+  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
+
+  // Show app opener when app is already open.
+  const [appOpenerVisible, setAppOpenerVisible] = useState(false)
+
+  const [url, setUrl, wasInitializedFromQuery] = useQuerySyncedState({
     param: 'url',
     defaultValue: '',
   })
 
-  let urlValid = false
-  try {
-    urlValid = !!url && !!new URL(url).href && ALLOWED_URL_REGEX.test(url)
-  } catch {
-    // Ignore.
-  }
-
-  // Set full screen first time when URL is set. If the user manually closes the
-  // full screen app, we don't want to open it again.
-  const openedFullScreenRef = useRef(false)
-  useEffect(() => {
-    if (urlValid && !openedFullScreenRef.current) {
-      setFullScreen(true)
-      openedFullScreenRef.current = true
-    }
-  }, [setFullScreen, urlValid, url])
-
-  // If URL is set on mount, open full screen.
-  useEffect(() => {
-    if (urlValid) {
-      setFullScreen(true)
-      openedFullScreenRef.current = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const props: InnerAppsRendererProps = {
-    fullScreen,
-    iframeRef,
-    setFullScreen,
-    setUrl,
-    url,
-    urlValid,
-    executionType,
-    setExecutionType,
-    otherAddress,
-    setOtherAddress,
-    AddressInput,
-    chainPicker,
-  }
-
-  return fullScreen ? (
-    createPortal(
-      <div className="hd-screen wd-screen fixed top-0 left-0 z-[38] bg-background-base p-safe pt-safe-or-4">
-        <InnerAppsRenderer {...props} className="h-full w-full" />
-      </div>,
-      document.body
-    )
-  ) : (
-    <InnerAppsRenderer {...props} />
-  )
-}
-
-type InnerAppsRendererProps = AppsRendererProps & {
-  url: string
-  urlValid: boolean
-  setUrl: Dispatch<SetStateAction<string>>
-  className?: string
-}
-
-// Only allow URLs starting with `http(s)://`, to prevent XSS via `javascript:`
-// URLs.
-const ALLOWED_URL_REGEX = /^https?:\/\/.+$/
-
-const InnerAppsRenderer = ({
-  iframeRef,
-  fullScreen,
-  setFullScreen,
-  url,
-  urlValid,
-  setUrl,
-  className,
-  executionType,
-  setExecutionType,
-  otherAddress,
-  setOtherAddress,
-  AddressInput,
-  chainPicker,
-}: InnerAppsRendererProps) => {
-  const { t } = useTranslation()
-  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
-  const [inputUrl, setInputUrl] = useState<string>(url)
-
-  const go = (url: string) => {
-    if (ALLOWED_URL_REGEX.test(url)) {
+  const [error, setError] = useState<string>()
+  const openApp = (url: string) => {
+    const validity = isUrlValid(url)
+    if (validity === true) {
+      setError(undefined)
       setUrl(url)
-    }
-  }
-
-  // On URL change, navigate iframe to it if valid.
-  useEffect(() => {
-    try {
-      if (iframe && urlValid) {
+      // Change existing iframe if it exists. Otherwise it will be created
+      // when the full screen modal opens and automatically use the URL set.
+      if (iframe) {
         iframe.src = url
       }
-    } catch {
-      // Ignore.
+      setFullScreen(true)
+      setAppOpenerVisible(false)
+    } else {
+      setError(validity)
     }
-  }, [iframe, url, urlValid])
+  }
+
+  // If URL is set on mount, open automatically.
+  useEffect(() => {
+    if (wasInitializedFromQuery && isUrlValid(url) === true) {
+      openApp(url)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wasInitializedFromQuery])
 
   // Add event handler to inform iframe that it's wrapped in DAO DAO if it asks.
   useEffect(() => {
@@ -199,31 +173,153 @@ const InnerAppsRenderer = ({
     }
   }, [iframe])
 
+  const currentError = _error || error
+
+  return fullScreen ? (
+    <>
+      {createPortal(
+        <div className="hd-screen wd-screen fixed top-0 left-0 z-[38] bg-background-base p-safe pt-safe-or-4">
+          <div className="flex flex-col h-full w-full">
+            <div className="flex flex-row justify-between items-center gap-8 px-safe-offset-4 pb-4 border-b border-border-base">
+              <div className="flex flex-row gap-2 justify-start items-center grow">
+                <Link className="!h-5 !w-5 !text-icon-secondary -rotate-45" />
+                <p className="primary-text !text-text-secondary break-all max-w-prose grow">
+                  {url}
+                </p>
+              </div>
+
+              <div className="flex flex-row gap-2 justify-end items-center shrink-0">
+                <Tooltip title={t('button.openAnotherApp')}>
+                  <IconButton
+                    Icon={MenuOpen}
+                    onClick={() => setAppOpenerVisible(true)}
+                    variant="ghost"
+                  />
+                </Tooltip>
+
+                <Tooltip title={t('button.closeApp')}>
+                  <IconButton
+                    Icon={Close}
+                    onClick={() => setFullScreen((f) => !f)}
+                    variant="ghost"
+                  />
+                </Tooltip>
+              </div>
+            </div>
+
+            {loading ? (
+              <PageLoader />
+            ) : currentError ? (
+              <ErrorPage error={error} />
+            ) : (
+              <iframe
+                allow="clipboard-write"
+                className={clsx(
+                  'grow',
+                  !fullScreen && 'min-h-[75dvh] rounded-md'
+                )}
+                ref={(ref) => {
+                  setIframe(ref)
+                  iframeRef(ref)
+                }}
+                src={url}
+              ></iframe>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      <Modal
+        containerClassName="w-full !max-w-3xl"
+        header={{
+          title: t('title.apps'),
+        }}
+        onClose={() => setAppOpenerVisible(false)}
+        visible={appOpenerVisible}
+      >
+        <AppOpener
+          AddressInput={AddressInput}
+          chainPicker={chainPicker}
+          error={currentError}
+          executionType={executionType}
+          loading={loading || updating}
+          openApp={openApp}
+          otherAddress={otherAddress}
+          setError={setError}
+          setExecutionType={setExecutionType}
+          setOtherAddress={setOtherAddress}
+          url={url}
+        />
+      </Modal>
+    </>
+  ) : (
+    <AppOpener
+      AddressInput={AddressInput}
+      chainPicker={chainPicker}
+      error={currentError}
+      executionType={executionType}
+      loading={loading || updating}
+      openApp={openApp}
+      otherAddress={otherAddress}
+      setError={setError}
+      setExecutionType={setExecutionType}
+      setOtherAddress={setOtherAddress}
+      url={url}
+    />
+  )
+}
+
+type AppOpenerProps = Omit<
+  AppsRendererProps,
+  'fullScreen' | 'setFullScreen' | 'iframeRef'
+> & {
+  url: string
+  openApp: (url: string) => void
+  error: string | undefined
+  setError: Dispatch<SetStateAction<string | undefined>>
+  loading?: boolean
+}
+
+const AppOpener = ({
+  executionType,
+  setExecutionType,
+  otherAddress,
+  setOtherAddress,
+  AddressInput,
+  chainPicker,
+  url,
+  openApp,
+  error,
+  setError,
+  loading,
+}: AppOpenerProps) => {
+  const { t } = useTranslation()
+
+  const [inputUrl, setInputUrl] = useState<string>(url)
   // Update the input field to match the URL if it changes in the parent
   // component. This should handle the URL being updated from the query params.
   useEffect(() => {
     if (url !== inputUrl) {
       setInputUrl(url)
     }
-    // Only change the input URL when the URL changes (i.e. ignore input change).
+
+    // Only change the input URL when the URL changes (i.e. ignore input
+    // change).
+    //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setInputUrl, url])
 
   // If no app URL matching, choose the last one (custom) with empty URL.
   const selectedAppIndex = APPS.findIndex(
-    ({ url: appUrl }) => appUrl === url || !appUrl
+    ({ url: appUrl }) => appUrl === inputUrl || !appUrl
   )
 
-  const customSelected = !!url && selectedAppIndex === APPS.length - 1
+  const customSelected = !!inputUrl && selectedAppIndex === APPS.length - 1
 
   return (
-    <div className={clsx('flex flex-col gap-2', className)}>
-      <div
-        className={clsx(
-          'styled-scrollbar flex shrink-0 flex-row items-stretch gap-2 overflow-x-scroll pb-2',
-          fullScreen && 'px-safe-offset-4'
-        )}
-      >
+    <div className="flex flex-col gap-4">
+      <div className="styled-scrollbar flex shrink-0 flex-row items-stretch gap-2 overflow-x-scroll pb-2">
         {APPS.map(({ platform, name, imageUrl, url: appUrl }, index) => {
           const isCustom = !appUrl
           const selected = index === selectedAppIndex
@@ -238,7 +334,10 @@ const InnerAppsRenderer = ({
                   ? '!border-border-interactive-active'
                   : !isCustom && 'border-transparent'
               )}
-              onClick={() => go(appUrl)}
+              onClick={() => {
+                setInputUrl(appUrl)
+                setError(undefined)
+              }}
               variant="none"
             >
               {/* Background. */}
@@ -269,72 +368,62 @@ const InnerAppsRenderer = ({
 
       {customSelected && (
         <StatusCard
-          className={clsx('mb-2', fullScreen && 'mx-safe-offset-4')}
+          className="-mt-3 mb-3 max-w-lg"
           content={t('info.customAppWarning')}
           style="warning"
-        />
+        >
+          <ButtonLink
+            className="italic !text-text-secondary"
+            contentContainerClassName="!gap-1.5"
+            href="https://github.com/DA0-DA0/dao-dao-ui/wiki/How-to-support-DAO-DAO's-Apps-interface"
+            variant="none"
+          >
+            {t('button.openIntegrationGuide')}
+            <ArrowOutward className="!h-4 !w-4 !text-icon-secondary" />
+          </ButtonLink>
+        </StatusCard>
       )}
 
-      <div
-        className={clsx(
-          'flex shrink-0 flex-row items-stretch gap-2',
-          fullScreen && 'px-safe-offset-4'
-        )}
-      >
-        <div className="flex grow flex-row items-stretch gap-1">
-          <TextInput
-            autoComplete="off"
-            className="grow"
-            onChange={(event) => setInputUrl(event.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                go(inputUrl)
-              }
-            }}
-            placeholder={t('form.url')}
-            type="url"
-            value={inputUrl}
-          />
+      <TextInput
+        autoComplete="off"
+        className="grow -mt-3"
+        onChange={(event) => {
+          setInputUrl(event.target.value)
+          setError(undefined)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            openApp(inputUrl)
+          }
+        }}
+        placeholder={t('form.url')}
+        type="url"
+        value={inputUrl}
+      />
 
-          <Button
-            className="shrink-0"
-            onClick={() => go(inputUrl)}
-            size="lg"
-            variant="primary"
-          >
-            {t('button.go')}
-          </Button>
-        </div>
+      <div className="flex flex-col gap-1 items-start">
+        <InputLabel
+          name={t('form.executionType')}
+          tooltip={
+            <MarkdownRenderer
+              className="p-2"
+              markdown={t('info.appExecutionTypeTooltip')}
+            />
+          }
+        />
 
-        <Tooltip title={t('button.toggleFullScreen')}>
-          <IconButton
-            Icon={fullScreen ? CloseFullscreen : OpenInFull}
-            className="!h-auto shrink-0"
-            onClick={() => setFullScreen((f) => !f)}
-            size="sm"
-            variant="ghost"
-          />
-        </Tooltip>
-      </div>
-
-      <div
-        className={clsx(
-          'flex flex-col gap-3 p-3 bg-background-tertiary rounded-md',
-          fullScreen && 'mx-safe-offset-4'
-        )}
-      >
         <SegmentedControls<AppsRendererExecutionType>
           onSelect={(value) => setExecutionType(value)}
           selected={executionType}
           tabs={[
-            { label: t('title.normal'), value: 'normal' },
+            { label: t('title.dao'), value: 'default' },
             { label: t('title.authzExec'), value: 'authzExec' },
             { label: t('title.daoAdminExec'), value: 'daoAdminExec' },
           ]}
         />
 
-        {executionType !== 'normal' && (
-          <div className="flex flex-row gap-2 items-stretch">
+        {executionType !== 'default' && (
+          <div className="flex flex-row gap-2 items-stretch mt-2 self-stretch">
             {chainPicker}
 
             <AddressInput
@@ -347,14 +436,18 @@ const InnerAppsRenderer = ({
         )}
       </div>
 
-      <iframe
-        allow="clipboard-write"
-        className={clsx('mt-2 grow', !fullScreen && 'min-h-[75dvh] rounded-md')}
-        ref={(ref) => {
-          setIframe(ref)
-          iframeRef(ref)
-        }}
-      ></iframe>
+      <Button
+        center
+        disabled={!!error}
+        loading={loading}
+        onClick={() => openApp(inputUrl)}
+        size="lg"
+        variant="brand"
+      >
+        {t('button.openApp')}
+      </Button>
+
+      <InputErrorMessage className="!-mt-2" error={error} />
     </div>
   )
 }

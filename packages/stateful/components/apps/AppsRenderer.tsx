@@ -30,6 +30,7 @@ import {
   useChain,
   useDaoIfAvailable,
   useLoadingPromise,
+  useQuerySyncedState,
 } from '@dao-dao/stateless'
 import {
   AccountType,
@@ -57,6 +58,7 @@ import {
   isValidBech32Address,
   maybeMakeIcaExecuteMessages,
   maybeMakePolytoneExecuteMessages,
+  processError,
 } from '@dao-dao/utils'
 
 import { AuthzExecAction, DaoAdminExecAction } from '../../actions/core/actions'
@@ -113,20 +115,29 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   const [fullScreen, setFullScreen] = useState(false)
 
   const [executionType, setExecutionType] =
-    useState<AppsRendererExecutionType>('normal')
-  const [otherAddress, setOtherAddress] = useState('')
-  const [otherChainId, setOtherChainId] = useState(contextChainId)
+    useQuerySyncedState<AppsRendererExecutionType>({
+      param: 'et',
+      defaultValue: 'default',
+    })
+  const [otherAddress, setOtherAddress] = useQuerySyncedState({
+    param: 'oa',
+    defaultValue: '',
+  })
+  const [otherChainId, setOtherChainId] = useQuerySyncedState({
+    param: 'oc',
+    defaultValue: contextChainId,
+  })
 
   // This is the chain we will use for the app. For a wallet, the chain switcher
   // will set the wallet chain ID atom which affects the whole app context, so
   // this shouldn't matter. For a DAO, this can differ from the DAO's chain ID
   // if the other address is on a different chain.
-  const appChainId = executionType === 'normal' ? contextChainId : otherChainId
+  const appChainId = executionType === 'default' ? contextChainId : otherChainId
 
-  // This is the other address for non-normal execution types (authz and DAO
+  // This is the other address for non-default execution types (authz and DAO
   // admin execute).
   const validOtherAddress =
-    executionType !== 'normal' &&
+    executionType !== 'default' &&
     otherAddress &&
     isValidBech32Address(
       otherAddress,
@@ -393,14 +404,14 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       enable: mode === 'dao' ? daoEnableAndConnect : undefined,
       connect: mode === 'dao' ? daoEnableAndConnect : walletConnect,
       sign:
-        mode === 'dao' || executionType !== 'normal'
+        mode === 'dao' || executionType !== 'default'
           ? () => ({
               type: 'error',
               value: 'Unsupported.',
             })
           : undefined,
       signArbitrary:
-        mode === 'dao' || executionType !== 'normal'
+        mode === 'dao' || executionType !== 'default'
           ? () => ({
               type: 'error',
               value: 'Unsupported.',
@@ -432,7 +443,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               type: 'error',
               error:
                 `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
-                (executionType !== 'normal'
+                (executionType !== 'default'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
             }
@@ -530,7 +541,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               type: 'error',
               error:
                 `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
-                (executionType !== 'normal'
+                (executionType !== 'default'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
             }
@@ -577,7 +588,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               type: 'error',
               error:
                 `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
-                (executionType !== 'normal'
+                (executionType !== 'default'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
             }
@@ -820,13 +831,22 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               <WalletChainSwitcher type="configured" />
             )
           }
+          error={
+            loadingAppEntity.errored
+              ? processError(loadingAppEntity.error, {
+                  forceCapture: false,
+                })
+              : undefined
+          }
           executionType={executionType}
           fullScreen={fullScreen}
           iframeRef={myIframeRef}
+          loading={loadingAppEntity.loading}
           otherAddress={otherAddress}
           setExecutionType={setExecutionType}
           setFullScreen={setFullScreen}
           setOtherAddress={setOtherAddress}
+          updating={loadingAppEntity.loading || loadingAppEntity.updating}
         />
       </ChainProvider>
 
@@ -871,13 +891,7 @@ const InnerAppsRenderer = ({
         ? // Never resolve while matcher is not ready.
           new Promise<ActionKeyAndData[]>(() => {})
         : await Promise.all(
-            matcher.matches.map(
-              async (decoder, index): Promise<ActionKeyAndData> => ({
-                _id: index.toString(),
-                actionKey: decoder.action.key,
-                data: await decoder.decode(),
-              })
-            )
+            matcher.matches.map((decoder) => decoder.decodeIntoKeyAndData())
           ),
     deps: [matcher.status],
   })

@@ -1,14 +1,18 @@
 import JSON5 from 'json5'
 
 import { ActionBase, RobotEmoji } from '@dao-dao/stateless'
-import { UnifiedCosmosMsg, makeStargateMessageFromAmino } from '@dao-dao/types'
+import {
+  UnifiedCosmosMsg,
+  decodeStargateMessage,
+  makeStargateMessageFromAmino,
+} from '@dao-dao/types'
 import {
   ActionKey,
   ActionMatch,
   ActionOptions,
   ProcessedMessage,
 } from '@dao-dao/types/actions'
-import { makeCosmosMsg } from '@dao-dao/utils'
+import { isCosmWasmStargateMsg, makeCosmosMsg } from '@dao-dao/utils'
 
 import { CustomComponent, CustomData } from './Component'
 
@@ -52,7 +56,17 @@ export class CustomAction extends ActionBase<CustomData> {
   }
 
   decode(messages: ProcessedMessage[]): CustomData {
-    const data = messages.map(({ message }) => message)
+    const data = messages.map(({ message }) => {
+      // Auto-decode stargate message if possible and ignore errors.
+      try {
+        if (isCosmWasmStargateMsg(message)) {
+          return decodeStargateMessage(message, false)
+        }
+      } catch {}
+
+      return message
+    })
+
     return {
       message: JSON.stringify(data.length === 1 ? data[0] : data, undefined, 2),
     }
