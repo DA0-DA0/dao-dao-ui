@@ -91,7 +91,7 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.JunoMainnet]: 1 * 10 ** 6,
   [ChainId.OsmosisMainnet]: 0.1 * 10 ** 6,
   [ChainId.StargazeMainnet]: 5 * 10 ** 6,
-  [ChainId.NeutronMainnet]: 2 * 10 ** 6,
+  [ChainId.NeutronMainnet]: 5 * 10 ** 6,
   [ChainId.TerraMainnet]: 0.1 * 10 ** 6,
   [ChainId.MigalooMainnet]: 40 * 10 ** 6,
   [ChainId.KujiraMainnet]: 0.1 * 10 ** 6,
@@ -241,7 +241,7 @@ export const SelfRelayExecuteModal = ({
     (chainId: string): number =>
       // Use relayer funds as base, increase by 5% per packet, and apply retry
       // multiplier.
-      (RELAYER_FUNDS_NEEDED[chainId] ?? 0) *
+      (RELAYER_FUNDS_NEEDED[chainId] ?? 1 * 10 ** 6) *
       (1 + crossChainPackets.length * 0.05) *
       fundsNeededRetryMultiplier
   )
@@ -797,9 +797,9 @@ export const SelfRelayExecuteModal = ({
                 // Refresh all balances.
                 relayers.map(refreshBalances)
                 console.error(err)
-                // Increase multipler by 25% so we retry with more funds than
+                // Increase multipler by 50% so we retry with more funds than
                 // before.
-                setFundsNeededRetryMultiplier((m) => m + 0.25)
+                setFundsNeededRetryMultiplier((m) => m + 0.5)
                 throw new Error(t('error.relayerWalletNeedsFunds'))
               }
 
