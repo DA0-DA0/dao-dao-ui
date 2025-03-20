@@ -1,7 +1,12 @@
 import { QueryClient } from '@tanstack/react-query'
 import { TFunction } from 'next-i18next'
 
-import { accountQueries, profileQueries } from '@dao-dao/state/query'
+import { getDao } from '@dao-dao/state/clients'
+import {
+  accountQueries,
+  entityQueries,
+  profileQueries,
+} from '@dao-dao/state/query'
 import {
   Action,
   ActionContext,
@@ -17,8 +22,6 @@ import {
   makeEmptyUnifiedProfile,
 } from '@dao-dao/utils'
 
-import { getDao } from '../../clients'
-import { entityQueries } from '../../queries'
 import { matchAndLoadAdapter } from '../../voting-module-adapter'
 import { getWidgetById } from '../../widgets'
 import { getCoreActions } from '../core'
@@ -113,16 +116,20 @@ export const fetchActionsWithOptions = async ({
     }
 
     // Get widget actions.
-    const widgetActions = getDaoWidgets(dao.info.items).flatMap(
-      ({ id, values }) => {
-        const widget = getWidgetById(chainId, id)
-        if (!widget) {
-          return []
-        }
-
-        return widget.getActions?.(values || {}) || []
+    const widgetActions = getDaoWidgets(dao).flatMap(({ id, values }) => {
+      const widget = getWidgetById(
+        {
+          chainId: dao.chainId,
+          version: dao.coreVersion,
+        },
+        id
+      )
+      if (!widget) {
+        return []
       }
-    )
+
+      return widget.getActions?.(values || {}) || []
+    })
 
     actions = [
       ...[
