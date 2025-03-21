@@ -100,7 +100,7 @@ export const UpdateDelegationConfigComponent: ActionComponent<
                   ]
                 : []),
               {
-                label: t('info.change'),
+                label: t('info.set'),
                 value: 'set',
               },
               {
@@ -197,7 +197,7 @@ export const UpdateDelegationConfigComponent: ActionComponent<
                   ]
                 : []),
               {
-                label: t('info.change'),
+                label: t('info.set'),
                 value: 'set',
               },
               {
