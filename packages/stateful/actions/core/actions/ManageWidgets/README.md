@@ -19,6 +19,9 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "id": "<WIDGET ID>",
   "values": {
     // WIDGET SPECIFIC VALUES
+  },
+  "extra": {
+    // EXTRA WIDGET SPECIFIC DATA USED DURING ENCODING BUT NOT STORED
   }
 }
 ```

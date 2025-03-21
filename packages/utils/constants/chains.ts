@@ -585,7 +585,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#000000',
         factoryContractAddress:
-          'neutron1amz5kq2fla85wkn93vls5mhfql8nzqpc9chnu6fzutx2lh4c6ecs38knzv',
+          'neutron13v9a8gyqcp57kv5qtltxna3p4smcqlva5cv5xs2m0hamzlemq73s0dzaq0',
         govContractAddress: NEUTRON_GOVERNANCE_DAO,
         explorerUrlTemplates: {
           tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',

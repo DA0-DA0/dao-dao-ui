@@ -265,7 +265,13 @@ export interface NewDao<
    * deleted. Make optional for backwards compatibility with saved forms in
    * people's browsers.
    */
-  widgets?: Record<string, Record<string, any> | null>
+  widgets?: Record<
+    string,
+    {
+      data: Record<string, any>
+      extra: Record<string, any>
+    } | null
+  >
   /**
    * The DAO address that will be created based on the uuid when using
    * instantiate2. This is used when setting up extensions that need to know the

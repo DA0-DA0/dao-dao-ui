@@ -64,7 +64,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
       </p>
 
       <div className="flex flex-col gap-3">
-        {availableWidgets.map(({ id, defaultValues, Editor }) => {
+        {availableWidgets.map(({ id, defaultValues, defaultExtra, Editor }) => {
           const added = !!existingWidgets[id]
 
           return (
@@ -95,8 +95,15 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                     } else {
                       // Add.
 
-                      // Clone so we don't mutate the default values object.
-                      setValue(`widgets.${id}`, cloneDeep(defaultValues || {}))
+                      // Clone so we don't mutate the default objects.
+                      setValue(
+                        `widgets.${id}.data`,
+                        cloneDeep(defaultValues || {})
+                      )
+                      setValue(
+                        `widgets.${id}.extra`,
+                        cloneDeep(defaultExtra || {})
+                      )
                     }
                   }}
                   variant="ghost"
@@ -121,8 +128,14 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                     >
                       <Editor
                         accounts={dao.accounts}
-                        errors={errors.widgets?.[id] as FieldErrors}
-                        fieldNamePrefix={`widgets.${id}.`}
+                        errors={
+                          (errors.widgets?.[id] as any)?.data as FieldErrors
+                        }
+                        extraErrors={
+                          (errors.widgets?.[id] as any)?.extra as FieldErrors
+                        }
+                        extraFieldNamePrefix={`widgets.${id}.extra.`}
+                        fieldNamePrefix={`widgets.${id}.data.`}
                         isCreating
                         type="daoCreation"
                       />

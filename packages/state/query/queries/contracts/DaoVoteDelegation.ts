@@ -14,6 +14,7 @@ import {
   InfoResponse,
   RegistrationResponse,
   UnvotedDelegatedVotingPowerResponse,
+  VotingPowerCapResponse,
 } from '@dao-dao/types/contracts/DaoVoteDelegation'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
@@ -128,6 +129,18 @@ export const daoVoteDelegationQueryKeys = {
       {
         ...daoVoteDelegationQueryKeys.address(chainId, contractAddress)[0],
         method: 'config',
+        args,
+      },
+    ] as const,
+  votingPowerCap: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoVoteDelegationQueryKeys.address(chainId, contractAddress)[0],
+        method: 'voting_power_cap',
         args,
       },
     ] as const,
@@ -405,6 +418,45 @@ export const daoVoteDelegationQueries = {
     },
     ...options,
   }),
+  votingPowerCap: <TData = VotingPowerCapResponse>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      args,
+      options,
+    }: DaoVoteDelegationVotingPowerCapQuery<TData>
+  ): UseQueryOptions<VotingPowerCapResponse, Error, TData> => ({
+    queryKey: daoVoteDelegationQueryKeys.votingPowerCap(
+      chainId,
+      contractAddress,
+      args
+    ),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoVoteDelegation/votingPowerCap',
+            args,
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoVoteDelegationQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).votingPowerCap({
+        height: args.height,
+      })
+    },
+    ...options,
+  }),
 }
 export interface DaoVoteDelegationReactQuery<TResponse, TData = TResponse> {
   chainId: string
@@ -414,6 +466,12 @@ export interface DaoVoteDelegationReactQuery<TResponse, TData = TResponse> {
     'queryKey' | 'queryFn' | 'initialData'
   > & {
     initialData?: undefined
+  }
+}
+export interface DaoVoteDelegationVotingPowerCapQuery<TData>
+  extends DaoVoteDelegationReactQuery<VotingPowerCapResponse, TData> {
+  args: {
+    height?: number
   }
 }
 export interface DaoVoteDelegationConfigQuery<TData>

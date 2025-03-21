@@ -461,12 +461,13 @@ export const InnerCreateDaoForm = ({
           ]
         : []),
       // Add widgets if configured.
+      // TODO: add additional widget actions to initial actions
       ...(widgets && Object.keys(widgets).length > 0
-        ? Object.entries(widgets).flatMap(([id, values]): InitialItem | [] =>
-            values
+        ? Object.entries(widgets).flatMap(([id, data]): InitialItem | [] =>
+            data
               ? {
                   key: getWidgetStorageItemKey(id),
-                  value: JSON.stringify(values),
+                  value: JSON.stringify(data.data),
                 }
               : []
           )

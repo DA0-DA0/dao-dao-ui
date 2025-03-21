@@ -8,16 +8,22 @@ import {
   DaoCardLazyData,
   DaoInfo,
   DaoSource,
+  DaoWidget,
   Feature,
   IDaoBase,
   IProposalModuleBase,
   IVotingModuleBase,
+  WidgetId,
 } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
-import { isFeatureSupportedByVersion } from '@dao-dao/utils'
+import {
+  getFilteredDaoItemsByPrefix,
+  getWidgetStorageItemKey,
+  isFeatureSupportedByVersion,
+} from '@dao-dao/utils'
 
 import { daoQueries } from '../../query'
 
@@ -139,6 +145,29 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
+   * DAO widgets.
+   */
+  get widgets(): readonly DaoWidget[] {
+    return (
+      getFilteredDaoItemsByPrefix(this.info.items, getWidgetStorageItemKey(''))
+        .map(([id, widgetJson]): DaoWidget | undefined => {
+          try {
+            return {
+              id,
+              values: (widgetJson && JSON.parse(widgetJson)) || {},
+            }
+          } catch (err) {
+            // Ignore widget format error but log to console for debugging.
+            console.error(`Invalid widget JSON: ${widgetJson}`, err)
+            return
+          }
+        })
+        // Validate widget structure.
+        .filter((widget): widget is DaoWidget => !!widget)
+    )
+  }
+
+  /**
    * Check whether or not the DAO supports a given feature.
    */
   supports(feature: Feature): boolean {
@@ -150,6 +179,15 @@ export abstract class DaoBase implements IDaoBase {
    */
   getProposalModule(address: string): IProposalModuleBase | undefined {
     return this.proposalModules.find((module) => module.address === address)
+  }
+
+  /**
+   * Get the widget with the given ID.
+   */
+  getWidget<Variables extends Record<string, unknown> = any>(
+    id: WidgetId | string
+  ): DaoWidget<Variables> | undefined {
+    return this.widgets.find((widget) => widget.id === id)
   }
 
   /**

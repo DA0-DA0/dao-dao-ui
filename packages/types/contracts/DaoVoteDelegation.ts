@@ -168,6 +168,11 @@ export type QueryMsg =
   | {
       config: {}
     }
+  | {
+      voting_power_cap: {
+        height?: number | null
+      }
+    }
 export interface MigrateMsg {}
 export interface Config {
   delegation_validity_blocks?: number | null
@@ -205,4 +210,8 @@ export interface RegistrationResponse {
 export interface UnvotedDelegatedVotingPowerResponse {
   effective: Uint128
   total: Uint128
+}
+export interface VotingPowerCapResponse {
+  height: number
+  vp_cap_percent?: Decimal | null
 }

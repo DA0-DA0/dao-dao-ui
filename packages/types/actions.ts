@@ -122,6 +122,9 @@ export enum ActionKey {
   PauseRewardDistribution = 'pauseRewardDistribution',
   ResumeRewardDistribution = 'resumeRewardDistribution',
   FixRewardDistributor = 'fixRewardDistributor',
+
+  // Vote Delegation
+  UpdateDelegationConfig = 'updateDelegationConfig',
 }
 
 export type ActionAndData<

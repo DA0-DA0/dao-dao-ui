@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
   CopyableAddress,
@@ -16,9 +17,16 @@ import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
 import { ConnectWallet } from '../../../components'
 import { useWallet } from '../../../hooks'
+import {
+  UpdateDelegationConfigComponent,
+  UpdateDelegationConfigData,
+} from './actions/UpdateDelegationConfig/Component'
 
 export const Editor = ({
+  isCreating,
+  extraErrors,
   fieldNamePrefix,
+  extraFieldNamePrefix,
 }: WidgetEditorProps<VoteDelegationWidgetData>) => {
   const { t } = useTranslation()
   const dao = useDao()
@@ -33,8 +41,11 @@ export const Editor = ({
     getSigningClient,
   } = useWallet()
 
-  const { watch, setValue } = useFormContext<VoteDelegationWidgetData>()
+  const { watch, setValue } = useFormContext<
+    VoteDelegationWidgetData & { extra: UpdateDelegationConfigData }
+  >()
   const address = watch((fieldNamePrefix + 'address') as 'address')
+  const extra = watch(extraFieldNamePrefix as 'extra')
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiate = async () => {
@@ -54,15 +65,17 @@ export const Editor = ({
         `DAO DAO Vote Delegation (${Date.now()})`,
         {
           dao: dao.coreAddress,
-          // 90 days assuming 3 seconds per block.
-          delegation_validity_blocks: (90 * 24 * 3600) / 3,
+          delegation_validity_blocks: extra.validityBlocks
+            ? HugeDecimal.from(extra.validityBlocks).toNumber()
+            : null,
+          // Hardcoded conservative gas limit that works on Neutron.
           max_delegations: 50,
           no_sync_proposal_modules: false,
-          // a delegate can only utilize at most 10% of total voting power, even
-          // if they are delegated more.
-          vp_cap_percent: '0.1',
+          vp_cap_percent: extra.vpCapPercent
+            ? HugeDecimal.from(extra.vpCapPercent).div(100).toString()
+            : null,
           vp_hook_callers: [hookCaller],
-        } as InstantiateMsg,
+        } satisfies InstantiateMsg,
         undefined,
         dao.coreAddress
       )
@@ -98,6 +111,24 @@ export const Editor = ({
 
         {address && <Check className="!h-6 !w-6" />}
       </div>
+
+      <UpdateDelegationConfigComponent
+        allActionsWithData={[]}
+        data={extra}
+        fieldNamePrefix={extraFieldNamePrefix}
+        index={0}
+        options={{}}
+        {...(isCreating && !address
+          ? {
+              isCreating,
+              addAction: () => {},
+              remove: () => {},
+              errors: extraErrors,
+            }
+          : {
+              isCreating: false,
+            })}
+      />
 
       {address ? (
         <CopyableAddress address={address} className="!w-auto" />

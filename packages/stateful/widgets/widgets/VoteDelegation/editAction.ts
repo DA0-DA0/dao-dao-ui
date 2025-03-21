@@ -8,13 +8,19 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { UpdateDelegationConfigAction } from './actions/UpdateDelegationConfig'
+import { UpdateDelegationConfigData } from './actions/UpdateDelegationConfig/Component'
+
 /**
  * Additional actions that will be added to the proposal when the widget is
  * edited. These are required for setup.
  */
-export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
+export const editAction: Widget<
+  VoteDelegationWidgetData,
+  UpdateDelegationConfigData
+>['editAction'] = {
   // Add hook messages.
-  encode: async ({ address }, options) => {
+  encode: async ({ data: { address }, extra, options }) => {
     if (options.context.type !== ActionContextType.Dao) {
       throw new Error('Invalid context')
     }
@@ -22,7 +28,17 @@ export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
 
     const hookCaller = await dao.votingModule.getHookCaller()
 
+    if (!address) {
+      throw new Error('Vote delegation contract not yet created.')
+    }
+    const updateDelegationConfigAction = new UpdateDelegationConfigAction(
+      options,
+      address
+    )
+
     return [
+      // Update delegation config.
+      updateDelegationConfigAction.encode(extra),
       // Voting module hook.
       makeExecuteSmartContractMessage({
         chainId: dao.chainId,
@@ -60,7 +76,7 @@ export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
     ]
   },
   // Match hook messages.
-  match: async ({ address }, messages, options) => {
+  match: async ({ data: { address }, messages, options }) => {
     if (options.context.type !== ActionContextType.Dao) {
       throw new Error('Invalid context')
     }
@@ -68,8 +84,20 @@ export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
 
     const hookCaller = await dao.votingModule.getHookCaller()
 
-    const firstIsVotingModule =
-      objectMatchesStructure(messages[0].decodedMessage, {
+    const updateDelegationConfigAction = new UpdateDelegationConfigAction(
+      options,
+      address
+    )
+
+    const firstIsUpdateDelegationConfig = !!updateDelegationConfigAction.match(
+      messages.slice(0, 1)
+    )
+    if (!firstIsUpdateDelegationConfig) {
+      return false
+    }
+
+    const secondIsVotingModule =
+      objectMatchesStructure(messages[1].decodedMessage, {
         wasm: {
           execute: {
             contract_addr: {},
@@ -81,19 +109,19 @@ export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
           },
         },
       }) &&
-      messages[0].decodedMessage.wasm.execute.contract_addr === hookCaller &&
-      messages[0].decodedMessage.wasm.execute.msg.add_hook.addr === address
-
-    if (!firstIsVotingModule) {
+      messages[1].decodedMessage.wasm.execute.contract_addr === hookCaller &&
+      messages[1].decodedMessage.wasm.execute.msg.add_hook.addr === address
+    if (!secondIsVotingModule) {
       return false
     }
 
-    // Match at least one for the voting module hook caller above.
-    let matches = 1
+    // Match at least two messages for the config update and voting module hook
+    // caller above.
+    let matches = 2
 
     // Loop over the rest of the messages and count adjacent proposal module
     // add_vote_hook and update_delegation_module messages.
-    for (const { decodedMessage } of messages.slice(1)) {
+    for (const { decodedMessage } of messages.slice(2)) {
       const isProposalModuleMessage =
         // Add vote hook.
         ((objectMatchesStructure(decodedMessage, {
@@ -137,5 +165,15 @@ export const editAction: Widget<VoteDelegationWidgetData>['editAction'] = {
     }
 
     return matches
+  },
+  // Decode extra data.
+  decode: ({ data: { address }, messages, options }) => {
+    const updateDelegationConfigAction = new UpdateDelegationConfigAction(
+      options,
+      address
+    )
+
+    // First message should be the config update.
+    return updateDelegationConfigAction.decode([messages[0]])
   },
 }

@@ -10,10 +10,9 @@ import {
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
-import { getDaoWidgets } from '@dao-dao/utils'
 
 import { useMembership } from '../../hooks'
-import { getWidgetById } from '../core'
+import { getDaoWidgets } from '../core'
 
 type UseWidgetsOptions = {
   // If passed, will only return the widgets in this location.
@@ -30,35 +29,25 @@ export const useWidgets = ({
   const dao = useDao()
   const { isMember = false } = useMembership()
 
-  const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {
-    const daoWidgets = getDaoWidgets(dao)
-
-    return {
+  const loadingWidgets = useMemo(
+    (): LoadingData<LoadedWidget[]> => ({
       loading: false,
-      data: daoWidgets
-        .map((daoWidget): LoadedWidget | undefined => {
-          const widget = getWidgetById(
-            {
-              chainId: dao.chainId,
-              version: dao.coreVersion,
-            },
-            daoWidget.id
-          )
-          // Enforce location filter.
-          if (!widget || (location && widget.location !== location)) {
-            return
+      data: getDaoWidgets(dao).flatMap(
+        ({ widget, daoWidget }): LoadedWidget | [] => {
+          if (location && widget.location !== location) {
+            return []
           }
 
           // Enforce visibility context.
           switch (widget.visibilityContext) {
             case WidgetVisibilityContext.OnlyMembers:
               if (!isMember) {
-                return
+                return []
               }
               break
             case WidgetVisibilityContext.OnlyNonMembers:
               if (isMember) {
-                return
+                return []
               }
               break
           }
@@ -75,11 +64,11 @@ export const useWidgets = ({
             daoWidget,
             WidgetComponent,
           }
-        })
-        // Filter out any undefined widgets.
-        .filter((widget): widget is LoadedWidget => !!widget),
-    }
-  }, [dao, isMember, t, location])
+        }
+      ),
+    }),
+    [dao, isMember, t, location]
+  )
 
   return loadingWidgets
 }

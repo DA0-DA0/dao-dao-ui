@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -30,7 +30,7 @@ import {
   useQueryLoadingDataWithError,
   useWallet,
 } from '../../hooks'
-import { useWidget } from '../../widgets'
+import { getDaoWidget } from '../../widgets'
 import { Trans } from '../Trans'
 
 // TODO(delegations): stream delegation updates via websockets
@@ -44,14 +44,18 @@ export const DaoVoteDelegationCard = (
   const queryClient = useQueryClient()
   const { address: walletAddress, getSigningClient } = useWallet()
 
-  const voteDelegation = useWidget<VoteDelegationWidgetData>(
-    WidgetId.VoteDelegation
+  const voteDelegation = useMemo(
+    () =>
+      getDaoWidget<VoteDelegationWidgetData>(dao, WidgetId.VoteDelegation)
+        ?.daoWidget,
+    [dao]
   )
-  if (!voteDelegation?.daoWidget.values?.address) {
+  if (!voteDelegation?.values?.address) {
     throw new Error('Vote delegation widget not set up')
   }
+
   const chainId = dao.chainId
-  const { address } = voteDelegation.daoWidget.values
+  const { address } = voteDelegation.values
 
   const totalVotingPower = useQueryLoadingDataWithError(
     dao.getTotalVotingPowerQuery(),

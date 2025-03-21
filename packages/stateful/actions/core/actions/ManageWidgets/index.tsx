@@ -6,7 +6,7 @@ import {
   Loader,
   useDao,
 } from '@dao-dao/stateless'
-import { DaoWidget, IDaoBase, UnifiedCosmosMsg } from '@dao-dao/types'
+import { IDaoBase, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -17,12 +17,11 @@ import {
 } from '@dao-dao/types/actions'
 import {
   DAO_WIDGET_ITEM_NAMESPACE,
-  getDaoWidgets,
   getWidgetStorageItemKey,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
-import { getWidgets, useWidgets } from '../../../../widgets'
+import { getWidgetById, getWidgets, useWidgets } from '../../../../widgets'
 import { ManageStorageItemsAction } from '../ManageStorageItems'
 import {
   ManageWidgetsData,
@@ -70,10 +69,10 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
     mode: 'set',
     id: '',
     values: {},
+    extra: {},
   }
 
-  private readonly dao: IDaoBase
-  public readonly availableWidgets: DaoWidget[]
+  public readonly dao: IDaoBase
   private manageStorageItemsAction: ManageStorageItemsAction
 
   constructor(options: ActionOptions) {
@@ -95,7 +94,6 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
 
     this.dao = options.context.dao
     this.manageStorageItemsAction = manageStorageItemsAction
-    this.availableWidgets = getDaoWidgets(this.dao)
   }
 
   setup() {
@@ -106,6 +104,7 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
     mode,
     id,
     values,
+    extra,
   }: ManageWidgetsData): Promise<UnifiedCosmosMsg[]> {
     const setting = mode === 'set'
     const msgs = [
@@ -124,7 +123,13 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
       }).find((w) => w.id === id)
       if (widget?.editAction) {
         msgs.push(
-          ...[await widget.editAction.encode(values, this.options)].flat()
+          ...[
+            await widget.editAction.encode({
+              data: values,
+              options: this.options,
+              extra,
+            }),
+          ].flat()
         )
       }
     }
@@ -154,17 +159,20 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
     // Optionally match additional widget messages when updating a widget.
     if (setting) {
       const widgetId = key.substring(DAO_WIDGET_ITEM_NAMESPACE.length)
-      const widget = getWidgets({
-        chainId: this.dao.chainId,
-        version: this.dao.coreVersion,
-      }).find((w) => w.id === widgetId)
+      const widget = getWidgetById(
+        {
+          chainId: this.dao.chainId,
+          version: this.dao.coreVersion,
+        },
+        widgetId
+      )
       if (widget?.editAction && messages.length > 1) {
         const values = JSON.parse(value)
-        const widgetMatch = await widget.editAction.match(
-          values,
-          messages.slice(1),
-          this.options
-        )
+        const widgetMatch = await widget.editAction.match({
+          data: values,
+          messages: messages.slice(1),
+          options: this.options,
+        })
         if (widgetMatch) {
           // Match the first ManageWidgets message, and then match the number of
           // additional messages encoded by the widget's edit action.
@@ -176,7 +184,7 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
     return true
   }
 
-  decode(messages: ProcessedMessage[]): ManageWidgetsData {
+  async decode(messages: ProcessedMessage[]): Promise<ManageWidgetsData> {
     const manageStorageItemsData =
       this.manageStorageItemsAction.decode(messages)
 
@@ -189,12 +197,35 @@ export class ManageWidgetsAction extends ActionBase<ManageWidgetsData> {
       }
     }
 
+    const mode = manageStorageItemsData.setting ? 'set' : 'delete'
+    const id = manageStorageItemsData.key.substring(
+      DAO_WIDGET_ITEM_NAMESPACE.length
+    )
+    let extra = {}
+
+    // Decode additional widget data if necessary.
+    if (mode === 'set') {
+      const widget = getWidgetById(
+        {
+          chainId: this.dao.chainId,
+          version: this.dao.coreVersion,
+        },
+        id
+      )
+      if (widget?.editAction?.decode && messages.length > 1) {
+        extra = await widget.editAction.decode({
+          data: values,
+          messages: messages.slice(1),
+          options: this.options,
+        })
+      }
+    }
+
     return {
-      mode: manageStorageItemsData.setting ? 'set' : 'delete',
-      id: manageStorageItemsData.key.substring(
-        DAO_WIDGET_ITEM_NAMESPACE.length
-      ),
+      mode,
+      id,
       values,
+      extra,
     }
   }
 }

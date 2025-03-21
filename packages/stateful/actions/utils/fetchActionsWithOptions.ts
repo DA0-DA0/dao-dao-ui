@@ -17,13 +17,12 @@ import {
 } from '@dao-dao/types'
 import {
   convertChainContextToActionChainContext,
-  getDaoWidgets,
   makeChainContext,
   makeEmptyUnifiedProfile,
 } from '@dao-dao/utils'
 
 import { matchAndLoadAdapter } from '../../voting-module-adapter'
-import { getWidgetById } from '../../widgets'
+import { getDaoWidgets } from '../../widgets'
 import { getCoreActions } from '../core'
 
 /**
@@ -116,20 +115,10 @@ export const fetchActionsWithOptions = async ({
     }
 
     // Get widget actions.
-    const widgetActions = getDaoWidgets(dao).flatMap(({ id, values }) => {
-      const widget = getWidgetById(
-        {
-          chainId: dao.chainId,
-          version: dao.coreVersion,
-        },
-        id
-      )
-      if (!widget) {
-        return []
-      }
-
-      return widget.getActions?.(values || {}) || []
-    })
+    const widgetActions = getDaoWidgets(dao).flatMap(
+      ({ widget: { getActions }, daoWidget: { values } }) =>
+        getActions?.(values || {}) || []
+    )
 
     actions = [
       ...[

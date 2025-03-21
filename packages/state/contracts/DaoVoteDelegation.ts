@@ -26,6 +26,7 @@ import {
   StakeChangedHookMsg,
   UnvotedDelegatedVotingPowerResponse,
   VoteHookMsg,
+  VotingPowerCapResponse,
 } from '@dao-dao/types/contracts/DaoVoteDelegation'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
@@ -83,6 +84,11 @@ export interface DaoVoteDelegationReadOnlyInterface {
     startAfter?: string
   }) => Promise<ArrayOfAddr>
   config: () => Promise<Config>
+  votingPowerCap: ({
+    height,
+  }: {
+    height?: number
+  }) => Promise<VotingPowerCapResponse>
 }
 export class DaoVoteDelegationQueryClient
   implements DaoVoteDelegationReadOnlyInterface
@@ -101,6 +107,7 @@ export class DaoVoteDelegationQueryClient
     this.proposalModules = this.proposalModules.bind(this)
     this.votingPowerHookCallers = this.votingPowerHookCallers.bind(this)
     this.config = this.config.bind(this)
+    this.votingPowerCap = this.votingPowerCap.bind(this)
   }
   info = async (): Promise<InfoResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -206,6 +213,17 @@ export class DaoVoteDelegationQueryClient
   config = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
       config: {},
+    })
+  }
+  votingPowerCap = async ({
+    height,
+  }: {
+    height?: number
+  }): Promise<VotingPowerCapResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      voting_power_cap: {
+        height,
+      },
     })
   }
 }

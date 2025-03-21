@@ -23,13 +23,14 @@ export const validateRequired = (v: any) => {
   return (v !== null && v !== undefined) || 'Field is required'
 }
 
-export const validatePositive = (v: HugeDecimal.Value | undefined) =>
-  (v !== undefined && HugeDecimal.from(v).isPositive()) || 'Must be positive'
+export const validatePositive = (v: HugeDecimal.Value | undefined | null) =>
+  (v !== undefined && v !== null && HugeDecimal.from(v).isPositive()) ||
+  'Must be positive'
 
 export const validateNonNegative = (v: HugeDecimal.Value | undefined) =>
   (v !== undefined && HugeDecimal.from(v).gte(0)) || 'Must be 0 or more'
 
-export const validatePercent = (v: string | number | undefined) => {
+export const validatePercent = (v: string | number | undefined | null) => {
   const p = v ? Number(v) : NaN
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
