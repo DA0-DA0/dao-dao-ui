@@ -55,6 +55,10 @@ export interface InstantiateMsg {
   pre_propose_info: PreProposeInfo
   veto?: VetoConfig | null
   voting_strategy: VotingStrategy
+  /**
+   * v2.7.0+
+   */
+  delegation_module?: string | null
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null

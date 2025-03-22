@@ -88,6 +88,10 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
        * Defaults to true.
        */
       onlyMembersExecute?: boolean
+      /**
+       * v2.7.0+
+       */
+      delegationModuleAddress?: string
     }
   ): ModuleInstantiateInfo {
     const { codeIds, latestVersion } = mustGetSupportedChainConfig(chainId)
@@ -140,7 +144,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
               : ({
                   ...preProposeCommon,
                   extension: {},
-                } as DaoPreProposeSingleInstantiateMsg)
+                } satisfies DaoPreProposeSingleInstantiateMsg)
           ),
           funds: [],
         },
@@ -161,7 +165,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         pre_propose_info,
         threshold: config.threshold,
         veto: config.veto,
-      } as InstantiateMsg),
+        delegation_module: config.delegationModuleAddress,
+      } satisfies InstantiateMsg),
       funds: [],
     }
   }

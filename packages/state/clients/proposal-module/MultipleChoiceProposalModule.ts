@@ -82,6 +82,10 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
        * Defaults to true.
        */
       onlyMembersExecute?: boolean
+      /**
+       * v2.7.0+
+       */
+      delegationModuleAddress?: string
     },
     options: {
       /**
@@ -141,7 +145,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
                   open_proposal_submission:
                     config.submissionPolicy === 'anyone',
                 }),
-          } as DaoPreProposeMultipleInstantiateMsg),
+          } satisfies DaoPreProposeMultipleInstantiateMsg),
           // This function is used by the enable multiple choice action, and
           // DAOs before v2.3.0 still might want to enable multiple choice, so
           // make sure to support the old version without the `funds` field.
@@ -173,7 +177,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
             quorum: config.quorum,
           },
         },
-      } as InstantiateMsg),
+        delegation_module: config.delegationModuleAddress,
+      } satisfies InstantiateMsg),
       // This function is used by the enable multiple choice action, and DAOs
       // before v2.3.0 still might want to enable multiple choice, so make sure
       // to support the old version without the `funds` field.

@@ -97,6 +97,13 @@ export type MultipleChoiceOptionData = {
 }
 
 export type DaoCreationExtraVotingConfig = {
-  // If defined, use this version of the contracts instead of the latest.
+  /**
+   * If defined, use this version of the contracts instead of the latest.
+   */
   overrideContractVersion?: ContractVersion
+  /**
+   * If defined, instantiate with this delegation module. Only supported on
+   * v2.7.0 and above.
+   */
+  delegationModuleAddress?: string
 }

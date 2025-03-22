@@ -1,11 +1,16 @@
 import { HugeDecimal } from '@dao-dao/math'
 import { MultipleChoiceProposalModule } from '@dao-dao/state/clients/proposal-module/MultipleChoiceProposalModule'
 import { SecretMultipleChoiceProposalModule } from '@dao-dao/state/clients/proposal-module/MultipleChoiceProposalModule.secret'
-import { DaoCreationGetInstantiateInfo, TokenType } from '@dao-dao/types'
+import {
+  DaoCreationGetInstantiateInfo,
+  Feature,
+  TokenType,
+} from '@dao-dao/types'
 import {
   TokenBasedCreatorId,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
+  isFeatureSupportedByVersion,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
@@ -29,7 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { overrideContractVersion }
+  { overrideContractVersion, delegationModuleAddress }
 ) => {
   const commonConfig = {
     quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
@@ -133,6 +138,14 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
               refund_policy: proposalDeposit.refundPolicy,
             }
           : null,
+        delegationModuleAddress:
+          !overrideContractVersion ||
+          isFeatureSupportedByVersion(
+            Feature.VoteDelegation,
+            overrideContractVersion
+          )
+            ? delegationModuleAddress
+            : undefined,
       },
       {
         overrideContractVersion,

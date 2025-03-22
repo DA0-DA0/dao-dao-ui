@@ -67,6 +67,10 @@ export interface InstantiateMsg {
   pre_propose_info: PreProposeInfo
   threshold: Threshold
   veto?: VetoConfig | null
+  /**
+   * v2.7.0+
+   */
+  delegation_module?: string | null
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
