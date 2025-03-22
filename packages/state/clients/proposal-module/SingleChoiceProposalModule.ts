@@ -48,6 +48,7 @@ import {
   cwProposalSingleV1Queries,
   daoPreProposeSingleQueries,
   daoProposalSingleV2Queries,
+  daoVoteDelegationQueries,
   proposalQueries,
 } from '../../query'
 import { CwDao } from '../dao/CwDao'
@@ -652,5 +653,72 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   async getMaxVotingPeriod(): Promise<Duration> {
     return (await this.queryClient.fetchQuery(this.getConfigQuery()))
       .max_voting_period
+  }
+
+  getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  > {
+    return daoProposalSingleV2Queries.delegationModule(this.queryClient, {
+      chainId: this.chainId,
+      contractAddress: this.address,
+    })
+  }
+
+  getUnvotedDelegatedVotingPowerQuery({
+    delegate,
+    proposalId,
+  }: {
+    delegate: string
+    proposalId: number
+  }): FetchQueryOptions<string> {
+    return {
+      queryKey: [
+        'singleChoiceProposalModule',
+        'unvotedDelegatedVotingPower',
+        {
+          chainId: this.chainId,
+          address: this.address,
+          delegate,
+          proposalId,
+        },
+      ],
+      queryFn: async () => {
+        const [
+          delegationModule,
+          {
+            proposal: { start_height },
+          },
+        ] = await Promise.all([
+          this.queryClient.fetchQuery(this.getDelegationModuleQuery()),
+          this.getProposal({
+            proposalId,
+          }),
+        ])
+
+        // If no delegation module, there is no unvoted delegated voting power.
+        if (!delegationModule) {
+          return '0'
+        }
+
+        const udvp = await this.queryClient.fetchQuery(
+          daoVoteDelegationQueries.unvotedDelegatedVotingPower(
+            this.queryClient,
+            {
+              chainId: this.chainId,
+              contractAddress: delegationModule,
+              args: {
+                delegate,
+                height: start_height,
+                proposalId,
+                proposalModule: this.address,
+              },
+            }
+          )
+        )
+
+        return udvp.effective
+      },
+    }
   }
 }

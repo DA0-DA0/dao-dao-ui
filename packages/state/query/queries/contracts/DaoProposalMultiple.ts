@@ -49,6 +49,18 @@ export const daoProposalMultipleQueryKeys = {
         args,
       },
     ] as const,
+  delegationModule: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalMultipleQueryKeys.address(chainId, contractAddress)[0],
+        method: 'delegation_module',
+        args,
+      },
+    ] as const,
   proposal: (
     chainId: string,
     contractAddress: string,
@@ -219,6 +231,40 @@ export const daoProposalMultipleQueries = {
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).config()
+    },
+    ...options,
+  }),
+  delegationModule: <TData = Addr | null>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoProposalMultipleDelegationModuleQuery<TData>
+  ): UseQueryOptions<Addr | null, Error, TData> => ({
+    queryKey: daoProposalMultipleQueryKeys.delegationModule(
+      chainId,
+      contractAddress
+    ),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalMultiple/delegationModule',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalMultipleQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).delegationModule()
     },
     ...options,
   }),
@@ -663,3 +709,5 @@ export interface DaoProposalMultipleProposalQuery<TData>
 }
 export interface DaoProposalMultipleConfigQuery<TData>
   extends DaoProposalMultipleReactQuery<Config, TData> {}
+export interface DaoProposalMultipleDelegationModuleQuery<TData>
+  extends DaoProposalMultipleReactQuery<Addr | null, TData> {}

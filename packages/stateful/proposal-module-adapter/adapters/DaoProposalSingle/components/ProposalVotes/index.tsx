@@ -72,12 +72,25 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
                 })
               )
             ).votes.map(
-              ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
+              ({
+                vote,
+                voter,
+                power,
+                individual_power,
+                rationale,
+                votedAt,
+              }): ProposalVote => ({
                 voterAddress: voter,
                 vote,
                 votingPowerPercent: totalPower.isZero()
                   ? 0
                   : HugeDecimal.from(power)
+                      .div(totalPower)
+                      .times(100)
+                      .toNumber(),
+                individualPowerPercent: totalPower.isZero()
+                  ? 0
+                  : HugeDecimal.from(individual_power ?? power)
                       .div(totalPower)
                       .times(100)
                       .toNumber(),
@@ -147,12 +160,25 @@ export const ProposalVotes = (props: BaseProposalVotesProps) => {
             })
           )
         ).map(
-          ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
+          ({
+            vote,
+            voter,
+            power,
+            individual_power,
+            rationale,
+            votedAt,
+          }): ProposalVote => ({
             voterAddress: voter,
             vote,
             votingPowerPercent: totalPower.isZero()
               ? 0
               : HugeDecimal.from(power).div(totalPower).times(100).toNumber(),
+            individualPowerPercent: totalPower.isZero()
+              ? 0
+              : HugeDecimal.from(individual_power ?? power)
+                  .div(totalPower)
+                  .times(100)
+                  .toNumber(),
             rationale,
             votedAt: votedAt ? new Date(votedAt) : undefined,
           })

@@ -80,4 +80,15 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
   async getMaxVotingPeriod(): Promise<Duration> {
     throw new Error('Not implemented')
   }
+
+  getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  > {
+    throw new Error('Not implemented')
+  }
+
+  getUnvotedDelegatedVotingPowerQuery(): FetchQueryOptions<string> {
+    throw new Error('Not implemented')
+  }
 }

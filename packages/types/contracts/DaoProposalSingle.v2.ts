@@ -316,6 +316,9 @@ export type QueryMsg =
       config: {}
     }
   | {
+      delegation_module: {}
+    }
+  | {
       proposal: {
         proposal_id: number
       }

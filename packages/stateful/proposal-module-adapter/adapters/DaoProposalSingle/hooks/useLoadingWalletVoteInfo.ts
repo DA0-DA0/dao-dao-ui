@@ -1,3 +1,4 @@
+import { SingleChoiceProposalModule } from '@dao-dao/state/clients'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
@@ -12,9 +13,12 @@ export const useLoadingWalletVoteInfo = ():
   | undefined
   | LoadingData<WalletVoteInfo<Vote>> => {
   const {
-    proposalModule,
+    proposalModule: _proposalModule,
     options: { proposalNumber, isPreProposeApprovalProposal },
   } = useProposalModuleAdapterContext()
+
+  const proposalModule =
+    _proposalModule as unknown as SingleChoiceProposalModule
 
   // Re-renders when permit is updated.
   const {
@@ -59,6 +63,26 @@ export const useLoadingWalletVoteInfo = ():
           )
     )
 
+  const unvotedDelegatedVotingPowerLoading = useQueryLoadingDataWithError(
+    loadingProposal.loading || !walletAddress
+      ? // loading state if proposal not yet loaded
+        undefined
+      : proposalModule.getUnvotedDelegatedVotingPowerQuery({
+          delegate: walletAddress,
+          proposalId: proposalNumber,
+        })
+  )
+
+  const delegateRegistrationLoading = useQueryLoadingDataWithError(
+    loadingProposal.loading || !walletAddress
+      ? // loading state if proposal not yet loaded
+        undefined
+      : proposalModule.getDelegateRegistrationQuery({
+          delegate: walletAddress,
+          height: loadingProposal.data.start_height,
+        })
+  )
+
   // Return undefined when no permit on Secret Network or when pre-propose
   // proposal (which doesn't have voting).
   if ((isSecretNetwork && !permit) || isPreProposeApprovalProposal) {
@@ -69,7 +93,9 @@ export const useLoadingWalletVoteInfo = ():
     loadingProposal.loading ||
     walletVoteLoading.loading ||
     walletVotingPowerWhenProposalCreatedLoading.loading ||
-    totalVotingPowerWhenProposalCreatedLoading.loading
+    totalVotingPowerWhenProposalCreatedLoading.loading ||
+    unvotedDelegatedVotingPowerLoading.loading ||
+    delegateRegistrationLoading.loading
   ) {
     return {
       loading: true,
@@ -78,13 +104,15 @@ export const useLoadingWalletVoteInfo = ():
 
   const proposal = loadingProposal.data
   const walletVote =
-    (!walletVoteLoading.errored && walletVoteLoading.data?.vote?.vote) ||
-    undefined
-  const walletVotingPowerWhenProposalCreated =
+    (!walletVoteLoading.errored && walletVoteLoading.data?.vote) || undefined
+  const individualVotingPower =
     walletVotingPowerWhenProposalCreatedLoading.errored
       ? 0
       : Number(walletVotingPowerWhenProposalCreatedLoading.data.power)
-  const couldVote = walletVotingPowerWhenProposalCreated > 0
+  const unvotedDelegatedVotingPower = unvotedDelegatedVotingPowerLoading.errored
+    ? 0
+    : Number(unvotedDelegatedVotingPowerLoading.data)
+  const couldVote = individualVotingPower > 0
   const totalVotingPowerWhenProposalCreated =
     totalVotingPowerWhenProposalCreatedLoading.errored
       ? 0
@@ -93,19 +121,34 @@ export const useLoadingWalletVoteInfo = ():
   const canVote =
     couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)
 
+  const votingPower = individualVotingPower + unvotedDelegatedVotingPower
+
+  const isDelegate =
+    !delegateRegistrationLoading.errored &&
+    delegateRegistrationLoading.data.registered
+
   return {
     loading: false,
     data: {
-      vote: walletVote,
+      vote: walletVote?.vote,
       // If wallet could vote when this was open.
       couldVote,
       // If wallet can vote now.
       canVote,
+      isDelegate,
       votingPowerPercent:
         (totalVotingPowerWhenProposalCreated === 0
           ? 0
-          : walletVotingPowerWhenProposalCreated /
-            totalVotingPowerWhenProposalCreated) * 100,
+          : votingPower / totalVotingPowerWhenProposalCreated) * 100,
+      individualVotingPowerPercent:
+        (totalVotingPowerWhenProposalCreated === 0
+          ? 0
+          : individualVotingPower / totalVotingPowerWhenProposalCreated) * 100,
+      unvotedDelegatedVotingPowerPercent:
+        (totalVotingPowerWhenProposalCreated === 0
+          ? 0
+          : unvotedDelegatedVotingPower / totalVotingPowerWhenProposalCreated) *
+        100,
     },
   }
 }

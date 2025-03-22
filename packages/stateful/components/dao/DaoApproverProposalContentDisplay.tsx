@@ -131,7 +131,7 @@ export const DaoApproverProposalContentDisplay = ({
     approvalContext: !loadingProposalStatus.loading
       ? {
           type: ApprovalProposalContextType.Approver,
-          status: loadingProposalStatus.data,
+          status: loadingProposalStatus.data.status,
         }
       : undefined,
   }

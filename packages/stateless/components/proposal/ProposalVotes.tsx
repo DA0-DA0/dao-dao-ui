@@ -32,7 +32,19 @@ import { Tooltip } from '../tooltip/Tooltip'
 export interface ProposalVote<Vote extends unknown = any> {
   voterAddress: string
   vote: Vote
+  /**
+   * The voting power of the vote as a percentage of the total voting power.
+   * Includes all voting power (both individual and delegated).
+   */
   votingPowerPercent: number
+  /**
+   * The voting power of the vote owned by the voter as a percentage of the
+   * total voting power. Excludes delegated power.
+   *
+   * Since delegations were added in v2.7.0, this equals `votingPowerPercent`
+   * for earlier versions.
+   */
+  individualPowerPercent: number
   rationale?: string | null
   votedAt?: Date
 }
@@ -198,7 +210,14 @@ export const ProposalVotes = <Vote extends unknown = any>({
           {/* Votes */}
           {(votes.loading || votes.errored ? [] : votes.data).map(
             (
-              { votedAt, voterAddress, vote, votingPowerPercent, rationale },
+              {
+                votedAt,
+                voterAddress,
+                vote,
+                votingPowerPercent,
+                individualPowerPercent,
+                rationale,
+              },
               index
             ) => (
               <Fragment key={index}>
@@ -243,14 +262,39 @@ export const ProposalVotes = <Vote extends unknown = any>({
                     <VoteDisplay vote={vote} />
                   </div>
                 </Tooltip>
-                <p
-                  className={clsx(
-                    'caption-text justify-self-right text-right font-mono text-text-body',
-                    votesLoadingOrUpdating && 'animate-pulse'
-                  )}
+                <Tooltip
+                  title={
+                    <>
+                      {t('title.individual') + ': '}
+                      <span className="text-text-brand-secondary font-mono">
+                        {formatPercentOf100(individualPowerPercent)}
+                      </span>
+                      <br />
+                      {t('title.delegated') + ': '}
+                      <span
+                        className={clsx(
+                          'font-mono',
+                          votingPowerPercent - individualPowerPercent > 0
+                            ? 'text-text-brand-secondary'
+                            : 'text-text-tertiary'
+                        )}
+                      >
+                        {formatPercentOf100(
+                          votingPowerPercent - individualPowerPercent
+                        )}
+                      </span>
+                    </>
+                  }
                 >
-                  {formatPercentOf100(votingPowerPercent)}
-                </p>
+                  <p
+                    className={clsx(
+                      'caption-text justify-self-right text-right font-mono text-text-body',
+                      votesLoadingOrUpdating && 'animate-pulse'
+                    )}
+                  >
+                    {formatPercentOf100(votingPowerPercent)}
+                  </p>
+                </Tooltip>
               </Fragment>
             )
           )}

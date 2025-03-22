@@ -550,4 +550,15 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     return (await this.queryClient.fetchQuery(this.getConfigQuery()))
       .max_voting_period
   }
+
+  getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  > {
+    throw new Error('Delegation module not supported')
+  }
+
+  getUnvotedDelegatedVotingPowerQuery(): FetchQueryOptions<string> {
+    throw new Error('Unvoted delegated voting power not supported')
+  }
 }

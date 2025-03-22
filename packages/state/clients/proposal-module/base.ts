@@ -12,10 +12,13 @@ import {
   PreProposeModule,
 } from '@dao-dao/types'
 import { VetoConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+import { RegistrationResponse } from '@dao-dao/types/contracts/DaoVoteDelegation'
 import {
   SupportedSigningCosmWasmClient,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
+
+import { daoVoteDelegationQueries } from '../../query'
 
 export abstract class ProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
@@ -279,4 +282,67 @@ export abstract class ProposalModuleBase<
    * Fetch the max voting period.
    */
   abstract getMaxVotingPeriod(): Promise<Duration>
+
+  /**
+   * Query options to fetch the delegation module address, or null if none.
+   */
+  abstract getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Fetch the effective unvoted delegated voting power on a specific proposal
+   * for a given delegate.
+   */
+  abstract getUnvotedDelegatedVotingPowerQuery(options: {
+    delegate: string
+    proposalId: number
+  }): FetchQueryOptions<string>
+
+  /**
+   * Fetch a delegate's registration info, optionally at a specific height.
+   */
+  getDelegateRegistrationQuery({
+    delegate,
+    height,
+  }: {
+    delegate: string
+    height?: number
+  }): FetchQueryOptions<RegistrationResponse> {
+    return {
+      queryKey: [
+        'singleChoiceProposalModule',
+        'unvotedDelegatedVotingPower',
+        {
+          chainId: this.chainId,
+          address: this.address,
+          delegate,
+          height,
+        },
+      ],
+      queryFn: async () => {
+        const delegationModule = await this.queryClient.fetchQuery(
+          this.getDelegationModuleQuery()
+        )
+
+        if (!delegationModule) {
+          throw new Error('No delegation module')
+        }
+
+        const registration = await this.queryClient.fetchQuery(
+          daoVoteDelegationQueries.registration(this.queryClient, {
+            chainId: this.chainId,
+            contractAddress: delegationModule,
+            args: {
+              delegate,
+              height,
+            },
+          })
+        )
+
+        return registration
+      },
+    }
+  }
 }

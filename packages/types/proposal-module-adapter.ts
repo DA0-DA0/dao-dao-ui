@@ -78,7 +78,10 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useLoadingProposalStatus: () => LoadingData<ProposalStatus>
+    useLoadingProposalStatus: () => LoadingData<{
+      status: ProposalStatus
+      isVotingOpen: boolean
+    }>
     useLoadingVoteOptions: () => LoadingData<ProposalVoteOption<Vote>[]>
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
@@ -336,7 +339,31 @@ export type WalletVoteInfo<T> = {
   vote: T | undefined
   couldVote: boolean
   canVote: boolean
+  /**
+   * Whether or not the wallet is registered as a delegate.
+   */
+  isDelegate: boolean
+  /**
+   * The voting power percentage of the total voting power. Includes all voting
+   * power (both individual and unvoted delegated).
+   */
   votingPowerPercent: number
+  /**
+   * The voting power owned by the voter as a percentage of the total voting
+   * power. Excludes delegated power.
+   *
+   * Since delegations were added in v2.7.0, this equals `votingPowerPercent`
+   * for earlier versions.
+   */
+  individualVotingPowerPercent: number
+  /**
+   * The voting power delegated to the voter by other members of the DAO who
+   * have not yet voted on the proposal as a percentage of the total voting
+   * power.
+   *
+   * Since delegations were added in v2.7.0, this is 0 for earlier versions.
+   */
+  unvotedDelegatedVotingPowerPercent: number
 }
 
 export type ProposalRefreshers = {

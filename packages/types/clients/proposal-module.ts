@@ -6,6 +6,7 @@ import { FetchQueryOptions } from '@tanstack/react-query'
 
 import { CheckedDepositInfo, Coin, Duration } from '../contracts/common'
 import { VetoConfig } from '../contracts/DaoProposalSingle.v2'
+import { RegistrationResponse } from '../contracts/DaoVoteDelegation'
 import { PreProposeModule } from '../dao'
 import { ContractVersion, Feature } from '../features'
 import { IDaoBase } from './dao'
@@ -191,4 +192,29 @@ export interface IProposalModuleBase<
    * Fetch the max voting period.
    */
   getMaxVotingPeriod(): Promise<Duration>
+
+  /**
+   * Query options to fetch the delegation module address, or null if none.
+   */
+  getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Fetch the effective unvoted delegated voting power on a specific proposal
+   * for a given delegate.
+   */
+  getUnvotedDelegatedVotingPowerQuery(options: {
+    delegate: string
+    proposalId: number
+  }): FetchQueryOptions<string>
+
+  /**
+   * Fetch a delegate's registration info, optionally at a specific height.
+   */
+  getDelegateRegistrationQuery(options: {
+    delegate: string
+    height?: number
+  }): FetchQueryOptions<RegistrationResponse>
 }
