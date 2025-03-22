@@ -393,6 +393,10 @@ export interface VoteResponse {
 }
 export interface VoteInfo {
   power: Uint128
+  /**
+   * v2.7.0+
+   */
+  individual_power?: Uint128
   rationale?: string | null
   vote: Vote
   voter: Addr
