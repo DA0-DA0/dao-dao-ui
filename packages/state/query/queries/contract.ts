@@ -15,6 +15,7 @@ import {
   cosmwasmProtoRpcClientRouter,
   getChainForChainId,
   getCosmWasmClientForChainId,
+  isErrorWithSubstring,
   isInvalidContractError,
   isSecretNetwork,
   isValidBech32Address,
@@ -51,10 +52,7 @@ export const fetchContractInfo = async (
     }
   } catch (error) {
     // Rethrow contract not found errors.
-    if (
-      error instanceof Error &&
-      error.message.includes('contract not found')
-    ) {
+    if (isErrorWithSubstring(error, 'contract not found')) {
       throw error
     }
 
