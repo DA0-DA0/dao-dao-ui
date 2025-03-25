@@ -289,7 +289,9 @@ export const ProposalVoteTallyLoader = ({
               ? t('proposalVoteTitle.reject')
               : t('info.noVote')}
           </p>
-          <p className="text-text-tertiary">... {t('info.abstainVote')}</p>
+          <p className="text-text-tertiary flex-1 text-right">
+            ... {t('info.abstainVote')}
+          </p>
         </div>
 
         {/* Threshold progress bar */}
