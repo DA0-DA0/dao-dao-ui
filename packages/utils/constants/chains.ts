@@ -605,17 +605,18 @@ const BASE_SUPPORTED_CHAINS: Omit<
     },
     latestVersion: ContractVersion.V260,
   },
-  {
-    chainId: ChainId.BitsongTestnet,
-    name: 'bitsong',
-    mainnet: false,
-    accentColor: '#c53381',
-    factoryContractAddress:
-      'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
-    tokenCreationFactoryAddress:
-      'bitsong13ackt4dv4ngt4jpngnvyyecjhu33w6gge3mad3n9vc0qkqcrk6cqzfm9vx',
-    latestVersion: ContractVersion.V260,
-  },
+  // BitSong Testnet is halted indefinitely
+  // {
+  //   chainId: ChainId.BitsongTestnet,
+  //   name: 'bitsong',
+  //   mainnet: false,
+  //   accentColor: '#c53381',
+  //   factoryContractAddress:
+  //     'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
+  //   tokenCreationFactoryAddress:
+  //     'bitsong13ackt4dv4ngt4jpngnvyyecjhu33w6gge3mad3n9vc0qkqcrk6cqzfm9vx',
+  //   latestVersion: ContractVersion.V260,
+  // },
   {
     chainId: ChainId.OmniflixHubTestnet,
     name: 'omniflixhub',
