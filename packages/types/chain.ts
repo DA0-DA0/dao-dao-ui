@@ -76,7 +76,7 @@ export enum ChainId {
   CosmosHubMainnet = 'cosmoshub-4',
   CosmosHubProviderTestnet = 'provider',
   JunoMainnet = 'juno-1',
-  JunoTestnet = 'uni-6',
+  JunoTestnet = 'uni-7',
   OsmosisMainnet = 'osmosis-1',
   OsmosisTestnet = 'osmo-test-5',
   StargazeMainnet = 'stargaze-1',

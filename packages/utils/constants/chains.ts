@@ -160,6 +160,24 @@ if (babylonTestnetChain?.chainRegistry) {
   }
 }
 
+// Replace Juno testnet uni-6 with uni-7.
+const junoTestnetChain = chains.find((c) => c.chainId === 'uni-6')
+if (junoTestnetChain?.chainRegistry) {
+  junoTestnetChain.chainId = ChainId.JunoTestnet
+  junoTestnetChain.chainRegistry.chain_id = ChainId.JunoTestnet
+  junoTestnetChain.chainRegistry.fees = {
+    fee_tokens: [
+      {
+        denom: 'ujunox',
+        low_gas_price: 0.075,
+        average_gas_price: 0.1,
+        high_gas_price: 0.125,
+        fixed_min_gas_price: 0.075,
+      },
+    ],
+  }
+}
+
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
   'thorchain',
@@ -502,7 +520,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
     mainnet: false,
     accentColor: '#f74a49',
     factoryContractAddress:
-      'juno1fec7mpkacctlj8w98af6d7grxu0jjy2zadvv9mekzhcdmleaa28s4mwu64',
+      'juno1hm4y6fzgxgu688jgf7ek66px6xkrtmn3gyk8fax3eawhp68c2d5qcyjvu4',
     explorerUrlTemplates: {
       tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
       gov: 'https://testnet.ping.pub/juno/gov',
