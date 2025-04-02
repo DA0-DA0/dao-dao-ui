@@ -19,10 +19,12 @@ import {
   ActionContextType,
   ActionKey,
 } from '@dao-dao/types/actions'
+import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
 
 export type CreateIcaData = {
   chainId: string
+  ordering?: Order
 }
 
 export type CreateIcaOptions = {
