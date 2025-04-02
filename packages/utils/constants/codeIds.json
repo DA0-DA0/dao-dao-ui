@@ -1385,13 +1385,17 @@
   "uni-7": {
     "2.6.0": {
       "Cw1Whitelist": 1,
-      "Cw4Group": 2,
       "Cw20Base": 3,
+      "Cw20Stake": 20,
+      "Cw4Group": 2,
       "Cw721Base": 4,
       "CwAdminFactory": 5,
       "CwPayrollFactory": 6,
       "CwTokenSwap": 7,
+      "CwTokenfactoryIssuer": 23,
+      "CwVesting": 19,
       "DaoDaoCore": 8,
+      "DaoMigrator": 18,
       "DaoPreProposeApprovalMultiple": 9,
       "DaoPreProposeApprovalSingle": 10,
       "DaoPreProposeApprover": 11,
@@ -1400,13 +1404,9 @@
       "DaoProposalMultiple": 14,
       "DaoProposalSingle": 15,
       "DaoRewardsDistributor": 16,
-      "DaoVotingCw4": 17,
-      "DaoMigrator": 18,
-      "CwVesting": 19,
-      "Cw20Stake": 20,
       "DaoVotingCw20Staked": 21,
+      "DaoVotingCw4": 17,
       "DaoVotingCw721Staked": 22,
-      "CwTokenfactoryIssuer": 23,
       "DaoVotingTokenStaked": 24
     }
   }
