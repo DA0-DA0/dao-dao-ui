@@ -1,4 +1,4 @@
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash.uniqby'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -229,8 +229,6 @@ export const genericTokenBalancesSelector = selectorFamily<
             )
           : []
       )[0]
-
-      console.log(address, cw20TokenBalances)
 
       return [
         ...nativeTokenBalances.map((native) => ({
