@@ -300,6 +300,26 @@
       "DaoVotingTokenStaked": 36
     }
   },
+  "dev-1": {
+    "2.6.0": {
+      "Cw1Whitelist": 80,
+      "Cw4Group": 81,
+      "CwAdminFactory": 82,
+      "CwPayrollFactory": 83,
+      "CwTokenSwap": 84,
+      "CwVesting": 95,
+      "DaoDaoCore": 85,
+      "DaoPreProposeApprovalMultiple": 86,
+      "DaoPreProposeApprovalSingle": 87,
+      "DaoPreProposeApprover": 88,
+      "DaoPreProposeMultiple": 89,
+      "DaoPreProposeSingle": 90,
+      "DaoProposalMultiple": 91,
+      "DaoProposalSingle": 92,
+      "DaoRewardsDistributor": 93,
+      "DaoVotingCw4": 94
+    }
+  },
   "elgafar-1": {
     "2.1.0": {
       "Cw4Group": 2887,

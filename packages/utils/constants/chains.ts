@@ -736,6 +736,15 @@ const BASE_SUPPORTED_CHAINS: Omit<
       [NftBasedCreatorId]: 'unsupported',
     },
   },
+  {
+    chainId: ChainId.ThorchainDevnet,
+    name: 'thorchain',
+    mainnet: false,
+    accentColor: '#00eed1',
+    factoryContractAddress:
+      'sthor190l0h8jw590kaywzzfdwjyk38w72vm99562e9z9gpj2vas8huveqwvfa9g',
+    latestVersion: ContractVersion.V260,
+  },
 ]
 
 // Extract info from JSON config.
