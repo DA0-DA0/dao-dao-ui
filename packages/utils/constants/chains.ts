@@ -58,33 +58,33 @@ let chains: AnyChain[] = chainRegistryChains.map(
 )
 const assets = [...chainRegistryAssets]
 
-// BitSong Testnet
-const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
-  ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
-  chain_id: ChainId.BitsongTestnet,
-  chain_name: 'bitsongtestnet',
-  status: 'live',
-  network_type: 'testnet',
-  pretty_name: 'BitSong Testnet',
-  apis: {
-    rpc: [
-      {
-        address: 'https://rpc-testnet.explorebitsong.com',
-      },
-    ],
-    rest: [
-      {
-        address: 'https://lcd-testnet.explorebitsong.com',
-      },
-    ],
-  },
-})
-chains.push(bitSongTestnetChain)
-assets.push({
-  chain_name: bitSongTestnetChain.chainName,
-  // Copy assets from BitSong mainnet.
-  assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
-})
+// BitSong Testnet: halted indefinitely
+// const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
+//   ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
+//   chain_id: ChainId.BitsongTestnet,
+//   chain_name: 'bitsongtestnet',
+//   status: 'live',
+//   network_type: 'testnet',
+//   pretty_name: 'BitSong Testnet',
+//   apis: {
+//     rpc: [
+//       {
+//         address: 'https://rpc-testnet.explorebitsong.com',
+//       },
+//     ],
+//     rest: [
+//       {
+//         address: 'https://lcd-testnet.explorebitsong.com',
+//       },
+//     ],
+//   },
+// })
+// chains.push(bitSongTestnetChain)
+// assets.push({
+//   chain_name: bitSongTestnetChain.chainName,
+//   // Copy assets from BitSong mainnet.
+//   assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
+// })
 
 // OmniFlix Hub Testnet
 const omniFlixHubTestnetChain = convertChainRegistryChainToAnyChain({
