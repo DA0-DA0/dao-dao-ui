@@ -101,6 +101,7 @@ export enum ChainId {
   SecretMainnet = 'secret-4',
   SecretTestnet = 'pulsar-3',
   BabylonTestnet = 'bbn-test-5',
+  ThorchainDevnet = 'dev-1',
 }
 
 export type BaseChainConfig = {

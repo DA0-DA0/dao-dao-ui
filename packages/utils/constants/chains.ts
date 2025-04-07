@@ -39,7 +39,7 @@ export const convertChainRegistryChainToAnyChain = (
 ): AnyChain => ({
   chainId: chain.chain_id,
   chainName: chain.chain_name,
-  bech32Prefix: chain.bech32_prefix,
+  bech32Prefix: chain.bech32_prefix ?? '',
   prettyName: chain.pretty_name ?? chain.chain_name,
   chainRegistry: chain,
 })
@@ -177,6 +177,72 @@ if (junoTestnetChain?.chainRegistry) {
     ],
   }
 }
+
+// THORChain/Rujira Devnet
+const thorchainDevnetChain = convertChainRegistryChainToAnyChain({
+  chain_id: ChainId.ThorchainDevnet,
+  chain_name: 'thorchaindevnet',
+  chain_type: 'cosmos',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'THORChain Devnet',
+  bech32_prefix: 'sthor',
+  slip44: 931,
+  apis: {
+    rpc: [
+      {
+        address: 'https://thornode-devnet-rpc.bryanlabs.net:443',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://thornode-devnet-api.bryanlabs.net:443',
+      },
+    ],
+  },
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'rune',
+        fixed_min_gas_price: 0.02,
+      },
+    ],
+  },
+})
+chains.push(thorchainDevnetChain)
+assets.push({
+  chain_name: thorchainDevnetChain.chainName,
+  assets: [
+    {
+      description: 'The native token of THORChain',
+      denom_units: [
+        {
+          denom: 'rune',
+          exponent: 0,
+        },
+        {
+          denom: 'RUNE',
+          exponent: 8,
+        },
+      ],
+      base: 'rune',
+      name: 'THORChain RUNE',
+      display: 'RUNE',
+      symbol: 'RUNE',
+      logo_URIs: {
+        png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.png',
+        svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.svg',
+      },
+      images: [
+        {
+          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.png',
+          svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.svg',
+        },
+      ],
+      type_asset: 'sdk.coin',
+    },
+  ],
+})
 
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
@@ -574,23 +640,24 @@ const BASE_SUPPORTED_CHAINS: Omit<
     },
     latestVersion: ContractVersion.V260,
   },
-  {
-    chainId: ChainId.KujiraTestnet,
-    name: 'kujira',
-    mainnet: false,
-    accentColor: '#e53935',
-    factoryContractAddress:
-      'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
-    explorerUrlTemplates: {
-      tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
-      // cannot link directly to testnet
-      // gov: 'https://kujira.network/govern',
-      // cannot link directly to testnet
-      // govProp: 'https://kujira.network/govern/REPLACE',
-      wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
-    },
-    latestVersion: ContractVersion.V260,
-  },
+  // Kujira Testnet is halted indefinitely
+  // {
+  //   chainId: ChainId.KujiraTestnet,
+  //   name: 'kujira',
+  //   mainnet: false,
+  //   accentColor: '#e53935',
+  //   factoryContractAddress:
+  //     'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
+  //   explorerUrlTemplates: {
+  //     tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
+  //     // cannot link directly to testnet
+  //     // gov: 'https://kujira.network/govern',
+  //     // cannot link directly to testnet
+  //     // govProp: 'https://kujira.network/govern/REPLACE',
+  //     wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
+  //   },
+  //   latestVersion: ContractVersion.V260,
+  // },
   {
     chainId: ChainId.NeutronTestnet,
     name: 'neutron',
@@ -816,6 +883,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BabylonTestnet]: {
     rpc: 'https://babylon-testnet-rpc.polkachu.com',
     rest: 'https://babylon-testnet-api.polkachu.com',
+  },
+  [ChainId.ThorchainDevnet]: {
+    rpc: 'https://thornode-devnet-rpc.bryanlabs.net',
+    rest: 'https://thornode-devnet-api.bryanlabs.net',
   },
 }
 

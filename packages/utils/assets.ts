@@ -42,7 +42,7 @@ export const convertChainRegistryAssetToGenericToken = (
   {
     base,
     symbol,
-    logo_URIs: { png, svg, jpeg } = {},
+    logo_URIs: { png, svg } = {},
     name,
     display,
     denom_units,
@@ -64,7 +64,7 @@ export const convertChainRegistryAssetToGenericToken = (
     denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
     denom_units[0]?.exponent ??
     0,
-  imageUrl: svg || png || jpeg || getFallbackImage(base),
+  imageUrl: svg || png || getFallbackImage(base),
   description: symbol === name ? undefined : name,
   // This will be wrong when this is an IBC asset.
   source: {
