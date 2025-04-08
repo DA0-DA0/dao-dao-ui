@@ -670,7 +670,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#000000',
         factoryContractAddress:
-          'neutron13v9a8gyqcp57kv5qtltxna3p4smcqlva5cv5xs2m0hamzlemq73s0dzaq0',
+          'neutron1y83whq00v8zdpzmf7rw9jr3hqzc7cuqa5jznd0fe5hyd7ew5jm3s6255nk',
         govContractAddress: NEUTRON_GOVERNANCE_DAO,
         explorerUrlTemplates: {
           tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',

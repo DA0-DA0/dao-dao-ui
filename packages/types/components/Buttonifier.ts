@@ -46,6 +46,8 @@ export type ButtonifierProps = {
   hovering?: boolean
   /** Whether button should appear focused */
   focused?: boolean
+  /** Whether button is in errored state */
+  errored?: boolean
   /** Whether to show a notification badge */
   showBadge?: boolean
   /** Allow button to be clicked even when loading */

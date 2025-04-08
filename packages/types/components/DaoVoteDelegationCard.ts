@@ -22,6 +22,10 @@ export type StatelessDaoVoteDelegationCardProps = {
    */
   totalVotingPower: LoadingDataWithError<HugeDecimal>
   /**
+   * Wallet voting power.
+   */
+  walletVotingPower: LoadingDataWithError<HugeDecimal>
+  /**
    * Delegates.
    */
   delegates: LoadingDataWithError<DelegateWithEntity[]>
@@ -40,7 +44,7 @@ export type StatelessDaoVoteDelegationCardProps = {
   /**
    * Function to register/unregister as a delegate.
    */
-  updateRegistration: (register: boolean) => Promise<void>
+  updateRegistration: (register: boolean) => Promise<boolean>
   /**
    * Whether or not delegation is loading.
    */
@@ -48,7 +52,7 @@ export type StatelessDaoVoteDelegationCardProps = {
   /**
    * Function to delegate.
    */
-  delegate: (data: DelegationForm) => Promise<void>
+  delegate: (data: DelegationForm) => Promise<boolean>
   /**
    * Whether or not undelegation is loading.
    */
@@ -56,7 +60,7 @@ export type StatelessDaoVoteDelegationCardProps = {
   /**
    * Function to undelegate.
    */
-  undelegate: (delegate: string) => Promise<void>
+  undelegate: (delegate: string) => Promise<boolean>
   /**
    * Stateful Trans component.
    */
@@ -66,6 +70,7 @@ export type StatelessDaoVoteDelegationCardProps = {
 export type StatefulDaoVoteDelegationCardProps = Omit<
   StatelessDaoVoteDelegationCardProps,
   | 'totalVotingPower'
+  | 'walletVotingPower'
   | 'delegates'
   | 'delegations'
   | 'registration'

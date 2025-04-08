@@ -4,6 +4,8 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { CheckedDepositInfo, Coin, Duration } from '../contracts/common'
 import { VetoConfig } from '../contracts/DaoProposalSingle.v2'
 import { RegistrationResponse } from '../contracts/DaoVoteDelegation'
@@ -202,19 +204,25 @@ export interface IProposalModuleBase<
   >
 
   /**
-   * Fetch the effective unvoted delegated voting power on a specific proposal
-   * for a given delegate.
+   * Fetch the unvoted delegated voting power on a specific proposal for a given
+   * delegate.
    */
   getUnvotedDelegatedVotingPowerQuery(options: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<string>
+  }): FetchQueryOptions<UnvotedDelegatedVotingPower>
 
   /**
-   * Fetch a delegate's registration info, optionally at a specific height.
+   * Fetch a delegate's registration info, optionally at a specific height, or
+   * null if no delegation module.
    */
   getDelegateRegistrationQuery(options: {
     delegate: string
     height?: number
-  }): FetchQueryOptions<RegistrationResponse>
+  }): FetchQueryOptions<RegistrationResponse | null>
+}
+
+export type UnvotedDelegatedVotingPower = {
+  total: HugeDecimal
+  effective: HugeDecimal
 }

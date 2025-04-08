@@ -138,7 +138,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Add to Sentry error tags if error occurs.
       try {
-        // Check for legacy contract.
+        // Check for legacy contract and contract existence.
         const contractInfo = !configuredGovChain
           ? (
               await queryClient.fetchQuery(

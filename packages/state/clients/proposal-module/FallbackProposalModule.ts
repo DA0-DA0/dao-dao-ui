@@ -87,8 +87,4 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
   > {
     throw new Error('Not implemented')
   }
-
-  getUnvotedDelegatedVotingPowerQuery(): FetchQueryOptions<string> {
-    throw new Error('Not implemented')
-  }
 }

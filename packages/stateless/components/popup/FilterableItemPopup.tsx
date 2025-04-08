@@ -47,6 +47,7 @@ export type FilterableItemPopupProps<
   listClassName?: string
   labelClassName?: string
   closeOnSelect?: boolean
+  noItemsLabel?: string
   getKeydownEventListener?: (
     open: boolean,
     setOpen: Dispatch<SetStateAction<boolean>>
@@ -62,6 +63,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   listClassName,
   labelClassName,
   closeOnSelect = true,
+  noItemsLabel,
   getKeydownEventListener,
 }: FilterableItemPopupProps<T>) => {
   const { t } = useTranslation()
@@ -310,7 +312,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           ) : (
             <NoContent
               Icon={WarningRounded}
-              body={t('info.nothingFound')}
+              body={noItemsLabel || t('info.nothingFound')}
               className="h-full w-full justify-center border-0"
             />
           )}

@@ -557,8 +557,4 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   > {
     throw new Error('Delegation module not supported')
   }
-
-  getUnvotedDelegatedVotingPowerQuery(): FetchQueryOptions<string> {
-    throw new Error('Unvoted delegated voting power not supported')
-  }
 }

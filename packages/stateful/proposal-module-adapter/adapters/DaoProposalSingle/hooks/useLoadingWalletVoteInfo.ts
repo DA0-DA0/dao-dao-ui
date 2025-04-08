@@ -1,3 +1,4 @@
+import { HugeDecimal } from '@dao-dao/math'
 import { SingleChoiceProposalModule } from '@dao-dao/state/clients'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
@@ -107,25 +108,25 @@ export const useLoadingWalletVoteInfo = ():
     (!walletVoteLoading.errored && walletVoteLoading.data?.vote) || undefined
   const individualVotingPower =
     walletVotingPowerWhenProposalCreatedLoading.errored
-      ? 0
-      : Number(walletVotingPowerWhenProposalCreatedLoading.data.power)
+      ? HugeDecimal.zero
+      : HugeDecimal.from(walletVotingPowerWhenProposalCreatedLoading.data.power)
   const unvotedDelegatedVotingPower = unvotedDelegatedVotingPowerLoading.errored
-    ? 0
-    : Number(unvotedDelegatedVotingPowerLoading.data)
-  const couldVote = individualVotingPower > 0
+    ? HugeDecimal.zero
+    : unvotedDelegatedVotingPowerLoading.data.effective
+  const couldVote = individualVotingPower.isPositive()
   const totalVotingPowerWhenProposalCreated =
     totalVotingPowerWhenProposalCreatedLoading.errored
-      ? 0
-      : Number(totalVotingPowerWhenProposalCreatedLoading.data.power)
+      ? HugeDecimal.zero
+      : HugeDecimal.from(totalVotingPowerWhenProposalCreatedLoading.data.power)
 
   const canVote =
     couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)
 
-  const votingPower = individualVotingPower + unvotedDelegatedVotingPower
+  const votingPower = individualVotingPower.plus(unvotedDelegatedVotingPower)
 
   const isDelegate =
     !delegateRegistrationLoading.errored &&
-    delegateRegistrationLoading.data.registered
+    !!delegateRegistrationLoading.data?.registered
 
   return {
     loading: false,
@@ -136,19 +137,25 @@ export const useLoadingWalletVoteInfo = ():
       // If wallet can vote now.
       canVote,
       isDelegate,
-      votingPowerPercent:
-        (totalVotingPowerWhenProposalCreated === 0
-          ? 0
-          : votingPower / totalVotingPowerWhenProposalCreated) * 100,
-      individualVotingPowerPercent:
-        (totalVotingPowerWhenProposalCreated === 0
-          ? 0
-          : individualVotingPower / totalVotingPowerWhenProposalCreated) * 100,
+      votingPowerPercent: totalVotingPowerWhenProposalCreated.isZero()
+        ? 0
+        : votingPower
+            .div(totalVotingPowerWhenProposalCreated)
+            .times(100)
+            .toNumber(),
+      individualVotingPowerPercent: totalVotingPowerWhenProposalCreated.isZero()
+        ? 0
+        : individualVotingPower
+            .div(totalVotingPowerWhenProposalCreated)
+            .times(100)
+            .toNumber(),
       unvotedDelegatedVotingPowerPercent:
-        (totalVotingPowerWhenProposalCreated === 0
+        totalVotingPowerWhenProposalCreated.isZero()
           ? 0
-          : unvotedDelegatedVotingPower / totalVotingPowerWhenProposalCreated) *
-        100,
+          : unvotedDelegatedVotingPower
+              .div(totalVotingPowerWhenProposalCreated)
+              .times(100)
+              .toNumber(),
     },
   }
 }

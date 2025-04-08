@@ -454,16 +454,15 @@ const InnerProposalStatusAndInfo = ({
     [voter.onVoteSuccess]
   )
 
+  const canVote =
+    !!loadingWalletVoteInfo &&
+    !loadingWalletVoteInfo.loading &&
+    loadingWalletVoteInfo.data.canVote
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      Voter={
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote
-          ? Voter
-          : undefined
-      }
+      Voter={canVote ? Voter : undefined}
       action={action}
       footer={footer}
       info={info}

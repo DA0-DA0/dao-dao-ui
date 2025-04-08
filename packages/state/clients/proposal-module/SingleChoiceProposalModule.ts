@@ -1,6 +1,7 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
 import {
   CheckedDepositInfo,
   Coin,
@@ -10,6 +11,7 @@ import {
   Feature,
   ModuleInstantiateInfo,
   SingleChoiceNewProposalData,
+  UnvotedDelegatedVotingPower,
 } from '@dao-dao/types'
 import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
@@ -676,7 +678,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<string> {
+  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
     return {
       queryKey: [
         'singleChoiceProposalModule',
@@ -703,10 +705,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
         // If no delegation module, there is no unvoted delegated voting power.
         if (!delegationModule) {
-          return '0'
+          return {
+            total: HugeDecimal.zero,
+            effective: HugeDecimal.zero,
+          }
         }
 
-        const udvp = await this.queryClient.fetchQuery(
+        const { total, effective } = await this.queryClient.fetchQuery(
           daoVoteDelegationQueries.unvotedDelegatedVotingPower(
             this.queryClient,
             {
@@ -722,7 +727,10 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           )
         )
 
-        return udvp.effective
+        return {
+          total: HugeDecimal.from(total),
+          effective: HugeDecimal.from(effective),
+        }
       },
     }
   }

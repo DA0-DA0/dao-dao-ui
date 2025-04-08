@@ -158,6 +158,13 @@ export class HugeDecimal {
     return new HugeDecimal(this.value.integerValue(BigNumber.ROUND_DOWN))
   }
 
+  /**
+   * Returns the integer value of this HugeDecimal with decimals rounded up.
+   */
+  ceil() {
+    return new HugeDecimal(this.value.integerValue(BigNumber.ROUND_UP))
+  }
+
   plus(n: HugeDecimal.Value) {
     return new HugeDecimal(this.value.plus(valueToBigNumber(n)))
   }

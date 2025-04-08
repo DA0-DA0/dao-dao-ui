@@ -1,6 +1,6 @@
 import { Add, ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -24,9 +24,13 @@ import { Loader } from '../logo'
 import { Modal } from '../modals'
 import { FilterableItemPopup } from '../popup'
 
+const DECIMAL_PLACES = 8
+const DECIMAL_PLACES_REGEX = new RegExp(`^[0-9]+\\.[0-9]{${DECIMAL_PLACES}}$`)
+
 export const DaoVoteDelegationCard = ({
   className,
   totalVotingPower,
+  walletVotingPower,
   delegates,
   delegations,
   registration,
@@ -41,7 +45,12 @@ export const DaoVoteDelegationCard = ({
   const { t } = useTranslation()
 
   const [delegationModalOpen, setDelegationModalOpen] = useState(false)
-  const delegationForm = useForm<DelegationForm>()
+  const delegationForm = useForm<DelegationForm>({
+    mode: 'onChange',
+  })
+
+  const delegateEntered = delegationForm.watch('delegate')
+  const percent = delegationForm.watch('percent')
 
   const selectedDelegateAddress = delegationForm.watch('delegate')
   const selectedDelegate =
@@ -62,6 +71,37 @@ export const DaoVoteDelegationCard = ({
     delegationForm.setValue('percent', '10')
     setDelegationModalOpen(true)
   }
+
+  const {
+    votingPowerToDelegate,
+    smallestPercentDelegation,
+    smallestPercentDelegationDoesNotTerminate,
+  } = useMemo(() => {
+    // Delegations module rounds down, so voting power unit determines minimum
+    // size of delegation.
+    const votingPowerToDelegate =
+      !walletVotingPower.loading && !walletVotingPower.errored
+        ? walletVotingPower.data.times(percent).div(100).trunc()
+        : HugeDecimal.from(NaN)
+
+    // Smallest percent delegation is determined by the voting power unit.
+    const smallestPercentDelegation =
+      !walletVotingPower.loading && !walletVotingPower.errored
+        ? HugeDecimal.from(100).div(walletVotingPower.data).toFormattedString({
+            showFullAmount: true,
+            maxNonZeroDecimals: DECIMAL_PLACES,
+          })
+        : undefined
+
+    const smallestPercentDelegationDoesNotTerminate =
+      !!smallestPercentDelegation?.match(DECIMAL_PLACES_REGEX)
+
+    return {
+      votingPowerToDelegate,
+      smallestPercentDelegation,
+      smallestPercentDelegationDoesNotTerminate,
+    }
+  }, [walletVotingPower, percent])
 
   return (
     <>
@@ -130,42 +170,72 @@ export const DaoVoteDelegationCard = ({
                 <>
                   <div className="flex flex-col mt-1">
                     {delegations.data.map(
-                      ({ active, delegate, entity, percent }) => (
-                        <Button
-                          key={delegate}
-                          className="!py-3 !px-4"
-                          contentContainerClassName="justify-between"
-                          onClick={() => {
-                            delegationForm.setValue('delegate', delegate)
-                            delegationForm.setValue(
-                              'percent',
-                              HugeDecimal.from(percent).times(100).toString()
-                            )
-                            setDelegationModalOpen(true)
-                          }}
-                          variant="ghost_outline"
-                        >
-                          <EntityDisplay
-                            address={delegate}
-                            loadingEntity={{ loading: false, data: entity }}
-                          />
+                      ({ active, delegate, entity, percent }) => {
+                        // Whether or not the delegation is too small and rounds
+                        // down to zero based on the current voting power.
+                        const isTooSmall =
+                          !walletVotingPower.loading &&
+                          !walletVotingPower.errored &&
+                          walletVotingPower.data.times(percent).trunc().isZero()
 
-                          <p
-                            className={clsx(
-                              'body-text font-mono text-right',
-                              active
-                                ? 'text-text-brand-secondary'
-                                : 'text-text-interactive-disabled'
+                        return (
+                          <>
+                            <Button
+                              key={delegate}
+                              className="!py-3 !px-4"
+                              contentContainerClassName="justify-between"
+                              errored={isTooSmall}
+                              onClick={() => {
+                                delegationForm.setValue('delegate', delegate)
+                                delegationForm.setValue(
+                                  'percent',
+                                  HugeDecimal.from(percent)
+                                    .times(100)
+                                    .toString()
+                                )
+                                setDelegationModalOpen(true)
+                              }}
+                              variant="ghost_outline"
+                            >
+                              <EntityDisplay
+                                address={delegate}
+                                loadingEntity={{ loading: false, data: entity }}
+                              />
+
+                              <p
+                                className={clsx(
+                                  'body-text font-mono text-right',
+                                  active
+                                    ? 'text-text-brand-secondary'
+                                    : 'text-text-interactive-disabled'
+                                )}
+                              >
+                                {HugeDecimal.from(percent)
+                                  .times(100)
+                                  .toFormattedString({
+                                    maxNonZeroDecimals: 3,
+                                  }) + '%'}
+                              </p>
+                            </Button>
+
+                            {isTooSmall && smallestPercentDelegation && (
+                              <InputErrorMessage
+                                className="self-end"
+                                error={t(
+                                  'info.mustDelegateMinimumDueToRounding',
+                                  {
+                                    context:
+                                      smallestPercentDelegationDoesNotTerminate
+                                        ? 'noTerminate'
+                                        : 'terminates',
+                                    minimum: smallestPercentDelegation,
+                                  }
+                                )}
+                              />
                             )}
-                          >
-                            {HugeDecimal.from(percent)
-                              .times(100)
-                              .toFormattedString({
-                                maxNonZeroDecimals: 3,
-                              }) + '%'}
-                          </p>
-                        </Button>
-                      )
+                          </>
+                        )
+                      }
                     )}
                   </div>
 
@@ -218,7 +288,7 @@ export const DaoVoteDelegationCard = ({
       </div>
 
       <Modal
-        containerClassName="min-w-72"
+        containerClassName="w-full !max-w-sm"
         header={{
           title: t('title.delegation'),
         }}
@@ -227,7 +297,11 @@ export const DaoVoteDelegationCard = ({
       >
         <form
           className="flex flex-col gap-4"
-          onSubmit={delegationForm.handleSubmit(delegate)}
+          onSubmit={delegationForm.handleSubmit((data) =>
+            delegate(data).then(
+              (success) => success && setDelegationModalOpen(false)
+            )
+          )}
         >
           <div className="flex flex-col gap-2">
             <InputLabel name={t('title.delegate')} />
@@ -252,6 +326,7 @@ export const DaoVoteDelegationCard = ({
                     </p>
                   ),
                 }))}
+                noItemsLabel={t('info.noDelegatesFound')}
                 onSelect={({ key }) => delegationForm.setValue('delegate', key)}
                 trigger={{
                   type: 'button',
@@ -289,25 +364,60 @@ export const DaoVoteDelegationCard = ({
           <div className="flex flex-col gap-2">
             <InputLabel name={t('title.percent')} />
             <NumericInput
+              error={
+                delegationForm.formState.errors.percent ||
+                votingPowerToDelegate.isZero()
+              }
               fieldName="percent"
               max={100}
-              min={0.0001}
               register={delegationForm.register}
-              step={0.0001}
+              step={0.0000000000000001}
               unit="%"
               validation={[validateRequired, validatePercent, validatePositive]}
             />
-            <InputErrorMessage
-              error={delegationForm.formState.errors.percent}
-            />
+
+            {!walletVotingPower.loading && !walletVotingPower.errored && (
+              <p
+                className={clsx(
+                  'caption-text text-xs',
+                  (votingPowerToDelegate.isZero() ||
+                    delegationForm.formState.errors.percent) &&
+                    '!text-text-interactive-error'
+                )}
+              >
+                {t('info.delegatesYourVotingPowerMath', {
+                  delegated: votingPowerToDelegate.isNaN()
+                    ? '—'
+                    : votingPowerToDelegate.toFormattedString({
+                        showFullAmount: true,
+                      }),
+                  votingPower: walletVotingPower.data.toFormattedString({
+                    showFullAmount: true,
+                  }),
+                })}
+                {smallestPercentDelegation &&
+                  votingPowerToDelegate.isZero() &&
+                  ' ' +
+                    t('info.mustDelegateMinimumDueToRounding', {
+                      context: smallestPercentDelegationDoesNotTerminate
+                        ? 'noTerminate'
+                        : 'terminates',
+                      minimum: smallestPercentDelegation,
+                    })}
+              </p>
+            )}
           </div>
 
           <div className="border-border-secondary flex flex-row gap-2 items-center justify-end -mx-6 -mb-6 mt-2 px-6 py-5 border-t">
             {selectedDelegateExistingDelegation && (
               <Button
-                disabled={loadingDelegate}
+                disabled={loadingDelegate || !delegateEntered}
                 loading={loadingUndelegate}
-                onClick={() => undelegate(selectedDelegateAddress)}
+                onClick={() =>
+                  undelegate(selectedDelegateAddress).then(
+                    (success) => success && setDelegationModalOpen(false)
+                  )
+                }
                 variant="secondary"
               >
                 {t('button.undelegate')}

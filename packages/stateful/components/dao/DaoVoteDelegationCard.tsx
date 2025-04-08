@@ -34,8 +34,6 @@ import { getDaoWidget } from '../../widgets'
 import { Trans } from '../Trans'
 
 // TODO(delegations): stream delegation updates via websockets
-// TODO(delegations): add delegated VP to member proposal voting power card
-// TODO(delegations): separate delegated VP from personal VP in vote cast list
 export const DaoVoteDelegationCard = (
   props: StatefulDaoVoteDelegationCardProps
 ) => {
@@ -59,6 +57,11 @@ export const DaoVoteDelegationCard = (
 
   const totalVotingPower = useQueryLoadingDataWithError(
     dao.getTotalVotingPowerQuery(),
+    (data) => HugeDecimal.from(data.power)
+  )
+
+  const walletVotingPower = useQueryLoadingDataWithError(
+    dao.getVotingPowerQuery(walletAddress),
     (data) => HugeDecimal.from(data.power)
   )
 
@@ -97,7 +100,7 @@ export const DaoVoteDelegationCard = (
   const updateRegistration = async (register: boolean) => {
     if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
-      return
+      return false
     }
 
     setLoadingRegistration(true)
@@ -230,9 +233,12 @@ export const DaoVoteDelegationCard = (
       } else {
         toast.success(t('success.unregistered'))
       }
+
+      return true
     } catch (error) {
       console.error(error)
       toast.error(processError(error))
+      return false
     } finally {
       setLoadingRegistration(false)
     }
@@ -242,7 +248,7 @@ export const DaoVoteDelegationCard = (
   const delegate = async ({ delegate, percent }: DelegationForm) => {
     if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
-      return
+      return false
     }
 
     setLoadingDelegate(true)
@@ -291,9 +297,11 @@ export const DaoVoteDelegationCard = (
         )
 
       toast.success(t('success.delegated'))
+      return true
     } catch (error) {
       console.error(error)
       toast.error(processError(error))
+      return false
     } finally {
       setLoadingDelegate(false)
     }
@@ -303,7 +311,7 @@ export const DaoVoteDelegationCard = (
   const undelegate = async (delegate: string) => {
     if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
-      return
+      return false
     }
 
     setLoadingUndelegate(true)
@@ -351,9 +359,11 @@ export const DaoVoteDelegationCard = (
         )
 
       toast.success(t('success.undelegated'))
+      return true
     } catch (error) {
       console.error(error)
       toast.error(processError(error))
+      return false
     } finally {
       setLoadingUndelegate(false)
     }
@@ -373,6 +383,7 @@ export const DaoVoteDelegationCard = (
       totalVotingPower={totalVotingPower}
       undelegate={undelegate}
       updateRegistration={updateRegistration}
+      walletVotingPower={walletVotingPower}
     />
   )
 }

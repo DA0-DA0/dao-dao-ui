@@ -10,6 +10,7 @@ import {
   IDaoBase,
   IProposalModuleBase,
   PreProposeModule,
+  UnvotedDelegatedVotingPower,
 } from '@dao-dao/types'
 import { VetoConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { RegistrationResponse } from '@dao-dao/types/contracts/DaoVoteDelegation'
@@ -292,16 +293,19 @@ export abstract class ProposalModuleBase<
   >
 
   /**
-   * Fetch the effective unvoted delegated voting power on a specific proposal
-   * for a given delegate.
+   * Fetch the unvoted delegated voting power on a specific proposal for a given
+   * delegate.
    */
-  abstract getUnvotedDelegatedVotingPowerQuery(options: {
+  getUnvotedDelegatedVotingPowerQuery(_options: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<string>
+  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
+    throw new Error('Not implemented')
+  }
 
   /**
-   * Fetch a delegate's registration info, optionally at a specific height.
+   * Fetch a delegate's registration info, optionally at a specific height, or
+   * null if no delegation module.
    */
   getDelegateRegistrationQuery({
     delegate,
@@ -309,11 +313,11 @@ export abstract class ProposalModuleBase<
   }: {
     delegate: string
     height?: number
-  }): FetchQueryOptions<RegistrationResponse> {
+  }): FetchQueryOptions<RegistrationResponse | null> {
     return {
       queryKey: [
-        'singleChoiceProposalModule',
-        'unvotedDelegatedVotingPower',
+        'proposalModule',
+        'delegateRegistration',
         {
           chainId: this.chainId,
           address: this.address,
@@ -327,7 +331,7 @@ export abstract class ProposalModuleBase<
         )
 
         if (!delegationModule) {
-          throw new Error('No delegation module')
+          return null
         }
 
         const registration = await this.queryClient.fetchQuery(
