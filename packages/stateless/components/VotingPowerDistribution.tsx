@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { uniq } from 'lodash'
+import uniq from 'lodash.uniq'
 import { ComponentType, Fragment } from 'react'
 
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'

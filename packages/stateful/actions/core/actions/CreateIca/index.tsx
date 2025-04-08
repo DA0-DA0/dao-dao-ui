@@ -24,6 +24,7 @@ import {
 } from '@dao-dao/types'
 import { MsgRegisterInterchainAccount } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
+import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   ICA_CHAINS_TX_PREFIX,
   getChainForChainName,
@@ -152,7 +153,10 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
     return this.manageStorageItemsAction.setup()
   }
 
-  encode({ chainId }: CreateIcaData): UnifiedCosmosMsg[] {
+  async encode({
+    chainId,
+    ordering = Order.ORDER_UNORDERED,
+  }: CreateIcaData): Promise<UnifiedCosmosMsg[]> {
     if (!chainId) {
       throw new Error('Missing chainId')
     }
@@ -169,6 +173,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
           value: MsgRegisterInterchainAccount.fromPartial({
             owner: this.options.address,
             connectionId: sourceChain.connection_id,
+            ordering,
             version: JSON.stringify(
               Metadata.fromPartial({
                 version: 'ics27-1',

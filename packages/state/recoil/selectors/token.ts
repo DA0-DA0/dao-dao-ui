@@ -1,4 +1,4 @@
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash.uniqby'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'

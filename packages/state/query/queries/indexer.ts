@@ -27,6 +27,17 @@ export type FetchIndexerQueryOptions = QueryIndexerOptions & {
    * indexer is behind. Defaults to false.
    */
   noFallback?: boolean
+  /**
+   * If true, throw indexer behind error on server. Defaults to true.
+   */
+  throwOnServer?: boolean
+}
+
+export class IndexerBehindError extends Error {
+  constructor() {
+    super('Indexer is behind')
+    this.name = 'IndexerBehindError'
+  }
 }
 
 /**
@@ -35,7 +46,7 @@ export type FetchIndexerQueryOptions = QueryIndexerOptions & {
  */
 export const fetchIndexerQuery = async <T = any>(
   queryClient: QueryClient,
-  { noFallback, ...options }: FetchIndexerQueryOptions
+  { noFallback, throwOnServer = true, ...options }: FetchIndexerQueryOptions
 ): Promise<T> => {
   // If the indexer is behind and either there's a fallback or we're on the
   // server, return null to make the caller use the fallback. Throw error if no
@@ -45,8 +56,8 @@ export const fetchIndexerQuery = async <T = any>(
       indexerQueries.isCaughtUp({ chainId: options.chainId })
     )
 
-    if (!isCaughtUp && typeof window !== 'undefined') {
-      throw new Error('Indexer is behind and no fallback is available')
+    if (!isCaughtUp && (throwOnServer || typeof window !== 'undefined')) {
+      throw new IndexerBehindError()
     }
   }
 

@@ -1,4 +1,5 @@
 import uniq from 'lodash.uniq'
+import uniqBy from 'lodash.uniqby'
 import {
   selectorFamily,
   waitForAll,
@@ -24,6 +25,7 @@ import {
   ArrayOfProposalModule,
   ArrayOfSubDao,
   Config,
+  Cw20BalanceResponse,
   Cw20BalancesResponse,
   DaoURIResponse,
   DumpStateResponse,
@@ -723,9 +725,39 @@ export const nativeCw20TokensWithBalancesSelector = selectorFamily<
         balances = [...balances]
         // If indexer query fails, fallback to contract query.
       } else {
-        balances = []
+        // Need to combine storage item CW20s with those stored in DAO contract.
+        const storageItemContracts = get(
+          listAllItemsWithPrefixSelector({
+            ...queryClientParams,
+            prefix: CW20_ITEM_KEY_PREFIX,
+          })
+        ).map(([key]) => key)
+
+        // Get balances for storage item CW20s if any exist.
+        balances = storageItemContracts.length
+          ? get(
+              waitForAllSettled(
+                storageItemContracts.map((contract) =>
+                  Cw20BaseSelectors.balanceSelector({
+                    ...queryClientParams,
+                    contractAddress: contract,
+                    params: [{ address: queryClientParams.contractAddress }],
+                  })
+                )
+              )
+            ).flatMap((loadable, index): Cw20BalanceResponse | [] =>
+              loadable.state === 'hasValue'
+                ? {
+                    addr: storageItemContracts[index],
+                    balance: loadable.contents.balance,
+                  }
+                : []
+            )
+          : []
+
+        // Get balances for CW20s stored in DAO contract.
         while (true) {
-          const response = await get(
+          const response = get(
             _cw20BalancesSelector({
               ...queryClientParams,
               params: [
@@ -745,6 +777,9 @@ export const nativeCw20TokensWithBalancesSelector = selectorFamily<
             break
           }
         }
+
+        // Remove duplicates.
+        balances = uniqBy(balances, 'addr')
       }
 
       //! Add governance token balance if exists but missing from list.

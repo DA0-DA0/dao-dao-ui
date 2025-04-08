@@ -43,7 +43,7 @@ export const convertChainRegistryChainToAnyChain = (
 ): AnyChain => ({
   chainId: chain.chain_id,
   chainName: chain.chain_name,
-  bech32Prefix: chain.bech32_prefix,
+  bech32Prefix: chain.bech32_prefix ?? '',
   prettyName: chain.pretty_name ?? chain.chain_name,
   chainRegistry: chain,
 })
@@ -62,33 +62,33 @@ let chains: AnyChain[] = chainRegistryChains.map(
 )
 const assets = [...chainRegistryAssets]
 
-// BitSong Testnet
-const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
-  ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
-  chain_id: ChainId.BitsongTestnet,
-  chain_name: 'bitsongtestnet',
-  status: 'live',
-  network_type: 'testnet',
-  pretty_name: 'BitSong Testnet',
-  apis: {
-    rpc: [
-      {
-        address: 'https://rpc-testnet.explorebitsong.com',
-      },
-    ],
-    rest: [
-      {
-        address: 'https://lcd-testnet.explorebitsong.com',
-      },
-    ],
-  },
-})
-chains.push(bitSongTestnetChain)
-assets.push({
-  chain_name: bitSongTestnetChain.chainName,
-  // Copy assets from BitSong mainnet.
-  assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
-})
+// BitSong Testnet: halted indefinitely
+// const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
+//   ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
+//   chain_id: ChainId.BitsongTestnet,
+//   chain_name: 'bitsongtestnet',
+//   status: 'live',
+//   network_type: 'testnet',
+//   pretty_name: 'BitSong Testnet',
+//   apis: {
+//     rpc: [
+//       {
+//         address: 'https://rpc-testnet.explorebitsong.com',
+//       },
+//     ],
+//     rest: [
+//       {
+//         address: 'https://lcd-testnet.explorebitsong.com',
+//       },
+//     ],
+//   },
+// })
+// chains.push(bitSongTestnetChain)
+// assets.push({
+//   chain_name: bitSongTestnetChain.chainName,
+//   // Copy assets from BitSong mainnet.
+//   assets: assets.find((a) => a.chain_name === 'bitsong')?.assets ?? [],
+// })
 
 // OmniFlix Hub Testnet
 const omniFlixHubTestnetChain = convertChainRegistryChainToAnyChain({
@@ -163,6 +163,90 @@ if (babylonTestnetChain?.chainRegistry) {
     ],
   }
 }
+
+// Replace Juno testnet uni-6 with uni-7.
+const junoTestnetChain = chains.find((c) => c.chainId === 'uni-6')
+if (junoTestnetChain?.chainRegistry) {
+  junoTestnetChain.chainId = ChainId.JunoTestnet
+  junoTestnetChain.chainRegistry.chain_id = ChainId.JunoTestnet
+  junoTestnetChain.chainRegistry.fees = {
+    fee_tokens: [
+      {
+        denom: 'ujunox',
+        low_gas_price: 0.075,
+        average_gas_price: 0.1,
+        high_gas_price: 0.125,
+        fixed_min_gas_price: 0.075,
+      },
+    ],
+  }
+}
+
+// THORChain/Rujira Devnet
+const thorchainDevnetChain = convertChainRegistryChainToAnyChain({
+  chain_id: ChainId.ThorchainDevnet,
+  chain_name: 'thorchaindevnet',
+  chain_type: 'cosmos',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'THORChain Devnet',
+  bech32_prefix: 'sthor',
+  slip44: 931,
+  apis: {
+    rpc: [
+      {
+        address: 'https://thornode-devnet-rpc.bryanlabs.net:443',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://thornode-devnet-api.bryanlabs.net:443',
+      },
+    ],
+  },
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'rune',
+        fixed_min_gas_price: 0.02,
+      },
+    ],
+  },
+})
+chains.push(thorchainDevnetChain)
+assets.push({
+  chain_name: thorchainDevnetChain.chainName,
+  assets: [
+    {
+      description: 'The native token of THORChain',
+      denom_units: [
+        {
+          denom: 'rune',
+          exponent: 0,
+        },
+        {
+          denom: 'RUNE',
+          exponent: 8,
+        },
+      ],
+      base: 'rune',
+      name: 'THORChain RUNE',
+      display: 'RUNE',
+      symbol: 'RUNE',
+      logo_URIs: {
+        png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.png',
+        svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.svg',
+      },
+      images: [
+        {
+          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.png',
+          svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/thorchain/images/rune.svg',
+        },
+      ],
+      type_asset: 'sdk.coin',
+    },
+  ],
+})
 
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
@@ -508,7 +592,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#f74a49',
         factoryContractAddress:
-          'juno1fec7mpkacctlj8w98af6d7grxu0jjy2zadvv9mekzhcdmleaa28s4mwu64',
+          'juno1hm4y6fzgxgu688jgf7ek66px6xkrtmn3gyk8fax3eawhp68c2d5qcyjvu4',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
           gov: 'https://testnet.ping.pub/juno/gov',
@@ -562,23 +646,24 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V260,
       },
-      {
-        chainId: ChainId.KujiraTestnet,
-        name: 'kujira',
-        mainnet: false,
-        accentColor: '#e53935',
-        factoryContractAddress:
-          'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
-        explorerUrlTemplates: {
-          tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
-          // cannot link directly to testnet
-          // gov: 'https://kujira.network/govern',
-          // cannot link directly to testnet
-          // govProp: 'https://kujira.network/govern/REPLACE',
-          wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
-        },
-        latestVersion: ContractVersion.V260,
-      },
+      // Kujira Testnet is halted indefinitely
+      // {
+      //   chainId: ChainId.KujiraTestnet,
+      //   name: 'kujira',
+      //   mainnet: false,
+      //   accentColor: '#e53935',
+      //   factoryContractAddress:
+      //     'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://finder.kujira.network/harpoon-4/tx/REPLACE',
+      //     // cannot link directly to testnet
+      //     // gov: 'https://kujira.network/govern',
+      //     // cannot link directly to testnet
+      //     // govProp: 'https://kujira.network/govern/REPLACE',
+      //     wallet: 'https://finder.kujira.network/harpoon-4/address/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V260,
+      // },
       {
         chainId: ChainId.NeutronTestnet,
         name: 'neutron',
@@ -593,17 +678,18 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V270,
       },
-      {
-        chainId: ChainId.BitsongTestnet,
-        name: 'bitsong',
-        mainnet: false,
-        accentColor: '#c53381',
-        factoryContractAddress:
-          'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
-        tokenCreationFactoryAddress:
-          'bitsong13ackt4dv4ngt4jpngnvyyecjhu33w6gge3mad3n9vc0qkqcrk6cqzfm9vx',
-        latestVersion: ContractVersion.V260,
-      },
+      // BitSong Testnet is halted indefinitely
+      // {
+      //   chainId: ChainId.BitsongTestnet,
+      //   name: 'bitsong',
+      //   mainnet: false,
+      //   accentColor: '#c53381',
+      //   factoryContractAddress:
+      //     'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
+      //   tokenCreationFactoryAddress:
+      //     'bitsong13ackt4dv4ngt4jpngnvyyecjhu33w6gge3mad3n9vc0qkqcrk6cqzfm9vx',
+      //   latestVersion: ContractVersion.V260,
+      // },
       {
         chainId: ChainId.OmniflixHubTestnet,
         name: 'omniflixhub',
@@ -655,6 +741,15 @@ const BASE_SUPPORTED_CHAINS: Omit<
           // No NFTs on Babylon.
           [NftBasedCreatorId]: 'unsupported',
         },
+      },
+      {
+        chainId: ChainId.ThorchainDevnet,
+        name: 'thorchain',
+        mainnet: false,
+        accentColor: '#00eed1',
+        factoryContractAddress:
+          'sthor190l0h8jw590kaywzzfdwjyk38w72vm99562e9z9gpj2vas8huveqwvfa9g',
+        latestVersion: ContractVersion.V260,
       },
     ]
 
@@ -817,6 +912,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BabylonTestnet]: {
     rpc: 'https://babylon-testnet-rpc.polkachu.com',
     rest: 'https://babylon-testnet-api.polkachu.com',
+  },
+  [ChainId.ThorchainDevnet]: {
+    rpc: 'https://thornode-devnet-rpc.bryanlabs.net',
+    rest: 'https://thornode-devnet-api.bryanlabs.net',
   },
 }
 

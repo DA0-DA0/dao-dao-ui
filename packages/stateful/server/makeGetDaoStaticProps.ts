@@ -37,6 +37,7 @@ import {
   getChainIdsForAddress,
   getConfiguredGovChainByName,
   getDaoPath,
+  isErrorWithSubstring,
   processError,
 } from '@dao-dao/utils'
 
@@ -250,13 +251,14 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         }
 
         if (
-          error instanceof Error &&
-          (error.message.includes('contract: not found') ||
-            error.message.includes('no such contract') ||
-            error.message.includes('404 contract not found') ||
-            error.message.includes('Error parsing into type') ||
-            error.message.includes('decoding bech32 failed') ||
-            error.message.includes('dumpState reason: Unexpected token'))
+          isErrorWithSubstring(error, [
+            'contract: not found',
+            'no such contract',
+            '404 contract not found',
+            'Error parsing into type',
+            'decoding bech32 failed',
+            'dumpState reason: Unexpected token',
+          ])
         ) {
           // Excluding `info` will render DAONotFound.
           return {

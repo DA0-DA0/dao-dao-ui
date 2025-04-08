@@ -54,19 +54,23 @@ export const ProposalVoteTally = ({
     ? turnoutAbstainPercent
     : totalAbstainPercent
 
+  // Ignore abstain in progress bar.
+  const effectiveYesNoPercent = effectiveYesPercent + effectiveNoPercent
+  const effectiveYesPercentWithoutAbstain =
+    (effectiveYesPercent / effectiveYesNoPercent) * 100
+  const effectiveNoPercentWithoutAbstain =
+    (effectiveNoPercent / effectiveYesNoPercent) * 100
+
   // Convert various threshold types to a relevant percent to use in UI
   // elements.
   const effectivePercentOrMajorityValue =
     threshold.type === ProcessedTQType.Majority
-      ? // If there are no abstain votes, this should be 50.
-        // If there are 4% abstain votes, this should be 48, since 48%+1 of the 96% non-abstain votes need to be in favor.
-        50 -
-        (abstainVotes / 2 / ((quorum ? turnoutTotal : totalVotingPower) || 1)) *
-          100
+      ? 50
       : threshold.type === ProcessedTQType.Percent
         ? threshold.value
         : // If absolute, compute percent of total.
           (threshold.value / totalVotingPower) * 100
+
   // Quorum does not have an absolute setting.
   const effectiveQuorum = quorum && {
     display: quorum.display,
@@ -129,18 +133,14 @@ export const ProposalVoteTally = ({
                 data: [
                   ...[
                     {
-                      value: Number(effectiveYesPercent),
+                      value: Number(effectiveYesPercentWithoutAbstain),
                       color: 'var(--icon-interactive-valid)',
                     },
                     {
-                      value: Number(effectiveNoPercent),
+                      value: Number(effectiveNoPercentWithoutAbstain),
                       color: 'var(--icon-interactive-error)',
                     },
                   ].sort((a, b) => b.value - a.value),
-                  {
-                    value: Number(effectiveAbstainPercent),
-                    color: 'var(--icon-tertiary)',
-                  },
                 ],
               },
             ]}
@@ -289,7 +289,9 @@ export const ProposalVoteTallyLoader = ({
               ? t('proposalVoteTitle.reject')
               : t('info.noVote')}
           </p>
-          <p className="text-text-tertiary">... {t('info.abstainVote')}</p>
+          <p className="text-text-tertiary flex-1 text-right">
+            ... {t('info.abstainVote')}
+          </p>
         </div>
 
         {/* Threshold progress bar */}

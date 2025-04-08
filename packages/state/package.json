@@ -25,19 +25,21 @@
     "graphql": "^16.8.1",
     "json5": "^2.2.0",
     "lodash.uniq": "^4.5.0",
+    "lodash.uniqby": "^4.7.0",
     "meilisearch": "^0.30.0",
     "pusher-js": "^7.6.0",
     "recoil": "^0.7.2",
     "secretjs": "^1.12.5"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.45.86",
+    "@chain-registry/types": "0.46.15",
     "@dao-dao/config": "2.7.0-rc.1",
     "@dao-dao/types": "2.7.0-rc.1",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/lodash.uniq": "^4.5.7",
+    "@types/lodash.uniqby": "^4.7.9",
     "typescript": "5.4.5"
   },
   "prettier": "@dao-dao/config/prettier",
