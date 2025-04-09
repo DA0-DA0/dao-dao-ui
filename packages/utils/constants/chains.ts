@@ -526,8 +526,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
           govProp: 'https://kujira.network/govern/REPLACE',
           wallet: 'https://finder.kujira.network/kaiyo-1/address/REPLACE',
         },
-        // TODO(260): Update to V260 once gov prop is published and passes:
-        // https://daodao.zone/dao/kujira/proposals/create?pi=QmYs6F4Zu5rZczqDRzxvyJtCCntMoaWL1yQjtw9p4J3XzZ
         latestVersion: ContractVersion.V250,
       },
       {
