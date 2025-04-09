@@ -29,14 +29,14 @@ jobs:
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
       - name: Set up testnet environment
-        run: cp apps/dapp/.env.testnet apps/dapp/.env.local
+        run: cp apps/dapp/.env.mainnet apps/dapp/.env.local
       - name: Build dApp
         run: yarn dapp build
       - name: Run Playwright tests
-        run: yarn test:e2e
+        run: yarn test:playwright
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
-          path: apps/dapp/playwright-report/
+          path: packages/tests/playwright-report/
           retention-days: 30

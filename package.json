@@ -14,7 +14,7 @@
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "postinstall": "patch-package",
     "test": "vitest",
-    "test:e2e": "yarn dapp test:e2e",
+    "test:playwright": "yarn tests test:playwright",
     "cwgen": "yarn utils cwgen",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",

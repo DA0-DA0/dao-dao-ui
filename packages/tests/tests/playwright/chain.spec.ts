@@ -1,16 +1,13 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { expect, test } from '@playwright/test'
 
 import './setup'
 
 test('chain home/proposals tab renders', async ({ page }) => {
-  await page.goto('/dao/juno/proposals')
+  await page.goto('/dao/cosmos/proposals')
 
-  // Expect description to exist.
+  // Expect title to exist.
   await expect(
-    page.getByText('Native chain governance for Juno Testnet.')
+    page.locator('.hero-text').filter({ hasText: 'Cosmos Hub' })
   ).toBeVisible()
 
   // Expect "New proposal" button to exist.
@@ -18,11 +15,11 @@ test('chain home/proposals tab renders', async ({ page }) => {
 })
 
 test('chain treasury tab renders', async ({ page }) => {
-  await page.goto('/dao/juno/treasury')
+  await page.goto('/dao/cosmos/treasury')
 
-  // Expect description to exist.
+  // Expect title to exist.
   await expect(
-    page.getByText('Native chain governance for Juno Testnet.')
+    page.locator('.hero-text').filter({ hasText: 'Cosmos Hub' })
   ).toBeVisible()
 
   // Expect "Token" title to exist.

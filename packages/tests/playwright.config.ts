@@ -1,12 +1,10 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
 import { defineConfig, devices } from '@playwright/test'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
+  testDir: './tests/playwright',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -66,7 +64,7 @@ export default defineConfig({
 
   /* Build and run server before starting the tests */
   webServer: {
-    command: 'yarn start',
+    command: 'cd ../../apps/dapp && yarn start',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     // allow 10 minutes for the server to build

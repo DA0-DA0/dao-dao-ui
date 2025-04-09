@@ -14,8 +14,6 @@
     "lint": "eslint .",
     "prettier:write": "prettier --write .",
     "start": "next start",
-    "test": "vitest",
-    "test:e2e": "cp .env.testnet .env.local && playwright test",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
   },
@@ -54,7 +52,6 @@
   "devDependencies": {
     "@dao-dao/config": "2.7.0-rc.1",
     "@next/bundle-analyzer": "^14.1.0",
-    "@playwright/test": "^1.49.1",
     "@sentry/cli": "^2.21.3",
     "@solana/web3.js": "^1.75.0",
     "@types/cors": "^2.8.13",

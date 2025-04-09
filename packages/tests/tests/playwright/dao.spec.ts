@@ -1,13 +1,10 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { expect, test } from '@playwright/test'
 
 import './setup'
 
 test('DAO home tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s'
   )
 
   // Expect description to exist.
@@ -16,7 +13,7 @@ test('DAO home tab renders', async ({ page }) => {
 
 test('DAO proposals tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/proposals'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s/proposals'
   )
 
   // Expect description to exist.
@@ -28,7 +25,7 @@ test('DAO proposals tab renders', async ({ page }) => {
 
 test('DAO treasury tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/treasury'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s/treasury'
   )
 
   // Expect no 404 error.
@@ -48,7 +45,7 @@ test('DAO treasury tab renders', async ({ page }) => {
 
 test('DAO subDAOs tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/subdaos'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s/subdaos'
   )
 
   // Expect description to exist.
@@ -60,7 +57,7 @@ test('DAO subDAOs tab renders', async ({ page }) => {
 
 test('DAO members tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/members'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s/members'
   )
 
   // Expect description to exist.
@@ -74,12 +71,14 @@ test('DAO members tab renders', async ({ page }) => {
 
 test('DAO apps tab renders', async ({ page }) => {
   await page.goto(
-    '/dao/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4/apps'
+    '/dao/cosmos1cp28gxjul0eht3axzdd5npxq7zqzy07r9y36rnsdf3r4s2g6d8hszw5k3s/apps'
   )
 
   // Expect description to exist.
   await expect(page.getByText('Worship the moon.')).toBeVisible()
 
-  // Expect member voting power title to exist.
-  await expect(page.getByRole('button', { name: 'Go' }).first()).toBeVisible()
+  // Expect open app button to exist.
+  await expect(
+    page.getByRole('button', { name: 'Open app' }).first()
+  ).toBeVisible()
 })
