@@ -53,6 +53,11 @@ export const APPS: App[] = [
     url: 'https://dashboard.kleomed.es',
   },
   {
+    name: 'Stake Hub',
+    imageUrl: '#',
+    url: 'https://www.stake-hub.xyz',
+  },
+  {
     name: 'Migaloo Command',
     imageUrl: '/apps/migaloo.png',
     url: 'https://app.migaloo.zone',

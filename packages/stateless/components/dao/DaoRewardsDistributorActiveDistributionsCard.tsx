@@ -79,7 +79,7 @@ export const DaoRewardsDistributorActiveDistributionsCard = ({
           <div className="styled-scrollbar flex flex-col gap-1 max-h-64 overflow-y-auto -mb-4 pb-4">
             {distributionsToShow.map((distribution) => (
               <Button
-                key={distribution.id}
+                key={getUniqueRewardDistributionKey(distribution)}
                 onClick={() =>
                   setSelected(getUniqueRewardDistributionKey(distribution))
                 }

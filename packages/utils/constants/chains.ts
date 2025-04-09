@@ -724,6 +724,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.BabylonTestnet,
         name: 'babylon',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#ce6533',
         factoryContractAddress:
           'bbn1jwx9r9hcdmcag2zka3dwsg4ekx965ega3wd9gl90pd46gcp7ecnqh3se4m',
