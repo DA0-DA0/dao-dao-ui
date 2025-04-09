@@ -12,7 +12,7 @@
     "start": "yarn dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
-    "postinstall": "patch-package || [ \"$CI\" = \"true\" ]",
+    "postinstall": "./scripts/patch.sh",
     "test": "vitest",
     "test:playwright": "yarn tests test:playwright",
     "cwgen": "yarn utils cwgen",
