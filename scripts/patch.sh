@@ -1,5 +1,6 @@
 #! /bin/bash
 
+# retry patch-package 3 times and capture the status code
 for i in {1..3}; do
   patch-package
   status=$?
@@ -12,7 +13,7 @@ for i in {1..3}; do
 done
 
 if [ $status -ne 0 ]; then
-  # log debug info in CI failure or vercel build failure
+  # log debug info on CI failure or vercel build failure
   if [ "$CI" = "true" ] || [ ! -z "$VERCEL_ENV" ]; then
     echo "DEBUG:"
     echo "$ pwd"
