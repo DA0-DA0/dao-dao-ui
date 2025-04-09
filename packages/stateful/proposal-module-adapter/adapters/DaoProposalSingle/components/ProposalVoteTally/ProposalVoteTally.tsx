@@ -54,12 +54,15 @@ export const ProposalVoteTally = ({
     ? turnoutAbstainPercent
     : totalAbstainPercent
 
-  // Ignore abstain in progress bar.
+  // Ignore abstain in progress bar when just showing turnout. Otherwise, when
+  // absolute threshold is used, just show total percents.
   const effectiveYesNoPercent = effectiveYesPercent + effectiveNoPercent
-  const effectiveYesPercentWithoutAbstain =
-    (effectiveYesPercent / effectiveYesNoPercent) * 100
-  const effectiveNoPercentWithoutAbstain =
-    (effectiveNoPercent / effectiveYesNoPercent) * 100
+  const effectiveYesPercentWithoutAbstain = quorum
+    ? (effectiveYesPercent / effectiveYesNoPercent) * 100
+    : effectiveYesPercent
+  const effectiveNoPercentWithoutAbstain = quorum
+    ? (effectiveNoPercent / effectiveYesNoPercent) * 100
+    : effectiveNoPercent
 
   // Convert various threshold types to a relevant percent to use in UI
   // elements.
