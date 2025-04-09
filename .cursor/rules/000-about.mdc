@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# About
+
+This monorepo is organized into a few apps and many packages that house logic,
+components, and more. It's built with TypeScript, React, and Next.js.
+
+The apps are Decentralized Autonomous Organization (DAO) tooling that enables
+users to create and manage DAOs within the Cosmos blockchain ecosystem.
