@@ -104,7 +104,7 @@ export const ProposalVoteTally = ({
                 : t('info.noVote')}
             </p>,
           ]
-            .sort(() => yesVotes - noVotes)
+            .sort(() => noVotes - yesVotes)
             .map((elem, idx) => (
               <div
                 key={idx}
