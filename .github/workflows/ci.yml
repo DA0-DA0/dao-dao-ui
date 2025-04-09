@@ -54,6 +54,8 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
       - run: yarn lint
 
   test:
@@ -73,6 +75,8 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
       - run: yarn test
 
   build-no-apps:
@@ -92,6 +96,8 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
       - run: yarn build:no-apps
 
   build-dapp:
@@ -111,6 +117,8 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
       - run: yarn dapp build
 
   build-sda:
@@ -130,4 +138,6 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install
       - run: yarn sda build
