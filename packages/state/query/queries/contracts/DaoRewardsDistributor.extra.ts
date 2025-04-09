@@ -186,7 +186,7 @@ export const listAllDaoRewardDistributorPendingRewards = async (
 ): Promise<PendingRewardsResponse> => {
   const rewards: DistributionPendingRewards[] = []
 
-  const limit = 15
+  const limit = 2
   while (true) {
     const page = (
       await queryClient.fetchQuery(
