@@ -105,8 +105,8 @@ export const useWebSocketChannels = (channelNames: string[]) => {
 export const useWebSocketChannel = (channelName: string) =>
   useWebSocketChannels([channelName])
 
-type OnMessageCallback = (
-  data: Record<string, any>,
+type OnMessageCallback<D = any> = (
+  data: D,
   // Whether or not the callback was called manually via the fallback.
   fallback: boolean
 ) => any
@@ -119,35 +119,39 @@ type OnMessageFallbackOptions = {
   // Defaults to true.
   onlyIfNotListening?: boolean
 }
-type OnMessageFallback = (
-  data?: Record<string, any>,
+type OnMessageFallback<D = any> = (
+  data?: D,
   options?: OnMessageFallbackOptions
 ) => void
 
-// Listens for messages from the WebSocket on all channels provided and calls
-// the callback if a received message type matches the expected type(s). Returns
-// whether or not the listener is currently active and a fallback function. By
-// default, the fallback function will call the callback function if the
-// listener is not listening, and after waiting for the next block. Its behavior
-// can be customized with its options arguments.
-export const useOnWebSocketMessage = (
+/**
+ * Listens for messages from the WebSocket on all channels provided and calls
+ * the callback if a received message type matches the expected type(s). Returns
+ * whether or not the listener is currently active and a fallback function. By
+ * default, the fallback function will call the callback function if the
+ * listener is not listening, and after waiting for the next block. Its behavior
+ * can be customized with its options arguments.
+ */
+export const useOnWebSocketMessage = <D = any>(
   channelNames: string[],
   expectedTypeOrTypes: string | string[],
-  onMessage: OnMessageCallback,
-  // If passed, will be used as the default data for the fallback function
-  // returned. The returned fallback function optionally allows passing data
-  // which will override this default.
-  defaultFallbackData?: Parameters<OnMessageFallback>[0]
+  onMessage: OnMessageCallback<D>,
+  /**
+   * If passed, will be used as the default data for the fallback function
+   * returned. The returned fallback function optionally allows passing data
+   * which will override this default.
+   */
+  defaultFallbackData?: Parameters<OnMessageFallback<D>>[0]
 ): {
   listening: boolean
-  fallback: OnMessageFallback
+  fallback: OnMessageFallback<D>
 } => {
   const channels = useWebSocketChannels(channelNames)
 
   // Store callback in ref so it can be used in the effect without having to
   // reapply the handler on every re-render. This avoids having to pass in a
   // memoized `useCallback` function to prevent additional re-renders.
-  const callbackRef = useUpdatingRef<OnMessageCallback>(onMessage)
+  const callbackRef = useUpdatingRef<OnMessageCallback<D>>(onMessage)
 
   const [listening, setListening] = useState(false)
 
@@ -192,7 +196,7 @@ export const useOnWebSocketMessage = (
   // fallback data after waiting a block. This is useful for ensuring the
   // callback gets executed when the WebSocket is misbehaving.
   const defaultFallbackDataRef = useUpdatingRef(defaultFallbackData)
-  const fallback: OnMessageFallback = useCallback(
+  const fallback: OnMessageFallback<D> = useCallback(
     async (data, { skipWait = false, onlyIfNotListening = true } = {}) => {
       // Do nothing if we are already listening.
       if (onlyIfNotListening && listeningRef.current) {
@@ -205,7 +209,10 @@ export const useOnWebSocketMessage = (
         await new Promise((resolve) => setTimeout(resolve, 7000))
       }
 
-      callbackRef.current(data ?? defaultFallbackDataRef.current ?? {}, true)
+      callbackRef.current(
+        data ?? defaultFallbackDataRef.current ?? ({} as any),
+        true
+      )
     },
     [callbackRef, defaultFallbackDataRef, listeningRef]
   )
@@ -216,17 +223,17 @@ export const useOnWebSocketMessage = (
   }
 }
 
-export const useOnDaoWebSocketMessage = (
+export const useOnDaoWebSocketMessage = <D = any>(
   chainId: string,
   coreAddress: string,
-  ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
+  ...args: ParametersExceptFirst<typeof useOnWebSocketMessage<D>>
 ) => {
   const indexerUp = useCachedLoadingWithError(
     indexerUpStatusSelector({
       chainId,
     })
   )
-  const response = useOnWebSocketMessage(
+  const response = useOnWebSocketMessage<D>(
     [webSocketChannelNameForDao({ chainId, coreAddress })],
     ...args
   )
@@ -240,9 +247,9 @@ export const useOnDaoWebSocketMessage = (
   }
 }
 
-export const useOnCurrentDaoWebSocketMessage = (
-  ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
+export const useOnCurrentDaoWebSocketMessage = <D = any>(
+  ...args: ParametersExceptFirst<typeof useOnWebSocketMessage<D>>
 ) => {
   const { chainId, coreAddress } = useDao()
-  return useOnDaoWebSocketMessage(chainId, coreAddress, ...args)
+  return useOnDaoWebSocketMessage<D>(chainId, coreAddress, ...args)
 }

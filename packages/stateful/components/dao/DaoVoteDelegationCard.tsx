@@ -23,17 +23,18 @@ import {
   executeSmartContract,
   executeSmartContracts,
   processError,
+  waitUntilBlockHeight,
 } from '@dao-dao/utils'
 
 import {
   useAwaitNextBlock,
+  useOnWebSocketMessage,
   useQueryLoadingDataWithError,
   useWallet,
 } from '../../hooks'
 import { getDaoWidget } from '../../widgets'
 import { Trans } from '../Trans'
 
-// TODO(delegations): stream delegation updates via websockets
 export const DaoVoteDelegationCard = (
   props: StatefulDaoVoteDelegationCardProps
 ) => {
@@ -53,7 +54,7 @@ export const DaoVoteDelegationCard = (
   }
 
   const chainId = dao.chainId
-  const { address } = voteDelegation.values
+  const delegationModule = voteDelegation.values.address
 
   const totalVotingPower = useQueryLoadingDataWithError(
     dao.getTotalVotingPowerQuery(),
@@ -68,7 +69,7 @@ export const DaoVoteDelegationCard = (
   const delegates = useQueryLoadingDataWithError(
     delegationsQueries.listAllDelegates(queryClient, {
       chainId,
-      address,
+      address: delegationModule,
     })
   )
 
@@ -76,7 +77,7 @@ export const DaoVoteDelegationCard = (
     walletAddress
       ? delegationsQueries.listAllDelegations(queryClient, {
           chainId,
-          address,
+          address: delegationModule,
           delegator: walletAddress,
         })
       : undefined
@@ -86,7 +87,7 @@ export const DaoVoteDelegationCard = (
     walletAddress
       ? daoVoteDelegationQueries.registration(queryClient, {
           chainId,
-          contractAddress: address,
+          contractAddress: delegationModule,
           args: {
             delegate: walletAddress,
           },
@@ -95,6 +96,58 @@ export const DaoVoteDelegationCard = (
   )
 
   const awaitNextBlock = useAwaitNextBlock()
+
+  // Listen for delegated VP changes and refresh the registration query.
+  useOnWebSocketMessage<{
+    height: string
+  }>(
+    walletAddress &&
+      !registration.loading &&
+      !registration.errored &&
+      registration.data.registered
+      ? [`delegate_${chainId}_${delegationModule}_${walletAddress}`]
+      : [],
+    'delegated_vp_change',
+    async ({ height }) => {
+      if (!walletAddress) {
+        return
+      }
+
+      try {
+        // Wait until the block height reaches the height of the change plus
+        // one extra block for good measure.
+        await waitUntilBlockHeight({
+          chainId,
+          blockHeight: parseInt(height) + 1,
+        })
+
+        // Invalidate the indexer query before refetching.
+        await queryClient.invalidateQueries({
+          queryKey: indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress: delegationModule,
+            formula: 'daoVoteDelegation/registration',
+            args: {
+              delegate: walletAddress,
+            },
+          }).queryKey,
+        })
+
+        await queryClient.refetchQueries(
+          daoVoteDelegationQueries.registration(queryClient, {
+            chainId,
+            contractAddress: delegationModule,
+            args: { delegate: walletAddress },
+          })
+        )
+      } catch (error) {
+        console.error(
+          'Error updating registration after delegated VP change',
+          error
+        )
+      }
+    }
+  )
 
   const [loadingRegistration, setLoadingRegistration] = useState(false)
   const updateRegistration = async (register: boolean) => {
@@ -110,7 +163,7 @@ export const DaoVoteDelegationCard = (
         ? await queryClient.fetchQuery(
             delegationsQueries.listAllDelegations(queryClient, {
               chainId,
-              address,
+              address: delegationModule,
               delegator: walletAddress,
             })
           )
@@ -122,7 +175,7 @@ export const DaoVoteDelegationCard = (
         instructions: [
           // Undelegate all existing delegations when registering.
           ...delegations.map(({ delegate }) => ({
-            contractAddress: address,
+            contractAddress: delegationModule,
             msg: {
               undelegate: {
                 delegate,
@@ -131,7 +184,7 @@ export const DaoVoteDelegationCard = (
           })),
           // Register or unregister.
           {
-            contractAddress: address,
+            contractAddress: delegationModule,
             msg: register
               ? {
                   register: {},
@@ -152,7 +205,7 @@ export const DaoVoteDelegationCard = (
           .refetchQueries({
             queryKey: indexerQueries.queryContract(queryClient, {
               chainId,
-              contractAddress: address,
+              contractAddress: delegationModule,
               formula: 'daoVoteDelegation/registration',
               args: {
                 delegate: walletAddress,
@@ -163,7 +216,7 @@ export const DaoVoteDelegationCard = (
             queryClient.refetchQueries({
               queryKey: daoVoteDelegationQueries.registration(queryClient, {
                 chainId,
-                contractAddress: address,
+                contractAddress: delegationModule,
                 args: {
                   delegate: walletAddress,
                 },
@@ -174,7 +227,7 @@ export const DaoVoteDelegationCard = (
           .refetchQueries({
             queryKey: indexerQueries.queryContract(queryClient, {
               chainId,
-              contractAddress: address,
+              contractAddress: delegationModule,
               formula: 'daoVoteDelegation/delegates',
             }).queryKey,
           })
@@ -182,7 +235,7 @@ export const DaoVoteDelegationCard = (
             queryClient.refetchQueries({
               queryKey: daoVoteDelegationQueries.delegates(queryClient, {
                 chainId,
-                contractAddress: address,
+                contractAddress: delegationModule,
                 args: {},
               }).queryKey,
             })
@@ -191,7 +244,7 @@ export const DaoVoteDelegationCard = (
             queryClient.refetchQueries({
               queryKey: delegationsQueries.listAllDelegates(queryClient, {
                 chainId,
-                address,
+                address: delegationModule,
               }).queryKey,
             })
           ),
@@ -199,7 +252,7 @@ export const DaoVoteDelegationCard = (
           .refetchQueries({
             queryKey: indexerQueries.queryContract(queryClient, {
               chainId,
-              contractAddress: address,
+              contractAddress: delegationModule,
               formula: 'daoVoteDelegation/delegations',
               args: {
                 delegator: walletAddress,
@@ -210,7 +263,7 @@ export const DaoVoteDelegationCard = (
             queryClient.refetchQueries({
               queryKey: daoVoteDelegationQueries.delegations(queryClient, {
                 chainId,
-                contractAddress: address,
+                contractAddress: delegationModule,
                 args: {
                   delegator: walletAddress,
                 },
@@ -221,7 +274,7 @@ export const DaoVoteDelegationCard = (
             queryClient.refetchQueries({
               queryKey: delegationsQueries.listAllDelegations(queryClient, {
                 chainId,
-                address,
+                address: delegationModule,
                 delegator: walletAddress,
               }).queryKey,
             })
@@ -253,12 +306,17 @@ export const DaoVoteDelegationCard = (
 
     setLoadingDelegate(true)
     try {
-      await executeSmartContract(getSigningClient, walletAddress, address, {
-        delegate: {
-          delegate,
-          percent: HugeDecimal.from(percent).div(100).toString(),
-        },
-      })
+      await executeSmartContract(
+        getSigningClient,
+        walletAddress,
+        delegationModule,
+        {
+          delegate: {
+            delegate,
+            percent: HugeDecimal.from(percent).div(100).toString(),
+          },
+        }
+      )
 
       // Wait one block.
       await awaitNextBlock()
@@ -268,7 +326,7 @@ export const DaoVoteDelegationCard = (
         .refetchQueries({
           queryKey: indexerQueries.queryContract(queryClient, {
             chainId,
-            contractAddress: address,
+            contractAddress: delegationModule,
             formula: 'daoVoteDelegation/delegations',
             args: {
               delegator: walletAddress,
@@ -279,7 +337,7 @@ export const DaoVoteDelegationCard = (
           queryClient.refetchQueries({
             queryKey: daoVoteDelegationQueries.delegations(queryClient, {
               chainId,
-              contractAddress: address,
+              contractAddress: delegationModule,
               args: {
                 delegator: walletAddress,
               },
@@ -290,7 +348,7 @@ export const DaoVoteDelegationCard = (
           queryClient.refetchQueries({
             queryKey: delegationsQueries.listAllDelegations(queryClient, {
               chainId,
-              address,
+              address: delegationModule,
               delegator: walletAddress,
             }).queryKey,
           })
@@ -316,11 +374,16 @@ export const DaoVoteDelegationCard = (
 
     setLoadingUndelegate(true)
     try {
-      await executeSmartContract(getSigningClient, walletAddress, address, {
-        undelegate: {
-          delegate,
-        },
-      })
+      await executeSmartContract(
+        getSigningClient,
+        walletAddress,
+        delegationModule,
+        {
+          undelegate: {
+            delegate,
+          },
+        }
+      )
 
       // Wait one block.
       await awaitNextBlock()
@@ -330,7 +393,7 @@ export const DaoVoteDelegationCard = (
         .refetchQueries({
           queryKey: indexerQueries.queryContract(queryClient, {
             chainId,
-            contractAddress: address,
+            contractAddress: delegationModule,
             formula: 'daoVoteDelegation/delegations',
             args: {
               delegator: walletAddress,
@@ -341,7 +404,7 @@ export const DaoVoteDelegationCard = (
           queryClient.refetchQueries({
             queryKey: daoVoteDelegationQueries.delegations(queryClient, {
               chainId,
-              contractAddress: address,
+              contractAddress: delegationModule,
               args: {
                 delegator: walletAddress,
               },
@@ -352,7 +415,7 @@ export const DaoVoteDelegationCard = (
           queryClient.refetchQueries({
             queryKey: delegationsQueries.listAllDelegations(queryClient, {
               chainId,
-              address,
+              address: delegationModule,
               delegator: walletAddress,
             }).queryKey,
           })

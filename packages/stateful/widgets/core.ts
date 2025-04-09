@@ -53,7 +53,7 @@ export const getDaoWidget = <Variables extends Record<string, unknown> = any>(
   id: string
 ): {
   widget: Widget<Variables>
-  daoWidget: DaoWidget
+  daoWidget: DaoWidget<Variables>
 } | null => {
   const daoWidget = dao.getWidget(id)
   if (!daoWidget) {
