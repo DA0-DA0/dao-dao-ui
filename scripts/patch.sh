@@ -12,9 +12,8 @@ for i in {1..3}; do
 done
 
 if [ $status -ne 0 ]; then
-  if [ "$CI" = "true" ]; then
-    echo "patch-package status = $status, exiting with 0 due to CI=true"
-
+  # log debug info in CI failure or vercel build failure
+  if [ "$CI" = "true" ] || [ ! -z "$VERCEL_ENV" ]; then
     echo "DEBUG:"
     echo "$ pwd"
     pwd
@@ -22,7 +21,10 @@ if [ $status -ne 0 ]; then
     echo "$ ls"
     ls
     echo
+  fi
 
+  if [ "$CI" = "true" ]; then
+    echo "patch-package status = $status, exiting with 0 due to CI=true"
     exit 0
   else
     exit $status
