@@ -6,6 +6,7 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "vitest",
+    "cwgen": "tsx ./scripts/cwgen.ts",
     "dump-go-relayer": "tsx ./scripts/dump-go-relayer.ts",
     "dump-hermes-relayer": "tsx ./scripts/dump-hermes-relayer.ts",
     "log-code-ids": "tsx ./scripts/log-code-ids.ts",
