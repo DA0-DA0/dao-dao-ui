@@ -33,7 +33,7 @@
     "js-yaml": "^4.1.0",
     "starshipjs": "^3.3.0",
     "typescript": "5.3.3",
-    "vitest": "^2.1.8"
+    "vitest": "^3.1.1"
   },
   "prettier": "@dao-dao/config/prettier",
   "dependencies": {

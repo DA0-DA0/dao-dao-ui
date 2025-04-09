@@ -12,7 +12,6 @@
     "lint": "eslint .",
     "prettier:write": "prettier --write .",
     "start": "next start",
-    "test": "vitest",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
   },

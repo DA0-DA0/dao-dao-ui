@@ -4,11 +4,12 @@ import { vitestConfig } from './packages/config/vitest'
 
 export default defineConfig({
   test: {
-    ...vitestConfig,
-    exclude: [
-      ...vitestConfig.exclude,
-      // playwright e2e tests, not unit tests. unit tests are spread throughout
-      '**/apps/dapp/tests/**/*',
+    workspace: [
+      'packages/*',
+      // Integration tests in packages/tests depend on running a local chain and
+      // should not be run in CI.
+      '!packages/tests'
     ],
+    ...vitestConfig,
   },
 })

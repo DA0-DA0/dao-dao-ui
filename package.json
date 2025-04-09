@@ -15,7 +15,7 @@
     "postinstall": "patch-package",
     "test": "vitest",
     "test:e2e": "yarn dapp test:e2e",
-    "cwgen": "yarn workspace @dao-dao/config cwgen",
+    "cwgen": "yarn utils cwgen",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
@@ -37,7 +37,7 @@
     "patch-package": "^8.0.0",
     "turbo": "latest",
     "turbo-ignore": "latest",
-    "vitest": "^2.1.8"
+    "vitest": "^3.1.1"
   },
   "engines": {
     "npm": ">=7.0.0",

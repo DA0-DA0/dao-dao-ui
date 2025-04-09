@@ -428,7 +428,7 @@ describe('delegations', () => {
     )
   })
 
-  it.only('should create a large token-based DAO with delegations and test gas limits', async () => {
+  it('should create a large token-based DAO with delegations and test gas limits', async () => {
     const chainConfig = mustGetSupportedChainConfig(suite.chainId)
 
     const creator = await suite.makeSigner()

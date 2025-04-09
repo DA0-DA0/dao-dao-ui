@@ -29,7 +29,7 @@ import {
 import { suite } from './common'
 
 describe('delegations', () => {
-  it.only('should create a token-based DAO with delegations', async () => {
+  it('should create a token-based DAO with delegations', async () => {
     const chainConfig = mustGetSupportedChainConfig(suite.chainId)
 
     const creator = await suite.makeSigner()

@@ -3,7 +3,13 @@ import { ViteUserConfig, defaultExclude, defineConfig } from 'vitest/config'
 export const vitestConfig: Required<
   Pick<
     Required<ViteUserConfig>['test'],
-    'exclude' | 'setupFiles' | 'testTimeout' | 'hookTimeout' | 'server' | 'watch' | 'hideSkippedTests'
+    | 'exclude'
+    | 'setupFiles'
+    | 'testTimeout'
+    | 'hookTimeout'
+    | 'server'
+    | 'watch'
+    | 'hideSkippedTests'
   >
 > = {
   exclude: [...defaultExclude, '**/.next/**'],
