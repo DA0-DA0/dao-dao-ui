@@ -14,6 +14,15 @@ done
 if [ $status -ne 0 ]; then
   if [ "$CI" = "true" ]; then
     echo "patch-package status = $status, exiting with 0 due to CI=true"
+
+    echo "DEBUG:"
+    echo "$ pwd"
+    pwd
+    echo
+    echo "$ ls"
+    ls
+    echo
+
     exit 0
   else
     exit $status
