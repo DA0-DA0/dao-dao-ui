@@ -29,6 +29,7 @@ import {
   ContractVersionInfo,
   DepositRefundPolicy,
   ModuleInstantiateInfo,
+  UnifiedCosmosMsg,
 } from './contracts/common'
 import {
   InstantiateMsg as DaoDaoCoreInstantiateMsg,
@@ -83,6 +84,7 @@ export type DaoInfo = {
   isActive: boolean
   activeThreshold: ActiveThreshold | null
   items: Record<string, string>
+  initialActions: UnifiedCosmosMsg[]
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
   accounts: Account[]

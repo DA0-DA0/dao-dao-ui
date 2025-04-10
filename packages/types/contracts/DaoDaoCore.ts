@@ -382,6 +382,9 @@ export type QueryMsg =
         height?: number | null
       }
     }
+  | {
+      initial_actions: {}
+    }
 export type MigrateMsg =
   | {
       from_v1: {
@@ -504,6 +507,10 @@ export interface DumpStateResponse {
   total_proposal_module_count: number
   version: ContractVersion
   voting_module: Addr
+  /**
+   * Added in v2.7.0.
+   */
+  initial_actions?: ArrayOfCosmosMsgForEmpty
 }
 export interface ContractVersion {
   contract: string

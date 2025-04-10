@@ -715,6 +715,7 @@ export const getDaoInfoForChainId = (
   isActive: true,
   activeThreshold: null,
   items: {},
+  initialActions: [],
   polytoneProxies: {},
   accounts,
   parentDao: null,

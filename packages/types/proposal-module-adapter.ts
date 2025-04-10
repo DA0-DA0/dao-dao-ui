@@ -77,7 +77,7 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
   // Hooks
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
-    useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
+    useLoadingProposalExecutionTxHash: () => LoadingData<string | null>
     useLoadingProposalStatus: () => LoadingData<{
       status: ProposalStatus
       isVotingOpen: boolean

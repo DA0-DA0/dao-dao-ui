@@ -59,6 +59,7 @@ export class CreatingDaoPlaceholder extends DaoBase {
       isActive: true,
       activeThreshold: null,
       items: {},
+      initialActions: [],
       polytoneProxies: {},
       accounts: [
         {

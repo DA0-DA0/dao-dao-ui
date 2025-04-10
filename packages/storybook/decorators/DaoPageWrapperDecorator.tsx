@@ -34,6 +34,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   isActive: true,
   activeThreshold: null,
   items: {},
+  initialActions: [],
   polytoneProxies: {},
   accounts: [
     {

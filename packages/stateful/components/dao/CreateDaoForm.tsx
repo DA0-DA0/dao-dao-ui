@@ -894,6 +894,7 @@ export const InnerCreateDaoForm = ({
               isActive: true,
               activeThreshold: null,
               items: {},
+              initialActions: [],
               polytoneProxies: {},
               accounts: [],
               contractAdmin: null,

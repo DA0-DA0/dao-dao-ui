@@ -1,5 +1,5 @@
 import { UnifiedCosmosMsg } from '../contracts'
-import { CrossChainPacketInfo } from '../proposal'
+import { CrossChainPacketInfo } from '../cross-chain'
 import { ModalProps } from './Modal'
 
 export type SelfRelayExecuteModalProps = Pick<

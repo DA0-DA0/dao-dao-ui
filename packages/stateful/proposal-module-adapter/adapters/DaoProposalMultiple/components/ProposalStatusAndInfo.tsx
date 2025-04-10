@@ -44,8 +44,8 @@ import { ButtonLink } from '../../../../components/ButtonLink'
 import {
   useAwaitNextBlock,
   useProposalActionState,
-  useProposalRelayState,
   useProposalVetoState,
+  useTxRelayState,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -125,12 +125,15 @@ const InnerProposalStatusAndInfo = ({
 
   const statusKey = getProposalStatusKey(proposal.status)
 
-  const relayState = useProposalRelayState({
+  const relayState = useTxRelayState({
     msgs: winningChoice?.msgs || [],
-    status: proposal.status,
-    executedAt: proposal.executedAt,
-    proposalModuleAddress: proposalModule.address,
-    proposalNumber,
+    context: {
+      type: 'proposal',
+      proposalModuleAddress: proposalModule.address,
+      proposalNumber,
+      executed: proposal.status === ProposalStatusEnum.Executed,
+      executedAt: proposal.executedAt,
+    },
     openSelfRelayExecute,
     loadingTxHash: loadingExecutionTxHash,
   })

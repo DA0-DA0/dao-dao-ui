@@ -327,6 +327,41 @@ export const fetchPreProposeModule = async (
   }
 }
 
+/**
+ * Fetch proposal execution TX hash.
+ */
+export const fetchProposalExecutionTxHash = async ({
+  chainId,
+  contractAddress,
+  proposalId,
+  isNeutronTimelockExecute,
+}: {
+  chainId: string
+  contractAddress: string
+  proposalId: string | number
+  /**
+   * Whether or not this is executed from Neutron's fork SubDAO timelock
+   * system. If so, the execute action event attribute is different.
+   */
+  isNeutronTimelockExecute?: boolean
+}): Promise<string | null> => {
+  const client = await getCosmWasmClientForChainId(chainId)
+  const events = await client.searchTx([
+    { key: 'wasm._contract_address', value: contractAddress },
+    { key: 'wasm.proposal_id', value: proposalId.toString() },
+    {
+      key: 'wasm.action',
+      value: isNeutronTimelockExecute ? 'execute_proposal' : 'execute',
+    },
+  ])
+
+  if (events.length > 1) {
+    console.error('More than one execution', events)
+  }
+
+  return events?.[0]?.hash ?? null
+}
+
 export const proposalQueries = {
   /**
    * Fetch pre-propose module info.
@@ -338,5 +373,15 @@ export const proposalQueries = {
     queryOptions({
       queryKey: ['proposal', 'preProposeModule', options],
       queryFn: () => fetchPreProposeModule(queryClient, options),
+    }),
+  /**
+   * Fetch proposal execution TX hash.
+   */
+  proposalExecutionTxHash: (
+    options: Parameters<typeof fetchProposalExecutionTxHash>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['proposal', 'executionTxHash', options],
+      queryFn: () => fetchProposalExecutionTxHash(options),
     }),
 }

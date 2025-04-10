@@ -75,7 +75,6 @@ export interface DaoDaoCoreReadOnlyInterface {
     startAfter?: string
   }) => Promise<ListItemsResponse>
   info: () => Promise<InfoResponse>
-  initialActions: () => Promise<ArrayOfCosmosMsgForEmpty>
   proposalModules: ({
     limit,
     startAfter,
@@ -113,6 +112,7 @@ export interface DaoDaoCoreReadOnlyInterface {
   }: {
     height?: number
   }) => Promise<TotalPowerAtHeightResponse>
+  initialActions: () => Promise<ArrayOfCosmosMsgForEmpty>
 }
 export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
   client: CosmWasmClient
@@ -130,7 +130,6 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
     this.getItem = this.getItem.bind(this)
     this.listItems = this.listItems.bind(this)
     this.info = this.info.bind(this)
-    this.initialActions = this.initialActions.bind(this)
     this.proposalModules = this.proposalModules.bind(this)
     this.activeProposalModules = this.activeProposalModules.bind(this)
     this.proposalModuleCount = this.proposalModuleCount.bind(this)
@@ -140,6 +139,7 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
     this.daoURI = this.daoURI.bind(this)
     this.votingPowerAtHeight = this.votingPowerAtHeight.bind(this)
     this.totalPowerAtHeight = this.totalPowerAtHeight.bind(this)
+    this.initialActions = this.initialActions.bind(this)
   }
   admin = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -208,11 +208,6 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
       get_item: {
         key,
       },
-    })
-  }
-  initialActions = async (): Promise<ArrayOfCosmosMsgForEmpty> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      initial_actions: {},
     })
   }
   listItems = async ({
@@ -319,6 +314,11 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
       total_power_at_height: {
         height,
       },
+    })
+  }
+  initialActions = async (): Promise<ArrayOfCosmosMsgForEmpty> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      initial_actions: {},
     })
   }
 }

@@ -50,6 +50,7 @@ export const makeDaoInfo = (id = 1): DaoInfo => ({
   isActive: true,
   activeThreshold: null,
   items: {},
+  initialActions: [],
   accounts: [],
   admin: '',
   contractAdmin: null,

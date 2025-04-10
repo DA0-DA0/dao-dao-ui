@@ -9,9 +9,9 @@ import { useRecoilValue } from 'recoil'
 import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
 import { chainQueries } from '@dao-dao/state/query'
 import {
-  ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   TextInput,
+  TxCrossChainRelayStatus,
   useDao,
 } from '@dao-dao/stateless'
 import {
@@ -34,7 +34,7 @@ import { ProfileProposalCard } from '../components'
 import { useProposalModuleAdapterContext } from '../proposal-module-adapter'
 import { useQueryLoadingDataWithError } from './query'
 import { useMembership } from './useMembership'
-import { UseProposalRelayStateReturn } from './useProposalRelayState'
+import { UseTxRelayStateReturn } from './useTxRelayState'
 import { useWallet } from './useWallet'
 
 export type UseProposalActionStateOptions = {
@@ -42,9 +42,9 @@ export type UseProposalActionStateOptions = {
    * Proposal description, for decoding additional execution metadata.
    */
   description: string
-  relayState: UseProposalRelayStateReturn
+  relayState: UseTxRelayStateReturn
   statusKey: ProposalStatusKey
-  loadingExecutionTxHash: LoadingData<string | undefined>
+  loadingExecutionTxHash: LoadingData<string | null>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -313,9 +313,7 @@ export const useProposalActionState = ({
             : undefined,
     footer: (showRelayStatus || isWalletConnected) && (
       <div className="flex flex-col gap-6">
-        {showRelayStatus && (
-          <ProposalCrossChainRelayStatus state={relayState.data} />
-        )}
+        {showRelayStatus && <TxCrossChainRelayStatus state={relayState.data} />}
 
         {isWalletConnected && <ProfileProposalCard />}
       </div>

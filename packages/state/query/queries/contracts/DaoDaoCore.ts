@@ -178,18 +178,6 @@ export const daoDaoCoreQueryKeys = {
         args,
       },
     ] as const,
-  initialActions: (
-    chainId: string,
-    contractAddress: string,
-    args?: Record<string, unknown>
-  ) =>
-    [
-      {
-        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
-        method: 'initial_actions',
-        args,
-      },
-    ] as const,
   proposalModules: (
     chainId: string,
     contractAddress: string,
@@ -295,6 +283,18 @@ export const daoDaoCoreQueryKeys = {
       {
         ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
         method: 'total_power_at_height',
+        args,
+      },
+    ] as const,
+  initialActions: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoDaoCoreQueryKeys.address(chainId, contractAddress)[0],
+        method: 'initial_actions',
         args,
       },
     ] as const,
@@ -611,33 +611,6 @@ export const daoDaoCoreQueries = {
     ...options,
   }),
   info: contractQueries.info,
-  initialActions: <TData = ArrayOfCosmosMsgForEmpty>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreInitialActionsQuery<TData>
-  ): UseQueryOptions<ArrayOfCosmosMsgForEmpty, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/initialActions',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).initialActions()
-    },
-    ...options,
-  }),
   proposalModules: <TData = ArrayOfProposalModule>(
     queryClient: QueryClient,
     {
@@ -923,6 +896,33 @@ export const daoDaoCoreQueries = {
     },
     ...options,
   }),
+  initialActions: <TData = ArrayOfCosmosMsgForEmpty>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoDaoCoreInitialActionsQuery<TData>
+  ): UseQueryOptions<ArrayOfCosmosMsgForEmpty, Error, TData> => ({
+    queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoCore/initialActions',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoDaoCoreQueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).initialActions()
+    },
+    ...options,
+  }),
 }
 export interface DaoDaoCoreReactQuery<TResponse, TData = TResponse> {
   chainId: string
@@ -934,6 +934,8 @@ export interface DaoDaoCoreReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
+export interface DaoDaoCoreInitialActionsQuery<TData>
+  extends DaoDaoCoreReactQuery<ArrayOfCosmosMsgForEmpty, TData> {}
 export interface DaoDaoCoreTotalPowerAtHeightQuery<TData>
   extends DaoDaoCoreReactQuery<TotalPowerAtHeightResponse, TData> {
   args: {
@@ -978,8 +980,6 @@ export interface DaoDaoCoreProposalModulesQuery<TData>
 }
 export interface DaoDaoCoreInfoQuery<TData>
   extends DaoDaoCoreReactQuery<InfoResponse, TData> {}
-export interface DaoDaoCoreInitialActionsQuery<TData>
-  extends DaoDaoCoreReactQuery<ArrayOfCosmosMsgForEmpty, TData> {}
 export interface DaoDaoCoreListItemsQuery<TData>
   extends DaoDaoCoreReactQuery<ListItemsResponse, TData> {
   args: {

@@ -28,9 +28,8 @@ import {
   CrossChainPacketInfoState,
   CrossChainPacketInfoStatus,
   LoadingData,
-  ProposalRelayState,
-  ProposalStatus,
-  ProposalStatusEnum,
+  SelfRelayExecuteModalProps,
+  TxRelayState,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import { ExecutionResponse } from '@dao-dao/types/contracts/PolytoneListener'
@@ -40,36 +39,55 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-export type UseProposalRelayStateOptions = {
+export type UseTxRelayStateOptions = {
   msgs: UnifiedCosmosMsg[]
-  status: ProposalStatus
-  executedAt: Date | undefined
-  proposalModuleAddress: string
-  proposalNumber: number
+  context:
+    | {
+        type: 'proposal'
+        proposalModuleAddress: string
+        proposalNumber: number
+        executed: boolean
+        /**
+         * Undefined if not executed or not yet loaded.
+         */
+        executedAt: Date | undefined
+      }
+    | {
+        type: 'dao_initial_actions'
+        coreAddress: string
+        /**
+         * Undefined if not yet loaded.
+         */
+        executedAt: Date | undefined
+      }
   openSelfRelayExecute: BaseProposalStatusAndInfoProps['openSelfRelayExecute']
-  loadingTxHash: LoadingData<string | undefined>
+  loadingTxHash: LoadingData<string | null>
 }
 
-export type UseProposalRelayStateReturn = LoadingData<ProposalRelayState>
+export type UseTxRelayStateReturn = LoadingData<TxRelayState>
 
 /**
- * This hook uses information about a proposal and produces all the necessary
- * state for the status of polytone message relays. It is used in the
- * `useProposalActionState` hook.
+ * This hook uses information about cross-chain messages (like from a proposal)
+ * and produces all the necessary state for the status of relays. It is used in
+ * the `useProposalActionState` hook.
  */
-export const useProposalRelayState = ({
+export const useTxRelayState = ({
   msgs,
-  status,
-  executedAt,
-  proposalModuleAddress,
-  proposalNumber,
+  context,
   openSelfRelayExecute,
   loadingTxHash,
-}: UseProposalRelayStateOptions): UseProposalRelayStateReturn => {
+}: UseTxRelayStateOptions): UseTxRelayStateReturn => {
   const { coreAddress } = useDao()
   const {
     chain: { chainId: srcChainId },
   } = useSupportedChainContext()
+
+  /**
+   * Whether or not the messages have been executed.
+   */
+  const executed =
+    context.type === 'dao_initial_actions' ||
+    (context.type === 'proposal' && context.executed)
 
   const packetsLoadable = useCachedLoadingWithError(
     loadingTxHash.loading || !loadingTxHash.data
@@ -197,7 +215,7 @@ export const useProposalRelayState = ({
   )
 
   // Get packet states.
-  const states = useMemo((): ProposalRelayState['states'] => {
+  const states = useMemo((): TxRelayState['states'] => {
     const packetStates =
       packetsLoadable.loading ||
       packetsLoadable.errored ||
@@ -388,10 +406,10 @@ export const useProposalRelayState = ({
   }, [anyPending, refreshIbcData])
 
   const executedOverOneMinuteAgo =
-    status === ProposalStatusEnum.Executed &&
-    executedAt !== undefined &&
+    (context.type === 'proposal' || context.type === 'dao_initial_actions') &&
+    !!context.executedAt &&
     // If executed over 1 minute ago...
-    Date.now() - executedAt.getTime() > 1 * 60 * 1000
+    Date.now() - context.executedAt.getTime() > 1 * 60 * 1000
   const messagesNeedingSelfRelay =
     unreceivedPackets.loading ||
     unreceivedAcks.loading ||
@@ -411,44 +429,65 @@ export const useProposalRelayState = ({
   const hasCrossChainMessagesNeedingSelfRelay =
     !!messagesNeedingSelfRelay?.length
 
-  const openSelfRelay = (transactionHash?: string) =>
-    hasCrossChainMessagesNeedingSelfRelay &&
-    openSelfRelayExecute({
-      uniqueId: `${srcChainId}:${proposalModuleAddress}:${proposalNumber}`,
-      transaction: transactionHash
+  const openSelfRelay = (transactionHash?: string | null) => {
+    if (!hasCrossChainMessagesNeedingSelfRelay) {
+      return
+    }
+
+    if (executed && !transactionHash) {
+      throw new Error('Transaction hash is required for executed proposals.')
+    }
+
+    const transaction: SelfRelayExecuteModalProps['transaction'] | undefined =
+      executed && transactionHash
         ? {
             type: 'exists',
             hash: transactionHash,
           }
-        : {
-            type: 'execute',
-            msgs: [
-              makeWasmMessage({
-                wasm: {
-                  execute: {
-                    contract_addr: proposalModuleAddress,
-                    funds: [],
-                    msg: {
-                      execute: {
-                        proposal_id: proposalNumber,
+        : context.type === 'proposal'
+          ? {
+              type: 'execute',
+              msgs: [
+                makeWasmMessage({
+                  wasm: {
+                    execute: {
+                      contract_addr: context.proposalModuleAddress,
+                      funds: [],
+                      msg: {
+                        execute: {
+                          proposal_id: context.proposalNumber,
+                        },
                       },
                     },
                   },
-                },
-              }),
-            ],
-          },
+                }),
+              ],
+            }
+          : undefined
+
+    if (!transaction) {
+      throw new Error('Failed to detect transaction for self-relay.')
+    }
+
+    openSelfRelayExecute({
+      uniqueId:
+        context.type === 'dao_initial_actions'
+          ? `${srcChainId}:${context.coreAddress}`
+          : `${srcChainId}:${context.proposalModuleAddress}:${context.proposalNumber}`,
+      transaction,
       crossChainPackets: messagesNeedingSelfRelay,
       chainIds: uniq(
         messagesNeedingSelfRelay.map(({ data: { chainId } }) => chainId)
       ),
     })
+  }
 
   return unreceivedPackets.loading ||
     unreceivedAcks.loading ||
     acksReceived.loading ||
     polytoneRelayResults.loading ||
-    packetsLoadable.loading
+    packetsLoadable.loading ||
+    (executed && loadingTxHash.loading)
     ? {
         loading: true,
       }
@@ -459,7 +498,7 @@ export const useProposalRelayState = ({
           states,
           needsSelfRelay: hasCrossChainMessagesNeedingSelfRelay,
           openSelfRelay: () =>
-            status === ProposalStatusEnum.Executed && !loadingTxHash.loading
+            executed && !loadingTxHash.loading
               ? openSelfRelay(loadingTxHash.data)
               : openSelfRelay(),
         },

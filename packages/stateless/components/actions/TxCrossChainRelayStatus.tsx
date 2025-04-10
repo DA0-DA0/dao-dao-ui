@@ -1,20 +1,20 @@
 import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { CrossChainPacketInfoStatus, ProposalRelayState } from '@dao-dao/types'
+import { CrossChainPacketInfoStatus, TxRelayState } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { Loader } from '../logo'
 import { StatusCard } from '../StatusCard'
 import { Tooltip } from '../tooltip'
 
-export type ProposalCrossChainRelayStatusProps = {
-  state: ProposalRelayState
+export type TxCrossChainRelayStatusProps = {
+  state: TxRelayState
 }
 
-export const ProposalCrossChainRelayStatus = ({
+export const TxCrossChainRelayStatus = ({
   state: { hasCrossChainMessages, needsSelfRelay, states },
-}: ProposalCrossChainRelayStatusProps) => {
+}: TxCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
   if (!hasCrossChainMessages) {

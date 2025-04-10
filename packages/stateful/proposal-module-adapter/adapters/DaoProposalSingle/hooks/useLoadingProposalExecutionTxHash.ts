@@ -1,13 +1,17 @@
-import { constSelector } from 'recoil'
+import { proposalQueries } from '@dao-dao/state/query'
+import {
+  LoadingData,
+  PreProposeModuleType,
+  ProposalStatusEnum,
+} from '@dao-dao/types'
 
-import { proposalExecutionTXHashSelector } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
-import { PreProposeModuleType, ProposalStatusEnum } from '@dao-dao/types'
-
+import { useQueryLoadingData } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
 
-export const useLoadingProposalExecutionTxHash = () => {
+export const useLoadingProposalExecutionTxHash = (): LoadingData<
+  string | null
+> => {
   const {
     proposalModule: { address: proposalModuleAddress, prePropose },
     proposalNumber,
@@ -16,7 +20,7 @@ export const useLoadingProposalExecutionTxHash = () => {
 
   const loadingProposal = useLoadingProposal()
 
-  return useCachedLoading(
+  return useQueryLoadingData(
     loadingProposal.loading
       ? // Returns loading when undefined passed to indicate we are still loading.
         undefined
@@ -26,20 +30,31 @@ export const useLoadingProposalExecutionTxHash = () => {
           // timelock module since that is the one that executes the actual
           // messages in the proposal.
           prePropose?.type === PreProposeModuleType.NeutronSubdaoSingle
-          ? proposalExecutionTXHashSelector({
+          ? proposalQueries.proposalExecutionTxHash({
               chainId,
               contractAddress: prePropose.config.timelockAddress,
               proposalId: proposalNumber,
               isNeutronTimelockExecute: true,
             })
           : // If in an execute state, load the execution TX hash.
-            proposalExecutionTXHashSelector({
+            proposalQueries.proposalExecutionTxHash({
               chainId,
               contractAddress: proposalModuleAddress,
               proposalId: proposalNumber,
             })
         : // Returns not loading with undefined value when undefined selector passed, indicating there is no data available.
-          constSelector(undefined),
-    undefined
+          {
+            queryKey: [
+              'proposal',
+              'executionTxHash',
+              {
+                chainId,
+                contractAddress: proposalModuleAddress,
+                proposalId: proposalNumber,
+              },
+            ],
+            queryFn: () => null,
+          },
+    null
   )
 }

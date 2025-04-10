@@ -211,6 +211,7 @@ export const fetchDaoInfo = async (
     isActive,
     activeThreshold,
     items,
+    initialActions: state.initial_actions || [],
     polytoneProxies,
     accounts,
     parentDao,
