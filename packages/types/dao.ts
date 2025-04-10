@@ -540,9 +540,10 @@ export type DaoWebSocketChannelInfo = {
 
 export type App = {
   /**
-   * App name.
+   * App name. If not provided, the thumbnail image will not be dimmed. This
+   * should be provided if the thumbnail image does not contain the name.
    */
-  name: string
+  name?: string
   /**
    * Optional platform name to show above the app name dimmed.
    */
