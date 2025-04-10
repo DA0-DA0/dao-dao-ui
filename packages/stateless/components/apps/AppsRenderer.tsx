@@ -343,7 +343,10 @@ const AppOpener = ({
               {/* Background. */}
               {!isCustom && (
                 <div
-                  className="absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center brightness-50"
+                  className={clsx(
+                    'absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center',
+                    !!name && 'brightness-50'
+                  )}
                   style={{
                     backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
                   }}
@@ -357,9 +360,11 @@ const AppOpener = ({
                   </p>
                 )}
 
-                <p className="primary-text break-words text-color-light">
-                  {isCustom ? t('title.custom') : name}
-                </p>
+                {(isCustom || name) && (
+                  <p className="primary-text break-words text-color-light">
+                    {isCustom ? t('title.custom') : name}
+                  </p>
+                )}
               </div>
             </Button>
           )

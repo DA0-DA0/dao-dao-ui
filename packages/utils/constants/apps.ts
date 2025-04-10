@@ -1,4 +1,4 @@
-import { App as App } from '@dao-dao/types'
+import { App } from '@dao-dao/types'
 
 import { MAINNET } from './env'
 
@@ -19,11 +19,14 @@ export const APPS: App[] = [
     url: 'https://app.astroport.fi/swap',
   },
   {
-    name: 'Stargaze',
     imageUrl: 'https://stargaze.zone/TwitterCard.png',
     url: MAINNET
       ? 'https://stargaze.zone'
       : 'https://testnet.publicawesome.dev',
+  },
+  {
+    imageUrl: '/apps/stardex.jpg',
+    url: 'https://swap.stargaze.zone/swap',
   },
   {
     name: 'Stargaze Studio',
@@ -31,11 +34,6 @@ export const APPS: App[] = [
     url: MAINNET
       ? 'https://studio.stargaze.zone'
       : 'https://studio.publicawesome.dev',
-  },
-  {
-    name: 'Stardex',
-    imageUrl: '/apps/stardex.jpg',
-    url: 'https://swap.stargaze.zone/swap',
   },
   {
     name: 'Mars Protocol',
@@ -53,8 +51,7 @@ export const APPS: App[] = [
     url: 'https://dashboard.kleomed.es',
   },
   {
-    name: 'Stake Hub',
-    imageUrl: '#',
+    imageUrl: '/apps/stakehub.jpeg',
     url: 'https://www.stake-hub.xyz',
   },
   {
