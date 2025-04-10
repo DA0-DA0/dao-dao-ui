@@ -13,7 +13,7 @@ export type TxCrossChainRelayStatusProps = {
 }
 
 export const TxCrossChainRelayStatus = ({
-  state: { hasCrossChainMessages, needsSelfRelay, states },
+  state: { hasCrossChainMessages, needsSelfRelay, states, openSelfRelay },
 }: TxCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
@@ -22,13 +22,20 @@ export const TxCrossChainRelayStatus = ({
   }
 
   return states.pending.length > 0 ? (
-    !needsSelfRelay ? (
+    needsSelfRelay ? (
+      <StatusCard
+        content={t('info.crossChainMessagesNeedSelfRelay')}
+        onClick={openSelfRelay}
+        size="xs"
+        style="warning"
+      />
+    ) : (
       <StatusCard
         content={t('info.relayingCrossChainMessages')}
         size="xs"
         style="loading"
       />
-    ) : null
+    )
   ) : states.errored.length + states.timedOut.length > 0 ? (
     <StatusCard
       content={t('error.crossChainMessagesErroredOrTimedOut')}

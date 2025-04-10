@@ -11,6 +11,7 @@ import {
   IVotingModuleBase,
   InstantiateInfo,
   ModuleInstantiateInfo,
+  UnifiedCosmosMsg,
 } from '@dao-dao/types'
 import {
   InitialItem,
@@ -97,6 +98,7 @@ export class CwDao extends DaoBase {
       description: string
       imageUrl?: string | null
       initialItems?: InitialItem[] | null
+      initialActions?: UnifiedCosmosMsg[] | null
       /**
        * Defaults to true.
        */
@@ -122,6 +124,7 @@ export class CwDao extends DaoBase {
         // Replace empty strings with null.
         image_url: config.imageUrl?.trim() || null,
         initial_items: config.initialItems,
+        initial_actions: config.initialActions,
         name: config.name,
         proposal_modules_instantiate_info: proposalModules,
         voting_module_instantiate_info: votingModule,

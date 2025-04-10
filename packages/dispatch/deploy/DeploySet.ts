@@ -162,7 +162,7 @@ export const deploySets: DeploySet[] = [
   new DeploySet(
     'cw-vesting with staking',
     'always',
-    [new DeploySetContract('cw_vesting')],
+    [new DeploySetContract('cw_vesting-staking', 'cw_vesting')],
     {
       skipChainIds: [
         ChainId.NeutronMainnet,

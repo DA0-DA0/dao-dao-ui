@@ -23,6 +23,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
   } = useSupportedChainContext()
 
   const {
+    availableExtensions,
     availableWidgets,
     predictedDaoAddress,
     form: {
@@ -33,6 +34,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
     },
   } = context
 
+  const existingExtensions = watch('extensions') || {}
   const existingWidgets = watch('widgets') || {}
 
   const name = watch('name')
@@ -64,6 +66,69 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
       </p>
 
       <div className="flex flex-col gap-3">
+        {availableExtensions.map(
+          ({ id, title, description, defaultValues, Editor }) => {
+            const added = !!existingExtensions[id]
+
+            return (
+              <div
+                key={id}
+                className={clsx(
+                  'bg-background-tertiary flex flex-col gap-5 px-7 py-5 rounded-md ring-1 transition-all',
+                  added ? 'ring-border-interactive-active' : 'ring-transparent'
+                )}
+              >
+                <div className="flex flex-row gap-3 items-center">
+                  <IconButton
+                    Icon={Add}
+                    circular
+                    className="-ml-3"
+                    iconClassName={clsx(
+                      '!transition-[transform]',
+                      added ? 'rotate-45' : 'rotate-0'
+                    )}
+                    onClick={() => {
+                      if (added) {
+                        // Remove.
+
+                        setValue(`extensions.${id}`, null)
+                        // Clear errors to ensure form isn't blocked by fields
+                        // that no longer exist.
+                        clearErrors(`extensions.${id}`)
+                      } else {
+                        // Add.
+
+                        // Clone so we don't mutate the default objects.
+                        setValue(
+                          `extensions.${id}.data`,
+                          cloneDeep(defaultValues)
+                        )
+                      }
+                    }}
+                    variant="ghost"
+                  />
+
+                  <div className="flex flex-col gap-1">
+                    <p className="title-text text-lg">{title}</p>
+                    <p className="secondary-text">{description}</p>
+                  </div>
+                </div>
+
+                {added && Editor && (
+                  <div className="pt-4 animate-fade-in border-t border-border-secondary -mx-7 px-7">
+                    <Editor
+                      errors={
+                        (errors.extensions?.[id] as any)?.data as FieldErrors
+                      }
+                      fieldNamePrefix={`extensions.${id}.data.`}
+                    />
+                  </div>
+                )}
+              </div>
+            )
+          }
+        )}
+
         {availableWidgets.map(({ id, defaultValues, defaultExtra, Editor }) => {
           const added = !!existingWidgets[id]
 
@@ -81,7 +146,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                   circular
                   className="-ml-3"
                   iconClassName={clsx(
-                    'transition-[transform]',
+                    '!transition-[transform]',
                     added ? 'rotate-45' : 'rotate-0'
                   )}
                   onClick={() => {

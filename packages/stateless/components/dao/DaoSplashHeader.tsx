@@ -13,6 +13,7 @@ export const DaoSplashHeader = ({
   LinkWrapper,
   parentProposalRecognizeSubDaoHref,
   proposeUpdateAdminToParentHref,
+  initialActionsVerified,
 }: DaoSplashHeaderProps) => {
   const { t } = useTranslation()
 
@@ -42,6 +43,20 @@ export const DaoSplashHeader = ({
           </p>
         </div>
       )}
+
+      {/* Show warning if user has not verified the initial actions for this DAO and the DAO was created within the last 30 days. */}
+      {dao.info.initialActions.length > 0 &&
+        !initialActionsVerified &&
+        !!dao.info.created &&
+        dao.info.created >= Date.now() - 30 * 24 * 60 * 60 * 1_000 && (
+          <div className="mb-10 -mt-4 flex flex-row items-center justify-center gap-3 rounded-md bg-background-interactive-warning p-3 md:gap-2">
+            <WarningRounded className="!h-10 !w-10 text-icon-interactive-warning md:!h-6 md:!w-6" />
+
+            <p className="text-text-interactive-warning-body">
+              {t('error.initialActionsNotVerified')}
+            </p>
+          </div>
+        )}
 
       {dao.info.parentDao && !dao.info.parentDao.registeredSubDao && (
         <ButtonLink

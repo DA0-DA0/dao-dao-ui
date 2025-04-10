@@ -52,6 +52,7 @@ import {
   CreateDaoCustomValidator,
   DaoParentInfo,
   DaoTabId,
+  Feature,
   GovernanceProposalActionData,
   InstantiateInfo,
   NewDao,
@@ -81,6 +82,7 @@ import {
   getWidgetStorageItemKey,
   instantiateSmartContract,
   isErrorWithSubstring,
+  isFeatureSupportedByVersion,
   isSecretNetwork,
   makeWasmMessage,
   parseContractVersion,
@@ -89,6 +91,7 @@ import {
 } from '@dao-dao/utils'
 
 import { CustomData } from '../../actions/core/actions/Custom/Component'
+import { getCreationExtensions } from '../../creation-extensions'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -197,12 +200,42 @@ export const InnerCreateDaoForm = ({
   const supportsInstantiate2 =
     versionGte(latestVersion, ContractVersion.V250) && !noInstantiate2Create
 
+  // Extensions depend on initial actions.
+  const supportsInitialActions = isFeatureSupportedByVersion(
+    Feature.InitialActions,
+    latestVersion
+  )
+
+  // Get available extensions.
+  const availableExtensions: CreateDaoContext['availableExtensions'] = useMemo(
+    () =>
+      getCreationExtensions({
+        chain: chainContext.chain,
+        version: latestVersion,
+      }),
+    [chainContext.chain, latestVersion]
+  )
+
+  // Get available widgets.
+  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
+    () =>
+      getWidgets({
+        chainId,
+        version: latestVersion,
+        isDaoCreation: true,
+      }),
+    [chainId, latestVersion]
+  )
+
   const CreateDaoPages = [
     CreateDaoStart,
     CreateDaoGovernance,
     CreateDaoVoting,
-    // Need instantiate2 to setup extensions on DAO creation.
-    ...(supportsInstantiate2 ? [CreateDaoExtensions] : []),
+    // Need instantiate2 or initial actions to setup widgets/extensions on DAO
+    // creation.
+    ...(supportsInstantiate2 || supportsInitialActions
+      ? [CreateDaoExtensions]
+      : []),
     CreateDaoReview,
   ]
 
@@ -222,6 +255,21 @@ export const InnerCreateDaoForm = ({
   // Verify cached value is still valid, and fix if not.
   const defaultForm = useMemo(() => {
     const defaultNewDao = makeDefaultNewDao(chainId)
+
+    const enableExtensions = availableExtensions.filter(
+      (extension) => extension.defaultEnabled
+    )
+    if (enableExtensions.length > 0) {
+      defaultNewDao.extensions = enableExtensions.reduce(
+        (acc, { id, defaultValues }) => ({
+          ...acc,
+          [id]: {
+            data: cloneDeep(defaultValues),
+          },
+        }),
+        {} as NewDao['extensions']
+      )
+    }
 
     const cached = cloneDeep(_newDaoAtom)
 
@@ -297,7 +345,7 @@ export const InnerCreateDaoForm = ({
       // Use overrides passed into component.
       override
     )
-  }, [_newDaoAtom, chainContext.config, chainId, override])
+  }, [_newDaoAtom, availableExtensions, chainContext.config, chainId, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
@@ -314,6 +362,7 @@ export const InnerCreateDaoForm = ({
     creator: { id: creatorId, data: creatorData },
     proposalModuleAdapters,
     votingConfig,
+    extensions,
     widgets,
   } = newDao
 
@@ -413,17 +462,6 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
-  // Get available widgets.
-  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
-    () =>
-      getWidgets({
-        chainId,
-        version: latestVersion,
-        isDaoCreation: true,
-      }),
-    [chainId, latestVersion]
-  )
-
   let instantiateInfo: InstantiateInfo | undefined
   let instantiateMsg:
     | DaoDaoCoreInstantiateMsg
@@ -474,6 +512,18 @@ export const InnerCreateDaoForm = ({
         : []),
     ]
 
+    const initialActions =
+      extensions && Object.keys(extensions).length > 0
+        ? Object.entries(extensions).flatMap(([id, data]) => {
+            const extension = availableExtensions.find(
+              (extension) => extension.id === id
+            )
+            return extension && data
+              ? extension.getInitialActions(data.data)
+              : []
+          })
+        : []
+
     const commonConfig = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
@@ -481,6 +531,7 @@ export const InnerCreateDaoForm = ({
       description,
       imageUrl,
       initialItems: initialItems.length > 0 ? initialItems : undefined,
+      initialActions: initialActions.length > 0 ? initialActions : undefined,
     }
 
     if (isSecretNetwork(chainId)) {
@@ -991,6 +1042,7 @@ export const InnerCreateDaoForm = ({
     creator,
     predictedDaoAddress,
     proposalModuleDaoCreationAdapters,
+    availableExtensions,
     availableWidgets,
     makeDefaultNewDao,
     SuspenseLoader,

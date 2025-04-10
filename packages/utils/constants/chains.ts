@@ -674,7 +674,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
           tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
           wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',
         },
-        latestVersion: ContractVersion.V270,
+        latestVersion: ContractVersion.V260,
       },
       // BitSong Testnet is halted indefinitely
       // {

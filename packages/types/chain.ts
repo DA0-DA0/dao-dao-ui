@@ -355,8 +355,7 @@ export type PolytoneConnection = {
    */
   remoteChannel: string
   /**
-   * Whether or not the user needs to self-relay an execution. This should be
-   * relay.
+   * Whether or not the user needs to self-relay an execution.
    */
   needsSelfRelay?: boolean
 }

@@ -53,7 +53,7 @@ export const StatusCard = ({
   return (
     <div
       className={clsx(
-        'flex flex-row rounded-md overflow-auto',
+        'flex flex-row rounded-md overflow-auto shrink-0',
         iconAtTop ? 'items-start' : 'items-center',
         onClick &&
           'cursor-pointer transition-opacity hover:opacity-80 active:opacity-70',

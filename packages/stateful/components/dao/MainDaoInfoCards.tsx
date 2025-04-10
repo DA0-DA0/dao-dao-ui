@@ -1,12 +1,16 @@
-import { DataObject } from '@mui/icons-material'
+import { DataObject, Send, WarningRounded } from '@mui/icons-material'
 import uniq from 'lodash.uniq'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValueLoadable, waitForAll } from 'recoil'
+import { useRecoilState, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { Cw1WhitelistSelectors, contractQueries } from '@dao-dao/state'
+import {
+  Cw1WhitelistSelectors,
+  contractQueries,
+  initialActionsVerifiedAtom,
+} from '@dao-dao/state'
 import {
   ActionsMatchAndRender,
   Button,
@@ -18,6 +22,7 @@ import {
   useDao,
 } from '@dao-dao/stateless'
 import {
+  DaoInfoCard,
   PreProposeModuleType,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
@@ -58,6 +63,13 @@ const InnerMainDaoInfoCards = () => {
   const [initialActionsModalOpen, setInitialActionsModalOpen] = useState(false)
   const [showRawInitialActions, setShowRawInitialActions] = useState(false)
 
+  const [initialActionsVerified, setInitialActionsVerified] = useRecoilState(
+    initialActionsVerifiedAtom({
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
+    })
+  )
+
   const [selfRelayExecuteProps, setSelfRelayExecuteProps] =
     useState<Pick<SelfRelayExecuteModalProps, 'chainIds' | 'transaction'>>()
 
@@ -92,7 +104,6 @@ const InnerMainDaoInfoCards = () => {
         },
     openSelfRelayExecute: setSelfRelayExecuteProps,
   })
-  console.log({ instantiationEvent, initialActionsRelayState })
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
     amount: -1,
@@ -137,6 +148,13 @@ const InnerMainDaoInfoCards = () => {
     )
   )
 
+  // Show warning if DAO was created within the last 30 days and initial actions
+  // have not been verified.
+  const initialActionsNeedVerification =
+    !!dao.info.created &&
+    dao.info.created >= Date.now() - 30 * 24 * 60 * 60 * 1_000 &&
+    !initialActionsVerified
+
   return (
     <>
       <StatelessDaoInfoCards
@@ -148,7 +166,7 @@ const InnerMainDaoInfoCards = () => {
                   label: t('title.established'),
                   tooltip: t('info.establishedTooltip'),
                   value: formatDate(new Date(created)),
-                },
+                } satisfies DaoInfoCard,
               ]
             : []),
           {
@@ -193,7 +211,7 @@ const InnerMainDaoInfoCards = () => {
                             symbol={tokenInfo.symbol}
                           />
                         ),
-                },
+                } satisfies DaoInfoCard,
               ]
             : []),
           ...(initialActions.length
@@ -201,9 +219,21 @@ const InnerMainDaoInfoCards = () => {
                 {
                   label: t('title.initialActions'),
                   tooltip: t('info.initialActionsDescription'),
+                  warning: initialActionsNeedVerification,
+                  Icon: initialActionsNeedVerification
+                    ? WarningRounded
+                    : undefined,
                   value: (
                     <Button
-                      onClick={() => setInitialActionsModalOpen(true)}
+                      className={
+                        initialActionsNeedVerification
+                          ? 'text-text-interactive-warning-body decoration-text-interactive-warning-body'
+                          : undefined
+                      }
+                      onClick={() => {
+                        setInitialActionsModalOpen(true)
+                        setInitialActionsVerified(true)
+                      }}
                       variant="underline"
                     >
                       {t('info.actions', {
@@ -211,7 +241,7 @@ const InnerMainDaoInfoCards = () => {
                       })}
                     </Button>
                   ),
-                },
+                } satisfies DaoInfoCard,
               ]
             : []),
           // Show approvers and vetoers from proposal modules here in the main
@@ -232,6 +262,26 @@ const InnerMainDaoInfoCards = () => {
       <Modal
         containerClassName="w-full !max-w-2xl"
         contentContainerClassName="gap-4"
+        footerContent={
+          !initialActionsRelayState.loading &&
+          initialActionsRelayState.data.hasCrossChainMessages && (
+            <div className="flex flex-col gap-4">
+              <TxCrossChainRelayStatus state={initialActionsRelayState.data} />
+
+              {initialActionsRelayState.data.needsSelfRelay && (
+                <Button
+                  center
+                  onClick={initialActionsRelayState.data.openSelfRelay}
+                  size="lg"
+                  variant="primary"
+                >
+                  <Send className="!h-5 !w-5" />
+                  {t('button.relay')}
+                </Button>
+              )}
+            </div>
+          )
+        }
         header={{
           title: t('title.initialActions'),
           subtitle: t('info.initialActionsDescription'),
@@ -239,11 +289,6 @@ const InnerMainDaoInfoCards = () => {
         onClose={() => setInitialActionsModalOpen(false)}
         visible={initialActionsModalOpen}
       >
-        {!initialActionsRelayState.loading &&
-          initialActionsRelayState.data.hasCrossChainMessages && (
-            <TxCrossChainRelayStatus state={initialActionsRelayState.data} />
-          )}
-
         <ActionsMatchAndRender
           SuspenseLoader={SuspenseLoader}
           hideCopyLink
@@ -280,7 +325,7 @@ const InnerMainDaoInfoCards = () => {
         uniqueId=""
         {...selfRelayExecuteProps}
         onClose={() => setSelfRelayExecuteProps(undefined)}
-        onSuccess={() => toast.success(t('success.initialActionsSelfRelayed'))}
+        onSuccess={() => toast.success(t('success.initialActionsRelayed'))}
         visible={!!selfRelayExecuteProps}
       />
     </>

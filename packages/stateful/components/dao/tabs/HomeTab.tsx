@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
+import { initialActionsVerifiedAtom } from '@dao-dao/state/recoil'
 import {
   DaoSplashHeader,
   useAppContext,
@@ -79,6 +80,13 @@ export const HomeTab = () => {
   const hasRewardDistributors =
     getDaoRewardDistributors(dao.info.items).length > 0
 
+  const initialActionsVerified = useRecoilValue(
+    initialActionsVerifiedAtom({
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
+    })
+  )
+
   return (
     <div className="flex flex-col items-stretch gap-4">
       {mode === DaoPageMode.Sda && (
@@ -86,6 +94,7 @@ export const HomeTab = () => {
           ButtonLink={ButtonLink}
           LinkWrapper={LinkWrapper}
           dao={dao}
+          initialActionsVerified={initialActionsVerified}
         />
       )}
 

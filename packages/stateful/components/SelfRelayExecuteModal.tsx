@@ -1109,7 +1109,7 @@ export const SelfRelayExecuteModal = ({
             content: () => (
               <div className="flex flex-col gap-4">
                 <p>
-                  To execute this proposal, you must relay a message from the
+                  To execute these actions, you must relay a message from the
                   source chain to the destination chain
                   {chains.length > 2 ? 's' : ''}.
                 </p>

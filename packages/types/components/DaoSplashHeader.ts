@@ -23,4 +23,9 @@ export type DaoSplashHeaderProps = {
    * `DaoDappTabbedHome.tsx`.
    */
   proposeUpdateAdminToParentHref?: string
+  /**
+   * Whether or not the current browser has verified the initial actions for
+   * this DAO. If not, show a warning.
+   */
+  initialActionsVerified?: boolean
 }

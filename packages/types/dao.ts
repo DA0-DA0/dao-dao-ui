@@ -45,6 +45,7 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
+import { LoadedDaoCreationExtension } from './creation-extensions'
 import { DaoCreator } from './creators'
 import { ContractVersion } from './features'
 import { LoadingDataWithError } from './misc'
@@ -234,6 +235,7 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
+  availableExtensions: readonly LoadedDaoCreationExtension[]
   availableWidgets: readonly Widget[]
   predictedDaoAddress: LoadingDataWithError<string>
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
@@ -262,6 +264,17 @@ export interface NewDao<
   }[]
   votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
+  /**
+   * Map extension ID to values for that extension. If null, it was added and
+   * then deleted. Make optional for backwards compatibility with saved forms in
+   * people's browsers.
+   */
+  extensions?: Record<
+    string,
+    {
+      data: Record<string, any>
+    } | null
+  >
   /**
    * Map widget ID to values for that widget. If null, it was added and then
    * deleted. Make optional for backwards compatibility with saved forms in
