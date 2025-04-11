@@ -1,8 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { NftCardProps } from '@dao-dao/types'
 
-import { NftCard, NftCardProps } from '../../nft/NftCard'
+import { NftCard } from '../../nft/NftCard'
 import { makeProps as makeNftCardProps } from '../../nft/NftCard.stories'
 import { NftsTab } from './NftsTab'
 
