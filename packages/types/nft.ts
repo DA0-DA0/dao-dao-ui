@@ -11,6 +11,7 @@ import {
 } from './components'
 import { Duration } from './contracts/common'
 import { ContractInfoResponse } from './contracts/Cw721Base'
+import { SaleType } from './graphql/__generated__/graphql'
 import { LoadingDataWithError } from './misc'
 import { GenericToken } from './token'
 
@@ -42,6 +43,7 @@ export type StargazeNft = {
       } | null
     } | null
   } | null
+  saleType?: SaleType | null
 }
 
 export enum StargazeNftMediaType {
@@ -86,7 +88,9 @@ export type NftCardInfo = {
     name: string
   }
   imageUrl?: string
-  // Metadata loaded from the token URI.
+  /**
+   * Metadata loaded from the token URI.
+   */
   metadata?: Record<string, any>
   highestOffer?: {
     offerToken?: GenericToken | null
@@ -96,10 +100,19 @@ export type NftCardInfo = {
   name: string
   description: string | undefined
 
-  // This indicates whether or not the NFT is staked in a DAO. It is manually
-  // set in `walletStakedLazyNftCardInfosSelector`.
+  /**
+   * Whether or not the NFT is staked in a DAO. It is manually set in
+   * `walletStakedLazyNftCardInfosSelector`.
+   */
   staked?: boolean
+  /**
+   * Timestamp when the NFT was fetched.
+   */
   fetchedTimestamp?: Date
+  /**
+   * Whether or not the NFT is listed for sale.
+   */
+  listed?: boolean
 }
 
 export type NftCardProps = NftCardInfo & {
@@ -118,6 +131,14 @@ export type NftCardProps = NftCardInfo & {
     sections: ButtonPopupSection[]
     ButtonLink: ComponentType<ButtonLinkProps>
   }
+  /**
+   * Diagonal banner to display on the NFT card.
+   */
+  banner?: string
+  /**
+   * Tooltip on banner.
+   */
+  bannerTooltip?: string
 }
 
 // Map chain ID to loading NFTs on that chain.
@@ -135,11 +156,11 @@ export type LazyNftCardInfo = WithChainId<
     tokenId: string
     // If passed and the NFT is staked, get staker info from this contract.
     stakingContractAddress?: string
-  } & Pick<NftCardInfo, 'staked' | 'highestOffer'>
+  } & Pick<NftCardInfo, 'staked' | 'highestOffer' | 'listed'>
 >
 
 export type LazyNftCardProps = LazyNftCardInfo &
-  Pick<NftCardProps, 'checkbox' | 'buttonPopup'>
+  Pick<NftCardProps, 'checkbox' | 'buttonPopup' | 'banner' | 'bannerTooltip'>
 
 export type LazyNftCardPropsWithRef = LazyNftCardProps &
   RefAttributes<HTMLDivElement>

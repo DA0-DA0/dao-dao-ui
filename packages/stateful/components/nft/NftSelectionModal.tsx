@@ -300,26 +300,41 @@ export const NftSelectionModal = ({
           <p className="body-text">
             {fallbackError ?? t('error.checkInternetOrTryAgain')}
           </p>
-          <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
+          <pre className="secondary-text text-text-interactive-error max-w-prose whitespace-pre-wrap text-center text-xs">
             {nfts.error.message}
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
         filteredSearchedNfts
           .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
-          .map(({ item }) => (
-            <LazyNftCard
-              ref={selectedKeys[0] === item.key ? firstSelectedRef : undefined}
-              type="collection"
-              {...item}
-              key={item.key}
-              checkbox={{
-                checked: selectedKeys.includes(item.key),
-                // Disable toggling if currently staking.
-                onClick: () => !action.loading && onNftClick(item),
-              }}
-            />
-          ))
+          .map(({ item, originalIndex }) => {
+            // Listed is loaded in the info.
+            const listed = nftsWithLoadedInfo[originalIndex]?.loadedInfo?.listed
+
+            return (
+              <LazyNftCard
+                ref={
+                  selectedKeys[0] === item.key ? firstSelectedRef : undefined
+                }
+                type="collection"
+                {...item}
+                key={item.key}
+                banner={listed ? t('title.onMarket') : undefined}
+                bannerTooltip={
+                  listed ? t('info.cantStakeNftOnMarket') : undefined
+                }
+                checkbox={
+                  !listed
+                    ? {
+                        checked: selectedKeys.includes(item.key),
+                        // Disable toggling if currently staking.
+                        onClick: () => !action.loading && onNftClick(item),
+                      }
+                    : undefined
+                }
+              />
+            )
+          })
       ) : (
         noneDisplay || (
           <NoContent
