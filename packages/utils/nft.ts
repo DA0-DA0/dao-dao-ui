@@ -3,6 +3,7 @@
 import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
+  GraphqlTypes,
   NftCardInfo,
   StargazeNft,
   StargazeNftMediaType,
@@ -115,4 +116,10 @@ export const nftCardInfoFromStargazeIndexerNft = (
       }
     : undefined,
   fetchedTimestamp: timestamp,
+  listed:
+    token.saleType === GraphqlTypes.SaleType.Auction ||
+    token.saleType === GraphqlTypes.SaleType.Expired ||
+    token.saleType === GraphqlTypes.SaleType.FixedPrice ||
+    token.saleType === GraphqlTypes.SaleType.Listed ||
+    token.saleType === GraphqlTypes.SaleType.LiveAuction,
 })

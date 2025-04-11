@@ -6,7 +6,7 @@
     "build": "tsc && npm run build:gql",
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "build:gql": "graphql-codegen --config ./gql-codegen.ts && eslint ./graphql/__generated__ --fix"
+    "build:gql": "graphql-codegen --config ./gql-codegen.ts && eslint ../types/graphql/__generated__ --fix"
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",

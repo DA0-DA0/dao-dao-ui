@@ -1,4 +1,4 @@
-import { gql } from '../../__generated__/gql'
+import { gql } from '@dao-dao/types/graphql'
 
 export const stargazeTokenQuery = gql(`
   query tokenQuery($collectionAddr: String!, $tokenId: String!) {
@@ -26,6 +26,7 @@ export const stargazeTokenQuery = gql(`
       }
       name
       description
+      saleType
     }
   }
 `)
@@ -69,6 +70,7 @@ export const stargazeTokensForOwnerQuery = gql(`
         }
         name
         description
+        saleType
       }
     }
   }

@@ -1,4 +1,4 @@
-import { gql } from '../../__generated__/gql'
+import { gql } from '@dao-dao/types/graphql'
 
 export const stargazeCollectionTokensQuery = gql(`
   query collectionTokensQuery(

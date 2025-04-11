@@ -3,6 +3,7 @@ import { selectorFamily, waitForAll, waitForNone } from 'recoil'
 import {
   ChainId,
   GenericToken,
+  GraphqlTypes,
   LazyNftCardInfo,
   LoadingDataWithError,
   LoadingNfts,
@@ -27,40 +28,9 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
 } from '../atoms'
-import { accountsSelector } from './account'
 import { CommonNftSelectors, DaoDaoCoreSelectors } from './contracts'
 import { queryAccountIndexerSelector } from './indexer'
-import { stargazeWalletUsdValueSelector } from './stargaze'
 import { genericTokenSelector } from './token'
-
-export const allNftUsdValueSelector = selectorFamily<
-  number,
-  WithChainId<{ address: string }>
->({
-  key: 'nftAllNftUsdValue',
-  get:
-    ({ chainId, address }) =>
-    ({ get }) => {
-      const accounts = get(accountsSelector({ chainId, address }))
-      const sum = get(
-        waitForAll(
-          accounts
-            .filter(
-              ({ chainId }) =>
-                chainId === ChainId.StargazeMainnet ||
-                chainId === ChainId.StargazeTestnet
-            )
-            .map(({ chainId, address }) =>
-              stargazeWalletUsdValueSelector({
-                chainId,
-                address,
-              })
-            )
-        )
-      ).reduce((acc, x) => acc + x, 0)
-      return sum
-    },
-})
 
 const STARGAZE_INDEXER_TOKENS_LIMIT = 100
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -99,6 +69,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
             lg?: { url?: string | null } | null
           } | null
         } | null
+        saleType?: GraphqlTypes.SaleType | null
       }[] = []
       while (true) {
         const { error, data } = await stargazeIndexerClient.query({

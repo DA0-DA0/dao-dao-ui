@@ -1,7 +1,8 @@
 import { ComponentProps, forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NftCardProps, NftCard as StatelessNftCard } from '@dao-dao/stateless'
+import { NftCard as StatelessNftCard } from '@dao-dao/stateless'
+import { NftCardProps } from '@dao-dao/types'
 
 import { EntityDisplay } from '../EntityDisplay'
 

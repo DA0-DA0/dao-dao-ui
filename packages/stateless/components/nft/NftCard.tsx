@@ -4,19 +4,15 @@ import {
   ExpandCircleDownOutlined,
   Image,
   ImageNotSupported,
+  InfoOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import NextImage from 'next/image'
-import { ComponentType, forwardRef, useState } from 'react'
+import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactPlayer from 'react-player'
 
-import {
-  ButtonLinkProps,
-  ButtonPopupSection,
-  NftCardInfo,
-  StatefulEntityDisplayProps,
-} from '@dao-dao/types'
+import { NftCardProps } from '@dao-dao/types'
 import {
   NFT_VIDEO_EXTENSIONS,
   getImageUrlForChainId,
@@ -33,26 +29,9 @@ import { LinkWrapper } from '../LinkWrapper'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { ButtonPopup } from '../popup/ButtonPopup'
 import { TokenAmountDisplay } from '../token'
+import { Tooltip } from '../tooltip'
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { TooltipLikeDisplay } from '../tooltip/TooltipLikeDisplay'
-
-export interface NftCardProps extends NftCardInfo {
-  hideCollection?: boolean
-  // Alternative label for Owner address.
-  ownerLabel?: string
-  checkbox?: {
-    checked: boolean
-    onClick: () => void
-  }
-  className?: string
-  // Needs to be defined to show the NFT owner.
-  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
-  // If present, will show button popup dropdown.
-  buttonPopup?: {
-    sections: ButtonPopupSection[]
-    ButtonLink: ComponentType<ButtonLinkProps>
-  }
-}
 
 export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
   function NftCard(
@@ -75,6 +54,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       className,
       EntityDisplay,
       buttonPopup,
+      banner,
+      bannerTooltip,
     },
     ref
   ) {
@@ -126,6 +107,26 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
         )}
         ref={ref}
       >
+        {banner && (
+          <div className="absolute top-7 left-7 z-10 origin-top-left -rotate-45 py-2 flex justify-center items-center">
+            {/* Background */}
+            <div className="-z-10 bg-background-button-active w-24 h-full absolute top-0 -left-24"></div>
+            <div className="-z-10 bg-background-button-active w-24 h-full absolute top-0 left-0"></div>
+
+            <Tooltip title={bannerTooltip}>
+              <div className="flex flex-row justify-center items-center gap-1 relative -left-1/2">
+                {!!bannerTooltip && (
+                  <InfoOutlined className="!h-4 !w-4 !text-icon-secondary" />
+                )}
+
+                <p className="primary-text text-center text-xs font-bold !text-text-secondary">
+                  {banner}
+                </p>
+              </div>
+            </Tooltip>
+          </div>
+        )}
+
         <div
           className={clsx(
             'relative flex flex-col items-stretch',
