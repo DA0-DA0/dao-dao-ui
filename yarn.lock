@@ -2044,10 +2044,10 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.86.tgz#a5eef445f0456968d6acc8a0e95aaf8df01e99b1"
   integrity sha512-wqp+0a9eeDj9Tjta0dpZGyQB0FKEVrM6R1h6hd/up04abE4UY/IhgmgEdKOazEV7BCECxWeXY3eI4tZA7SwwNA==
 
-"@chain-registry/types@0.46.15", "@chain-registry/types@^0.46.11", "@chain-registry/types@^0.46.15":
-  version "0.46.15"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.15.tgz#f4c0219fb7060d97cb224b55f349adb1d436aac9"
-  integrity sha512-gzf+pkAbEZ7fKuTuwmrEAEcx1K/BNrKuCnB9s+WwSo9Ad/3s+GV5LOXcOOxjjHh9Mrs9kvnxKvzKjOwWu8gDJw==
+"@chain-registry/types@0.50.111", "@chain-registry/types@^0.50.111":
+  version "0.50.111"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.111.tgz#d2cf7f537420e8532b342d6ff099847774f6caaa"
+  integrity sha512-Z6gAqAx4fM0C9/dYpjUeKGi2q05QqWDzH+NvXRVYbZ101VvJoucW9EzJNXykEJ5G/3RUBm6cJSx8pFs9355R8g==
 
 "@chain-registry/types@^0.17.1":
   version "0.17.1"
@@ -2055,6 +2055,11 @@
   integrity sha512-O0CgrtJgIlqXvZm1CqDZe/7jZz068O/uuCIoyDXCegFHK03rdHacKcDGwEIUuI0MNUf8YV3jdE4xHQMSAX+79w==
   dependencies:
     "@babel/runtime" "^7.21.0"
+
+"@chain-registry/types@^0.46.11":
+  version "0.46.15"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.15.tgz#f4c0219fb7060d97cb224b55f349adb1d436aac9"
+  integrity sha512-gzf+pkAbEZ7fKuTuwmrEAEcx1K/BNrKuCnB9s+WwSo9Ad/3s+GV5LOXcOOxjjHh9Mrs9kvnxKvzKjOwWu8gDJw==
 
 "@chain-registry/types@^0.50.108":
   version "0.50.108"
@@ -12626,12 +12631,12 @@ chai@^5.1.2, chai@^5.2.0:
     loupe "^3.1.0"
     pathval "^2.0.0"
 
-chain-registry@1.64.17:
-  version "1.64.17"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.64.17.tgz#0d9bc53b58d25022496a0fc2d2a74d48f8fc2df8"
-  integrity sha512-lyWfUtdO4WCWwFi/X76lQWFd1tyceLvzS01+IS6n9ZCl7bHVBd/9R3U3rFSvbiUb5woUNK8M3wCL+16CJ6933Q==
+chain-registry@1.69.179:
+  version "1.69.179"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.69.179.tgz#23e36a3ae9cfbad298148dd3f665d0df3e62ef6a"
+  integrity sha512-hZSam9WHpdxktZEh4GjZeNnWYfj0ye0F0Ok5yHxPDhl96hOR1IVnOBhj8LoDzpvUV87czuJn6AeSrotrw4s15A==
   dependencies:
-    "@chain-registry/types" "^0.46.15"
+    "@chain-registry/types" "^0.50.111"
 
 chalk@3.0.0:
   version "3.0.0"
