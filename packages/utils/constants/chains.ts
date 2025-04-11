@@ -115,51 +115,6 @@ assets.push({
   assets: assets.find((a) => a.chain_name === 'omniflixhub')?.assets ?? [],
 })
 
-// Replace babylon testnet 3 with 5.
-// TODO: update to the latest chain registry which has the 5th testnet.
-const babylonTestnetChain = chains.find((c) => c.chainId === 'bbn-test3')
-if (babylonTestnetChain?.chainRegistry) {
-  babylonTestnetChain.chainId = ChainId.BabylonTestnet
-  babylonTestnetChain.prettyName = 'Babylon Testnet'
-  babylonTestnetChain.chainRegistry.chain_id = ChainId.BabylonTestnet
-  babylonTestnetChain.chainRegistry.pretty_name = 'Babylon Testnet'
-  babylonTestnetChain.chainRegistry.apis = {
-    rpc: [
-      {
-        address: 'https://babylon-testnet-rpc.nodes.guru',
-        provider: 'NodesGuru',
-      },
-    ],
-    rest: [
-      {
-        address: 'https://babylon-testnet-api.nodes.guru',
-        provider: 'NodesGuru',
-      },
-    ],
-    grpc: [],
-  }
-  babylonTestnetChain.chainRegistry.explorers = [
-    {
-      kind: 'babylonscan',
-      url: 'https://babylon-testnet.l2scan.co',
-      tx_page: 'https://babylon-testnet.l2scan.co/tx/${txHash}',
-    },
-    {
-      kind: 'explorers.guru',
-      url: 'https://testnet.babylon.explorers.guru',
-      tx_page: 'https://testnet.babylon.explorers.guru/transaction/${txHash}',
-    },
-  ]
-  babylonTestnetChain.chainRegistry.fees = {
-    fee_tokens: [
-      {
-        denom: 'ubbn',
-        fixed_min_gas_price: 0.002,
-      },
-    ],
-  }
-}
-
 // Replace Juno testnet uni-6 with uni-7.
 const junoTestnetChain = chains.find((c) => c.chainId === 'uni-6')
 if (junoTestnetChain?.chainRegistry) {
@@ -249,8 +204,6 @@ const chainsToRemove = [
   'thorchain',
   'althea',
   'andromeda1',
-  // Remove Babylon testnet 1 since it's not supported.
-  'babylontestnet1',
 ]
 chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
 
