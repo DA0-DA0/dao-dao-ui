@@ -12,13 +12,12 @@ import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoTabId, TokenCardProps } from '@dao-dao/types'
+import { DaoTabId, NftCardProps, TokenCardProps } from '@dao-dao/types'
 
 import {
   ButtonLink,
   LinkWrapper,
   MembersTabProps,
-  NftCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
   TreasuryTabProps,

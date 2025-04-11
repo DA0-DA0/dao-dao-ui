@@ -3,10 +3,10 @@ import { useState } from 'react'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { EntityDisplay } from '@dao-dao/stateful'
-import { LazyNftCardInfo } from '@dao-dao/types'
+import { LazyNftCardInfo, NftCardProps } from '@dao-dao/types'
 import { getNftKey } from '@dao-dao/utils'
 
-import { NftCard, NftCardProps } from './NftCard'
+import { NftCard } from './NftCard'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / nft / NftCard',

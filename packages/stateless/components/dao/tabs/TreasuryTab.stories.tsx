@@ -8,9 +8,9 @@ import {
 } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
-import { TokenCardProps } from '@dao-dao/types'
+import { NftCardProps, TokenCardProps } from '@dao-dao/types'
 
-import { NftCard, NftCardProps } from '../../nft/NftCard'
+import { NftCard } from '../../nft/NftCard'
 import { makeProps as makeNftCardProps } from '../../nft/NftCard.stories'
 import { makeProps as makeTokenCardProps } from '../../token/TokenCard.stories'
 import { TreasuryTab } from './TreasuryTab'
