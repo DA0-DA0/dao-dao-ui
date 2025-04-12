@@ -48,5 +48,6 @@ Sentry.init({
     "Cannot destructure property 'address' of '(intermediate value)' as it is undefined.",
     'No indexer for chain',
     'Error querying indexer',
+    'WebSocket connection failed for host: wss://relay.walletconnect.org',
   ],
 })
