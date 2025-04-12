@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.7.0-rc.2",
+  "version": "2.7.0-rc.3",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "lint": "eslint .",
@@ -12,8 +12,14 @@
   },
   "dependencies": {
     "@chain-registry/types": "0.50.111",
+    "@cosmjs/cosmwasm-stargate": "0.33.1",
+    "@cosmjs/proto-signing": "0.33.1",
+    "@cosmology/telescope": "^1.8.3",
     "@cosmos-kit/web3auth": "^2.16.0",
-    "@dao-dao/math": "2.7.0-rc.2",
+    "@dao-dao/math": "2.7.0-rc.3",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@tanstack/react-query": "^5.40.0",
+    "graphql": "^16.8.1",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
     "react": "^18.2.0",
@@ -23,11 +29,7 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.33.1",
-    "@cosmjs/proto-signing": "0.33.1",
-    "@cosmology/telescope": "^1.8.3",
-    "@dao-dao/config": "2.7.0-rc.2",
-    "@tanstack/react-query": "^5.40.0"
+    "@dao-dao/config": "2.7.0-rc.3"
   },
   "peerDependencies": {
     "next": "^12 || ^13",
