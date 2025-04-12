@@ -144,10 +144,13 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
                 depositInfo,
               }
         ),
+      // Version used to choose multiple choice proposal module.
       isFeatureSupportedByVersion(
         Feature.VoteDelegation,
-        this.options.context.dao.coreVersion
+        this.options.chainContext.config.latestVersion
       ) &&
+      // Can only query single choice proposal module for delegation module if
+      // supported.
       isFeatureSupportedByVersion(
         Feature.VoteDelegation,
         singleChoiceProposalModule.version
@@ -219,7 +222,6 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       {
         ...makeDefaultNewDao(this.options.chain.chainId).votingConfig,
         enableMultipleChoice: true,
-        overrideContractVersion: this.options.context.dao.coreVersion,
         delegationModuleAddress: delegationModule || undefined,
       },
       this.options.t
