@@ -51,7 +51,6 @@ import {
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getChainAddressForActionOptions,
-  getDaoWidgets,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
   isValidBech32Address,
@@ -469,7 +468,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
 
     this.widgetData =
       options.context.type === ActionContextType.Dao
-        ? getDaoWidgets(options.context.dao.info.items).find(
+        ? options.context.dao.widgets.find(
             ({ id }) => id === WidgetId.VestingPayments
           )?.values
         : undefined

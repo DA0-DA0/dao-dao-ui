@@ -36,6 +36,9 @@ export const isFeatureSupportedByVersion = (
       return versionGte(version, ContractVersion.V250)
     case Feature.UnlimitedNftClaims:
       return versionGte(version, ContractVersion.V260)
+    case Feature.VoteDelegation:
+    case Feature.InitialActions:
+      return versionGte(version, ContractVersion.V270)
     default:
       return true
   }

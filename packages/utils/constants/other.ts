@@ -236,6 +236,11 @@ export const DAOS_HIDDEN_FROM_SEARCH = [
  */
 export const PROPOSAL_DESCRIPTION_METADATA_SEPARATOR = '\n~@~@~@~\n'
 
+/**
+ * Whether or not the current environment is testing.
+ */
+export const TEST_ENV = process.env.NODE_ENV === 'test'
+
 // Wallet account secp256k1 public keys are expected to be 33 bytes starting
 // with 0x02 or 0x03. This will be used when simulating requests, but not when
 // signing since we intercept messages. This may cause problems with some dApps

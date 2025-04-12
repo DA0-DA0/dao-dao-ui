@@ -31,6 +31,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   circular: _circular,
   noRounding: _noRounding,
   focused: _focused,
+  errored: _errored,
   loadingVariant: _loadingVariant,
   // Process these props
   loading,
@@ -57,6 +58,7 @@ export const getButtonifiedClassNames = ({
   circular,
   noRounding,
   focused,
+  errored,
   className,
 }: ButtonifierProps) => {
   const disabledOrLoading = disabled || (!allowClickWhileLoading && loading)
@@ -152,7 +154,8 @@ export const getButtonifiedClassNames = ({
         !disabledOrLoading &&
           'hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
         // Outline
-        (variant === 'ghost_outline' || loading) && '!ring-border-primary',
+        (variant === 'ghost_outline' || loading) &&
+          (errored ? '!ring-border-interactive-error' : '!ring-border-primary'),
         variant === 'ghost_outline' && !disabledOrLoading && 'hover:!ring-0',
         // Default, not pressed
         !disabledOrLoading && !pressed && 'bg-transparent text-text-secondary',

@@ -38,7 +38,7 @@ export const ProfileProposalCard = () => {
   )
 
   const {
-    hooks: { useLoadingWalletVoteInfo },
+    hooks: { useLoadingWalletVoteInfo, useLoadingProposalStatus },
     components: { ProposalWalletVote },
   } = useProposalModuleAdapter()
 
@@ -84,6 +84,7 @@ export const ProfileProposalCard = () => {
   // Relevant for showing them membership join info or not.
   const { isMember = false } = useMembership()
 
+  const loadingProposalStatus = useLoadingProposalStatus()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   if (isSecretNetworkPermitNeeded) {
@@ -99,12 +100,22 @@ export const ProfileProposalCard = () => {
   // info hook returns undefined when there is no wallet connected. If we are
   // here and there is no wallet connected, something is probably just loading,
   // maybe the wallet is reconnecting.
-  if (!loadingWalletVoteInfo || loadingWalletVoteInfo.loading) {
+  if (
+    !loadingWalletVoteInfo ||
+    loadingWalletVoteInfo.loading ||
+    loadingProposalStatus.loading
+  ) {
     return null
   }
 
-  const { vote, couldVote, canVote, votingPowerPercent } =
-    loadingWalletVoteInfo.data
+  const {
+    vote,
+    couldVote,
+    canVote,
+    isDelegate,
+    votingPowerPercent,
+    unvotedDelegatedVotingPowerPercent,
+  } = loadingWalletVoteInfo.data
 
   const commonProps = {
     votingPower: votingPowerPercent,
@@ -117,6 +128,9 @@ export const ProfileProposalCard = () => {
   return couldVote ? (
     <ProfileVoteCard
       {...commonProps}
+      isDelegate={isDelegate}
+      isVotingOpen={loadingProposalStatus.data.isVotingOpen}
+      unvotedDelegatedVotingPower={unvotedDelegatedVotingPowerPercent}
       vote={
         <ProposalWalletVote
           fallback={

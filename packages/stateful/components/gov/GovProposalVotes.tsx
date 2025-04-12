@@ -63,14 +63,16 @@ const InnerGovProposalVotes = ({
             limit: VOTES_PER_PAGE,
           })
         )
-      ).votes.map(
-        ({ voter, options, staked }): ProposalVote<VoteOption> => ({
+      ).votes.map(({ voter, options, staked }): ProposalVote<VoteOption> => {
+        const votingPowerPercent = staked.div(bondedTokens).div(100).toNumber()
+        return {
           voterAddress: voter,
           vote: options.sort((a, b) => Number(b.weight) - Number(a.weight))[0]
             .option,
-          votingPowerPercent: staked.div(bondedTokens).div(100).toNumber(),
-        })
-      )
+          votingPowerPercent,
+          individualPowerPercent: votingPowerPercent,
+        }
+      })
 
       setVotes((prev) =>
         uniqBy([...prev, ...newVotes], ({ voterAddress }) => voterAddress)

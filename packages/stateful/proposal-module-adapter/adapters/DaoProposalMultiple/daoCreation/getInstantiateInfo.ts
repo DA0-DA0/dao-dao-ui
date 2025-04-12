@@ -1,14 +1,19 @@
 import { HugeDecimal } from '@dao-dao/math'
-import { DaoCreationGetInstantiateInfo, TokenType } from '@dao-dao/types'
+import { MultipleChoiceProposalModule } from '@dao-dao/state/clients/proposal-module/MultipleChoiceProposalModule'
+import { SecretMultipleChoiceProposalModule } from '@dao-dao/state/clients/proposal-module/MultipleChoiceProposalModule.secret'
+import {
+  DaoCreationGetInstantiateInfo,
+  Feature,
+  TokenType,
+} from '@dao-dao/types'
 import {
   TokenBasedCreatorId,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
+  isFeatureSupportedByVersion,
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { MultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule'
-import { SecretMultipleChoiceProposalModule } from '../../../../clients/proposal-module/MultipleChoiceProposalModule.secret'
 import { CreatorData as TokenBasedCreatorData } from '../../../../creators/TokenBased/types'
 import { DaoCreationExtraVotingConfig } from '../types'
 import { convertPercentOrMajorityValueToPercentageThreshold } from '../utils'
@@ -29,7 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       veto,
     },
   },
-  { overrideContractVersion }
+  { overrideContractVersion, delegationModuleAddress }
 ) => {
   const commonConfig = {
     quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
@@ -133,6 +138,14 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
               refund_policy: proposalDeposit.refundPolicy,
             }
           : null,
+        delegationModuleAddress:
+          !overrideContractVersion ||
+          isFeatureSupportedByVersion(
+            Feature.VoteDelegation,
+            overrideContractVersion
+          )
+            ? delegationModuleAddress
+            : undefined,
       },
       {
         overrideContractVersion,

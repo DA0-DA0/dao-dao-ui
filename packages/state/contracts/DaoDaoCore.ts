@@ -16,6 +16,7 @@ import {
   Addr,
   AdminNominationResponse,
   ArrayOfAddr,
+  ArrayOfCosmosMsgForEmpty,
   ArrayOfProposalModule,
   ArrayOfSubDao,
   Binary,
@@ -111,6 +112,7 @@ export interface DaoDaoCoreReadOnlyInterface {
   }: {
     height?: number
   }) => Promise<TotalPowerAtHeightResponse>
+  initialActions: () => Promise<ArrayOfCosmosMsgForEmpty>
 }
 export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
   client: CosmWasmClient
@@ -137,6 +139,7 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
     this.daoURI = this.daoURI.bind(this)
     this.votingPowerAtHeight = this.votingPowerAtHeight.bind(this)
     this.totalPowerAtHeight = this.totalPowerAtHeight.bind(this)
+    this.initialActions = this.initialActions.bind(this)
   }
   admin = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -311,6 +314,11 @@ export class DaoDaoCoreQueryClient implements DaoDaoCoreReadOnlyInterface {
       total_power_at_height: {
         height,
       },
+    })
+  }
+  initialActions = async (): Promise<ArrayOfCosmosMsgForEmpty> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      initial_actions: {},
     })
   }
 }

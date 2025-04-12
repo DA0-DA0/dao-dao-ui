@@ -29,6 +29,7 @@ import {
   ContractVersionInfo,
   DepositRefundPolicy,
   ModuleInstantiateInfo,
+  UnifiedCosmosMsg,
 } from './contracts/common'
 import {
   InstantiateMsg as DaoDaoCoreInstantiateMsg,
@@ -36,10 +37,7 @@ import {
 } from './contracts/DaoDaoCore'
 import { PreProposeSubmissionPolicy } from './contracts/DaoPreProposeSingle'
 import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
-import {
-  ProposalResponse as SingleChoiceProposalResponse,
-  VetoConfig,
-} from './contracts/DaoProposalSingle.v2'
+import { ProposalResponse as SingleChoiceProposalResponse } from './contracts/DaoProposalSingle.v2'
 import {
   DistributionState,
   EmissionRate,
@@ -47,6 +45,7 @@ import {
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
+import { LoadedDaoCreationExtension } from './creation-extensions'
 import { DaoCreator } from './creators'
 import { ContractVersion } from './features'
 import { LoadingDataWithError } from './misc'
@@ -73,7 +72,7 @@ export type DaoInfo = {
   coreVersion: ContractVersion
   votingModuleAddress: string
   votingModuleInfo: ContractVersionInfo
-  proposalModules: ProposalModuleInfo[]
+  proposalModules: ProposalModuleWithInfo[]
   /**
    * Wasm contract-level admin that can migrate.
    */
@@ -86,6 +85,7 @@ export type DaoInfo = {
   isActive: boolean
   activeThreshold: ActiveThreshold | null
   items: Record<string, string>
+  initialActions: UnifiedCosmosMsg[]
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
   accounts: Account[]
@@ -206,40 +206,6 @@ export type PreProposeModule = {
   submissionPolicy: PreProposeSubmissionPolicy
 } & PreProposeModuleTypedConfig
 
-export enum ProposalModuleType {
-  Single = 'single',
-  Multiple = 'multiple',
-  Other = 'other',
-}
-
-export type ProposalModuleSingleConfig = {
-  veto: VetoConfig | null
-}
-export type ProposalModuleMultipleConfig = ProposalModuleSingleConfig
-
-export type ProposalModuleTypedConfig =
-  | {
-      type: ProposalModuleType.Single
-      config: ProposalModuleSingleConfig
-    }
-  | {
-      type: ProposalModuleType.Multiple
-      config: ProposalModuleMultipleConfig
-    }
-  | {
-      type: ProposalModuleType.Other
-      config?: undefined
-    }
-
-export type ProposalModuleInfo = {
-  contractName: string
-  version: ContractVersion
-  address: string
-  prefix: string
-  // If set, this uses a pre-propose module.
-  prePropose: PreProposeModule | null
-} & ProposalModuleTypedConfig
-
 export type ProposalPrefill<FormData> = {
   // Proposal module adapter ID
   id: string
@@ -269,6 +235,7 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
+  availableExtensions: readonly LoadedDaoCreationExtension[]
   availableWidgets: readonly Widget[]
   predictedDaoAddress: LoadingDataWithError<string>
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
@@ -298,11 +265,28 @@ export interface NewDao<
   votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
   /**
+   * Map extension ID to values for that extension. If null, it was added and
+   * then deleted. Make optional for backwards compatibility with saved forms in
+   * people's browsers.
+   */
+  extensions?: Record<
+    string,
+    {
+      data: Record<string, any>
+    } | null
+  >
+  /**
    * Map widget ID to values for that widget. If null, it was added and then
    * deleted. Make optional for backwards compatibility with saved forms in
    * people's browsers.
    */
-  widgets?: Record<string, Record<string, any> | null>
+  widgets?: Record<
+    string,
+    {
+      data: Record<string, any>
+      extra: Record<string, any>
+    } | null
+  >
   /**
    * The DAO address that will be created based on the uuid when using
    * instantiate2. This is used when setting up extensions that need to know the

@@ -1,7 +1,6 @@
-import { DaoWidget, WidgetId } from '@dao-dao/types'
+import { WidgetId } from '@dao-dao/types'
 
 import { DAO_WIDGET_ITEM_NAMESPACE } from './constants'
-import { getFilteredDaoItemsByPrefix } from './dao'
 
 /**
  * Get the key in the DAO storage items map for a widget item.
@@ -11,26 +10,3 @@ import { getFilteredDaoItemsByPrefix } from './dao'
  */
 export const getWidgetStorageItemKey = (id: WidgetId | string): string =>
   DAO_WIDGET_ITEM_NAMESPACE + id
-
-/**
- * Get the DAO widgets from the DAO storage items.
- *
- * @param items The DAO storage items.
- * @returns Parsed DAO widgets.
- */
-export const getDaoWidgets = (items: Record<string, string>): DaoWidget[] =>
-  getFilteredDaoItemsByPrefix(items, getWidgetStorageItemKey(''))
-    .map(([id, widgetJson]): DaoWidget | undefined => {
-      try {
-        return {
-          id,
-          values: (widgetJson && JSON.parse(widgetJson)) || {},
-        }
-      } catch (err) {
-        // Ignore widget format error but log to console for debugging.
-        console.error(`Invalid widget JSON: ${widgetJson}`, err)
-        return
-      }
-    })
-    // Validate widget structure.
-    .filter((widget): widget is DaoWidget => !!widget)

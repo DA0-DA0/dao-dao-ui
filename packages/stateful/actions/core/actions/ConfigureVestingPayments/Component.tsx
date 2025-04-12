@@ -22,6 +22,14 @@ export const ConfigureVestingPaymentsComponent: ActionComponent<
       <VestingPaymentsEditor
         {...props}
         accounts={options.context.accounts}
+        data={{
+          ...props.data,
+          extra: {},
+        }}
+        // Unused.
+        extraErrors={{}}
+        // Unused.
+        extraFieldNamePrefix=""
         options={options}
         type="action"
       />

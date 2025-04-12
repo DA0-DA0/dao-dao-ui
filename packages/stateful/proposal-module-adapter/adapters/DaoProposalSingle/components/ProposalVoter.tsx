@@ -33,7 +33,7 @@ export const ProposalVoter = (props: BaseProposalVoterProps) => {
       {!loadingProposalStatus.loading && !loadingVoteOptions.loading && (
         <InnerProposalVoter
           {...props}
-          status={loadingProposalStatus.data}
+          status={loadingProposalStatus.data.status}
           voteOptions={loadingVoteOptions.data}
         />
       )}

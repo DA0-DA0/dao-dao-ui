@@ -4,6 +4,20 @@ A collection of simple utility functions used across packages.
 
 ## Scripts
 
+### cwgen
+
+Generate types, clients, and queries for CosmWasm contracts, modify them for use
+with this codebase, and install them in the right places.
+
+```sh
+Usage: yarn cwgen [options]
+
+Options:
+  -n, --name <name>  contract name
+  -p, --path <path>  path to contract folder that contains "schema" folder
+  -h, --help         display help for command
+```
+
 ### log-code-ids
 
 Get Code IDs for a chain in the format for a

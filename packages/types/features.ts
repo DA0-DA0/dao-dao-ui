@@ -39,6 +39,8 @@ export enum ContractVersion {
   V250 = '2.5.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.6.0
   V260 = '2.6.0',
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.7.0
+  V270 = '2.7.0-rc.2',
 }
 
 /**
@@ -111,4 +113,12 @@ export enum Feature {
    * outstanding claims.
    */
   UnlimitedNftClaims,
+  /**
+   * Vote delegation was added.
+   */
+  VoteDelegation,
+  /**
+   * Initial actions were added.
+   */
+  InitialActions,
 }

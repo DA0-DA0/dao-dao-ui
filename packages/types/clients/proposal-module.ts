@@ -4,8 +4,12 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { FetchQueryOptions } from '@tanstack/react-query'
 
+import { HugeDecimal } from '@dao-dao/math'
+
 import { CheckedDepositInfo, Coin, Duration } from '../contracts/common'
-import { PreProposeModule, ProposalModuleInfo } from '../dao'
+import { VetoConfig } from '../contracts/DaoProposalSingle.v2'
+import { RegistrationResponse } from '../contracts/DaoVoteDelegation'
+import { PreProposeModule } from '../dao'
 import { ContractVersion, Feature } from '../features'
 import { IDaoBase } from './dao'
 
@@ -22,11 +26,6 @@ export interface IProposalModuleBase<
    * DAO this module belongs to.
    */
   dao: Dao
-
-  /**
-   * Proposal module info.
-   */
-  info: ProposalModuleInfo
 
   /**
    * Chain ID of the proposal module.
@@ -59,6 +58,23 @@ export interface IProposalModuleBase<
   prePropose: PreProposeModule | null
 
   /**
+   * Veto config, or null if disabled.
+   */
+  veto: VetoConfig | null
+
+  /**
+   * Whether or not the client has been initialized. This only matters for some
+   * functions, depending on the implementation.
+   */
+  initialized: boolean
+
+  /**
+   * Initialize the client. This only matters for some functions, depending on
+   * the implementation.
+   */
+  init(): void | Promise<void>
+
+  /**
    * Check whether or not the proposal module supports a given feature.
    */
   supports(feature: Feature): boolean
@@ -72,7 +88,9 @@ export interface IProposalModuleBase<
      * Cast a vote with the proposal.
      */
     vote?: Vote
-    getSigningClient: () => Promise<SigningCosmWasmClient>
+    signingClient:
+      | SigningCosmWasmClient
+      | (() => Promise<SigningCosmWasmClient>)
     sender: string
     funds?: Coin[]
     txOptions?: CustomTxOptions
@@ -87,7 +105,9 @@ export interface IProposalModuleBase<
   vote(options: {
     proposalId: number
     vote: Vote
-    getSigningClient: () => Promise<SigningCosmWasmClient>
+    signingClient:
+      | SigningCosmWasmClient
+      | (() => Promise<SigningCosmWasmClient>)
     sender: string
     txOptions?: CustomTxOptions
   }): Promise<void>
@@ -97,7 +117,9 @@ export interface IProposalModuleBase<
    */
   execute(options: {
     proposalId: number
-    getSigningClient: () => Promise<SigningCosmWasmClient>
+    signingClient:
+      | SigningCosmWasmClient
+      | (() => Promise<SigningCosmWasmClient>)
     sender: string
     memo?: string
     txOptions?: CustomTxOptions
@@ -108,7 +130,9 @@ export interface IProposalModuleBase<
    */
   close(options: {
     proposalId: number
-    getSigningClient: () => Promise<SigningCosmWasmClient>
+    signingClient:
+      | SigningCosmWasmClient
+      | (() => Promise<SigningCosmWasmClient>)
     sender: string
     txOptions?: CustomTxOptions
   }): Promise<void>
@@ -170,4 +194,35 @@ export interface IProposalModuleBase<
    * Fetch the max voting period.
    */
   getMaxVotingPeriod(): Promise<Duration>
+
+  /**
+   * Query options to fetch the delegation module address, or null if none.
+   */
+  getDelegationModuleQuery(): Pick<
+    FetchQueryOptions<string | null>,
+    'queryKey' | 'queryFn'
+  >
+
+  /**
+   * Fetch the unvoted delegated voting power on a specific proposal for a given
+   * delegate.
+   */
+  getUnvotedDelegatedVotingPowerQuery(options: {
+    delegate: string
+    proposalId: number
+  }): FetchQueryOptions<UnvotedDelegatedVotingPower>
+
+  /**
+   * Fetch a delegate's registration info, optionally at a specific height, or
+   * null if no delegation module.
+   */
+  getDelegateRegistrationQuery(options: {
+    delegate: string
+    height?: number
+  }): FetchQueryOptions<RegistrationResponse | null>
+}
+
+export type UnvotedDelegatedVotingPower = {
+  total: HugeDecimal
+  effective: HugeDecimal
 }

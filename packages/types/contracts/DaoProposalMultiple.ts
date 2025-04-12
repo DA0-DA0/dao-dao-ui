@@ -55,6 +55,10 @@ export interface InstantiateMsg {
   pre_propose_info: PreProposeInfo
   veto?: VetoConfig | null
   voting_strategy: VotingStrategy
+  /**
+   * v2.7.0+
+   */
+  delegation_module?: string | null
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
@@ -315,6 +319,9 @@ export type QueryMsg =
       config: {}
     }
   | {
+      delegation_module: {}
+    }
+  | {
       proposal: {
         proposal_id: number
       }
@@ -392,6 +399,10 @@ export interface VoteResponse {
 }
 export interface VoteInfo {
   power: Uint128
+  /**
+   * v2.7.0+
+   */
+  individual_power?: Uint128
   rationale?: string | null
   vote: MultipleChoiceVote
   voter: Addr
@@ -459,6 +470,10 @@ export interface MultipleChoiceProposal {
   total_power: Uint128
   veto?: VetoConfig | null
   votes: MultipleChoiceVotes
+  /**
+   * v2.7.0+
+   */
+  individual_votes: MultipleChoiceVotes
   voting_strategy: VotingStrategy
 }
 export interface CheckedMultipleChoiceOption {

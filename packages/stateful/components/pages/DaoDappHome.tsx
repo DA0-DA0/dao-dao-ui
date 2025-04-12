@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
+import { initialActionsVerifiedAtom } from '@dao-dao/state/recoil'
 import {
   DaoDappTabbedHome,
   useActionsContext,
@@ -104,6 +106,13 @@ export const InnerDaoDappHome = ({
     updatingFollowing,
   }
 
+  const initialActionsVerified = useRecoilValue(
+    initialActionsVerifiedAtom({
+      chainId: dao.chainId,
+      coreAddress: dao.coreAddress,
+    })
+  )
+
   return (
     <>
       <PageHeaderContent
@@ -127,6 +136,7 @@ export const InnerDaoDappHome = ({
         LinkWrapper={LinkWrapper}
         SuspenseLoader={SuspenseLoader}
         follow={follow}
+        initialActionsVerified={initialActionsVerified}
         onSelectTabId={onSelectTabId}
         selectedTabId={tabId}
         tabs={tabs || []}

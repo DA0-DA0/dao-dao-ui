@@ -22,6 +22,8 @@ export type ManageWidgetsData = {
   id: string
   // Widget data type.
   values: Record<string, unknown>
+  // Widget extra data type used only for encoding.
+  extra: Record<string, unknown>
 }
 
 export type ManageWidgetsOptions = {
@@ -53,7 +55,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
   const existingWidgetsRef = useUpdatingRef(existingWidgets)
 
   const selectWidget = useCallback(
-    ({ id, defaultValues }: Widget) => {
+    ({ id, defaultValues, defaultExtra }: Widget) => {
       // Set widget ID.
       setValue((fieldNamePrefix + 'id') as 'id', id)
       // Set default values, using existing if present.
@@ -65,9 +67,14 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
         // Clone so we don't mutate the default values object.
         cloneDeep(existingWidget?.values || defaultValues || {})
       )
-      // Clear errors for the values in case there are any left over from the
-      // previous widget.
+      setValue(
+        (fieldNamePrefix + 'extra') as 'extra',
+        // Clone so we don't mutate the default extra object.
+        cloneDeep(defaultExtra || {})
+      )
+      // Clear errors in case there are any left over from the previous widget.
       clearErrors((fieldNamePrefix + 'values') as 'values')
+      clearErrors((fieldNamePrefix + 'extra') as 'extra')
     },
     [clearErrors, existingWidgetsRef, fieldNamePrefix, setValue]
   )
@@ -192,6 +199,8 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
                   accounts={actionOptions.context.accounts}
                   data={props.data.values}
                   errors={errors?.values}
+                  extraErrors={errors?.extra}
+                  extraFieldNamePrefix={fieldNamePrefix + 'extra.'}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
                   options={actionOptions}
                   type="action"
@@ -218,6 +227,8 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
                   {...props}
                   accounts={actionOptions.context.accounts}
                   data={props.data.values}
+                  extraErrors={{}}
+                  extraFieldNamePrefix={fieldNamePrefix + 'extra.'}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
                   options={actionOptions}
                   type="action"

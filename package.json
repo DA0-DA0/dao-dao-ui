@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.6.0-rc.1",
+  "version": "2.7.0-rc.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,10 +12,10 @@
     "start": "yarn dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
-    "postinstall": "patch-package",
-    "test": "jest",
-    "test:e2e": "yarn dapp test:e2e",
-    "cwgen": "yarn workspace @dao-dao/config cwgen",
+    "postinstall": "./scripts/patch.sh",
+    "test": "vitest",
+    "test:playwright": "yarn tests test:playwright",
+    "cwgen": "yarn utils cwgen",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
@@ -28,16 +28,16 @@
     "email": "yarn workspace @dao-dao/email",
     "dispatch": "yarn workspace @dao-dao/dispatch",
     "math": "yarn workspace @dao-dao/math",
+    "tests": "yarn workspace @dao-dao/tests",
+    "starship": "yarn tests starship",
     "publish-all": "find . -name '*.log' -delete && lerna publish --no-private from-package"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "jest": "^29.5.0",
     "lerna": "^6.4.1",
     "patch-package": "^8.0.0",
-    "ts-jest": "^29.0.5",
     "turbo": "latest",
-    "turbo-ignore": "latest"
+    "turbo-ignore": "latest",
+    "vitest": "^3.1.1"
   },
   "engines": {
     "npm": ">=7.0.0",

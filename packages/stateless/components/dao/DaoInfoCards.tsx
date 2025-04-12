@@ -16,26 +16,46 @@ export const DaoInfoCards = ({
       className
     )}
   >
-    {cards.map(({ Icon, label, tooltip, loading, value }, index) => (
+    {cards.map(({ Icon, label, tooltip, loading, warning, value }, index) => (
       <div
         key={index}
         className={clsx(
           'flex flex-col gap-1 rounded-md bg-background-tertiary px-3 py-2 xs:gap-2 xs:px-4 xs:py-3',
-          loading && 'animate-pulse'
+          loading && 'animate-pulse',
+          warning && '!bg-background-interactive-warning'
         )}
       >
         <div className="flex flex-row items-center gap-1.5">
           {Icon && (
             <div className="mr-0.5 !text-xl flex flex-row items-center">
-              <Icon />
+              <Icon
+                className={
+                  warning
+                    ? '!text-icon-interactive-warning'
+                    : '!text-icon-secondary'
+                }
+              />
             </div>
           )}
 
-          <p className="primary-text text-xs font-normal text-text-secondary xs:text-sm">
+          <p
+            className={clsx(
+              'primary-text text-xs font-normal xs:text-sm',
+              warning
+                ? 'text-text-interactive-warning-title'
+                : 'text-text-secondary'
+            )}
+          >
             {label}
           </p>
 
-          {tooltip && <TooltipInfoIcon size="xs" title={tooltip} />}
+          {tooltip && (
+            <TooltipInfoIcon
+              iconClassName={warning ? '!text-icon-interactive-warning' : ''}
+              size="xs"
+              title={tooltip}
+            />
+          )}
         </div>
 
         <div

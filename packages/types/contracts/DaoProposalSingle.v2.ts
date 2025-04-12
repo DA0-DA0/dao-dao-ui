@@ -67,6 +67,10 @@ export interface InstantiateMsg {
   pre_propose_info: PreProposeInfo
   threshold: Threshold
   veto?: VetoConfig | null
+  /**
+   * v2.7.0+
+   */
+  delegation_module?: string | null
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
@@ -316,6 +320,9 @@ export type QueryMsg =
       config: {}
     }
   | {
+      delegation_module: {}
+    }
+  | {
       proposal: {
         proposal_id: number
       }
@@ -393,6 +400,10 @@ export interface VoteResponse {
 }
 export interface VoteInfo {
   power: Uint128
+  /**
+   * v2.7.0+
+   */
+  individual_power?: Uint128
   rationale?: string | null
   vote: Vote
   voter: Addr
@@ -460,6 +471,10 @@ export interface SingleChoiceProposal {
   total_power: Uint128
   veto?: VetoConfig | null
   votes: Votes
+  /**
+   * v2.7.0+
+   */
+  individual_votes: Votes
 }
 export interface Votes {
   abstain: Uint128

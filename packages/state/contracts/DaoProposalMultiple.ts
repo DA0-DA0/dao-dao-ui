@@ -36,6 +36,7 @@ import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 export interface DaoProposalMultipleReadOnlyInterface {
   contractAddress: string
   config: () => Promise<Config>
+  delegationModule: () => Promise<Addr | null>
   proposal: ({
     proposalId,
   }: {
@@ -88,6 +89,7 @@ export class DaoProposalMultipleQueryClient
     this.client = client
     this.contractAddress = contractAddress
     this.config = this.config.bind(this)
+    this.delegationModule = this.delegationModule.bind(this)
     this.proposal = this.proposal.bind(this)
     this.listProposals = this.listProposals.bind(this)
     this.reverseProposals = this.reverseProposals.bind(this)
@@ -104,6 +106,11 @@ export class DaoProposalMultipleQueryClient
   config = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
       config: {},
+    })
+  }
+  delegationModule = async (): Promise<Addr | null> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      delegation_module: {},
     })
   }
   proposal = async ({

@@ -48,22 +48,23 @@ export class EnableRetroactiveCompensationAction extends ActionBase<{}> {
     return this.manageWidgetsAction.setup()
   }
 
-  encode(): UnifiedCosmosMsg {
+  encode(): Promise<UnifiedCosmosMsg[]> {
     return this.manageWidgetsAction.encode({
       mode: 'set',
       id: WidgetId.RetroactiveCompensation,
       values: {},
+      extra: {},
     })
   }
 
-  match(messages: ProcessedMessage[]): ActionMatch {
+  async match(messages: ProcessedMessage[]): Promise<ActionMatch> {
     const manageWidgetsMatch = this.manageWidgetsAction.match(messages)
     if (!manageWidgetsMatch) {
       return manageWidgetsMatch
     }
 
     // Ensure this is setting the retroactive compensation widget item.
-    const { mode, id } = this.manageWidgetsAction.decode(messages)
+    const { mode, id } = await this.manageWidgetsAction.decode(messages)
     return mode === 'set' && id === WidgetId.RetroactiveCompensation
   }
 

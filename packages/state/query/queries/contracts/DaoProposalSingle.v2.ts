@@ -49,6 +49,18 @@ export const daoProposalSingleV2QueryKeys = {
         args,
       },
     ] as const,
+  delegationModule: (
+    chainId: string,
+    contractAddress: string,
+    args?: Record<string, unknown>
+  ) =>
+    [
+      {
+        ...daoProposalSingleV2QueryKeys.address(chainId, contractAddress)[0],
+        method: 'delegation_module',
+        args,
+      },
+    ] as const,
   proposal: (
     chainId: string,
     contractAddress: string,
@@ -219,6 +231,40 @@ export const daoProposalSingleV2Queries = {
         await getCosmWasmClientForChainId(chainId),
         contractAddress
       ).config()
+    },
+    ...options,
+  }),
+  delegationModule: <TData = Addr | null>(
+    queryClient: QueryClient,
+    {
+      chainId,
+      contractAddress,
+      options,
+    }: DaoProposalSingleV2DelegationModuleQuery<TData>
+  ): UseQueryOptions<Addr | null, Error, TData> => ({
+    queryKey: daoProposalSingleV2QueryKeys.delegationModule(
+      chainId,
+      contractAddress
+    ),
+    queryFn: async () => {
+      try {
+        // Attempt to fetch data from the indexer.
+        return await queryClient.fetchQuery(
+          indexerQueries.queryContract(queryClient, {
+            chainId,
+            contractAddress,
+            formula: 'daoProposalSingle/delegationModule',
+          })
+        )
+      } catch (error) {
+        console.error(error)
+      }
+
+      // If indexer query fails, fallback to contract query.
+      return new DaoProposalSingleV2QueryClient(
+        await getCosmWasmClientForChainId(chainId),
+        contractAddress
+      ).delegationModule()
     },
     ...options,
   }),
@@ -663,3 +709,5 @@ export interface DaoProposalSingleV2ProposalQuery<TData>
 }
 export interface DaoProposalSingleV2ConfigQuery<TData>
   extends DaoProposalSingleV2ReactQuery<Config, TData> {}
+export interface DaoProposalSingleV2DelegationModuleQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<Addr | null, TData> {}

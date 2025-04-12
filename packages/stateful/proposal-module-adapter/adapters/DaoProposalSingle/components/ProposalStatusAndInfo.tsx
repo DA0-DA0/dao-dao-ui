@@ -45,8 +45,8 @@ import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
   useAwaitNextBlock,
   useProposalActionState,
-  useProposalRelayState,
   useProposalVetoState,
+  useTxRelayState,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -170,12 +170,15 @@ const InnerProposalStatusAndInfo = ({
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
-  const relayState = useProposalRelayState({
+  const relayState = useTxRelayState({
     msgs: proposal.msgs,
-    status: proposal.status,
-    executedAt: proposal.executedAt,
-    proposalModuleAddress: proposalModule.address,
-    proposalNumber,
+    context: {
+      type: 'proposal',
+      proposalModuleAddress: proposalModule.address,
+      proposalNumber,
+      executed: proposal.status === ProposalStatusEnum.Executed,
+      executedAt: proposal.executedAt,
+    },
     openSelfRelayExecute,
     loadingTxHash: loadingExecutionTxHash,
   })
@@ -454,16 +457,15 @@ const InnerProposalStatusAndInfo = ({
     [voter.onVoteSuccess]
   )
 
+  const canVote =
+    !!loadingWalletVoteInfo &&
+    !loadingWalletVoteInfo.loading &&
+    loadingWalletVoteInfo.data.canVote
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      Voter={
-        loadingWalletVoteInfo &&
-        !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote
-          ? Voter
-          : undefined
-      }
+      Voter={canVote ? Voter : undefined}
       action={action}
       footer={footer}
       info={info}

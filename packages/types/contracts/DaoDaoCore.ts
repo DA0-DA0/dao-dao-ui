@@ -24,6 +24,7 @@ export interface InstantiateMsg {
   dao_uri?: string | null
   description: string
   image_url?: string | null
+  initial_actions?: CosmosMsgForEmpty[] | null
   initial_items?: InitialItem[] | null
   name: string
   proposal_modules_instantiate_info: ModuleInstantiateInfo[]
@@ -329,6 +330,9 @@ export type QueryMsg =
       }
     }
   | {
+      initial_actions: {}
+    }
+  | {
       list_items: {
         limit?: number | null
         start_after?: string | null
@@ -377,6 +381,9 @@ export type QueryMsg =
       total_power_at_height: {
         height?: number | null
       }
+    }
+  | {
+      initial_actions: {}
     }
 export type MigrateMsg =
   | {
@@ -450,6 +457,7 @@ export interface Cw20BalanceResponse {
 }
 export type Cw20BalancesResponse = Cw20BalanceResponse[]
 export type ArrayOfAddr = Addr[]
+export type ArrayOfCosmosMsgForEmpty = CosmosMsgForEmpty[]
 export interface DaoURIResponse {
   dao_uri?: string | null
 }
@@ -499,6 +507,10 @@ export interface DumpStateResponse {
   total_proposal_module_count: number
   version: ContractVersion
   voting_module: Addr
+  /**
+   * Added in v2.7.0.
+   */
+  initial_actions?: ArrayOfCosmosMsgForEmpty
 }
 export interface ContractVersion {
   contract: string

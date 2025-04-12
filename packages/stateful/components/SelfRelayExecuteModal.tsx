@@ -387,7 +387,8 @@ export const SelfRelayExecuteModal = ({
                 estimatedBlockTime: 3000,
                 // How long it waits until looking for acks.
                 estimatedIndexerTime: 3000,
-                gasPrice: new DynamicGasPrice(queryClient, chain),
+                // Force ignore version type mismatch caused by dependencies.
+                gasPrice: new DynamicGasPrice(queryClient, chain) as any,
               }
             )
           )
@@ -1108,7 +1109,7 @@ export const SelfRelayExecuteModal = ({
             content: () => (
               <div className="flex flex-col gap-4">
                 <p>
-                  To execute this proposal, you must relay a message from the
+                  To execute these actions, you must relay a message from the
                   source chain to the destination chain
                   {chains.length > 2 ? 's' : ''}.
                 </p>
@@ -1211,7 +1212,7 @@ export const SelfRelayExecuteModal = ({
                                 ? t('error.insufficientWalletBalance', {
                                     amount: HugeDecimal.from(
                                       fundTokenWithBalance.balance
-                                    ).toInternationalizedHumanReadableString({
+                                    ).toFormattedString({
                                       decimals:
                                         fundTokenWithBalance.token.decimals,
                                     }),

@@ -1,0 +1,26 @@
+name: dao-dao-tests
+version: v0.2.19
+
+chains:
+  - id: starship-chain
+    name: neutron
+    numValidators: 1
+    genesis:
+      consensus_params:
+        block:
+          max_gas: '30000000'
+    ports:
+      rest: 23450
+      rpc: 23451
+      faucet: 23452
+
+explorer:
+  enabled: true
+  ports:
+    rest: 23453
+
+registry:
+  enabled: true
+  ports:
+    rest: 23454
+    grpc: 23455

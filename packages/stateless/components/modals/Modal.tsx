@@ -193,7 +193,7 @@ export const Modal = ({
             {footerContent && (
               <div
                 className={clsx(
-                  'shrink-0 border-t border-border-secondary py-5 px-6',
+                  'shrink-0 border-t border-border-secondary py-5 px-6 max-h-[33dvh] overflow-y-auto',
                   footerContainerClassName
                 )}
               >

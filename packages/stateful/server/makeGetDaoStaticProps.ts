@@ -6,8 +6,10 @@ import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
+  ChainXGovDao,
   contractQueries,
   dehydrateSerializable,
+  getDao,
   makeReactQueryClient,
   polytoneQueries,
   queryIndexer,
@@ -39,7 +41,6 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ChainXGovDao, getDao } from '../clients'
 import { DaoPageWrapperProps } from '../components'
 import {
   ProposalModuleAdapterError,
@@ -137,7 +138,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Add to Sentry error tags if error occurs.
       try {
-        // Check for legacy contract.
+        // Check for legacy contract and contract existence.
         const contractInfo = !configuredGovChain
           ? (
               await queryClient.fetchQuery(

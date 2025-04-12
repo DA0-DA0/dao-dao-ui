@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 
+import { Entity } from '../entity'
 import { LoadingData } from '../misc'
 import { PfpkProfileUpdateFunction, UnifiedProfile } from '../profile'
-import { Entity } from './EntityDisplay'
 
 export type WalletProfileHeaderProps = {
   /**

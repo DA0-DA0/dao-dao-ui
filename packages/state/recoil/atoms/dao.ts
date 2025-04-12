@@ -36,3 +36,19 @@ export const discordNotifierSetupAtom = atomFamily<
   default: undefined,
   effects: [localStorageEffectJSON],
 })
+
+/**
+ * Store whether or not the user has verified the initial actions for a DAO.
+ * Verification is done by viewing the initial actions modal.
+ */
+export const initialActionsVerifiedAtom = atomFamily<
+  boolean,
+  {
+    chainId: string
+    coreAddress: string
+  }
+>({
+  key: 'initialActionsVerified',
+  default: false,
+  effects: [localStorageEffectJSON],
+})

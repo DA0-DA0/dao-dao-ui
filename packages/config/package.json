@@ -1,10 +1,7 @@
 {
   "name": "@dao-dao/config",
-  "version": "2.6.0-rc.1",
+  "version": "2.7.0-rc.1",
   "license": "BSD-3-Clause-Clear",
-  "scripts": {
-    "cwgen": "tsx ./scripts/cwgen.ts"
-  },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "6.21.0",
@@ -28,9 +25,7 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@cosmwasm/ts-codegen": "^1.10.0",
-    "commander": "^12.1.0",
-    "tsx": "^4.19.0"
+    "@cosmwasm/ts-codegen": "^1.10.0"
   },
   "prettier": "./prettier/index.js",
   "gitHead": "d7b959f412c3990123b0e2afb11f32acd9c3764c"

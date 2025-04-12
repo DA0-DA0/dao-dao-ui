@@ -7,14 +7,20 @@ import { useLoadingProposal } from './useLoadingProposal'
 export const useLoadingProposalStatus = () => {
   const loadingProposal = useLoadingProposal()
   return useMemo(
-    (): LoadingData<ProposalStatus> =>
+    (): LoadingData<{
+      status: ProposalStatus
+      isVotingOpen: boolean
+    }> =>
       loadingProposal.loading
         ? {
             loading: true,
           }
         : {
             loading: false,
-            data: loadingProposal.data.status,
+            data: {
+              status: loadingProposal.data.status,
+              isVotingOpen: loadingProposal.data.votingOpen,
+            },
           },
     [loadingProposal]
   )

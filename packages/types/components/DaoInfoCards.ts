@@ -18,6 +18,10 @@ export type DaoInfoCard = {
    */
   loading?: boolean
   /**
+   * Optionally apply a warning style to the card.
+   */
+  warning?: boolean
+  /**
    * The card value.
    */
   value: ReactNode

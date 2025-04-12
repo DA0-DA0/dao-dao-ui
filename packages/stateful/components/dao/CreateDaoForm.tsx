@@ -23,6 +23,8 @@ import {
   contractQueries,
   walletChainIdAtom,
 } from '@dao-dao/state'
+import { CwDao } from '@dao-dao/state/clients/dao/CwDao'
+import { SecretCwDao } from '@dao-dao/state/clients/dao/CwDao.secret'
 import {
   Button,
   ChainProvider,
@@ -37,7 +39,6 @@ import {
   StatusCard,
   Tooltip,
   TooltipInfoIcon,
-  useAppContext,
   useCachedLoadable,
   useDaoIfAvailable,
   useDaoNavHelpers,
@@ -49,10 +50,11 @@ import {
   ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
-  DaoPageMode,
   DaoParentInfo,
   DaoTabId,
+  Feature,
   GovernanceProposalActionData,
+  InstantiateInfo,
   NewDao,
   PlausibleEvents,
   ProposalModuleAdapter,
@@ -74,13 +76,13 @@ import {
   findWasmAttributeValue,
   getDisplayNameForChainId,
   getFallbackImage,
-  getFundsFromDaoInstantiateMsg,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
   getWidgetStorageItemKey,
   instantiateSmartContract,
   isErrorWithSubstring,
+  isFeatureSupportedByVersion,
   isSecretNetwork,
   makeWasmMessage,
   parseContractVersion,
@@ -89,8 +91,7 @@ import {
 } from '@dao-dao/utils'
 
 import { CustomData } from '../../actions/core/actions/Custom/Component'
-import { CwDao } from '../../clients/dao/CwDao'
-import { SecretCwDao } from '../../clients/dao/SecretCwDao'
+import { getCreationExtensions } from '../../creation-extensions'
 import { getCreatorById, getCreators } from '../../creators'
 import {
   GovernanceTokenType,
@@ -100,7 +101,6 @@ import {
   CwAdminFactoryHooks,
   SecretCwAdminFactoryHooks,
   useAwaitNextBlock,
-  useFollowingDaos,
   useGenerateInstantiate2,
   useQuerySyncedRecoilState,
   useWallet,
@@ -200,19 +200,46 @@ export const InnerCreateDaoForm = ({
   const supportsInstantiate2 =
     versionGte(latestVersion, ContractVersion.V250) && !noInstantiate2Create
 
+  // Extensions depend on initial actions.
+  const supportsInitialActions = isFeatureSupportedByVersion(
+    Feature.InitialActions,
+    latestVersion
+  )
+
+  // Get available extensions.
+  const availableExtensions: CreateDaoContext['availableExtensions'] = useMemo(
+    () =>
+      getCreationExtensions({
+        chain: chainContext.chain,
+        version: latestVersion,
+      }),
+    [chainContext.chain, latestVersion]
+  )
+
+  // Get available widgets.
+  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
+    () =>
+      getWidgets({
+        chainId,
+        version: latestVersion,
+        isDaoCreation: true,
+      }),
+    [chainId, latestVersion]
+  )
+
   const CreateDaoPages = [
     CreateDaoStart,
     CreateDaoGovernance,
     CreateDaoVoting,
-    // Need instantiate2 to setup extensions on DAO creation.
-    ...(supportsInstantiate2 ? [CreateDaoExtensions] : []),
+    // Need instantiate2 or initial actions to setup widgets/extensions on DAO
+    // creation.
+    ...(supportsInstantiate2 || supportsInitialActions
+      ? [CreateDaoExtensions]
+      : []),
     CreateDaoReview,
   ]
 
   const { goToDao, goToDaoProposal } = useDaoNavHelpers()
-  const { setFollowing } = useFollowingDaos()
-
-  const { mode } = useAppContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
@@ -228,6 +255,21 @@ export const InnerCreateDaoForm = ({
   // Verify cached value is still valid, and fix if not.
   const defaultForm = useMemo(() => {
     const defaultNewDao = makeDefaultNewDao(chainId)
+
+    const enableExtensions = availableExtensions.filter(
+      (extension) => extension.defaultEnabled
+    )
+    if (enableExtensions.length > 0) {
+      defaultNewDao.extensions = enableExtensions.reduce(
+        (acc, { id, defaultValues }) => ({
+          ...acc,
+          [id]: {
+            data: cloneDeep(defaultValues),
+          },
+        }),
+        {} as NewDao['extensions']
+      )
+    }
 
     const cached = cloneDeep(_newDaoAtom)
 
@@ -303,7 +345,7 @@ export const InnerCreateDaoForm = ({
       // Use overrides passed into component.
       override
     )
-  }, [_newDaoAtom, chainContext.config, chainId, override])
+  }, [_newDaoAtom, availableExtensions, chainContext.config, chainId, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
@@ -320,6 +362,7 @@ export const InnerCreateDaoForm = ({
     creator: { id: creatorId, data: creatorData },
     proposalModuleAdapters,
     votingConfig,
+    extensions,
     widgets,
   } = newDao
 
@@ -419,12 +462,7 @@ export const InnerCreateDaoForm = ({
     [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
-  // Get available widgets.
-  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
-    () => getWidgets(chainId).filter((w) => w.supportsDaoCreation),
-    [chainId]
-  )
-
+  let instantiateInfo: InstantiateInfo | undefined
   let instantiateMsg:
     | DaoDaoCoreInstantiateMsg
     | SecretDaoDaoCoreInstantiateMsg
@@ -461,17 +499,30 @@ export const InnerCreateDaoForm = ({
           ]
         : []),
       // Add widgets if configured.
+      // TODO: add additional widget actions to initial actions
       ...(widgets && Object.keys(widgets).length > 0
-        ? Object.entries(widgets).flatMap(([id, values]): InitialItem | [] =>
-            values
+        ? Object.entries(widgets).flatMap(([id, data]): InitialItem | [] =>
+            data
               ? {
                   key: getWidgetStorageItemKey(id),
-                  value: JSON.stringify(values),
+                  value: JSON.stringify(data.data),
                 }
               : []
           )
         : []),
     ]
+
+    const initialActions =
+      extensions && Object.keys(extensions).length > 0
+        ? Object.entries(extensions).flatMap(([id, data]) => {
+            const extension = availableExtensions.find(
+              (extension) => extension.id === id
+            )
+            return extension && data
+              ? extension.getInitialActions(data.data)
+              : []
+          })
+        : []
 
     const commonConfig = {
       // If parentDao exists, let's make a subDAO :D
@@ -480,6 +531,7 @@ export const InnerCreateDaoForm = ({
       description,
       imageUrl,
       initialItems: initialItems.length > 0 ? initialItems : undefined,
+      initialActions: initialActions.length > 0 ? initialActions : undefined,
     }
 
     if (isSecretNetwork(chainId)) {
@@ -494,30 +546,25 @@ export const InnerCreateDaoForm = ({
         throw new Error('Missing code_hash in proposal module info')
       }
 
-      instantiateMsg = decodeJsonFromBase64(
-        SecretCwDao.generateInstantiateInfo(
-          chainContext.chainId,
-          commonConfig,
-          votingModuleInstantiateInfo,
-          proposalModuleInstantiateInfos as SecretModuleInstantiateInfo[]
-        ).msg
+      instantiateInfo = SecretCwDao.generateInstantiateInfo(
+        chainContext.chainId,
+        commonConfig,
+        votingModuleInstantiateInfo,
+        proposalModuleInstantiateInfos as SecretModuleInstantiateInfo[]
       )
+      instantiateMsg = decodeJsonFromBase64(instantiateInfo.msg)
     } else {
-      instantiateMsg = decodeJsonFromBase64(
-        CwDao.generateInstantiateInfo(
-          chainContext.chainId,
-          commonConfig,
-          votingModuleInstantiateInfo,
-          proposalModuleInstantiateInfos
-        ).msg
+      instantiateInfo = CwDao.generateInstantiateInfo(
+        chainContext.chainId,
+        commonConfig,
+        votingModuleInstantiateInfo,
+        proposalModuleInstantiateInfos
       )
+      instantiateMsg = decodeJsonFromBase64(instantiateInfo.msg)
     }
   } catch (err) {
     instantiateMsgError = err instanceof Error ? err.message : `${err}`
   }
-
-  const instantiateMsgFunds =
-    instantiateMsg && getFundsFromDaoInstantiateMsg(instantiateMsg)
 
   //! Submit handlers
 
@@ -569,27 +616,26 @@ export const InnerCreateDaoForm = ({
   const doCreateDao = async () => {
     if (instantiateMsgError) {
       throw new Error(instantiateMsgError)
-    } else if (!instantiateMsg) {
+    } else if (!instantiateInfo || !instantiateMsg) {
       throw new Error(t('error.loadingData'))
     } else if (!walletAddress) {
       throw new Error(t('error.logInToContinue'))
     }
 
     const isSecret = isSecretNetwork(chainId)
-    const instantiateFunds = getFundsFromDaoInstantiateMsg(instantiateMsg)
     const contractLabel = `DAO DAO DAO (${Date.now()})`
 
     // If admin is set, use it as the contract-level admin as well (for creating
     // SubDAOs). Otherwise, instantiate with self as admin via factory.
-    if (instantiateMsg.admin) {
+    if (instantiateInfo.admin) {
       return await instantiateSmartContract(
         getSigningClient,
         walletAddress,
         daoDaoCoreCodeId,
         contractLabel,
         instantiateMsg,
-        instantiateFunds,
-        instantiateMsg.admin,
+        instantiateInfo.funds,
+        instantiateInfo.admin,
         undefined,
         undefined,
         supportsInstantiate2 ? toUtf8(uuid) : undefined
@@ -601,14 +647,14 @@ export const InnerCreateDaoForm = ({
 
       const { events } = await secretInstantiateWithSelfAdmin(
         {
-          instantiateMsg: encodeJsonToBase64(instantiateMsg),
+          instantiateMsg: instantiateInfo.msg,
           codeId: daoDaoCoreCodeId,
           codeHash: codeHashes.DaoDaoCore,
           label: contractLabel,
         },
         SECRET_GAS.DAO_CREATION,
         undefined,
-        instantiateFunds
+        instantiateInfo.funds
       )
       return findWasmAttributeValue(
         chainId,
@@ -625,24 +671,24 @@ export const InnerCreateDaoForm = ({
         ? instantiate2WithSelfAdmin(
             {
               codeId: daoDaoCoreCodeId,
-              instantiateMsg: encodeJsonToBase64(instantiateMsg),
+              instantiateMsg: instantiateInfo.msg,
               label: contractLabel,
               salt: toBase64(toUtf8(uuid)),
               expect: newDao.predictedDaoAddress,
             },
             CHAIN_GAS_MULTIPLIER,
             undefined,
-            instantiateFunds
+            instantiateInfo.funds
           )
         : instantiateWithSelfAdmin(
             {
               codeId: daoDaoCoreCodeId,
-              instantiateMsg: encodeJsonToBase64(instantiateMsg),
+              instantiateMsg: instantiateInfo.msg,
               label: contractLabel,
             },
             CHAIN_GAS_MULTIPLIER,
             undefined,
-            instantiateFunds
+            instantiateInfo.funds
           ))
       return findWasmAttributeValue(
         chainId,
@@ -691,7 +737,7 @@ export const InnerCreateDaoForm = ({
         if (instantiateMsgError) {
           toast.error(processError(instantiateMsgError))
           return
-        } else if (!instantiateMsg) {
+        } else if (!instantiateInfo || !instantiateMsg) {
           toast.error(t('error.loadingData'))
           return
         }
@@ -713,7 +759,7 @@ export const InnerCreateDaoForm = ({
             // If admin is set, use it as the contract-level admin as well (for
             // creating SubDAOs). Otherwise, instantiate with self as admin via
             // factory.
-            _actionData: instantiateMsg.admin
+            _actionData: instantiateInfo.admin
               ? [
                   {
                     _id: 'create',
@@ -725,10 +771,9 @@ export const InnerCreateDaoForm = ({
                             [supportsInstantiate2
                               ? 'instantiate2'
                               : 'instantiate']: {
-                              admin: instantiateMsg.admin,
+                              admin: instantiateInfo.admin,
                               code_id: daoDaoCoreCodeId,
-                              funds:
-                                getFundsFromDaoInstantiateMsg(instantiateMsg),
+                              funds: instantiateInfo.funds,
                               label: contractLabel,
                               msg: instantiateMsg,
                               ...(supportsInstantiate2 && {
@@ -753,15 +798,13 @@ export const InnerCreateDaoForm = ({
                           wasm: {
                             execute: {
                               contract_addr: factoryContractAddress,
-                              funds:
-                                getFundsFromDaoInstantiateMsg(instantiateMsg),
+                              funds: instantiateInfo.funds,
                               msg: {
                                 [supportsInstantiate2
                                   ? 'instantiate2_contract_with_self_admin'
                                   : 'instantiate_contract_with_self_admin']: {
                                   code_id: daoDaoCoreCodeId,
-                                  instantiate_msg:
-                                    encodeJsonToBase64(instantiateMsg),
+                                  instantiate_msg: instantiateInfo.msg,
                                   label: contractLabel,
                                   ...(supportsInstantiate2 && {
                                     salt: toBase64(toUtf8(uuid)),
@@ -822,14 +865,6 @@ export const InnerCreateDaoForm = ({
             )
             .catch(() => ({ info: { version: 'unknown' } }))
           const coreVersion = parseContractVersion(info.version)
-
-          // Don't set following on SDA. Only dApp.
-          if (mode !== DaoPageMode.Sda) {
-            setFollowing({
-              chainId,
-              coreAddress,
-            })
-          }
 
           // New wallet balances will not appear until the next block.
           awaitNextBlock().then(refreshBalances)
@@ -910,6 +945,7 @@ export const InnerCreateDaoForm = ({
               isActive: true,
               activeThreshold: null,
               items: {},
+              initialActions: [],
               polytoneProxies: {},
               accounts: [],
               contractAdmin: null,
@@ -1006,6 +1042,7 @@ export const InnerCreateDaoForm = ({
     creator,
     predictedDaoAddress,
     proposalModuleDaoCreationAdapters,
+    availableExtensions,
     availableWidgets,
     makeDefaultNewDao,
     SuspenseLoader,
@@ -1119,8 +1156,8 @@ export const InnerCreateDaoForm = ({
 
           {/* If funds are required, display on last page. */}
           {pageIndex === CreateDaoPages.length - 1 &&
-            !!instantiateMsgFunds?.length &&
-            instantiateMsgFunds.some(({ amount }) => amount !== '0') && (
+            !!instantiateInfo?.funds?.length &&
+            instantiateInfo.funds.some(({ amount }) => amount !== '0') && (
               <div className="mt-6 -mb-8 flex flex-row justify-end">
                 <div className="flex flex-col items-end gap-2">
                   <div className="flex flex-row items-center gap-1 self-start">
@@ -1134,7 +1171,7 @@ export const InnerCreateDaoForm = ({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    {instantiateMsgFunds.map((coin, index) => (
+                    {instantiateInfo.funds.map((coin, index) => (
                       <TokenAmountDisplay
                         key={coin.denom + index}
                         coin={coin}

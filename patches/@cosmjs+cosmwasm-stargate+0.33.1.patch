@@ -1,0 +1,252 @@
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts b/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
+index bb2e8b6..ce111cd 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
+@@ -2,6 +2,6 @@ export { Code, CodeDetails, Contract, ContractCodeHistoryEntry, CosmWasmClient }
+ export { fromBinary, toBinary } from "./encoding";
+ export { _instantiate2AddressIntermediate, instantiate2Address } from "./instantiate2";
+ export { createWasmAminoConverters, isMsgClearAdminEncodeObject, isMsgExecuteEncodeObject, isMsgInstantiateContract2EncodeObject, isMsgInstantiateContractEncodeObject, isMsgMigrateEncodeObject, isMsgStoreCodeEncodeObject, isMsgUpdateAdminEncodeObject, JsonObject, MsgClearAdminEncodeObject, MsgExecuteContractEncodeObject, MsgInstantiateContract2EncodeObject, MsgInstantiateContractEncodeObject, MsgMigrateContractEncodeObject, MsgStoreCodeEncodeObject, MsgUpdateAdminEncodeObject, setupWasmExtension, WasmExtension, wasmTypes, } from "./modules";
+-export { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClient, SigningCosmWasmClientOptions, UploadResult, } from "./signingcosmwasmclient";
++export { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClient, SigningCosmWasmClientOptions, UploadResult, CustomTxOptions, } from "./signingcosmwasmclient";
+ export { Attribute, DeliverTxResponse, Event, IndexedTx } from "@cosmjs/stargate";
+ export { HttpEndpoint } from "@cosmjs/tendermint-rpc";
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
+index 398df4c..27f7067 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
+@@ -98,6 +98,19 @@ export interface ExecuteResult {
+     readonly gasWanted: bigint;
+     readonly gasUsed: bigint;
+ }
++/**
++ * Custom options to use when creating a transaction.
++ */
++export type CustomTxOptions = {
++    /**
++     * non-critical extension options to be included in the transaction
++     */
++    nonCriticalExtensionOptions?: EncodeObject[]
++    /**
++     * fee granter address that pays fees for this TX
++     */
++    feeGranter?: string
++}
+ /**
+  * Searches in events for an event of the given event type which contains an
+  * attribute for with the given key.
+@@ -143,7 +156,7 @@ export declare class SigningCosmWasmClient extends CosmWasmClient {
+      */
+     static offline(signer: OfflineSigner, options?: SigningCosmWasmClientOptions): Promise<SigningCosmWasmClient>;
+     protected constructor(cometClient: CometClient | undefined, signer: OfflineSigner, options: SigningCosmWasmClientOptions);
+-    simulate(signerAddress: string, messages: readonly EncodeObject[], memo: string | undefined): Promise<number>;
++    simulate(signerAddress: string, messages: readonly EncodeObject[], memo: string | undefined, options?: CustomTxOptions): Promise<number>;
+     /** Uploads code and returns a receipt, including the code ID */
+     upload(senderAddress: string, wasmCode: Uint8Array, fee: StdFee | "auto" | number, memo?: string, instantiatePermission?: AccessConfig): Promise<UploadResult>;
+     instantiate(senderAddress: string, codeId: number, msg: JsonObject, label: string, fee: StdFee | "auto" | number, options?: InstantiateOptions): Promise<InstantiateResult>;
+@@ -151,11 +164,11 @@ export declare class SigningCosmWasmClient extends CosmWasmClient {
+     updateAdmin(senderAddress: string, contractAddress: string, newAdmin: string, fee: StdFee | "auto" | number, memo?: string): Promise<ChangeAdminResult>;
+     clearAdmin(senderAddress: string, contractAddress: string, fee: StdFee | "auto" | number, memo?: string): Promise<ChangeAdminResult>;
+     migrate(senderAddress: string, contractAddress: string, codeId: number, migrateMsg: JsonObject, fee: StdFee | "auto" | number, memo?: string): Promise<MigrateResult>;
+-    execute(senderAddress: string, contractAddress: string, msg: JsonObject, fee: StdFee | "auto" | number, memo?: string, funds?: readonly Coin[]): Promise<ExecuteResult>;
++    execute(senderAddress: string, contractAddress: string, msg: JsonObject, fee: StdFee | "auto" | number, memo?: string, funds?: readonly Coin[], options?: CustomTxOptions): Promise<ExecuteResult>;
+     /**
+      * Like `execute` but allows executing multiple messages in one transaction.
+      */
+-    executeMultiple(senderAddress: string, instructions: readonly ExecuteInstruction[], fee: StdFee | "auto" | number, memo?: string): Promise<ExecuteResult>;
++    executeMultiple(senderAddress: string, instructions: readonly ExecuteInstruction[], fee: StdFee | "auto" | number, memo?: string, options?: CustomTxOptions): Promise<ExecuteResult>;
+     sendTokens(senderAddress: string, recipientAddress: string, amount: readonly Coin[], fee: StdFee | "auto" | number, memo?: string): Promise<DeliverTxResponse>;
+     delegateTokens(delegatorAddress: string, validatorAddress: string, amount: Coin, fee: StdFee | "auto" | number, memo?: string): Promise<DeliverTxResponse>;
+     undelegateTokens(delegatorAddress: string, validatorAddress: string, amount: Coin, fee: StdFee | "auto" | number, memo?: string): Promise<DeliverTxResponse>;
+@@ -168,8 +181,9 @@ export declare class SigningCosmWasmClient extends CosmWasmClient {
+      * @param fee
+      * @param memo
+      * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
++     * @param options (optional) custom TX options
+      */
+-    signAndBroadcast(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee | "auto" | number, memo?: string, timeoutHeight?: bigint): Promise<DeliverTxResponse>;
++    signAndBroadcast(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee | "auto" | number, memo?: string, timeoutHeight?: bigint, options?: CustomTxOptions): Promise<DeliverTxResponse>;
+     /**
+      * Creates a transaction with the given messages, fee, memo and timeout height. Then signs and broadcasts the transaction.
+      *
+@@ -182,11 +196,12 @@ export declare class SigningCosmWasmClient extends CosmWasmClient {
+      * @param fee
+      * @param memo
+      * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
++     * @param options (optional) custom TX options
+      *
+      * @returns Returns the hash of the transaction
+      */
+-    signAndBroadcastSync(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee | "auto" | number, memo?: string, timeoutHeight?: bigint): Promise<string>;
+-    sign(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee, memo: string, explicitSignerData?: SignerData, timeoutHeight?: bigint): Promise<TxRaw>;
++    signAndBroadcastSync(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee | "auto" | number, memo?: string, timeoutHeight?: bigint, options?: CustomTxOptions): Promise<string>;
++    sign(signerAddress: string, messages: readonly EncodeObject[], fee: StdFee, memo: string, explicitSignerData?: SignerData, timeoutHeight?: bigint, options?: CustomTxOptions): Promise<TxRaw>;
+     private signAmino;
+     private signDirect;
+ }
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
+index 6eb95bb..867e0cf 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
+@@ -86,15 +86,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+         this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
+         this.gasPrice = options.gasPrice;
+     }
+-    async simulate(signerAddress, messages, memo) {
++    async simulate(signerAddress, messages, memo, options) {
+         const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
++        const anyNonCriticalExtensionOptions = options?.nonCriticalExtensionOptions?.map((m) => this.registry.encodeAsAny(m));
+         const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+         if (!accountFromSigner) {
+             throw new Error("Failed to retrieve account from signer");
+         }
+         const pubkey = (0, amino_1.encodeSecp256k1Pubkey)(accountFromSigner.pubkey);
+         const { sequence } = await this.getSequence(signerAddress);
+-        const { gasInfo } = await this.forceGetQueryClient().tx.simulate(anyMsgs, memo, pubkey, sequence);
++        const { gasInfo } = await this.forceGetQueryClient().tx.simulate(anyMsgs, memo, pubkey, sequence, anyNonCriticalExtensionOptions);
+         (0, utils_1.assertDefined)(gasInfo);
+         return math_1.Uint53.fromString(gasInfo.gasUsed.toString()).toNumber();
+     }
+@@ -252,18 +253,18 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+             gasUsed: result.gasUsed,
+         };
+     }
+-    async execute(senderAddress, contractAddress, msg, fee, memo = "", funds) {
++    async execute(senderAddress, contractAddress, msg, fee, memo = "", funds, options) {
+         const instruction = {
+             contractAddress: contractAddress,
+             msg: msg,
+             funds: funds,
+         };
+-        return this.executeMultiple(senderAddress, [instruction], fee, memo);
++        return this.executeMultiple(senderAddress, [instruction], fee, memo, options);
+     }
+     /**
+      * Like `execute` but allows executing multiple messages in one transaction.
+      */
+-    async executeMultiple(senderAddress, instructions, fee, memo = "") {
++    async executeMultiple(senderAddress, instructions, fee, memo = "", options) {
+         const msgs = instructions.map((i) => ({
+             typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+             value: tx_4.MsgExecuteContract.fromPartial({
+@@ -273,7 +274,7 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+                 funds: [...(i.funds || [])],
+             }),
+         }));
+-        const result = await this.signAndBroadcast(senderAddress, msgs, fee, memo);
++        const result = await this.signAndBroadcast(senderAddress, msgs, fee, memo, undefined, options);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error(createDeliverTxResponseErrorMessage(result));
+         }
+@@ -326,19 +327,20 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+      * @param fee
+      * @param memo
+      * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
++     * @param options (optional) custom TX options
+      */
+-    async signAndBroadcast(signerAddress, messages, fee, memo = "", timeoutHeight) {
++    async signAndBroadcast(signerAddress, messages, fee, memo = "", timeoutHeight, options) {
+         let usedFee;
+         if (fee == "auto" || typeof fee === "number") {
+             (0, utils_1.assertDefined)(this.gasPrice, "Gas price must be set in the client options when auto gas is used.");
+-            const gasEstimation = await this.simulate(signerAddress, messages, memo);
++            const gasEstimation = await this.simulate(signerAddress, messages, memo, options);
+             const multiplier = typeof fee === "number" ? fee : this.defaultGasMultiplier;
+             usedFee = (0, stargate_1.calculateFee)(Math.round(gasEstimation * multiplier), this.gasPrice);
+         }
+         else {
+             usedFee = fee;
+         }
+-        const txRaw = await this.sign(signerAddress, messages, usedFee, memo, undefined, timeoutHeight);
++        const txRaw = await this.sign(signerAddress, messages, usedFee, memo, undefined, timeoutHeight, options);
+         const txBytes = tx_3.TxRaw.encode(txRaw).finish();
+         return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+     }
+@@ -354,25 +356,26 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+      * @param fee
+      * @param memo
+      * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
++     * @param options (optional) custom TX options
+      *
+      * @returns Returns the hash of the transaction
+      */
+-    async signAndBroadcastSync(signerAddress, messages, fee, memo = "", timeoutHeight) {
++    async signAndBroadcastSync(signerAddress, messages, fee, memo = "", timeoutHeight, options) {
+         let usedFee;
+         if (fee == "auto" || typeof fee === "number") {
+             (0, utils_1.assertDefined)(this.gasPrice, "Gas price must be set in the client options when auto gas is used.");
+-            const gasEstimation = await this.simulate(signerAddress, messages, memo);
++            const gasEstimation = await this.simulate(signerAddress, messages, memo, options);
+             const multiplier = typeof fee === "number" ? fee : this.defaultGasMultiplier;
+             usedFee = (0, stargate_1.calculateFee)(Math.round(gasEstimation * multiplier), this.gasPrice);
+         }
+         else {
+             usedFee = fee;
+         }
+-        const txRaw = await this.sign(signerAddress, messages, usedFee, memo, undefined, timeoutHeight);
++        const txRaw = await this.sign(signerAddress, messages, usedFee, memo, undefined, timeoutHeight, options);
+         const txBytes = tx_3.TxRaw.encode(txRaw).finish();
+         return this.broadcastTxSync(txBytes);
+     }
+-    async sign(signerAddress, messages, fee, memo, explicitSignerData, timeoutHeight) {
++    async sign(signerAddress, messages, fee, memo, explicitSignerData, timeoutHeight, options) {
+         let signerData;
+         if (explicitSignerData) {
+             signerData = explicitSignerData;
+@@ -386,11 +389,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+                 chainId: chainId,
+             };
+         }
++
++        if (options?.feeGranter) {
++            fee.granter = options.feeGranter;
++        }
++
+         return (0, proto_signing_1.isOfflineDirectSigner)(this.signer)
+-            ? this.signDirect(signerAddress, messages, fee, memo, signerData, timeoutHeight)
+-            : this.signAmino(signerAddress, messages, fee, memo, signerData, timeoutHeight);
++            ? this.signDirect(signerAddress, messages, fee, memo, signerData, timeoutHeight, options)
++            : this.signAmino(signerAddress, messages, fee, memo, signerData, timeoutHeight, options);
+     }
+-    async signAmino(signerAddress, messages, fee, memo, { accountNumber, sequence, chainId }, timeoutHeight) {
++    async signAmino(signerAddress, messages, fee, memo, { accountNumber, sequence, chainId }, timeoutHeight, options) {
+         (0, utils_1.assert)(!(0, proto_signing_1.isOfflineDirectSigner)(this.signer));
+         const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+         if (!accountFromSigner) {
+@@ -401,12 +409,14 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+         const msgs = messages.map((msg) => this.aminoTypes.toAmino(msg));
+         const signDoc = (0, amino_1.makeSignDoc)(msgs, fee, chainId, memo, accountNumber, sequence, timeoutHeight);
+         const { signature, signed } = await this.signer.signAmino(signerAddress, signDoc);
++        const anyNonCriticalExtensionOptions = options?.nonCriticalExtensionOptions?.map((m) => this.registry.encodeAsAny(m));
+         const signedTxBody = {
+             typeUrl: "/cosmos.tx.v1beta1.TxBody",
+             value: {
+                 messages: signed.msgs.map((msg) => this.aminoTypes.fromAmino(msg)),
+                 memo: signed.memo,
+                 timeoutHeight: timeoutHeight,
++                nonCriticalExtensionOptions: anyNonCriticalExtensionOptions,
+             },
+         };
+         const signedTxBodyBytes = this.registry.encode(signedTxBody);
+@@ -419,19 +429,21 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+             signatures: [(0, encoding_1.fromBase64)(signature.signature)],
+         });
+     }
+-    async signDirect(signerAddress, messages, fee, memo, { accountNumber, sequence, chainId }, timeoutHeight) {
++    async signDirect(signerAddress, messages, fee, memo, { accountNumber, sequence, chainId }, timeoutHeight, options) {
+         (0, utils_1.assert)((0, proto_signing_1.isOfflineDirectSigner)(this.signer));
+         const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+         if (!accountFromSigner) {
+             throw new Error("Failed to retrieve account from signer");
+         }
+         const pubkey = (0, proto_signing_1.encodePubkey)((0, amino_1.encodeSecp256k1Pubkey)(accountFromSigner.pubkey));
++        const anyNonCriticalExtensionOptions = options?.nonCriticalExtensionOptions?.map((m) => this.registry.encodeAsAny(m));
+         const txBody = {
+             typeUrl: "/cosmos.tx.v1beta1.TxBody",
+             value: {
+                 messages: messages,
+                 memo: memo,
+                 timeoutHeight: timeoutHeight,
++                nonCriticalExtensionOptions: anyNonCriticalExtensionOptions,
+             },
+         };
+         const txBodyBytes = this.registry.encode(txBody);

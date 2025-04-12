@@ -84,6 +84,7 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
     veto: convertCosmosVetoConfigToVeto(null),
   },
   advancedVotingConfigEnabled: false,
+  extensions: {},
   widgets: {},
 })
 

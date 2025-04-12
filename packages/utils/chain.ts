@@ -31,6 +31,7 @@ import {
   convertChainRegistryAssetToGenericToken,
   getChainAssets,
 } from './assets'
+import { getCosmWasmClientForChainId } from './client'
 import {
   CHAIN_ENDPOINTS,
   CONFIGURED_CHAINS,
@@ -105,14 +106,15 @@ export const getLcdForChainId = (
       CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
     {}
   )?.rest
-  if (lcd && offset === 0) {
+  // Try preferred LCD 3 times before falling back to chain registry.
+  if (lcd && offset < 3) {
     return lcd
   }
 
-  // If LCD was found but not used, offset > 0, and subtract 1 from offset so we
-  // try the first LCD in the chain registry list.
+  // If LCD was found but not used, offset > 3, so subtract 3 so we start trying
+  // the first LCD in the chain registry list.
   if (lcd) {
-    offset -= 1
+    offset -= 3
   }
 
   // Fallback to chain registry.
@@ -121,10 +123,12 @@ export const getLcdForChainId = (
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
 
-  const lcds = chain?.chainRegistry?.apis?.rest ?? []
-  if (lcds.length === 0) {
-    throw new Error(`No LCD found for chain ID "${chainId}"`)
-  }
+  const lcds = [
+    // Try cosmos.directory LCD first.
+    { address: 'https://rest.cosmos.directory/' + chain.chainName },
+    // Fallback to chain registry.
+    ...(chain?.chainRegistry?.apis?.rest ?? []),
+  ]
 
   return lcds[offset % lcds.length].address.replace(/http:\/\//, 'https://')
 }
@@ -711,6 +715,7 @@ export const getDaoInfoForChainId = (
   isActive: true,
   activeThreshold: null,
   items: {},
+  initialActions: [],
   polytoneProxies: {},
   accounts,
   parentDao: null,
@@ -758,3 +763,51 @@ export const makeChainContext = (chainId: string): IChainContext => ({
   base: getConfiguredChainConfig(chainId),
   config: getSupportedChainConfig(chainId),
 })
+
+/**
+ * Wait until the block height for the chain reaches the provided block height.
+ */
+export const waitUntilBlockHeight = async ({
+  chainId,
+  blockHeight,
+  interval = 1_000,
+  maxDistance = 100,
+}: {
+  /**
+   * Chain ID to listen for block height on.
+   */
+  chainId: string
+  /**
+   * Block height to wait for.
+   */
+  blockHeight: number
+  /**
+   * Interval to poll the block height in milliseconds. Defaults to 1,000ms.
+   */
+  interval?: number
+  /**
+   * Maximum block height distance to wait for. Errors if the block height
+   * distance is greater than this value. Defaults to 100 blocks.
+   */
+  maxDistance?: number
+}) => {
+  const client = await getCosmWasmClientForChainId(chainId)
+
+  // Refresh block height until height reaches the provided block height.
+  await new Promise<void>((resolve, reject) => {
+    const timer = setInterval(async () => {
+      const currentBlockHeight = await client.getHeight()
+
+      // Once we reach the next block height, stop polling and resolve.
+      if (currentBlockHeight >= blockHeight) {
+        clearInterval(timer)
+        resolve()
+      }
+      // Otherwise if the block height is too far away, reject.
+      else if (blockHeight - currentBlockHeight > maxDistance) {
+        clearInterval(timer)
+        reject(new Error('Block height too far away'))
+      }
+    }, interval)
+  })
+}

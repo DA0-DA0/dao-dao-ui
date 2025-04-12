@@ -6,6 +6,9 @@ export enum ContractName {
   CwTokenSwap = 'crates.io:cw-token-swap',
   // This contract left out the `crates.io:` prefix.
   CwTokenfactoryIssuer = 'cw-tokenfactory-issuer',
+  DaoProposalSingle = 'crates.io:dao-proposal-single',
+  DaoVotingCw4 = 'crates.io:dao-voting-cw4',
+  DaoVotingTokenStaked = 'crates.io:dao-voting-token-staked',
   PolytoneProxy = 'crates.io:polytone-proxy',
   PreProposeSingle = 'crates.io:dao-pre-propose-single',
   PreProposeMultiple = 'crates.io:dao-pre-propose-multiple',
@@ -57,7 +60,7 @@ export const DAO_VOTING_CW4_CONTRACT_NAMES = [
   'crates.io:cw4-voting',
   // V2
   'crates.io:cwd-voting-cw4',
-  'crates.io:dao-voting-cw4',
+  ContractName.DaoVotingCw4,
 ]
 
 export const DAO_VOTING_CW721_STAKED_CONTRACT_NAMES = [
@@ -77,8 +80,7 @@ export const DAO_VOTING_SG_COMMUNITY_NFT_CONTRACT_NAMES = [
 ]
 
 export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [
-  // V2.3.0+
-  'crates.io:dao-voting-token-staked',
+  ContractName.DaoVotingTokenStaked,
 ]
 
 export const NEUTRON_VOTING_REGISTRY_CONTRACT_NAMES = [
@@ -97,7 +99,7 @@ export const DAO_PROPOSAL_SINGLE_CONTRACT_NAMES = [
   'crates.io:cw-proposal-single',
   // V2+
   'crates.io:cwd-proposal-single',
-  'crates.io:dao-proposal-single',
+  ContractName.DaoProposalSingle,
   // Neutron
   'crates.io:cwd-subdao-proposal-single',
 ]

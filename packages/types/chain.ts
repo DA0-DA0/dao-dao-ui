@@ -102,6 +102,9 @@ export enum ChainId {
   SecretTestnet = 'pulsar-3',
   BabylonTestnet = 'bbn-test-5',
   ThorchainDevnet = 'dev-1',
+
+  // Local testing chain powered by Starship.
+  StarshipTestChain = 'starship-chain',
 }
 
 export type BaseChainConfig = {
@@ -159,7 +162,7 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
   /**
    * Chain ID.
    */
-  chainId: ChainId
+  chainId: string
   /**
    * The `cw-admin-factory` contract address that instantiates contracts with
    * themselves set as their admin.
@@ -285,6 +288,7 @@ export type CodeIdConfig = {
   Cw721Base?: number
 
   // https://github.com/DA0-DA0/dao-contracts
+  CwAdminFactory?: number
   CwPayrollFactory: number
   CwTokenSwap: number
   CwTokenfactoryIssuer: number
@@ -297,6 +301,7 @@ export type CodeIdConfig = {
   DaoProposalMultiple: number
   DaoProposalSingle: number
   DaoRewardsDistributor: number
+  DaoVoteDelegation: number
   DaoVotingCw4: number
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
@@ -350,8 +355,7 @@ export type PolytoneConnection = {
    */
   remoteChannel: string
   /**
-   * Whether or not the user needs to self-relay an execution. This should be
-   * relay.
+   * Whether or not the user needs to self-relay an execution.
    */
   needsSelfRelay?: boolean
 }

@@ -6,15 +6,20 @@ import {
   ActionCategoryMaker,
   ActionComponentProps,
   ActionMaker,
+  ActionMatch,
   ActionOptions,
   ImplementedAction,
+  ProcessedMessage,
 } from './actions'
+import { UnifiedCosmosMsg } from './contracts'
+import { ContractVersion } from './features'
 
 export enum WidgetId {
   MintNft = 'mint_nft',
   Press = 'press',
   RetroactiveCompensation = 'retroactive',
   VestingPayments = 'vesting',
+  VoteDelegation = 'vote_delegation',
 }
 
 export enum WidgetLocation {
@@ -22,6 +27,8 @@ export enum WidgetLocation {
   Home = 'home',
   // Widget is displayed in its own tab. `Icon` must be provided as well.
   Tab = 'tab',
+  // Widget is manually integrated.
+  Manual = 'manual',
 }
 
 export enum WidgetVisibilityContext {
@@ -38,24 +45,44 @@ export type WidgetRendererProps<Variables extends Record<string, unknown>> = {
   variables: Variables
 }
 
-export type WidgetEditorProps<Variables extends Record<string, unknown> = any> =
-  (
-    | ({
-        type: 'action'
-        options: ActionOptions
-      } & ActionComponentProps<undefined, Variables>)
-    | {
-        type: 'daoCreation'
-        // To match action props.
-        isCreating: true
-        fieldNamePrefix: string
-        errors: FieldErrors
-      }
-  ) & {
-    accounts: readonly Account[]
-  }
+export type WidgetEditorProps<
+  Variables extends Record<string, unknown> = any,
+  Extra extends Record<string, unknown> = any,
+> = (
+  | ({
+      type: 'action'
+      options: ActionOptions
+    } & ActionComponentProps<undefined, Variables & { extra: Extra }>)
+  | {
+      type: 'daoCreation'
+      // To match action props.
+      isCreating: true
+      /**
+       * The field name path prefix for widget variables stored in the DAO.
+       */
+      fieldNamePrefix: string
+      /**
+       * The errors for the widget variables.
+       */
+      errors: FieldErrors
+    }
+) & {
+  accounts: readonly Account[]
 
-export type Widget<Variables extends Record<string, unknown> = any> = {
+  /**
+   * The field name path prefix for extra data used only for encoding.
+   */
+  extraFieldNamePrefix: string
+  /**
+   * The errors for the extra data used only for encoding.
+   */
+  extraErrors: FieldErrors
+}
+
+export type Widget<
+  Variables extends Record<string, unknown> = any,
+  ExtraActionData extends Record<string, unknown> = any,
+> = {
   /**
    * A unique identifier for the widget.
    */
@@ -83,6 +110,10 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
    */
   isChainSupported?: (chainId: string) => boolean
   /**
+   * Minimum version of the DAO contracts that the widget is supported on.
+   */
+  minVersion?: ContractVersion
+  /**
    * Whether or not the widget can be enabled on DAO creation. Defaults to
    * false.
    */
@@ -92,13 +123,63 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
    */
   defaultValues?: Variables
   /**
+   * The default values for the widget's extra data used only for encoding.
+   */
+  defaultExtra?: ExtraActionData
+  /**
    * Component that renders the widget.
    */
-  Renderer: ComponentType<WidgetRendererProps<Variables>>
+  Renderer?: ComponentType<WidgetRendererProps<Variables>>
   /**
    * Component that allows the user to edit the widget's variables in an action.
    */
   Editor?: ComponentType<WidgetEditorProps<Variables>>
+  /**
+   * Encode and match additional messages when using the ManageWidgets action to
+   * set/update the widget.
+   */
+  editAction?: {
+    /**
+     * Encode additional messages when using the ManageWidgets action to
+     * set/update the widget.
+     */
+    encode: (options: {
+      data: Variables
+      options: ActionOptions
+      extra: ExtraActionData
+    }) =>
+      | UnifiedCosmosMsg
+      | UnifiedCosmosMsg[]
+      | Promise<UnifiedCosmosMsg | UnifiedCosmosMsg[]>
+    /**
+     * Match additional messages when using the ManageWidgets action to
+     * set/update the widget. This should match the number of messages encoded
+     * by the above `encode` function (i.e. excluding the initial ManageWidgets
+     * message).
+     *
+     * The messages passed exclude the initial ManageWidgets message.
+     */
+    match: (options: {
+      data: Variables
+      /**
+       * Messages excluding the initial ManageWidgets message.
+       */
+      messages: ProcessedMessage[]
+      options: ActionOptions
+    }) => ActionMatch | Promise<ActionMatch>
+    /**
+     * Decode extra data from the matched messages, excluding the initial
+     * ManageWidgets message.
+     */
+    decode?: (options: {
+      data: Variables
+      /**
+       * Messages excluding the initial ManageWidgets message.
+       */
+      messages: ProcessedMessage[]
+      options: ActionOptions
+    }) => ExtraActionData | Promise<ExtraActionData>
+  }
   /**
    * Actions that are available in proposals when this widget is enabled.
    */
@@ -109,17 +190,40 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
   }
 }
 
-// DaoWidget is the structure of a widget as stored in the DAO's core item map
-// as a JSON-encoded object. It stores the unique identifier of the widget and
-// the values for the widget's variables so that it can be rendered.
+/**
+ * DaoWidget is the structure of a widget as stored in the DAO's core item map
+ * as a JSON-encoded object. It stores the unique identifier of the widget and
+ * the values for the widget's variables so that it can be rendered.
+ */
 export type DaoWidget<Data extends Record<string, unknown> = any> = {
   id: string
   values?: Data
 }
 
+/**
+ * LoadedWidget is a widget that has been loaded and is ready to be rendered.
+ */
 export type LoadedWidget<Data extends Record<string, unknown> = any> = {
   title: string
   widget: Widget
   daoWidget: DaoWidget<Data>
   WidgetComponent: ComponentType
+}
+
+/**
+ * Options used to filter widgets.
+ */
+export type WidgetFilterOptions = {
+  /**
+   * Chain ID.
+   */
+  chainId: string
+  /**
+   * Version of the DAO contracts.
+   */
+  version: ContractVersion
+  /**
+   * Whether or not we're in the DAO creation context. Defaults to false.
+   */
+  isDaoCreation?: boolean
 }

@@ -1,10 +1,10 @@
 import { Wallet } from '@cosmos-kit/core'
 import { ComponentType } from 'react'
 
+import { Entity } from '../entity'
 import { LoadingData } from '../misc'
 import { UnifiedProfile } from '../profile'
 import { ButtonLinkProps } from './Buttonifier'
-import { Entity } from './EntityDisplay'
 import { NotificationsProps } from './Notifications'
 
 export type NavWalletConnectedProps = {

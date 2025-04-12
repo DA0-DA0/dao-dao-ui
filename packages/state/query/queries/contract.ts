@@ -1,5 +1,6 @@
-import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
+import { IndexedTx, instantiate2Address } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
+import { Block } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { InfoResponse } from '@dao-dao/types'
@@ -23,7 +24,6 @@ import {
   secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
-import { chainQueries } from './chain'
 import { cwVestingQueries } from './contracts'
 import { indexerQueries } from './indexer'
 
@@ -146,6 +146,42 @@ export const fetchIsContract = async (
 }
 
 /**
+ * Fetch contract instantiation event.
+ */
+export const fetchContractInstantiationEvent = async ({
+  chainId,
+  address,
+}: {
+  chainId: string
+  address: string
+}): Promise<{
+  event: IndexedTx
+  /**
+   * Null if the block fails to load.
+   */
+  block: Block | null
+}> => {
+  const client = await getCosmWasmClientForChainId(chainId)
+  const events = await client.searchTx([
+    { key: 'instantiate._contract_address', value: address },
+  ])
+
+  if (events.length === 0) {
+    throw new Error(
+      'Failed to find instantiation event for contract: ' + address
+    )
+  }
+
+  const event = events[0]
+  const block = await client.getBlock(event.height).catch(() => null)
+
+  return {
+    event,
+    block,
+  }
+}
+
+/**
  * Fetch contract instantiation time.
  */
 export const fetchContractInstantiationTime = async (
@@ -171,29 +207,21 @@ export const fetchContractInstantiationTime = async (
         })
       )
     ).getTime()
-  } catch (error) {
-    console.error(error)
-  }
+  } catch {}
 
   // If indexer fails, fallback to querying chain.
-  const client = await getCosmWasmClientForChainId(chainId)
-  const events = await client.searchTx([
-    { key: 'instantiate._contract_address', value: address },
-  ])
-
-  if (events.length === 0) {
-    throw new Error(
-      'Failed to find instantiation time due to no instantiation events for contract: ' +
-        address
-    )
-  }
-
-  return await queryClient.fetchQuery(
-    chainQueries.blockTimestamp({
+  const { block } = await queryClient.fetchQuery(
+    contractQueries.instantiationEvent({
       chainId,
-      height: events[0].height,
+      address,
     })
   )
+
+  if (!block) {
+    throw new Error('Failed to load block for contract instantiation.')
+  }
+
+  return new Date(block.header.time).getTime()
 }
 
 /**
@@ -433,6 +461,16 @@ export const contractQueries = {
     contractQueries.isContract(queryClient, {
       ...options,
       nameOrNames: ContractName.Cw1Whitelist,
+    }),
+  /**
+   * Fetch contract instantiation event.
+   */
+  instantiationEvent: (
+    options: Parameters<typeof fetchContractInstantiationEvent>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['contract', 'instantiationEvent', options],
+      queryFn: () => fetchContractInstantiationEvent(options),
     }),
   /**
    * Fetch contract instantiation time.

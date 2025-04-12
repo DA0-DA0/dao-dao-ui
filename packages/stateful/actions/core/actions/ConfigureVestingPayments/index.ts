@@ -53,7 +53,7 @@ export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsWi
     await this.manageWidgetsAction.setup()
 
     // Attempt to load existing widget data.
-    const widget = this.manageWidgetsAction.availableWidgets.find(
+    const widget = this.manageWidgetsAction.dao.widgets.find(
       ({ id }) => id === WidgetId.VestingPayments
     )
 
@@ -64,26 +64,29 @@ export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsWi
         }
   }
 
-  encode(data: VestingPaymentsWidgetData): UnifiedCosmosMsg {
+  encode(data: VestingPaymentsWidgetData): Promise<UnifiedCosmosMsg[]> {
     return this.manageWidgetsAction.encode({
       mode: 'set',
       id: WidgetId.VestingPayments,
       values: data,
+      extra: {},
     })
   }
 
-  match(messages: ProcessedMessage[]): ActionMatch {
+  async match(messages: ProcessedMessage[]): Promise<ActionMatch> {
     const manageWidgetsMatch = this.manageWidgetsAction.match(messages)
     if (!manageWidgetsMatch) {
       return manageWidgetsMatch
     }
 
     // Ensure this is setting the vesting payments widget item.
-    const { mode, id } = this.manageWidgetsAction.decode(messages)
+    const { mode, id } = await this.manageWidgetsAction.decode(messages)
     return mode === 'set' && id === WidgetId.VestingPayments
   }
 
-  decode(messages: ProcessedMessage[]): VestingPaymentsWidgetData {
-    return this.manageWidgetsAction.decode(messages).values
+  async decode(
+    messages: ProcessedMessage[]
+  ): Promise<VestingPaymentsWidgetData> {
+    return (await this.manageWidgetsAction.decode(messages)).values
   }
 }

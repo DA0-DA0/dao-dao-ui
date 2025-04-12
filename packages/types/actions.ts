@@ -13,9 +13,9 @@ import {
 } from './chain'
 import { IDaoBase, IProposalModuleBase } from './clients'
 import { UnifiedCosmosMsg } from './contracts/common'
+import { DecodedIcaMsgMatch, DecodedPolytoneMsgMatch } from './cross-chain'
 import { AllGovParams } from './gov'
 import { UnifiedProfile } from './profile'
-import { DecodedIcaMsgMatch, DecodedPolytoneMsgMatch } from './proposal'
 
 export enum ActionCategoryKey {
   CommonlyUsed = 'commonlyUsed',
@@ -122,6 +122,9 @@ export enum ActionKey {
   PauseRewardDistribution = 'pauseRewardDistribution',
   ResumeRewardDistribution = 'resumeRewardDistribution',
   FixRewardDistributor = 'fixRewardDistributor',
+
+  // Vote Delegation
+  UpdateDelegationConfig = 'updateDelegationConfig',
 }
 
 export type ActionAndData<

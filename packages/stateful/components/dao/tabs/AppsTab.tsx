@@ -4,13 +4,13 @@ import { useSetRecoilState } from 'recoil'
 
 import { latestProposalSaveAtom } from '@dao-dao/state/recoil'
 import { StatusCard, useActionsContext, useDao } from '@dao-dao/stateless'
+import { SingleChoiceNewProposalForm } from '@dao-dao/types'
 import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
   ProposalModuleAdapterCommonProvider,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../../proposal-module-adapter'
-import { NewProposalForm } from '../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { AppsRenderer, AppsRendererExecutorProps } from '../../apps'
 import { ProposalActionShoppingCart } from '../ProposalActionShoppingCart'
 
@@ -47,7 +47,7 @@ const AppsTabExecutor = ({
   const dao = useDao()
   const { t } = useTranslation()
   const { actionMap } = useActionsContext()
-  const setProposalSave = useSetRecoilState<NewProposalForm>(
+  const setProposalSave = useSetRecoilState<SingleChoiceNewProposalForm>(
     latestProposalSaveAtom(dao.proposalSaveLocalStorageKey)
   )
 
