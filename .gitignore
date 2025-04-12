@@ -2,7 +2,6 @@
 *.pem
 *.tsbuildinfo
 .DS_Store
-.DS_Store
 .idea/
 .next/
 .pnp.js
