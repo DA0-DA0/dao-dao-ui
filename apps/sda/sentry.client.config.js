@@ -46,5 +46,7 @@ Sentry.init({
     'not found in registry',
     // Some wallet extension causes this.
     "Cannot destructure property 'address' of '(intermediate value)' as it is undefined.",
+    'No indexer for chain',
+    'Error querying indexer',
   ],
 })
