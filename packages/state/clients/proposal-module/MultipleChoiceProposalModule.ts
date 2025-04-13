@@ -620,6 +620,15 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         },
       ],
       queryFn: async () => {
+        if (
+          !isFeatureSupportedByVersion(Feature.VoteDelegation, this.version)
+        ) {
+          return {
+            total: HugeDecimal.zero,
+            effective: HugeDecimal.zero,
+          }
+        }
+
         const [
           delegationModule,
           {

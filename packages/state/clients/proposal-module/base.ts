@@ -326,6 +326,12 @@ export abstract class ProposalModuleBase<
         },
       ],
       queryFn: async () => {
+        if (
+          !isFeatureSupportedByVersion(Feature.VoteDelegation, this.version)
+        ) {
+          return null
+        }
+
         const delegationModule = await this.queryClient.fetchQuery(
           this.getDelegationModuleQuery()
         )
