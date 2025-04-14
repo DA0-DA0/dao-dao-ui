@@ -1,0 +1,158 @@
+---
+description: An overview of the modular DAO contract and UI module architecture
+globs: 
+alwaysApply: false
+---
+
+# DAO Architecture
+
+Inspired by https://github.com/DA0-DA0/dao-contracts/wiki/DAO-DAO-Contracts-Design.
+
+The DAO DAO contracts are governance lego blocks. This enables highly
+customizable governance configurations that are upgradable in the face of
+vulnerabilities or bugs.
+
+## Overview
+
+Each DAO is composed of at least three modules:
+
+1. A core module. This handles execution of messages on behalf of the DAO and
+   holds the DAO's treasury.
+2. A voting power module. This module is responsible for determining
+   the voting power of members. For example, it may be based on how many
+   governance tokens you have staked, or multisig-style voting weights.
+3. At least one proposal module. Proposal modules are delegated authority to
+   execute actions on behalf of the DAO, and our default modules handle the
+   lifecycle of proposals (single and multiple choice voting). A DAO may
+   register more than one proposal module to support any number of proposal
+   types or implement custom execution flows.
+
+In addition, most DAOs our standard proposal modules utilize a pre-propose
+module to enable proposal deposits and gating for who may create a proposal.
+
+Modules are defined by their interface, not by their implementation. This
+enables DAOs to implement custom modules to support their governance
+requirements.
+
+## Core Module
+
+The core module executes messages on behalf of the proposal modules. To this end
+it exposes a `ExecuteProposalHook { msgs }` method. This method may only be
+called by proposal modules that have been registered with the core contract. For
+example, this may occur when a proposal module has passed a proposal and would
+like to execute it.
+
+The core module may also route queries between proposal modules and its voting
+module about voting power. To this end it implements the same interface for
+queries that voting modules must implement. Specifically, it implements a
+`VotingPowerAtHeight { addr, height }` and `TotalPowerAtHeight { height }`
+query. These queries will be proxied to the voting module and that response
+returned. This allows proposal modules to make voting power queries without
+needing any information about the current voting configuration.
+
+At all times the core contract must have one voting module associated with it
+and at least one proposal module associated with it.
+
+The core contract may add and remove proposal and voting modules at will by
+calling the `UpdateVotingModule` and `UpdateProposalModules` methods on itself.
+
+### SubDAOs
+
+To better support subDAOs the core contract may also be instantiated with an
+admin. This admin has the ability to execute messages on the core module outside
+of the regular governance flow. The current admin may also nominate a new admin
+or remove themselves. If no admin is set, the core module is considered its own
+admin and may nominate new admins itself. This admin functionality makes subDAOs
+accountable to their parent DAO.
+
+The process for assigning a new admin has two steps:
+
+1. The current admin nominates a new admin.
+2. The new admin accepts the nomination and becomes the admin.
+
+These are accomplished via the `NominateAdmin` and `AcceptAdminNomination`
+messages. The current admin may, at any time, withdraw their nomination by
+executing a `WithdrawAdminNomination` message. In order to nominate a new admin
+any outstanding nomination must be withdrawn.
+
+The admin is not able to execute messages on a paused subDAO.
+
+## Items
+
+Items are key value pairs stored in the core contract. Their key is a string and
+their value is a string. One may use these to store information like the social
+media addresses of a DAO, or the contract address of a related smart contract.
+
+The core contract may add and remove these items by calling the `SetItem` and
+`RemoveItem` methods on itself. In practice this occurs by proposal modules
+sending a execute hook that will cause the core contract to call that method on
+itself.
+
+### UI
+
+The UI uses items to store associated contracts and enabled modules.
+
+For example, to enable the Vesting Module in the UI, members of the DAO would
+create and vote on a proposal to instantiate a vesting contract and store its
+address as an item in the core contract. Later, the UI would read this item to
+detect if the module is enabled and if so, display the vesting tab on the DAO's
+page.
+
+## Voting Module
+
+Voting modules are responsible for tracking the voting power of DAO members as a
+function of block height. They implement a `VotingPowerAtHeight` and
+`TotalPowerAtHeight` query which other modules may use to determine the weight
+of an addresses' vote on a proposal. For voting modules that do voting based on
+a token the module may also implement a `TokenContract` query which will return
+the address of the token being used.
+
+Voting modules have an intentionally minimal interface. In practice, they are
+typically backed by aother contract which provides weights. For example, for
+token based DAOs voting power is determined by number of staked tokens. The
+voting power module then translates queries about staked balances into voting
+powers.
+
+## Proposal Modules
+
+Proposal modules are extremely flexible and don't have any particular interface
+they must implement. They only need to be aware of how to execute the proposal
+hook on the core contract.
+
+It is imagined that proposal contracts will mostly implement some kind of
+proposal and voting system. For example, they might support ranked choice
+voting, multiple choice voting, or quadratic voting. In practice, this is not
+enforced and a core contract may register any proposal contract it would like.
+
+`dao-proposal-single` is the standard proposal contract and allows for single
+choice (yes or no) voting. Proposal contracts can manage multiple proposals so a
+new one is not created for each proposal. In the case of `dao-proposal-single`
+the contract implements a variety of queries to help the frontend display
+proposal information. Future proposal module authors may consider implementing a
+similar interface.
+
+## Pre-propose Module
+
+Pre-propose modules are an additional configuration option for proposal modules
+that enable pre-flight checks for proposal creation. For example, a pre-propose
+module may:
+
+- require a proposal deposit is paid before proposal creation
+- only allow DAO members to create proposals
+- require a non-refundable payment of native tokens to create a proposal
+
+The above functionality is supported by the `dao-pre-propose-base` package and
+pre-propose module authors may use that to write pre-propose modules for their
+proposal modules.
+
+## Frontend Integration
+
+All modules in this system must implement an `Info {}` query which returns the
+contract's name and its version. To render a module the frontend will then query
+the core contract for its modules and then query those modules for their info.
+
+The UI implements adapter systems matching the modularity of the DAO contracts
+to create a flexible UI. Voting and proposal modules are the only two required
+types of modules; other optional modules and their creation/configuration
+mechanisms live entirely within the UI, which typically relies on the items in
+the core contract as storage and future detection.

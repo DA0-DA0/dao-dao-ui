@@ -1,0 +1,244 @@
+---
+description: A step by step guide to instantiating a DAO
+globs: 
+alwaysApply: false
+---
+
+## Instantiating a DAO
+
+This is an up-to-date example instantiating a v2.4.2 DAO on Osmosis Mainnet
+using an existing token.
+
+The values we need are:
+- Admin factory contract that instantiates a contract with its admin set to its own address
+- DAO Code IDs
+
+The admin factory can be found in
+[chains.ts](mdc:packages/utils/constants/chains.ts) and the DAO code IDs can be
+found in [codeIds.json](mdc:packages/utils/constants/codeIds.json) for all of
+the chains DAO DAO is deployed on.
+
+### Values
+
+For Osmosis mainnet:
+
+Admin factory: `osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p`
+
+DAO Code IDs:
+```
+DaoCore: 365
+DaoPreProposeMultiple: 359
+DaoPreProposeSingle: 360
+DaoProposalMultiple: 366
+DaoProposalSingle: 361
+DaoVotingCw4: 362
+DaoVotingCw721Staked: 363
+DaoVotingTokenStaked: 367
+```
+
+### Message generation
+
+The config is as follows:
+
+- 1% of tokens must be staked before the DAO is active (can create proposals)
+- Existing token (`DENOM`) used as the governance token (staked voting power)
+- 2 week unstaking period for staked voting power/tokens
+- No proposal deposit
+- Only members can submit proposals
+- No revoting
+- Proposals close on execution failure
+- 1 week voting period (unless an outcome is guaranteed sooner)
+- No minimum voting period (proposals pass/reject once outcome is guaranteed)
+- Only members can execute passed proposals
+- Majority passing threshold
+- 20% quorum
+
+#### Voting module
+
+For `dao-voting-token-staked`, this is the instantiation message:
+
+```
+{
+  "active_threshold": {
+    "percentage": {
+      "percent": "0.01"
+    }
+  },
+  "token_info": {
+    "existing": {
+      "denom": "DENOM"
+    }
+  },
+  "unstaking_duration": {
+    "time": 1209600
+  }
+}
+```
+
+which gets [base64-encoded](mdc:https:/www.base64encode.org) into:
+
+```
+ewogICJhY3RpdmVfdGhyZXNob2xkIjogewogICAgInBlcmNlbnRhZ2UiOiB7CiAgICAgICJwZXJjZW50IjogIjAuMDEiCiAgICB9CiAgfSwKICAidG9rZW5faW5mbyI6IHsKICAgICJleGlzdGluZyI6IHsKICAgICAgImRlbm9tIjogIkRFTk9NIgogICAgfQogIH0sCiAgInVuc3Rha2luZ19kdXJhdGlvbiI6IHsKICAgICJ0aW1lIjogMTIwOTYwMAogIH0KfQ==
+```
+
+#### Proposal modules
+
+We'll add two proposal modules: single choice and multiple choice. Each proposal
+module also contains a pre-propose module instantiation.
+
+Both `dao-pre-propose-single` and `dao-pre-propose-multiple` have the same
+instantiation msg:
+
+```
+{
+  "deposit_info": null,
+  "extension": {},
+  "open_proposal_submission": false
+}
+```
+```
+ewogICJkZXBvc2l0X2luZm8iOiBudWxsLAogICJleHRlbnNpb24iOiB7fSwKICAib3Blbl9wcm9wb3NhbF9zdWJtaXNzaW9uIjogZmFsc2UKfQ==
+```
+
+And then we can construct the proposal modules:
+
+`dao-proposal-single`:
+
+```
+{
+  "allow_revoting": false,
+  "close_proposal_on_execution_failure": true,
+  "max_voting_period": {
+    "time": 604800
+  },
+  "min_voting_period": null,
+  "only_members_execute": true,
+  "pre_propose_info": {
+    "module_may_propose": {
+      "info": {
+        "admin": {
+          "core_module": {}
+        },
+        "code_id": 360,
+        "label": "DAO_NAME_pre-propose_DaoProposalSingle",
+        "msg": "ewogICJkZXBvc2l0X2luZm8iOiBudWxsLAogICJleHRlbnNpb24iOiB7fSwKICAib3Blbl9wcm9wb3NhbF9zdWJtaXNzaW9uIjogZmFsc2UKfQ==",
+        "funds": []
+      }
+    }
+  },
+  "threshold": {
+    "threshold_quorum": {
+      "quorum": {
+        "percent": "0.20"
+      },
+      "threshold": {
+        "majority": {}
+      }
+    }
+  },
+  "veto": null
+}
+```
+```
+ewogICJhbGxvd19yZXZvdGluZyI6IGZhbHNlLAogICJjbG9zZV9wcm9wb3NhbF9vbl9leGVjdXRpb25fZmFpbHVyZSI6IHRydWUsCiAgIm1heF92b3RpbmdfcGVyaW9kIjogewogICAgInRpbWUiOiA2MDQ4MDAKICB9LAogICJtaW5fdm90aW5nX3BlcmlvZCI6IG51bGwsCiAgIm9ubHlfbWVtYmVyc19leGVjdXRlIjogdHJ1ZSwKICAicHJlX3Byb3Bvc2VfaW5mbyI6IHsKICAgICJtb2R1bGVfbWF5X3Byb3Bvc2UiOiB7CiAgICAgICJpbmZvIjogewogICAgICAgICJhZG1pbiI6IHsKICAgICAgICAgICJjb3JlX21vZHVsZSI6IHt9CiAgICAgICAgfSwKICAgICAgICAiY29kZV9pZCI6IDM2MCwKICAgICAgICAibGFiZWwiOiAiREFPX05BTUVfcHJlLXByb3Bvc2VfRGFvUHJvcG9zYWxTaW5nbGUiLAogICAgICAgICJtc2ciOiAiZXdvZ0lDSmtaWEJ2YzJsMFgybHVabThpT2lCdWRXeHNMQW9nSUNKbGVIUmxibk5wYjI0aU9pQjdmU3dLSUNBaWIzQmxibDl3Y205d2IzTmhiRjl6ZFdKdGFYTnphVzl1SWpvZ1ptRnNjMlVLZlE9PSIsCiAgICAgICAgImZ1bmRzIjogW10KICAgICAgfQogICAgfQogIH0sCiAgInRocmVzaG9sZCI6IHsKICAgICJ0aHJlc2hvbGRfcXVvcnVtIjogewogICAgICAicXVvcnVtIjogewogICAgICAgICJwZXJjZW50IjogIjAuMjAiCiAgICAgIH0sCiAgICAgICJ0aHJlc2hvbGQiOiB7CiAgICAgICAgIm1ham9yaXR5Ijoge30KICAgICAgfQogICAgfQogIH0sCiAgInZldG8iOiBudWxsCn0=
+```
+
+`dao-proposal-multiple`:
+
+```
+{
+  "allow_revoting": false,
+  "close_proposal_on_execution_failure": true,
+  "max_voting_period": {
+    "time": 604800
+  },
+  "min_voting_period": null,
+  "only_members_execute": true,
+  "pre_propose_info": {
+    "module_may_propose": {
+      "info": {
+        "admin": {
+          "core_module": {}
+        },
+        "code_id": 359,
+        "label": "DAO_NAME_pre-propose-DaoProposalMultiple",
+        "msg": "ewogICJkZXBvc2l0X2luZm8iOiBudWxsLAogICJleHRlbnNpb24iOiB7fSwKICAib3Blbl9wcm9wb3NhbF9zdWJtaXNzaW9uIjogZmFsc2UKfQ==",
+        "funds": []
+      }
+    }
+  },
+  "voting_strategy": {
+    "single_choice": {
+      "quorum": {
+        "percent": "0.20"
+      }
+    }
+  },
+  "veto": null
+}
+```
+```
+ewogICJhbGxvd19yZXZvdGluZyI6IGZhbHNlLAogICJjbG9zZV9wcm9wb3NhbF9vbl9leGVjdXRpb25fZmFpbHVyZSI6IHRydWUsCiAgIm1heF92b3RpbmdfcGVyaW9kIjogewogICAgInRpbWUiOiA2MDQ4MDAKICB9LAogICJtaW5fdm90aW5nX3BlcmlvZCI6IG51bGwsCiAgIm9ubHlfbWVtYmVyc19leGVjdXRlIjogdHJ1ZSwKICAicHJlX3Byb3Bvc2VfaW5mbyI6IHsKICAgICJtb2R1bGVfbWF5X3Byb3Bvc2UiOiB7CiAgICAgICJpbmZvIjogewogICAgICAgICJhZG1pbiI6IHsKICAgICAgICAgICJjb3JlX21vZHVsZSI6IHt9CiAgICAgICAgfSwKICAgICAgICAiY29kZV9pZCI6IDM1OSwKICAgICAgICAibGFiZWwiOiAiREFPX05BTUVfcHJlLXByb3Bvc2UtRGFvUHJvcG9zYWxNdWx0aXBsZSIsCiAgICAgICAgIm1zZyI6ICJld29nSUNKa1pYQnZjMmwwWDJsdVptOGlPaUJ1ZFd4c0xBb2dJQ0psZUhSbGJuTnBiMjRpT2lCN2ZTd0tJQ0FpYjNCbGJsOXdjbTl3YjNOaGJGOXpkV0p0YVhOemFXOXVJam9nWm1Gc2MyVUtmUT09IiwKICAgICAgICAiZnVuZHMiOiBbXQogICAgICB9CiAgICB9CiAgfSwKICAidm90aW5nX3N0cmF0ZWd5IjogewogICAgInNpbmdsZV9jaG9pY2UiOiB7CiAgICAgICJxdW9ydW0iOiB7CiAgICAgICAgInBlcmNlbnQiOiAiMC4yMCIKICAgICAgfQogICAgfQogIH0sCiAgInZldG8iOiBudWxsCn0=
+```
+
+### Final message
+
+Putting those base64-encoded messages into the DAO instantiation msg gives:
+
+```
+{
+  "admin": null,
+  "automatically_add_cw20s": true,
+  "automatically_add_cw721s": true,
+  "description": "DESCRIPTION",
+  "image_url": "IMAGE_URL",
+  "name": "NAME",
+  "proposal_modules_instantiate_info": [
+    {
+      "admin": {
+        "core_module": {}
+      },
+      "code_id": 361,
+      "label": "DAO_NAME_DaoProposalSingle",
+      "msg": "ewogICJhbGxvd19yZXZvdGluZyI6IGZhbHNlLAogICJjbG9zZV9wcm9wb3NhbF9vbl9leGVjdXRpb25fZmFpbHVyZSI6IHRydWUsCiAgIm1heF92b3RpbmdfcGVyaW9kIjogewogICAgInRpbWUiOiA2MDQ4MDAKICB9LAogICJtaW5fdm90aW5nX3BlcmlvZCI6IG51bGwsCiAgIm9ubHlfbWVtYmVyc19leGVjdXRlIjogdHJ1ZSwKICAicHJlX3Byb3Bvc2VfaW5mbyI6IHsKICAgICJtb2R1bGVfbWF5X3Byb3Bvc2UiOiB7CiAgICAgICJpbmZvIjogewogICAgICAgICJhZG1pbiI6IHsKICAgICAgICAgICJjb3JlX21vZHVsZSI6IHt9CiAgICAgICAgfSwKICAgICAgICAiY29kZV9pZCI6IDM2MCwKICAgICAgICAibGFiZWwiOiAiREFPX05BTUVfcHJlLXByb3Bvc2VfRGFvUHJvcG9zYWxTaW5nbGUiLAogICAgICAgICJtc2ciOiAiZXdvZ0lDSmtaWEJ2YzJsMFgybHVabThpT2lCdWRXeHNMQW9nSUNKbGVIUmxibk5wYjI0aU9pQjdmU3dLSUNBaWIzQmxibDl3Y205d2IzTmhiRjl6ZFdKdGFYTnphVzl1SWpvZ1ptRnNjMlVLZlE9PSIsCiAgICAgICAgImZ1bmRzIjogW10KICAgICAgfQogICAgfQogIH0sCiAgInRocmVzaG9sZCI6IHsKICAgICJ0aHJlc2hvbGRfcXVvcnVtIjogewogICAgICAicXVvcnVtIjogewogICAgICAgICJwZXJjZW50IjogIjAuMjAiCiAgICAgIH0sCiAgICAgICJ0aHJlc2hvbGQiOiB7CiAgICAgICAgIm1ham9yaXR5Ijoge30KICAgICAgfQogICAgfQogIH0sCiAgInZldG8iOiBudWxsCn0=",
+      "funds": []
+    },
+    {
+      "admin": {
+        "core_module": {}
+      },
+      "code_id": 366,
+      "label": "DAO_NAME_DaoProposalMultiple",
+      "msg": "ewogICJhbGxvd19yZXZvdGluZyI6IGZhbHNlLAogICJjbG9zZV9wcm9wb3NhbF9vbl9leGVjdXRpb25fZmFpbHVyZSI6IHRydWUsCiAgIm1heF92b3RpbmdfcGVyaW9kIjogewogICAgInRpbWUiOiA2MDQ4MDAKICB9LAogICJtaW5fdm90aW5nX3BlcmlvZCI6IG51bGwsCiAgIm9ubHlfbWVtYmVyc19leGVjdXRlIjogdHJ1ZSwKICAicHJlX3Byb3Bvc2VfaW5mbyI6IHsKICAgICJtb2R1bGVfbWF5X3Byb3Bvc2UiOiB7CiAgICAgICJpbmZvIjogewogICAgICAgICJhZG1pbiI6IHsKICAgICAgICAgICJjb3JlX21vZHVsZSI6IHt9CiAgICAgICAgfSwKICAgICAgICAiY29kZV9pZCI6IDM1OSwKICAgICAgICAibGFiZWwiOiAiREFPX05BTUVfcHJlLXByb3Bvc2UtRGFvUHJvcG9zYWxNdWx0aXBsZSIsCiAgICAgICAgIm1zZyI6ICJld29nSUNKa1pYQnZjMmwwWDJsdVptOGlPaUJ1ZFd4c0xBb2dJQ0psZUhSbGJuTnBiMjRpT2lCN2ZTd0tJQ0FpYjNCbGJsOXdjbTl3YjNOaGJGOXpkV0p0YVhOemFXOXVJam9nWm1Gc2MyVUtmUT09IiwKICAgICAgICAiZnVuZHMiOiBbXQogICAgICB9CiAgICB9CiAgfSwKICAidm90aW5nX3N0cmF0ZWd5IjogewogICAgInNpbmdsZV9jaG9pY2UiOiB7CiAgICAgICJxdW9ydW0iOiB7CiAgICAgICAgInBlcmNlbnQiOiAiMC4yMCIKICAgICAgfQogICAgfQogIH0sCiAgInZldG8iOiBudWxsCn0=",
+      "funds": []
+    }
+  ],
+  "voting_module_instantiate_info": {
+    "admin": {
+      "core_module": {}
+    },
+    "code_id": 367,
+    "label": "DAO_NAME_TokenBased_native",
+    "msg": "ewogICJhY3RpdmVfdGhyZXNob2xkIjogewogICAgInBlcmNlbnRhZ2UiOiB7CiAgICAgICJwZXJjZW50IjogIjAuMDEiCiAgICB9CiAgfSwKICAidG9rZW5faW5mbyI6IHsKICAgICJleGlzdGluZyI6IHsKICAgICAgImRlbm9tIjogIkRFTk9NIgogICAgfQogIH0sCiAgInVuc3Rha2luZ19kdXJhdGlvbiI6IHsKICAgICJ0aW1lIjogMTIwOTYwMAogIH0KfQ==",
+    "funds": []
+  }
+}
+```
+```
+ewogICJhZG1pbiI6IG51bGwsCiAgImF1dG9tYXRpY2FsbHlfYWRkX2N3MjBzIjogdHJ1ZSwKICAiYXV0b21hdGljYWxseV9hZGRfY3c3MjFzIjogdHJ1ZSwKICAiZGVzY3JpcHRpb24iOiAiREVTQ1JJUFRJT04iLAogICJpbWFnZV91cmwiOiAiSU1BR0VfVVJMIiwKICAibmFtZSI6ICJOQU1FIiwKICAicHJvcG9zYWxfbW9kdWxlc19pbnN0YW50aWF0ZV9pbmZvIjogWwogICAgewogICAgICAiYWRtaW4iOiB7CiAgICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgICAgfSwKICAgICAgImNvZGVfaWQiOiAzNjEsCiAgICAgICJsYWJlbCI6ICJEQU9fTkFNRV9EYW9Qcm9wb3NhbFNpbmdsZSIsCiAgICAgICJtc2ciOiAiZXdvZ0lDSmhiR3h2ZDE5eVpYWnZkR2x1WnlJNklHWmhiSE5sTEFvZ0lDSmpiRzl6WlY5d2NtOXdiM05oYkY5dmJsOWxlR1ZqZFhScGIyNWZabUZwYkhWeVpTSTZJSFJ5ZFdVc0NpQWdJbTFoZUY5MmIzUnBibWRmY0dWeWFXOWtJam9nZXdvZ0lDQWdJblJwYldVaU9pQTJNRFE0TURBS0lDQjlMQW9nSUNKdGFXNWZkbTkwYVc1blgzQmxjbWx2WkNJNklHNTFiR3dzQ2lBZ0ltOXViSGxmYldWdFltVnljMTlsZUdWamRYUmxJam9nZEhKMVpTd0tJQ0FpY0hKbFgzQnliM0J2YzJWZmFXNW1ieUk2SUhzS0lDQWdJQ0p0YjJSMWJHVmZiV0Y1WDNCeWIzQnZjMlVpT2lCN0NpQWdJQ0FnSUNKcGJtWnZJam9nZXdvZ0lDQWdJQ0FnSUNKaFpHMXBiaUk2SUhzS0lDQWdJQ0FnSUNBZ0lDSmpiM0psWDIxdlpIVnNaU0k2SUh0OUNpQWdJQ0FnSUNBZ2ZTd0tJQ0FnSUNBZ0lDQWlZMjlrWlY5cFpDSTZJRE0yTUN3S0lDQWdJQ0FnSUNBaWJHRmlaV3dpT2lBaVJFRlBYMDVCVFVWZmNISmxMWEJ5YjNCdmMyVmZSR0Z2VUhKdmNHOXpZV3hUYVc1bmJHVWlMQW9nSUNBZ0lDQWdJQ0p0YzJjaU9pQWlaWGR2WjBsRFNtdGFXRUoyWXpKc01GZ3liSFZhYlRocFQybENkV1JYZUhOTVFXOW5TVU5LYkdWSVVteGliazV3WWpJMGFVOXBRamRtVTNkTFNVTkJhV0l6UW14aWJEbDNZMjA1ZDJJelRtaGlSamw2WkZkS2RHRllUbnBoVnpsMVNXcHZaMXB0Um5Oak1sVkxabEU5UFNJc0NpQWdJQ0FnSUNBZ0ltWjFibVJ6SWpvZ1cxMEtJQ0FnSUNBZ2ZRb2dJQ0FnZlFvZ0lIMHNDaUFnSW5Sb2NtVnphRzlzWkNJNklIc0tJQ0FnSUNKMGFISmxjMmh2YkdSZmNYVnZjblZ0SWpvZ2V3b2dJQ0FnSUNBaWNYVnZjblZ0SWpvZ2V3b2dJQ0FnSUNBZ0lDSndaWEpqWlc1MElqb2dJakF1TWpBaUNpQWdJQ0FnSUgwc0NpQWdJQ0FnSUNKMGFISmxjMmh2YkdRaU9pQjdDaUFnSUNBZ0lDQWdJbTFoYW05eWFYUjVJam9nZTMwS0lDQWdJQ0FnZlFvZ0lDQWdmUW9nSUgwc0NpQWdJblpsZEc4aU9pQnVkV3hzQ24wPSIsCiAgICAgICJmdW5kcyI6IFtdCiAgICB9LAogICAgewogICAgICAiYWRtaW4iOiB7CiAgICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgICAgfSwKICAgICAgImNvZGVfaWQiOiAzNjYsCiAgICAgICJsYWJlbCI6ICJEQU9fTkFNRV9EYW9Qcm9wb3NhbE11bHRpcGxlIiwKICAgICAgIm1zZyI6ICJld29nSUNKaGJHeHZkMTl5WlhadmRHbHVaeUk2SUdaaGJITmxMQW9nSUNKamJHOXpaVjl3Y205d2IzTmhiRjl2Ymw5bGVHVmpkWFJwYjI1ZlptRnBiSFZ5WlNJNklIUnlkV1VzQ2lBZ0ltMWhlRjkyYjNScGJtZGZjR1Z5YVc5a0lqb2dld29nSUNBZ0luUnBiV1VpT2lBMk1EUTRNREFLSUNCOUxBb2dJQ0p0YVc1ZmRtOTBhVzVuWDNCbGNtbHZaQ0k2SUc1MWJHd3NDaUFnSW05dWJIbGZiV1Z0WW1WeWMxOWxlR1ZqZFhSbElqb2dkSEoxWlN3S0lDQWljSEpsWDNCeWIzQnZjMlZmYVc1bWJ5STZJSHNLSUNBZ0lDSnRiMlIxYkdWZmJXRjVYM0J5YjNCdmMyVWlPaUI3Q2lBZ0lDQWdJQ0pwYm1adklqb2dld29nSUNBZ0lDQWdJQ0poWkcxcGJpSTZJSHNLSUNBZ0lDQWdJQ0FnSUNKamIzSmxYMjF2WkhWc1pTSTZJSHQ5Q2lBZ0lDQWdJQ0FnZlN3S0lDQWdJQ0FnSUNBaVkyOWtaVjlwWkNJNklETTFPU3dLSUNBZ0lDQWdJQ0FpYkdGaVpXd2lPaUFpUkVGUFgwNUJUVVZmY0hKbExYQnliM0J2YzJVdFJHRnZVSEp2Y0c5ellXeE5kV3gwYVhCc1pTSXNDaUFnSUNBZ0lDQWdJbTF6WnlJNklDSmxkMjluU1VOS2ExcFlRblpqTW13d1dESnNkVnB0T0dsUGFVSjFaRmQ0YzB4QmIyZEpRMHBzWlVoU2JHSnVUbkJpTWpScFQybENOMlpUZDB0SlEwRnBZak5DYkdKc09YZGpiVGwzWWpOT2FHSkdPWHBrVjBwMFlWaE9lbUZYT1hWSmFtOW5XbTFHYzJNeVZVdG1VVDA5SWl3S0lDQWdJQ0FnSUNBaVpuVnVaSE1pT2lCYlhRb2dJQ0FnSUNCOUNpQWdJQ0I5Q2lBZ2ZTd0tJQ0FpZG05MGFXNW5YM04wY21GMFpXZDVJam9nZXdvZ0lDQWdJbk5wYm1kc1pWOWphRzlwWTJVaU9pQjdDaUFnSUNBZ0lDSnhkVzl5ZFcwaU9pQjdDaUFnSUNBZ0lDQWdJbkJsY21ObGJuUWlPaUFpTUM0eU1DSUtJQ0FnSUNBZ2ZRb2dJQ0FnZlFvZ0lIMHNDaUFnSW5abGRHOGlPaUJ1ZFd4c0NuMD0iLAogICAgICAiZnVuZHMiOiBbXQogICAgfQogIF0sCiAgInZvdGluZ19tb2R1bGVfaW5zdGFudGlhdGVfaW5mbyI6IHsKICAgICJhZG1pbiI6IHsKICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgIH0sCiAgICAiY29kZV9pZCI6IDM2NywKICAgICJsYWJlbCI6ICJEQU9fTkFNRV9Ub2tlbkJhc2VkX25hdGl2ZSIsCiAgICAibXNnIjogImV3b2dJQ0poWTNScGRtVmZkR2h5WlhOb2IyeGtJam9nZXdvZ0lDQWdJbkJsY21ObGJuUmhaMlVpT2lCN0NpQWdJQ0FnSUNKd1pYSmpaVzUwSWpvZ0lqQXVNREVpQ2lBZ0lDQjlDaUFnZlN3S0lDQWlkRzlyWlc1ZmFXNW1ieUk2SUhzS0lDQWdJQ0psZUdsemRHbHVaeUk2SUhzS0lDQWdJQ0FnSW1SbGJtOXRJam9nSWtSRlRrOU5JZ29nSUNBZ2ZRb2dJSDBzQ2lBZ0luVnVjM1JoYTJsdVoxOWtkWEpoZEdsdmJpSTZJSHNLSUNBZ0lDSjBhVzFsSWpvZ01USXdPVFl3TUFvZ0lIMEtmUT09IiwKICAgICJmdW5kcyI6IFtdCiAgfQp9
+```
+
+To create the DAO using the admin factory, so that the DAO is its own admin, the
+execution message needed is:
+
+```
+{
+  "instantiate_contract_with_self_admin": {
+    "code_id": 365,
+    "instantiate_msg": "ewogICJhZG1pbiI6IG51bGwsCiAgImF1dG9tYXRpY2FsbHlfYWRkX2N3MjBzIjogdHJ1ZSwKICAiYXV0b21hdGljYWxseV9hZGRfY3c3MjFzIjogdHJ1ZSwKICAiZGVzY3JpcHRpb24iOiAiREVTQ1JJUFRJT04iLAogICJpbWFnZV91cmwiOiAiSU1BR0VfVVJMIiwKICAibmFtZSI6ICJOQU1FIiwKICAicHJvcG9zYWxfbW9kdWxlc19pbnN0YW50aWF0ZV9pbmZvIjogWwogICAgewogICAgICAiYWRtaW4iOiB7CiAgICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgICAgfSwKICAgICAgImNvZGVfaWQiOiAzNjEsCiAgICAgICJsYWJlbCI6ICJEQU9fTkFNRV9EYW9Qcm9wb3NhbFNpbmdsZSIsCiAgICAgICJtc2ciOiAiZXdvZ0lDSmhiR3h2ZDE5eVpYWnZkR2x1WnlJNklHWmhiSE5sTEFvZ0lDSmpiRzl6WlY5d2NtOXdiM05oYkY5dmJsOWxlR1ZqZFhScGIyNWZabUZwYkhWeVpTSTZJSFJ5ZFdVc0NpQWdJbTFoZUY5MmIzUnBibWRmY0dWeWFXOWtJam9nZXdvZ0lDQWdJblJwYldVaU9pQTJNRFE0TURBS0lDQjlMQW9nSUNKdGFXNWZkbTkwYVc1blgzQmxjbWx2WkNJNklHNTFiR3dzQ2lBZ0ltOXViSGxmYldWdFltVnljMTlsZUdWamRYUmxJam9nZEhKMVpTd0tJQ0FpY0hKbFgzQnliM0J2YzJWZmFXNW1ieUk2SUhzS0lDQWdJQ0p0YjJSMWJHVmZiV0Y1WDNCeWIzQnZjMlVpT2lCN0NpQWdJQ0FnSUNKcGJtWnZJam9nZXdvZ0lDQWdJQ0FnSUNKaFpHMXBiaUk2SUhzS0lDQWdJQ0FnSUNBZ0lDSmpiM0psWDIxdlpIVnNaU0k2SUh0OUNpQWdJQ0FnSUNBZ2ZTd0tJQ0FnSUNBZ0lDQWlZMjlrWlY5cFpDSTZJRE0yTUN3S0lDQWdJQ0FnSUNBaWJHRmlaV3dpT2lBaVJFRlBYMDVCVFVWZmNISmxMWEJ5YjNCdmMyVmZSR0Z2VUhKdmNHOXpZV3hUYVc1bmJHVWlMQW9nSUNBZ0lDQWdJQ0p0YzJjaU9pQWlaWGR2WjBsRFNtdGFXRUoyWXpKc01GZ3liSFZhYlRocFQybENkV1JYZUhOTVFXOW5TVU5LYkdWSVVteGliazV3WWpJMGFVOXBRamRtVTNkTFNVTkJhV0l6UW14aWJEbDNZMjA1ZDJJelRtaGlSamw2WkZkS2RHRllUbnBoVnpsMVNXcHZaMXB0Um5Oak1sVkxabEU5UFNJc0NpQWdJQ0FnSUNBZ0ltWjFibVJ6SWpvZ1cxMEtJQ0FnSUNBZ2ZRb2dJQ0FnZlFvZ0lIMHNDaUFnSW5Sb2NtVnphRzlzWkNJNklIc0tJQ0FnSUNKMGFISmxjMmh2YkdSZmNYVnZjblZ0SWpvZ2V3b2dJQ0FnSUNBaWNYVnZjblZ0SWpvZ2V3b2dJQ0FnSUNBZ0lDSndaWEpqWlc1MElqb2dJakF1TWpBaUNpQWdJQ0FnSUgwc0NpQWdJQ0FnSUNKMGFISmxjMmh2YkdRaU9pQjdDaUFnSUNBZ0lDQWdJbTFoYW05eWFYUjVJam9nZTMwS0lDQWdJQ0FnZlFvZ0lDQWdmUW9nSUgwc0NpQWdJblpsZEc4aU9pQnVkV3hzQ24wPSIsCiAgICAgICJmdW5kcyI6IFtdCiAgICB9LAogICAgewogICAgICAiYWRtaW4iOiB7CiAgICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgICAgfSwKICAgICAgImNvZGVfaWQiOiAzNjYsCiAgICAgICJsYWJlbCI6ICJEQU9fTkFNRV9EYW9Qcm9wb3NhbE11bHRpcGxlIiwKICAgICAgIm1zZyI6ICJld29nSUNKaGJHeHZkMTl5WlhadmRHbHVaeUk2SUdaaGJITmxMQW9nSUNKamJHOXpaVjl3Y205d2IzTmhiRjl2Ymw5bGVHVmpkWFJwYjI1ZlptRnBiSFZ5WlNJNklIUnlkV1VzQ2lBZ0ltMWhlRjkyYjNScGJtZGZjR1Z5YVc5a0lqb2dld29nSUNBZ0luUnBiV1VpT2lBMk1EUTRNREFLSUNCOUxBb2dJQ0p0YVc1ZmRtOTBhVzVuWDNCbGNtbHZaQ0k2SUc1MWJHd3NDaUFnSW05dWJIbGZiV1Z0WW1WeWMxOWxlR1ZqZFhSbElqb2dkSEoxWlN3S0lDQWljSEpsWDNCeWIzQnZjMlZmYVc1bWJ5STZJSHNLSUNBZ0lDSnRiMlIxYkdWZmJXRjVYM0J5YjNCdmMyVWlPaUI3Q2lBZ0lDQWdJQ0pwYm1adklqb2dld29nSUNBZ0lDQWdJQ0poWkcxcGJpSTZJSHNLSUNBZ0lDQWdJQ0FnSUNKamIzSmxYMjF2WkhWc1pTSTZJSHQ5Q2lBZ0lDQWdJQ0FnZlN3S0lDQWdJQ0FnSUNBaVkyOWtaVjlwWkNJNklETTFPU3dLSUNBZ0lDQWdJQ0FpYkdGaVpXd2lPaUFpUkVGUFgwNUJUVVZmY0hKbExYQnliM0J2YzJVdFJHRnZVSEp2Y0c5ellXeE5kV3gwYVhCc1pTSXNDaUFnSUNBZ0lDQWdJbTF6WnlJNklDSmxkMjluU1VOS2ExcFlRblpqTW13d1dESnNkVnB0T0dsUGFVSjFaRmQ0YzB4QmIyZEpRMHBzWlVoU2JHSnVUbkJpTWpScFQybENOMlpUZDB0SlEwRnBZak5DYkdKc09YZGpiVGwzWWpOT2FHSkdPWHBrVjBwMFlWaE9lbUZYT1hWSmFtOW5XbTFHYzJNeVZVdG1VVDA5SWl3S0lDQWdJQ0FnSUNBaVpuVnVaSE1pT2lCYlhRb2dJQ0FnSUNCOUNpQWdJQ0I5Q2lBZ2ZTd0tJQ0FpZG05MGFXNW5YM04wY21GMFpXZDVJam9nZXdvZ0lDQWdJbk5wYm1kc1pWOWphRzlwWTJVaU9pQjdDaUFnSUNBZ0lDSnhkVzl5ZFcwaU9pQjdDaUFnSUNBZ0lDQWdJbkJsY21ObGJuUWlPaUFpTUM0eU1DSUtJQ0FnSUNBZ2ZRb2dJQ0FnZlFvZ0lIMHNDaUFnSW5abGRHOGlPaUJ1ZFd4c0NuMD0iLAogICAgICAiZnVuZHMiOiBbXQogICAgfQogIF0sCiAgInZvdGluZ19tb2R1bGVfaW5zdGFudGlhdGVfaW5mbyI6IHsKICAgICJhZG1pbiI6IHsKICAgICAgImNvcmVfbW9kdWxlIjoge30KICAgIH0sCiAgICAiY29kZV9pZCI6IDM2NywKICAgICJsYWJlbCI6ICJEQU9fTkFNRV9Ub2tlbkJhc2VkX25hdGl2ZSIsCiAgICAibXNnIjogImV3b2dJQ0poWTNScGRtVmZkR2h5WlhOb2IyeGtJam9nZXdvZ0lDQWdJbkJsY21ObGJuUmhaMlVpT2lCN0NpQWdJQ0FnSUNKd1pYSmpaVzUwSWpvZ0lqQXVNREVpQ2lBZ0lDQjlDaUFnZlN3S0lDQWlkRzlyWlc1ZmFXNW1ieUk2SUhzS0lDQWdJQ0psZUdsemRHbHVaeUk2SUhzS0lDQWdJQ0FnSW1SbGJtOXRJam9nSWtSRlRrOU5JZ29nSUNBZ2ZRb2dJSDBzQ2lBZ0luVnVjM1JoYTJsdVoxOWtkWEpoZEdsdmJpSTZJSHNLSUNBZ0lDSjBhVzFsSWpvZ01USXdPVFl3TUFvZ0lIMEtmUT09IiwKICAgICJmdW5kcyI6IFtdCiAgfQp9",
+    "label": "NAME"
+  }
+}
+```
+
+to be executed on `osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p`
