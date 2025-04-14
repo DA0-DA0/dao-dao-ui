@@ -6,7 +6,7 @@ import { UploadCodeComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / UploadCode',
+    'DAO DAO / packages / stateful / actions / core / actions / UploadCode',
   component: UploadCodeComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof UploadCodeComponent>

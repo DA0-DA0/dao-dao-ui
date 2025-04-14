@@ -7,7 +7,7 @@ import { ManageVetoableDaosComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / ManageVetoableDaos',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageVetoableDaos',
   component: ManageVetoableDaosComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageVetoableDaosComponent>

@@ -21,7 +21,7 @@ import { AuthzGrantRevokeData } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / authorizations / AuthzGrantRevoke',
+    'DAO DAO / packages / stateful / actions / core / actions / AuthzGrantRevoke',
   component: AuthzGrantRevokeComponent,
   decorators: [
     makeReactHookFormDecorator<AuthzGrantRevokeData>({

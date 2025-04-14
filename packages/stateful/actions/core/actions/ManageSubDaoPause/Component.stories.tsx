@@ -7,7 +7,7 @@ import { ManageSubDaoPauseComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / ManageSubDaoPause',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageSubDaoPause',
   component: ManageSubDaoPauseComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageSubDaoPauseComponent>

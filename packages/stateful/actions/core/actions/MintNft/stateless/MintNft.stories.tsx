@@ -13,8 +13,7 @@ import { MintNftData } from '../types'
 import { MintNft } from './MintNft'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / core / nfts / MintNft / stateless / MintNft',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / MintNft',
   component: MintNft,
   decorators: [
     makeReactHookFormDecorator<MintNftData>({

@@ -10,7 +10,7 @@ import { UpdateAdminComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / UpdateAdmin',
+    'DAO DAO / packages / stateful / actions / core / actions / UpdateAdmin',
   component: UpdateAdminComponent,
   decorators: [
     ReactHookFormDecorator,

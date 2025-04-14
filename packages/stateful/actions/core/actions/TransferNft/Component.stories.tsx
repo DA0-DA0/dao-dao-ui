@@ -15,7 +15,8 @@ import { NftSelectionModal } from '../../../../components'
 import { TransferNftComponent } from './Component'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / core / nfts / TransferNft',
+  title:
+    'DAO DAO / packages / stateful / actions / core / actions / TransferNft',
   component: TransferNftComponent,
   decorators: [
     ReactHookFormDecorator,

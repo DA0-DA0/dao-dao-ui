@@ -10,7 +10,7 @@ import { ManageWidgetsComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_appearance / ManageWidgets',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageWidgets',
   component: ManageWidgetsComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageWidgetsComponent>

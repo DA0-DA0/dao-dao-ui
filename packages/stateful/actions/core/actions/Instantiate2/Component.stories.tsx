@@ -8,7 +8,7 @@ import { Instantiate2Component } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / Instantiate2',
+    'DAO DAO / packages / stateful / actions / core / actions / Instantiate2',
   component: Instantiate2Component,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof Instantiate2Component>

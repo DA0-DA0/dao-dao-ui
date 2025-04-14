@@ -13,7 +13,7 @@ import { getNativeTokenForChainId } from '@dao-dao/utils'
 import { SpendComponent, SpendData } from './Component'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / core / treasury / Spend',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / Spend',
   component: SpendComponent,
   decorators: [
     makeReactHookFormDecorator<SpendData>({

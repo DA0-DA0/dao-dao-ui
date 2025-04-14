@@ -7,8 +7,7 @@ import { getFallbackImage, getNativeTokenForChainId } from '@dao-dao/utils'
 import { ExecuteComponent } from './Component'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / Execute',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / Execute',
   component: ExecuteComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ExecuteComponent>

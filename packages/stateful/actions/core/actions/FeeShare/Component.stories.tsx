@@ -7,8 +7,7 @@ import { AddressInput } from '../../../../components/AddressInput'
 import { FeeShareComponent, FeeShareData } from './Component'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / FeeShare',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / FeeShare',
   component: FeeShareComponent,
   decorators: [
     makeReactHookFormDecorator<FeeShareData>({

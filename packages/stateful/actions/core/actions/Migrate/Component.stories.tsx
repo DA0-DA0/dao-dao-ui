@@ -10,7 +10,7 @@ import { MigrateContractComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / smart_contracting / MigrateContract',
+    'DAO DAO / packages / stateful / actions / core / actions / MigrateContract',
   component: MigrateContractComponent,
   decorators: [
     ReactHookFormDecorator,

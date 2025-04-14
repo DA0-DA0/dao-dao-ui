@@ -12,7 +12,7 @@ import { ExecuteProposalComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / ExecuteProposal',
+    'DAO DAO / packages / stateful / actions / core / actions / ExecuteProposal',
   component: ExecuteProposalComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ExecuteProposalComponent>

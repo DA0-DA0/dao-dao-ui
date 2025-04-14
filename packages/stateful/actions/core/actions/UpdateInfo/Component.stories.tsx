@@ -10,7 +10,7 @@ import { UpdateInfoComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_appearance / UpdateInfo',
+    'DAO DAO / packages / stateful / actions / core / actions / UpdateInfo',
   component: UpdateInfoComponent,
   decorators: [
     ReactHookFormDecorator,

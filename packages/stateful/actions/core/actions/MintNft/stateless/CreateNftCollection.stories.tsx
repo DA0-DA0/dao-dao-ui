@@ -13,7 +13,7 @@ import { CreateNftCollection } from './CreateNftCollection'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / nfts / MintNft / stateless / CreateNftCollection',
+    'DAO DAO / packages / stateful / actions / core / actions / CreateNftCollection',
   component: CreateNftCollection,
   decorators: [
     makeReactHookFormDecorator<MintNftData>({

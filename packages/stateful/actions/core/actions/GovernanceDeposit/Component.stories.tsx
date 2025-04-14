@@ -14,7 +14,7 @@ import { GovernanceDepositComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceDeposit',
+    'DAO DAO / packages / stateful / actions / core / actions / GovernanceDeposit',
   component: GovernanceDepositComponent,
   decorators: [ReactHookFormDecorator],
   excludeStories: ['makeProposal'],

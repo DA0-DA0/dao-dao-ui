@@ -12,7 +12,7 @@ import { ExistingTokenSwap } from './ExistingTokenSwap'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / token_swap / ExistingTokenSwap',
+    'DAO DAO / packages / stateful / actions / core / actions / ExistingTokenSwap',
   component: ExistingTokenSwap,
 
   decorators: [

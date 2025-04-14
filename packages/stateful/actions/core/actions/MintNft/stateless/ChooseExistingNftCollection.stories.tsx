@@ -12,7 +12,7 @@ import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / nfts / MintNft / stateless / ChooseExistingNftCollection',
+    'DAO DAO / packages / stateful / actions / core / actions / ChooseExistingNftCollection',
   component: ChooseExistingNftCollection,
 
   decorators: [

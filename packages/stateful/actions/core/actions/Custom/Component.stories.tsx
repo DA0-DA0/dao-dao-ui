@@ -5,7 +5,7 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { CustomComponent } from './Component'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / core / advanced / Custom',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / Custom',
   component: CustomComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof CustomComponent>

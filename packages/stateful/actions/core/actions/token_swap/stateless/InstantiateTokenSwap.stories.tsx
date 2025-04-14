@@ -16,7 +16,7 @@ import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / token_swap / InstantiateTokenSwap',
+    'DAO DAO / packages / stateful / actions / core / actions / InstantiateTokenSwap',
   component: InstantiateTokenSwap,
   decorators: [
     makeReactHookFormDecorator<PerformTokenSwapData>({

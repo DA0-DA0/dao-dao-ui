@@ -11,7 +11,7 @@ import { VetoProposalComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / VetoProposal',
+    'DAO DAO / packages / stateful / actions / core / actions / VetoProposal',
   component: VetoProposalComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof VetoProposalComponent>

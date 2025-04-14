@@ -14,7 +14,7 @@ import { NftSelectionModal } from '../../../../components'
 import { BurnNft } from './Component'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / core / nfts / BurnNft',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / BurnNft',
   component: BurnNft,
   decorators: [
     ReactHookFormDecorator,

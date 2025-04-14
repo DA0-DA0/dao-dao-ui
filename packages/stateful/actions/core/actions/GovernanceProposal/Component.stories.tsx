@@ -15,7 +15,7 @@ import { GovernanceProposalComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceProposal',
+    'DAO DAO / packages / stateful / actions / core / actions / GovernanceProposal',
   component: GovernanceProposalComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof GovernanceProposalComponent>

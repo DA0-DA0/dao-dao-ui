@@ -6,7 +6,7 @@ import { ValidatorActionsComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / chain_governance / ValidatorActions',
+    'DAO DAO / packages / stateful / actions / core / actions / ValidatorActions',
   component: ValidatorActionsComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ValidatorActionsComponent>

@@ -6,7 +6,7 @@ import { ManageCw20Component } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / ManageCw20',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageCw20',
   component: ManageCw20Component,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageCw20Component>

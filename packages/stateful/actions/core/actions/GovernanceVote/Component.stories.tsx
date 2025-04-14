@@ -9,7 +9,7 @@ import { GovernanceVoteComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceVote',
+    'DAO DAO / packages / stateful / actions / core / actions / GovernanceVote',
   component: GovernanceVoteComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof GovernanceVoteComponent>

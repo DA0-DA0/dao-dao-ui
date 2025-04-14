@@ -10,7 +10,7 @@ import { ResumeRebalancerComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / valence / ResumeRebalancer',
+    'DAO DAO / packages / stateful / actions / core / actions / ResumeRebalancer',
   component: ResumeRebalancerComponent,
   decorators: [
     ReactHookFormDecorator,

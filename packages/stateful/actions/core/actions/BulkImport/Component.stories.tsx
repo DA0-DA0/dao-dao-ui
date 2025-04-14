@@ -12,7 +12,7 @@ import { BulkImportComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / advanced / BulkImportComponent',
+    'DAO DAO / packages / stateful / actions / core / actions / BulkImportComponent',
   component: BulkImportComponent,
   decorators: [
     makeDaoProvidersDecorator(makeDaoInfo()),

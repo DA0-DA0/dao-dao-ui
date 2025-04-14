@@ -12,7 +12,7 @@ import { UploadNftMetadata } from './UploadNftMetadata'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / nfts / MintNft / stateless / UploadNftMetadata',
+    'DAO DAO / packages / stateful / actions / core / actions / UploadNftMetadata',
   component: UploadNftMetadata,
   decorators: [
     makeReactHookFormDecorator<MintNftData>({

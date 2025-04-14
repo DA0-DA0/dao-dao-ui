@@ -8,7 +8,7 @@ import { ManageSubDaosComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / subdaos / ManageSubDaos',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageSubDaos',
   component: ManageSubDaosComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageSubDaosComponent>

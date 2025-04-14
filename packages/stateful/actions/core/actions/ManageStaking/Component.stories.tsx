@@ -12,7 +12,7 @@ import { ManageStakingComponent, ManageStakingData } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / ManageStaking',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageStaking',
   component: ManageStakingComponent,
   decorators: [
     makeReactHookFormDecorator<ManageStakingData>({

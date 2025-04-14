@@ -6,7 +6,7 @@ import { ChainId } from '@dao-dao/types'
 import { HideIcaComponent } from './Component'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / core / advanced / HideIca',
+  title: 'DAO DAO / packages / stateful / actions / core / actions / HideIca',
   component: HideIcaComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof HideIcaComponent>

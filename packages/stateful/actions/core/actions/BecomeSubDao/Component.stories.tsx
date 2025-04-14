@@ -7,7 +7,7 @@ import { BecomeSubDaoComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / subdaos / BecomeSubDao',
+    'DAO DAO / packages / stateful / actions / core / actions / BecomeSubDao',
   component: BecomeSubDaoComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof BecomeSubDaoComponent>

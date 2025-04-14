@@ -11,7 +11,7 @@ import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / treasury / token_swap / ChooseExistingTokenSwap',
+    'DAO DAO / packages / stateful / actions / core / actions / ChooseExistingTokenSwap',
   component: ChooseExistingTokenSwap,
 
   decorators: [

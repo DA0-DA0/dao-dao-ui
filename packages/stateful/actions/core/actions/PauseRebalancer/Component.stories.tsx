@@ -10,7 +10,7 @@ import { PauseRebalancerComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / valence / PauseRebalancer',
+    'DAO DAO / packages / stateful / actions / core / actions / PauseRebalancer',
   component: PauseRebalancerComponent,
   decorators: [
     ReactHookFormDecorator,

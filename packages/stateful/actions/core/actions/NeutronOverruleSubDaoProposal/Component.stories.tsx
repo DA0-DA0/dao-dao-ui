@@ -7,7 +7,7 @@ import { NeutronOverruleSubDaoProposalComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / NeutronOverruleSubDaoProposal',
+    'DAO DAO / packages / stateful / actions / core / actions / NeutronOverruleSubDaoProposal',
   component: NeutronOverruleSubDaoProposalComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof NeutronOverruleSubDaoProposalComponent>

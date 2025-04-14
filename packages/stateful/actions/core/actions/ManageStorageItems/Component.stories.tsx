@@ -9,7 +9,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / dao_governance / ManageStorageItems',
+    'DAO DAO / packages / stateful / actions / core / actions / ManageStorageItems',
   component: ManageStorageItemsComponent,
   decorators: [
     makeReactHookFormDecorator<ManageStorageItemsData>({
