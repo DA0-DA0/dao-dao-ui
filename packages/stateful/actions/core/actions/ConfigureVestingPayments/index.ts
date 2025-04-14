@@ -2,9 +2,9 @@ import cloneDeep from 'lodash.clonedeep'
 
 import { ActionBase, SuitAndTieEmoji } from '@dao-dao/stateless'
 import {
+  ModuleId,
   UnifiedCosmosMsg,
-  VestingPaymentsWidgetData,
-  WidgetId,
+  VestingPaymentsModuleData,
 } from '@dao-dao/types'
 import {
   ActionContextType,
@@ -13,26 +13,25 @@ import {
   ActionOptions,
   ProcessedMessage,
 } from '@dao-dao/types/actions'
-import { getWidgetStorageItemKey } from '@dao-dao/utils'
 
-import { ManageWidgetsAction } from '../ManageWidgets'
+import { getModuleById } from '../../../../modules'
+import { ManageModulesAction } from '../ManageModules'
 import { ConfigureVestingPaymentsComponent } from './Component'
 
-export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsWidgetData> {
+export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsModuleData> {
   public readonly key = ActionKey.ConfigureVestingPayments
   public readonly Component = ConfigureVestingPaymentsComponent
 
-  private manageWidgetsAction: ManageWidgetsAction
+  private manageModulesAction: ManageModulesAction
 
   constructor(options: ActionOptions) {
     if (options.context.type !== ActionContextType.Dao) {
       throw new Error('Not DAO context')
     }
 
-    const enabled =
-      !!options.context.dao.info.items[
-        getWidgetStorageItemKey(WidgetId.VestingPayments)
-      ]
+    const enabled = options.context.dao.isModuleEnabled(
+      ModuleId.VestingPayments
+    )
 
     super(options, {
       Icon: SuitAndTieEmoji,
@@ -41,52 +40,52 @@ export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsWi
         : options.t('title.enableVestingPayments'),
       description: enabled
         ? options.t('info.configureVestingPaymentsDescription')
-        : options.t('widgetDescription.vesting'),
+        : getModuleById(ModuleId.VestingPayments)?.description || '',
       keywords: ['payroll'],
       notReusable: true,
     })
 
-    this.manageWidgetsAction = new ManageWidgetsAction(options)
+    this.manageModulesAction = new ManageModulesAction(options)
   }
 
   async setup() {
-    await this.manageWidgetsAction.setup()
+    await this.manageModulesAction.setup()
 
-    // Attempt to load existing widget data.
-    const widget = this.manageWidgetsAction.dao.widgets.find(
-      ({ id }) => id === WidgetId.VestingPayments
+    // Attempt to load existing module data.
+    const module = this.manageModulesAction.dao.modules.find(
+      ({ id }) => id === ModuleId.VestingPayments
     )
 
-    this._defaults = widget
-      ? cloneDeep(widget.values)
+    this._defaults = module
+      ? cloneDeep(module.values)
       : {
           factories: {},
         }
   }
 
-  encode(data: VestingPaymentsWidgetData): Promise<UnifiedCosmosMsg[]> {
-    return this.manageWidgetsAction.encode({
+  encode(data: VestingPaymentsModuleData): Promise<UnifiedCosmosMsg[]> {
+    return this.manageModulesAction.encode({
       mode: 'set',
-      id: WidgetId.VestingPayments,
+      id: ModuleId.VestingPayments,
       values: data,
       extra: {},
     })
   }
 
   async match(messages: ProcessedMessage[]): Promise<ActionMatch> {
-    const manageWidgetsMatch = this.manageWidgetsAction.match(messages)
-    if (!manageWidgetsMatch) {
-      return manageWidgetsMatch
+    const manageModulesMatch = this.manageModulesAction.match(messages)
+    if (!manageModulesMatch) {
+      return manageModulesMatch
     }
 
-    // Ensure this is setting the vesting payments widget item.
-    const { mode, id } = await this.manageWidgetsAction.decode(messages)
-    return mode === 'set' && id === WidgetId.VestingPayments
+    // Ensure this is setting the vesting payments module item.
+    const { mode, id } = await this.manageModulesAction.decode(messages)
+    return mode === 'set' && id === ModuleId.VestingPayments
   }
 
   async decode(
     messages: ProcessedMessage[]
-  ): Promise<VestingPaymentsWidgetData> {
-    return (await this.manageWidgetsAction.decode(messages)).values
+  ): Promise<VestingPaymentsModuleData> {
+    return (await this.manageModulesAction.decode(messages)).values
   }
 }

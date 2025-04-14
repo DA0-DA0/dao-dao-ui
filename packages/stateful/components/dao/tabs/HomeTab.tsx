@@ -10,24 +10,24 @@ import {
   useCachedLoadable,
   useDao,
 } from '@dao-dao/stateless'
-import { CheckedDepositInfo, DaoPageMode, WidgetId } from '@dao-dao/types'
+import { CheckedDepositInfo, DaoPageMode, ModuleId } from '@dao-dao/types'
 import { getDaoRewardDistributors } from '@dao-dao/utils'
 
 import {
   useDaoGovernanceToken,
   useDaoWithWalletSecretNetworkPermit,
 } from '../../../hooks'
+import { useModule } from '../../../modules'
 import { matchAndLoadCommon } from '../../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../../voting-module-adapter'
-import { useWidget } from '../../../widgets'
 import { ButtonLink } from '../../ButtonLink'
 import { ConnectWallet } from '../../ConnectWallet'
 import { LinkWrapper } from '../../LinkWrapper'
 import { CreateDaoPermit } from '../CreateDaoPermit'
+import { DaoModules } from '../DaoModules'
 import { DaoRewardsDistributorActiveDistributionsCard } from '../DaoRewardsDistributorActiveDistributionsCard'
 import { DaoRewardsDistributorClaimCard } from '../DaoRewardsDistributorClaimCard'
 import { DaoVoteDelegationCard } from '../DaoVoteDelegationCard'
-import { DaoWidgets } from '../DaoWidgets'
 import { MainDaoInfoCards } from '../MainDaoInfoCards'
 
 export const HomeTab = () => {
@@ -75,7 +75,7 @@ export const HomeTab = () => {
             HugeDecimal.zero
           )
 
-  const hasVoteDelegation = !!useWidget(WidgetId.VoteDelegation)
+  const hasVoteDelegation = !!useModule(ModuleId.VoteDelegation)
 
   const hasRewardDistributors =
     getDaoRewardDistributors(dao.info.items).length > 0
@@ -147,7 +147,7 @@ export const HomeTab = () => {
 
       <MainDaoInfoCards />
 
-      <DaoWidgets />
+      <DaoModules />
     </div>
   )
 }

@@ -163,7 +163,7 @@ export class MintNftAction extends ActionBase<MintNftData> {
       Icon: CameraWithFlashEmoji,
       label: options.t('title.mintNft'),
       description: options.t('info.mintNftDescription'),
-      // This must be after the Press widget's Create Post action.
+      // This must be after the Press module's Create Post action.
       matchPriority: -80,
     })
 

@@ -106,7 +106,7 @@ export class BurnNftAction extends ActionBase<BurnNftData> {
       Icon: FireEmoji,
       label: options.t('title.burnNfts'),
       description: options.t('info.burnNftsDescription'),
-      // This must be after the Press widget's Delete Post action.
+      // This must be after the Press module's Delete Post action.
       matchPriority: -80,
     })
   }

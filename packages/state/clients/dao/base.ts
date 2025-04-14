@@ -7,13 +7,13 @@ import {
   ContractVersion,
   DaoCardLazyData,
   DaoInfo,
+  DaoModule,
   DaoSource,
-  DaoWidget,
   Feature,
   IDaoBase,
   IProposalModuleBase,
   IVotingModuleBase,
-  WidgetId,
+  ModuleId,
 } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
@@ -21,7 +21,7 @@ import {
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   getFilteredDaoItemsByPrefix,
-  getWidgetStorageItemKey,
+  getModuleStorageItemKey,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
@@ -145,25 +145,25 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
-   * DAO widgets.
+   * DAO modules.
    */
-  get widgets(): readonly DaoWidget[] {
+  get modules(): readonly DaoModule[] {
     return (
-      getFilteredDaoItemsByPrefix(this.info.items, getWidgetStorageItemKey(''))
-        .map(([id, widgetJson]): DaoWidget | undefined => {
+      getFilteredDaoItemsByPrefix(this.info.items, getModuleStorageItemKey(''))
+        .map(([id, moduleJson]): DaoModule | undefined => {
           try {
             return {
               id,
-              values: (widgetJson && JSON.parse(widgetJson)) || {},
+              values: (moduleJson && JSON.parse(moduleJson)) || {},
             }
           } catch (err) {
-            // Ignore widget format error but log to console for debugging.
-            console.error(`Invalid widget JSON: ${widgetJson}`, err)
+            // Ignore module format error but log to console for debugging.
+            console.error(`Invalid module JSON: ${moduleJson}`, err)
             return
           }
         })
-        // Validate widget structure.
-        .filter((widget): widget is DaoWidget => !!widget)
+        // Validate module structure.
+        .filter((module): module is DaoModule => !!module)
     )
   }
 
@@ -182,12 +182,19 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
-   * Get the widget with the given ID.
+   * Whether or not a module is enabled.
    */
-  getWidget<Variables extends Record<string, unknown> = any>(
-    id: WidgetId | string
-  ): DaoWidget<Variables> | undefined {
-    return this.widgets.find((widget) => widget.id === id)
+  isModuleEnabled(id: ModuleId): boolean {
+    return !!this.info.items[getModuleStorageItemKey(id)]
+  }
+
+  /**
+   * Get the module with the given ID.
+   */
+  getModule<Variables extends Record<string, unknown> = any>(
+    id: ModuleId | string
+  ): DaoModule<Variables> | undefined {
+    return this.modules.find((module) => module.id === id)
   }
 
   /**

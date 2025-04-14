@@ -19,8 +19,8 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
+import { useModules } from '../../modules'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
-import { useWidgets } from '../../widgets'
 import {
   getCoreActionCategoryMakers,
   getCoreActions,
@@ -40,7 +40,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // - core actions
   // - voting module adapter actions
   // - all proposal module adapters actions
-  // - widget adapter actions
+  // - module adapter actions
   //
   // The core action categories are relevant to all DAOs, and the adapter action
   // categories are relevant to the DAO's specific modules. There will be one
@@ -49,9 +49,9 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // Get voting module adapter actions.
   const votingModuleActions = useVotingModuleAdapter().fields.actions
 
-  // Get widgets to load actions from.
-  const loadingWidgets = useWidgets()
-  const loadedWidgets = loadingWidgets.loading ? undefined : loadingWidgets.data
+  // Get modules to load actions from.
+  const loadingModules = useModules()
+  const loadedModules = loadingModules.loading ? undefined : loadingModules.data
 
   // Combine all actions and categories. Memoize this all so we don't
   // reconstruct the actions and categories on every render. If the maker
@@ -77,11 +77,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     const coreActions = getCoreActions()
     const coreActionCategoryMakers = getCoreActionCategoryMakers()
 
-    // Get all actions for all widgets.
-    const widgetActions =
-      loadedWidgets?.flatMap(
-        ({ widget, daoWidget }) =>
-          widget.getActions?.(daoWidget.values || {}) || []
+    // Get all actions for all modules.
+    const moduleActions =
+      loadedModules?.flatMap(
+        ({ module, daoModule }) =>
+          module.getActions?.(daoModule.values || {}) || []
       ) ?? []
 
     // Combine all actions.
@@ -89,7 +89,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       ...[
         ...coreActions,
         ...(votingModuleActions?.actions || []),
-        ...widgetActions.flatMap(({ actions }) => actions || []),
+        ...moduleActions.flatMap(({ actions }) => actions || []),
       ].flatMap((Action) => {
         // Action constructor throws error for invalid contexts.
         try {
@@ -98,7 +98,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
           return []
         }
       }),
-      ...widgetActions.flatMap(
+      ...moduleActions.flatMap(
         ({ actionMakers }) =>
           actionMakers?.flatMap((maker) => maker(options) || []) || []
       ),
@@ -107,7 +107,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     const categoryMakers: ActionCategoryMaker[] = [
       ...coreActionCategoryMakers,
       ...(votingModuleActions?.categoryMakers || []),
-      ...widgetActions.flatMap(({ categoryMakers }) => categoryMakers),
+      ...moduleActions.flatMap(({ categoryMakers }) => categoryMakers),
     ]
 
     // Make action categories.
@@ -123,7 +123,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       categories,
       messageProcessor: processMessage,
     }
-  }, [chainContext, dao, loadedWidgets, queryClient, t, votingModuleActions])
+  }, [chainContext, dao, loadedModules, queryClient, t, votingModuleActions])
 
   return (
     <ActionsContext.Provider value={context}>

@@ -76,10 +76,10 @@ import {
   findWasmAttributeValue,
   getDisplayNameForChainId,
   getFallbackImage,
+  getModuleStorageItemKey,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   getSupportedChains,
-  getWidgetStorageItemKey,
   instantiateSmartContract,
   isErrorWithSubstring,
   isFeatureSupportedByVersion,
@@ -105,13 +105,13 @@ import {
   useQuerySyncedRecoilState,
   useWallet,
 } from '../../hooks'
+import { getModules } from '../../modules'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
   daoCreatedCardPropsAtom,
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
-import { getWidgets } from '../../widgets'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -196,7 +196,7 @@ export const InnerCreateDaoForm = ({
   } = chainContext
 
   // Only v2.5.0 and above supports instantiate2 in admin factory, so we can set
-  // up widgets with the predictable DAO address.
+  // up modules with the predictable DAO address.
   const supportsInstantiate2 =
     versionGte(latestVersion, ContractVersion.V250) && !noInstantiate2Create
 
@@ -216,10 +216,10 @@ export const InnerCreateDaoForm = ({
     [chainContext.chain, latestVersion]
   )
 
-  // Get available widgets.
-  const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
+  // Get available modules.
+  const availableModules: CreateDaoContext['availableModules'] = useMemo(
     () =>
-      getWidgets({
+      getModules({
         chainId,
         version: latestVersion,
         isDaoCreation: true,
@@ -231,7 +231,7 @@ export const InnerCreateDaoForm = ({
     CreateDaoStart,
     CreateDaoGovernance,
     CreateDaoVoting,
-    // Need instantiate2 or initial actions to setup widgets/extensions on DAO
+    // Need instantiate2 or initial actions to setup modules/extensions on DAO
     // creation.
     ...(supportsInstantiate2 || supportsInitialActions
       ? [CreateDaoExtensions]
@@ -325,16 +325,16 @@ export const InnerCreateDaoForm = ({
       cached.votingConfig
     )
 
-    // If no UUID is set, or no widgets are configured, randomize the uuid.
+    // If no UUID is set, or no modules are configured, randomize the uuid.
     // Sometimes uuid gets stuck in local storage, not cleared from a previous
     // DAO creation, and it needs to be reset. However, this uuid controls the
-    // predicted DAO address which gets used when setting up widgets, so we can
-    // only randomize it if no widgets have been set up yet.
+    // predicted DAO address which gets used when setting up modules, so we can
+    // only randomize it if no modules have been set up yet.
     if (
       !cached.uuid ||
-      !cached.widgets ||
-      Object.keys(cached.widgets).length === 0 ||
-      Object.values(cached.widgets).every((v) => v === null)
+      !cached.modules ||
+      Object.keys(cached.modules).length === 0 ||
+      Object.values(cached.modules).every((v) => v === null)
     ) {
       cached.uuid = nanoid()
     }
@@ -363,7 +363,7 @@ export const InnerCreateDaoForm = ({
     proposalModuleAdapters,
     votingConfig,
     extensions,
-    widgets,
+    modules,
   } = newDao
 
   // If chain ID changes, update form values.
@@ -498,13 +498,13 @@ export const InnerCreateDaoForm = ({
             },
           ]
         : []),
-      // Add widgets if configured.
-      // TODO: add additional widget actions to initial actions
-      ...(widgets && Object.keys(widgets).length > 0
-        ? Object.entries(widgets).flatMap(([id, data]): InitialItem | [] =>
+      // Add modules if configured.
+      // TODO: add additional module actions to initial actions
+      ...(modules && Object.keys(modules).length > 0
+        ? Object.entries(modules).flatMap(([id, data]): InitialItem | [] =>
             data
               ? {
-                  key: getWidgetStorageItemKey(id),
+                  key: getModuleStorageItemKey(id),
                   value: JSON.stringify(data.data),
                 }
               : []
@@ -584,7 +584,7 @@ export const InnerCreateDaoForm = ({
   })
 
   // If the predicted DAO address differs from the one in the form, update it
-  // and clear widgets, since widgets depend on knowing the DAO address ahead of
+  // and clear modules, since modules depend on knowing the DAO address ahead of
   // time.
   useEffect(() => {
     if (
@@ -593,7 +593,7 @@ export const InnerCreateDaoForm = ({
       predictedDaoAddress.data !== newDao.predictedDaoAddress
     ) {
       form.setValue('predictedDaoAddress', predictedDaoAddress.data)
-      form.setValue('widgets', {})
+      form.setValue('modules', {})
     }
   }, [form, newDao.predictedDaoAddress, predictedDaoAddress])
 
@@ -1043,7 +1043,7 @@ export const InnerCreateDaoForm = ({
     predictedDaoAddress,
     proposalModuleDaoCreationAdapters,
     availableExtensions,
-    availableWidgets,
+    availableModules,
     makeDefaultNewDao,
     SuspenseLoader,
     ImportMultisigModal,

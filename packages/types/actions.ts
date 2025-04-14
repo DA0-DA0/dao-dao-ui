@@ -67,7 +67,7 @@ export enum ActionKey {
   EnableMultipleChoice = 'enableMultipleChoice',
   EnableApprover = 'enableApprover',
   BecomeApprover = 'becomeApprover',
-  ManageWidgets = 'manageWidgets',
+  ManageModules = 'manageModules',
   FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',
   Mint = 'mint',

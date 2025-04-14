@@ -15,9 +15,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   DelegationForm,
+  ModuleId,
   StatefulDaoVoteDelegationCardProps,
-  VoteDelegationWidgetData,
-  WidgetId,
+  VoteDelegationModuleData,
 } from '@dao-dao/types'
 import {
   executeSmartContract,
@@ -32,7 +32,7 @@ import {
   useQueryLoadingDataWithError,
   useWallet,
 } from '../../hooks'
-import { getDaoWidget } from '../../widgets'
+import { getDaoModule } from '../../modules'
 import { Trans } from '../Trans'
 
 export const DaoVoteDelegationCard = (
@@ -45,12 +45,12 @@ export const DaoVoteDelegationCard = (
 
   const voteDelegation = useMemo(
     () =>
-      getDaoWidget<VoteDelegationWidgetData>(dao, WidgetId.VoteDelegation)
-        ?.daoWidget,
+      getDaoModule<VoteDelegationModuleData>(dao, ModuleId.VoteDelegation)
+        ?.daoModule,
     [dao]
   )
   if (!voteDelegation?.values?.address) {
-    throw new Error('Vote delegation widget not set up')
+    throw new Error('Vote delegation module not set up')
   }
 
   const chainId = dao.chainId

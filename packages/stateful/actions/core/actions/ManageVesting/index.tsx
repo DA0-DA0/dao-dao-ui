@@ -21,14 +21,14 @@ import {
 import {
   DurationUnits,
   DurationWithUnits,
+  ModuleId,
   SegmentedControlsProps,
   TokenType,
   TypedOption,
   UnifiedCosmosMsg,
   VestingContractVersion,
   VestingInfo,
-  VestingPaymentsWidgetData,
-  WidgetId,
+  VestingPaymentsModuleData,
 } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -72,7 +72,7 @@ import {
   useQueryLoadingData,
   useQueryLoadingDataWithError,
 } from '../../../../hooks'
-import { useWidget } from '../../../../widgets'
+import { useModule } from '../../../../modules'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { BeginVesting, BeginVestingData } from './BeginVesting'
 import { CancelVesting, CancelVestingData } from './CancelVesting'
@@ -99,15 +99,15 @@ const instantiateStructure = {
 }
 
 /**
- * Get vesting sources from widget data.
+ * Get vesting sources from module data.
  */
-const getVestingSourcesFromWidgetData = (
+const getVestingSourcesFromModuleData = (
   options: ActionOptions,
-  widgetData: VestingPaymentsWidgetData
+  moduleData: VestingPaymentsModuleData
 ) =>
-  widgetData.factories
+  moduleData.factories
     ? Object.fromEntries(
-        Object.entries(widgetData.factories).map(
+        Object.entries(moduleData.factories).map(
           ([chainId, { address: factory, version }]) => [
             chainId,
             {
@@ -119,14 +119,14 @@ const getVestingSourcesFromWidgetData = (
         )
       )
     : // If the factories are undefined, this DAO is using an old version
-      // of the vesting widget which only allows a single factory on the
-      // same chain as the DAO. If widget data is undefined, this is being
+      // of the vesting module which only allows a single factory on the
+      // same chain as the DAO. If module data is undefined, this is being
       // used by a wallet.
       {
         [options.chain.chainId]: {
           owner: options.address,
-          factory: widgetData.factory,
-          version: widgetData.version,
+          factory: moduleData.factory,
+          version: moduleData.version,
         },
       }
 
@@ -139,10 +139,10 @@ const getVestingSourcesFromWidgetData = (
  */
 const getVestingInfosOwnedByEntityQueries = (
   options: ActionOptions,
-  widgetData?: VestingPaymentsWidgetData
+  moduleData?: VestingPaymentsModuleData
 ) => {
   const sources =
-    widgetData && getVestingSourcesFromWidgetData(options, widgetData)
+    moduleData && getVestingSourcesFromModuleData(options, moduleData)
   return options.context.accounts.flatMap(({ chainId, address }) =>
     chainIsIndexed(chainId)
       ? cwVestingExtraQueries.vestingInfosOwnedBy(options.queryClient, {
@@ -177,9 +177,9 @@ const useVestingInfosOwnedByEntity = () => {
 
 const Component: ComponentType<
   ActionComponentProps<undefined, ManageVestingData> & {
-    widgetData?: VestingPaymentsWidgetData
+    moduleData?: VestingPaymentsModuleData
   }
-> = ({ widgetData, ...props }) => {
+> = ({ moduleData, ...props }) => {
   const { t } = useTranslation()
   const {
     chain: { chainId: nativeChainId },
@@ -220,13 +220,13 @@ const Component: ComponentType<
 
   const tokenBalances = useTokenBalances()
 
-  // Only used on pre-v1 vesting widgets.
+  // Only used on pre-v1 vesting modules.
   const queryClient = useQueryClient()
   const preV1VestingFactoryOwner = useQueryLoadingDataWithError(
-    widgetData && !widgetData.version && widgetData.factory
+    moduleData && !moduleData.version && moduleData.factory
       ? cwPayrollFactoryQueries.ownership(queryClient, {
           chainId: nativeChainId,
-          contractAddress: widgetData.factory,
+          contractAddress: moduleData.factory,
         })
       : undefined,
     ({ owner }) => owner || null
@@ -290,8 +290,8 @@ const Component: ComponentType<
   }, [setError, clearErrors, props.fieldNamePrefix, t, mode, selectedAddress])
 
   const tabs: SegmentedControlsProps<ManageVestingData['mode']>['tabs'] = [
-    // Only allow beginning a vest if widget is setup.
-    ...(widgetData
+    // Only allow beginning a vest if module is setup.
+    ...(moduleData
       ? ([
           {
             label: t('title.beginVesting'),
@@ -384,7 +384,7 @@ const Component: ComponentType<
           errors={props.errors?.begin}
           fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
           options={{
-            widgetData,
+            moduleData: moduleData,
             tokens: tokenBalances.loading ? [] : tokenBalances.data,
             preV1VestingFactoryOwner,
             AddressInput,
@@ -432,13 +432,13 @@ const Component: ComponentType<
   )
 }
 
-// Only check if widget exists in DAOs.
+// Only check if module exists in DAOs.
 const DaoComponent: ActionComponent<undefined, ManageVestingData> = (props) => {
-  const widgetData = useWidget<VestingPaymentsWidgetData>(
-    WidgetId.VestingPayments
-  )?.daoWidget.values
+  const moduleData = useModule<VestingPaymentsModuleData>(
+    ModuleId.VestingPayments
+  )?.daoModule.values
 
-  return <Component {...props} widgetData={widgetData} />
+  return <Component {...props} moduleData={moduleData} />
 }
 
 const WalletComponent: ActionComponent<undefined, ManageVestingData> = (
@@ -450,7 +450,7 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
   public readonly Component: ActionComponent<undefined, ManageVestingData>
 
   private vestingInfosOwnedByEntity: VestingInfo[] = []
-  private widgetData?: VestingPaymentsWidgetData
+  private moduleData?: VestingPaymentsModuleData
 
   constructor(options: ActionOptions) {
     super(options, {
@@ -466,10 +466,10 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
         ? DaoComponent
         : WalletComponent
 
-    this.widgetData =
+    this.moduleData =
       options.context.type === ActionContextType.Dao
-        ? options.context.dao.widgets.find(
-            ({ id }) => id === WidgetId.VestingPayments
+        ? options.context.dao.modules.find(
+            ({ id }) => id === ModuleId.VestingPayments
           )?.values
         : undefined
 
@@ -486,19 +486,19 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
       )
     ).flat()
 
-    // Don't show if vesting payment widget is not enabled (for DAOs) and this
+    // Don't show if vesting payment module is not enabled (for DAOs) and this
     // entity owns no vesting payments.
     this.metadata.hideFromPicker =
       (this.options.context.type !== ActionContextType.Dao ||
-        !this.widgetData) &&
+        !this.moduleData) &&
       this.vestingInfosOwnedByEntity.length === 0
 
     // Default start to 7 days from now.
     const start = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
     this.defaults = {
-      // Cannot use begin if no widget setup, so default to cancel if no data.
-      mode: this.widgetData ? 'begin' : 'cancel',
+      // Cannot use begin if no module setup, so default to cancel if no data.
+      mode: this.moduleData ? 'begin' : 'cancel',
       begin: {
         chainId: this.options.chain.chainId,
         amount: '1',
@@ -553,13 +553,13 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
     let chainId: string
     let cosmosMsg: UnifiedCosmosMsg
 
-    // Can only begin a vest if there is widget data available.
-    if (mode === 'begin' && this.widgetData) {
+    // Can only begin a vest if there is module data available.
+    if (mode === 'begin' && this.moduleData) {
       chainId = begin.chainId
 
-      const vestingSource = getVestingSourcesFromWidgetData(
+      const vestingSource = getVestingSourcesFromModuleData(
         this.options,
-        this.widgetData
+        this.moduleData
       )[chainId]
       if (!vestingSource?.factory) {
         throw new Error(
@@ -583,13 +583,13 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
               denomOrAddress: begin.denomOrAddress,
             })
           ),
-          // Pre-v1 vesting widgets use the factory owner as the vesting owner.
-          this.widgetData.factory && !this.widgetData.version
+          // Pre-v1 vesting modules use the factory owner as the vesting owner.
+          this.moduleData.factory && !this.moduleData.version
             ? this.options.queryClient
                 .fetchQuery(
                   cwPayrollFactoryQueries.ownership(this.options.queryClient, {
                     chainId: this.options.chain.chainId,
-                    contractAddress: this.widgetData.factory,
+                    contractAddress: this.moduleData.factory,
                   })
                 )
                 .then(({ owner }) => owner || null)
@@ -614,11 +614,11 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
               },
         description: begin.description || undefined,
         owner:
-          // Widgets prior to V1 use the factory owner.
+          // Modules prior to V1 use the factory owner.
           !vestingSource.version
             ? preV1VestingFactoryOwner
-            : // V1 and later can set the owner, or no widget data (when used by a wallet).
-              !this.widgetData ||
+            : // V1 and later can set the owner, or no module data (when used by a wallet).
+              !this.moduleData ||
                 (vestingSource.version &&
                   vestingSource.version >= VestingContractVersion.V1)
               ? begin.ownerMode === 'none'

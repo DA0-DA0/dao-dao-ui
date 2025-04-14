@@ -14,7 +14,7 @@ import { BeginVesting } from './BeginVesting'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / widgets / widgets / VestingPayments / actions / ManageVesting / BeginVesting',
+    'DAO DAO / packages / stateful / modules / modules / VestingPayments / actions / ManageVesting / BeginVesting',
   component: BeginVesting,
   decorators: [
     makeReactHookFormDecorator(),
@@ -37,7 +37,7 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    widgetData: {
+    moduleData: {
       factory: 'factory',
       version: VestingContractVersion.V1,
     },

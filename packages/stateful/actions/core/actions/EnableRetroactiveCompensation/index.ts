@@ -1,5 +1,5 @@
 import { ActionBase, BeeEmoji } from '@dao-dao/stateless'
-import { UnifiedCosmosMsg, WidgetId } from '@dao-dao/types'
+import { ModuleId, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionContextType,
   ActionKey,
@@ -7,9 +7,9 @@ import {
   ActionOptions,
   ProcessedMessage,
 } from '@dao-dao/types/actions'
-import { getWidgetStorageItemKey } from '@dao-dao/utils'
 
-import { ManageWidgetsAction } from '../ManageWidgets'
+import { getModuleById } from '../../../../modules'
+import { ManageModulesAction } from '../ManageModules'
 import { EnableRetroactiveCompensationComponent } from './Component'
 
 export class EnableRetroactiveCompensationAction extends ActionBase<{}> {
@@ -18,22 +18,22 @@ export class EnableRetroactiveCompensationAction extends ActionBase<{}> {
 
   protected _defaults = {}
 
-  private manageWidgetsAction: ManageWidgetsAction
+  private manageModulesAction: ManageModulesAction
 
   constructor(options: ActionOptions) {
     if (options.context.type !== ActionContextType.Dao) {
       throw new Error('Not DAO context')
     }
 
-    const enabled =
-      !!options.context.dao.info.items[
-        getWidgetStorageItemKey(WidgetId.RetroactiveCompensation)
-      ]
+    const enabled = options.context.dao.isModuleEnabled(
+      ModuleId.RetroactiveCompensation
+    )
 
     super(options, {
       Icon: BeeEmoji,
       label: options.t('title.enableRetroactiveCompensation'),
-      description: options.t('widgetDescription.retroactive'),
+      description:
+        getModuleById(ModuleId.RetroactiveCompensation)?.description || '',
       keywords: ['payroll'],
       notReusable: true,
       // Do not allow using this action if the DAO already has retroactive
@@ -41,31 +41,31 @@ export class EnableRetroactiveCompensationAction extends ActionBase<{}> {
       hideFromPicker: enabled,
     })
 
-    this.manageWidgetsAction = new ManageWidgetsAction(options)
+    this.manageModulesAction = new ManageModulesAction(options)
   }
 
   setup() {
-    return this.manageWidgetsAction.setup()
+    return this.manageModulesAction.setup()
   }
 
   encode(): Promise<UnifiedCosmosMsg[]> {
-    return this.manageWidgetsAction.encode({
+    return this.manageModulesAction.encode({
       mode: 'set',
-      id: WidgetId.RetroactiveCompensation,
+      id: ModuleId.RetroactiveCompensation,
       values: {},
       extra: {},
     })
   }
 
   async match(messages: ProcessedMessage[]): Promise<ActionMatch> {
-    const manageWidgetsMatch = this.manageWidgetsAction.match(messages)
-    if (!manageWidgetsMatch) {
-      return manageWidgetsMatch
+    const manageModulesMatch = this.manageModulesAction.match(messages)
+    if (!manageModulesMatch) {
+      return manageModulesMatch
     }
 
-    // Ensure this is setting the retroactive compensation widget item.
-    const { mode, id } = await this.manageWidgetsAction.decode(messages)
-    return mode === 'set' && id === WidgetId.RetroactiveCompensation
+    // Ensure this is setting the retroactive compensation module item.
+    const { mode, id } = await this.manageModulesAction.decode(messages)
+    return mode === 'set' && id === ModuleId.RetroactiveCompensation
   }
 
   decode() {

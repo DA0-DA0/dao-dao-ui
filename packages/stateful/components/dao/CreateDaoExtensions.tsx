@@ -24,7 +24,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
 
   const {
     availableExtensions,
-    availableWidgets,
+    availableModules,
     predictedDaoAddress,
     form: {
       setValue,
@@ -35,7 +35,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
   } = context
 
   const existingExtensions = watch('extensions') || {}
-  const existingWidgets = watch('widgets') || {}
+  const existingModules = watch('modules') || {}
 
   const name = watch('name')
   const description = watch('description')
@@ -115,7 +115,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                 </div>
 
                 {added && Editor && (
-                  <div className="pt-4 animate-fade-in border-t border-border-secondary -mx-7 px-7">
+                  <div className="animate-fade-in border-border-secondary pt-4 border-t -mx-7 px-7">
                     <Editor
                       errors={
                         (errors.extensions?.[id] as any)?.data as FieldErrors
@@ -129,90 +129,90 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
           }
         )}
 
-        {availableWidgets.map(({ id, defaultValues, defaultExtra, Editor }) => {
-          const added = !!existingWidgets[id]
+        {availableModules.map(
+          ({ id, title, description, defaultValues, defaultExtra, Editor }) => {
+            const added = !!existingModules[id]
 
-          return (
-            <div
-              key={id}
-              className={clsx(
-                'bg-background-tertiary flex flex-col gap-5 px-7 py-5 rounded-md ring-1 transition-all',
-                added ? 'ring-border-interactive-active' : 'ring-transparent'
-              )}
-            >
-              <div className="flex flex-row gap-3 items-center">
-                <IconButton
-                  Icon={Add}
-                  circular
-                  className="-ml-3"
-                  iconClassName={clsx(
-                    '!transition-[transform]',
-                    added ? 'rotate-45' : 'rotate-0'
-                  )}
-                  onClick={() => {
-                    if (added) {
-                      // Remove.
+            return (
+              <div
+                key={id}
+                className={clsx(
+                  'bg-background-tertiary flex flex-col gap-5 px-7 py-5 rounded-md ring-1 transition-all',
+                  added ? 'ring-border-interactive-active' : 'ring-transparent'
+                )}
+              >
+                <div className="flex flex-row gap-3 items-center">
+                  <IconButton
+                    Icon={Add}
+                    circular
+                    className="-ml-3"
+                    iconClassName={clsx(
+                      '!transition-[transform]',
+                      added ? 'rotate-45' : 'rotate-0'
+                    )}
+                    onClick={() => {
+                      if (added) {
+                        // Remove.
 
-                      setValue(`widgets.${id}`, null)
-                      // Clear errors to ensure form isn't blocked by fields
-                      // that no longer exist.
-                      clearErrors(`widgets.${id}`)
-                    } else {
-                      // Add.
+                        setValue(`modules.${id}`, null)
+                        // Clear errors to ensure form isn't blocked by fields
+                        // that no longer exist.
+                        clearErrors(`modules.${id}`)
+                      } else {
+                        // Add.
 
-                      // Clone so we don't mutate the default objects.
-                      setValue(
-                        `widgets.${id}.data`,
-                        cloneDeep(defaultValues || {})
-                      )
-                      setValue(
-                        `widgets.${id}.extra`,
-                        cloneDeep(defaultExtra || {})
-                      )
-                    }
-                  }}
-                  variant="ghost"
-                />
+                        // Clone so we don't mutate the default objects.
+                        setValue(
+                          `modules.${id}.data`,
+                          cloneDeep(defaultValues || {})
+                        )
+                        setValue(
+                          `modules.${id}.extra`,
+                          cloneDeep(defaultExtra || {})
+                        )
+                      }
+                    }}
+                    variant="ghost"
+                  />
 
-                <div className="flex flex-col gap-1">
-                  <p className="title-text text-lg">{t(`widgetTitle.${id}`)}</p>
-                  <p className="secondary-text">
-                    {t(`widgetDescription.${id}`)}
-                  </p>
-                </div>
-              </div>
-
-              {added &&
-                Editor &&
-                (dao ? (
-                  <div className="pt-4 animate-fade-in border-t border-border-secondary -mx-7 px-7">
-                    <DaoContext.Provider
-                      value={{
-                        dao,
-                      }}
-                    >
-                      <Editor
-                        accounts={dao.accounts}
-                        errors={
-                          (errors.widgets?.[id] as any)?.data as FieldErrors
-                        }
-                        extraErrors={
-                          (errors.widgets?.[id] as any)?.extra as FieldErrors
-                        }
-                        extraFieldNamePrefix={`widgets.${id}.extra.`}
-                        fieldNamePrefix={`widgets.${id}.data.`}
-                        isCreating
-                        type="daoCreation"
-                      />
-                    </DaoContext.Provider>
+                  <div className="flex flex-col gap-1">
+                    <p className="title-text text-lg">{title}</p>
+                    <p className="secondary-text">{description}</p>
                   </div>
-                ) : (
-                  // If DAO undefined, predicted DAO address is still loading.
-                  <Loader />
-                ))}
-            </div>
-          )
-        })}
+                </div>
+
+                {added &&
+                  Editor &&
+                  (dao ? (
+                    <div className="animate-fade-in border-border-secondary pt-4 border-t -mx-7 px-7">
+                      <DaoContext.Provider
+                        value={{
+                          dao,
+                        }}
+                      >
+                        <Editor
+                          accounts={dao.accounts}
+                          errors={
+                            (errors.modules?.[id] as any)?.data as FieldErrors
+                          }
+                          extraErrors={
+                            (errors.modules?.[id] as any)?.extra as FieldErrors
+                          }
+                          extraFieldNamePrefix={`modules.${id}.extra.`}
+                          fieldNamePrefix={`modules.${id}.data.`}
+                          isCreating
+                          type="daoCreation"
+                        />
+                      </DaoContext.Provider>
+                    </div>
+                  ) : (
+                    // If DAO undefined, predicted DAO address is still loading.
+                    <Loader />
+                  ))}
+              </div>
+            )
+          }
+        )}
       </div>
     </>
   )

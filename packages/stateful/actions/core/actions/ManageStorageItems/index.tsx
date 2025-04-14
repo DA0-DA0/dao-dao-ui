@@ -73,7 +73,7 @@ export class ManageStorageItemsAction extends ActionBase<ManageStorageItemsData>
       Icon: WrenchEmoji,
       label: options.t('title.manageStorageItems'),
       description: options.t('info.manageStorageItemsDescription'),
-      // other actions, like manage widgets, should be matched before this
+      // other actions, like manage modules, should be matched before this
       matchPriority: -90,
     })
 

@@ -47,7 +47,7 @@ import {
   StatefulEntityDisplayProps,
   TokenType,
   VestingContractVersion,
-  VestingPaymentsWidgetData,
+  VestingPaymentsModuleData,
   VestingStep,
 } from '@dao-dao/types'
 import {
@@ -90,11 +90,11 @@ export type BeginVestingData = {
 }
 
 export type BeginVestingOptions = {
-  // If undefined, no widget is setup, and begin vesting should be disabled.
-  widgetData: VestingPaymentsWidgetData | undefined
+  // If undefined, no module is setup, and begin vesting should be disabled.
+  moduleData: VestingPaymentsModuleData | undefined
   tokens: GenericTokenBalanceWithOwner[]
   // The vesting contract factory owner. If null, no owner is set. This is
-  // only used for pre-v1 vesting widgets.
+  // only used for pre-v1 vesting module.
   preV1VestingFactoryOwner: LoadingDataWithError<string | null>
   AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -111,7 +111,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   index: actionIndex,
   allActionsWithData,
   options: {
-    widgetData,
+    moduleData,
     tokens,
     preV1VestingFactoryOwner,
     AddressInput,
@@ -253,9 +253,9 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     ActionKey.ConfigureVestingPayments
   )
 
-  // If widget not set up, don't render anything because begin vesting cannot be
+  // If module not set up, don't render anything because begin vesting cannot be
   // used.
-  if (!widgetData) {
+  if (!moduleData) {
     return null
   }
 
@@ -266,14 +266,14 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   )
 
   const vestingManagerExists =
-    !!widgetData.factories?.[chainId] ||
+    !!moduleData.factories?.[chainId] ||
     // Old single-chain factory support.
-    (chainId === nativeChainId && !!widgetData.factory)
-  const vestingManagerVersion = widgetData.factories
-    ? widgetData.factories[chainId]?.version
+    (chainId === nativeChainId && !!moduleData.factory)
+  const vestingManagerVersion = moduleData.factories
+    ? moduleData.factories[chainId]?.version
     : // Old single-chain factory support.
-      chainId === nativeChainId && !!widgetData.factory
-      ? widgetData.version
+      chainId === nativeChainId && !!moduleData.factory
+      ? moduleData.version
       : undefined
 
   const crossChainAccountActionExists = allActionsWithData.some(
@@ -740,8 +740,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         </div>
 
         {
-          // Widgets prior to V1 use the factory owner.
-          !widgetData.version &&
+          // Modules prior to V1 use the factory owner.
+          !moduleData.version &&
             !preV1VestingFactoryOwner.loading &&
             !preV1VestingFactoryOwner.errored && (
               <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">

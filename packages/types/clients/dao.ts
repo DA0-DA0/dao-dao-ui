@@ -9,8 +9,8 @@ import {
 } from '../contracts/DaoDaoCore'
 import { DaoInfo, DaoSource } from '../dao'
 import { ContractVersion, Feature } from '../features'
+import { DaoModule, ModuleId } from '../modules'
 import { AmountWithTimestamp } from '../token'
-import { DaoWidget, WidgetId } from '../widgets'
 import { IProposalModuleBase } from './proposal-module'
 import { IVotingModuleBase } from './voting-module'
 
@@ -91,9 +91,9 @@ export interface IDaoBase {
   proposalSaveLocalStorageKey: string
 
   /**
-   * DAO widgets.
+   * DAO modules.
    */
-  widgets: readonly DaoWidget[]
+  modules: readonly DaoModule[]
 
   /**
    * Whether or not the client has been initialized. This only matters for some
@@ -118,11 +118,16 @@ export interface IDaoBase {
   getProposalModule(address: string): IProposalModuleBase | undefined
 
   /**
-   * Get the widget with the given ID.
+   * Whether or not a module is enabled.
    */
-  getWidget<Variables extends Record<string, unknown> = any>(
-    id: WidgetId | string
-  ): DaoWidget<Variables> | undefined
+  isModuleEnabled(id: ModuleId): boolean
+
+  /**
+   * Get the module with the given ID.
+   */
+  getModule<Variables extends Record<string, unknown> = any>(
+    id: ModuleId | string
+  ): DaoModule<Variables> | undefined
 
   /**
    * Query options to fetch the voting power for a given address. Optionally

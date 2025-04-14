@@ -18,7 +18,7 @@ import {
   DaoTabId,
   DaoTabWithComponent,
   LoadingData,
-  WidgetLocation,
+  ModuleDisplayLocation,
 } from '@dao-dao/types'
 
 import {
@@ -28,8 +28,8 @@ import {
   SubDaosTab,
   TreasuryTab,
 } from '../components'
+import { useModules } from '../modules'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
-import { useWidgets } from '../widgets'
 
 export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
   const { t } = useTranslation()
@@ -38,10 +38,10 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
     components: { extraTabs },
   } = useVotingModuleAdapter()
 
-  // Get widget tab components, if exist.
-  const loadingWidgets = useWidgets({
-    // Only load tab widgets.
-    location: WidgetLocation.Tab,
+  // Get module tab components, if exist.
+  const loadingModules = useModules({
+    // Only load tab modules.
+    location: ModuleDisplayLocation.Tab,
   })
 
   return useMemo(
@@ -49,7 +49,7 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
       // Some tabs are ready right away, so just use the `updating` field to
       // indicate if more tabs are still loading.
       loading: false,
-      updating: loadingWidgets.loading || loadingWidgets.updating,
+      updating: loadingModules.loading || loadingModules.updating,
       data: [
         {
           id: DaoTabId.Home,
@@ -91,24 +91,24 @@ export const useDaoTabs = (): LoadingData<DaoTabWithComponent[]> => {
           Icon: WebOutlined,
           IconFilled: WebRounded,
         },
-        ...(loadingWidgets.loading
+        ...(loadingModules.loading
           ? []
-          : loadingWidgets.data.map(
+          : loadingModules.data.map(
               ({
-                title,
-                widget: { id, Icon, IconFilled },
-                WidgetComponent,
+                module: { id, title, Icon, IconFilled },
+                ModuleComponent,
               }): DaoTabWithComponent => ({
                 id,
                 label: title,
-                // Icon should always be defined for tab widgets, but just in case...
+                // Icon should always be defined for tab modules, but just in
+                // case...
                 Icon: Icon || QuestionMark,
                 IconFilled: IconFilled || QuestionMark,
-                Component: WidgetComponent,
+                Component: ModuleComponent,
               })
             )),
       ],
     }),
-    [extraTabs, t, loadingWidgets]
+    [extraTabs, t, loadingModules]
   )
 }

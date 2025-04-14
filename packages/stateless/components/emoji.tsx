@@ -209,8 +209,8 @@ export const NumbersEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" {...props} />
 )
 
-export const HammerAndWrenchEmoji = (props: EmojiProps) => (
-  <EmojiWrapper emoji="🛠️" labelI18nKey="emoji.hammerAndWrench" {...props} />
+export const PuzzlePieceEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🧩" labelI18nKey="emoji.puzzlePiece" {...props} />
 )
 
 export const FileFolderEmoji = (props: EmojiProps) => (

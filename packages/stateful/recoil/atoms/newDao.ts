@@ -85,7 +85,7 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
   },
   advancedVotingConfigEnabled: false,
   extensions: {},
-  widgets: {},
+  modules: {},
 })
 
 export const newDaoAtom = atomFamily<

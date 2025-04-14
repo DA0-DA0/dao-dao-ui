@@ -49,6 +49,7 @@ import { LoadedDaoCreationExtension } from './creation-extensions'
 import { DaoCreator } from './creators'
 import { ContractVersion } from './features'
 import { LoadingDataWithError } from './misc'
+import { Module } from './modules'
 import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
@@ -56,7 +57,6 @@ import {
 } from './proposal-module-adapter'
 import { GenericToken, GenericTokenBalanceAndValue } from './token'
 import { DurationWithUnits } from './units'
-import { Widget } from './widgets'
 
 /**
  * An object that represents a DAO across the app.
@@ -236,7 +236,7 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   availableExtensions: readonly LoadedDaoCreationExtension[]
-  availableWidgets: readonly Widget[]
+  availableModules: readonly Module[]
   predictedDaoAddress: LoadingDataWithError<string>
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   makeDefaultNewDao: (chainId: string) => NewDao
@@ -276,11 +276,11 @@ export interface NewDao<
     } | null
   >
   /**
-   * Map widget ID to values for that widget. If null, it was added and then
+   * Map module ID to values for that module. If null, it was added and then
    * deleted. Make optional for backwards compatibility with saved forms in
    * people's browsers.
    */
-  widgets?: Record<
+  modules?: Record<
     string,
     {
       data: Record<string, any>
@@ -472,7 +472,7 @@ export type DaoPayrollConfig = {
   data?: Record<string, unknown>
 }
 
-// Built-in DAO tabs. These do not include widget tabs.
+// Built-in DAO tabs. These do not include module tabs.
 export enum DaoTabId {
   Home = 'home',
   Proposals = 'proposals',

@@ -16,11 +16,11 @@ export enum VestingContractVersion {
 
 /**
  * The latest version of the vesting contract used by the vesting payments
- * widget.
+ * module.
  */
 export const LATEST_VESTING_CONTRACT_VERSION = VestingContractVersion.V2
 
-export type VestingPaymentsWidgetData = {
+export type VestingPaymentsModuleData = {
   /**
    * A map of chain ID to current factory on that chain. This replaces the
    * single `factory` and allows for multiple chains. Old versions should be
@@ -40,7 +40,7 @@ export type VestingPaymentsWidgetData = {
    */
   factory?: string
   /**
-   * Versioning was created after the widget was created, so it may be
+   * Versioning was created after the module was created, so it may be
    * undefined. If undefined, assume it supports none of the versioned features.
    * This is part of the old single factory, before the factories map which
    * allows for multiple chains.
@@ -60,7 +60,7 @@ export type OldVestingPaymentFactory = {
   chainId?: string
   address: string
   /**
-   * Versioning was created after the widget was created, so it may be
+   * Versioning was created after the module was created, so it may be
    * undefined. If undefined, assume it supports none of the versioned features.
    */
   version?: VestingContractVersion

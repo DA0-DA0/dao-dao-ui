@@ -388,7 +388,7 @@ export const ActionLibraryRow = ({
       variant="ghost"
     >
       {action.metadata.Icon && (
-        <div className="flex items-center justify-center w-9 h-9">
+        <div className="flex items-center justify-center w-9 h-9 shrink-0">
           <p className="text-3xl">
             <action.metadata.Icon />
           </p>

@@ -23,7 +23,7 @@ import { DaoBase } from './base'
 
 /**
  * A placeholder DAO class used when creating a DAO. This is necessary for the
- * widget editors since some depend on the DAO context.
+ * module editors since some depend on the DAO context.
  */
 export class CreatingDaoPlaceholder extends DaoBase {
   protected _info: DaoInfo

@@ -21,8 +21,8 @@ import {
   makeEmptyUnifiedProfile,
 } from '@dao-dao/utils'
 
+import { getDaoModules } from '../../modules'
 import { matchAndLoadAdapter } from '../../voting-module-adapter'
-import { getDaoWidgets } from '../../widgets'
 import { getCoreActions } from '../core'
 
 /**
@@ -114,9 +114,9 @@ export const fetchActionsWithOptions = async ({
       // If no adapter is found, ignore.
     }
 
-    // Get widget actions.
-    const widgetActions = getDaoWidgets(dao).flatMap(
-      ({ widget: { getActions }, daoWidget: { values } }) =>
+    // Get module actions.
+    const moduleActions = getDaoModules(dao).flatMap(
+      ({ module: { getActions }, daoModule: { values } }) =>
         getActions?.(values || {}) || []
     )
 
@@ -124,7 +124,7 @@ export const fetchActionsWithOptions = async ({
       ...[
         ...coreActions,
         ...votingModuleActions,
-        ...widgetActions.flatMap(({ actions }) => actions || []),
+        ...moduleActions.flatMap(({ actions }) => actions || []),
       ].flatMap((Action) => {
         // Action constructor throws error for invalid contexts.
         try {
@@ -133,7 +133,7 @@ export const fetchActionsWithOptions = async ({
           return []
         }
       }),
-      ...widgetActions.flatMap(
+      ...moduleActions.flatMap(
         ({ actionMakers }) =>
           actionMakers?.flatMap((maker) => maker(options) || []) || []
       ),

@@ -8,12 +8,12 @@ import {
   TokenStakedVotingModule,
 } from '@dao-dao/state/clients'
 import { CwAdminFactoryClient } from '@dao-dao/state/contracts/CwAdminFactory'
-import { ManageWidgetsAction } from '@dao-dao/stateful/actions/core/actions'
+import { ManageModulesAction } from '@dao-dao/stateful/actions/core/actions'
 import {
   ActionChainContextType,
   ActionContextType,
+  ModuleId,
   ProposalStatusEnum,
-  WidgetId,
 } from '@dao-dao/types'
 import { MsgSend } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/tx'
 import {
@@ -232,7 +232,7 @@ describe('delegations', () => {
     const delegatedVpCap = Math.floor(Number(totalVotingPower) * vpCapPercent)
 
     // Propose to set up delegations.
-    const manageWidgetsAction = new ManageWidgetsAction({
+    const manageModulesAction = new ManageModulesAction({
       t: (key) => key,
       chain: suite.chain,
       chainContext: {
@@ -249,10 +249,10 @@ describe('delegations', () => {
       },
       queryClient: suite.queryClient,
     })
-    await manageWidgetsAction.init()
-    const msgs = await manageWidgetsAction.encode({
+    await manageModulesAction.init()
+    const msgs = await manageModulesAction.encode({
       mode: 'set',
-      id: WidgetId.VoteDelegation,
+      id: ModuleId.VoteDelegation,
       values: {
         address: delegationAddress,
       },
@@ -641,7 +641,7 @@ describe('delegations', () => {
     )
 
     // Propose to set up delegations.
-    const manageWidgetsAction = new ManageWidgetsAction({
+    const manageModulesAction = new ManageModulesAction({
       t: (key) => key,
       chain: suite.chain,
       chainContext: {
@@ -658,10 +658,10 @@ describe('delegations', () => {
       },
       queryClient: suite.queryClient,
     })
-    await manageWidgetsAction.init()
-    const msgs = await manageWidgetsAction.encode({
+    await manageModulesAction.init()
+    const msgs = await manageModulesAction.encode({
       mode: 'set',
-      id: WidgetId.VoteDelegation,
+      id: ModuleId.VoteDelegation,
       values: {
         address: delegationAddress,
       },
