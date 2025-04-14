@@ -18,6 +18,8 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     ActionKey.ManageStorageItems,
     ActionKey.DaoAdminExec,
     ActionKey.CreateCrossChainAccount,
+    ActionKey.UpdateInfo,
+    ActionKey.ManageWidgets,
     ActionKey.VetoProposal,
     ActionKey.ExecuteProposal,
     ActionKey.ManageVetoableDaos,

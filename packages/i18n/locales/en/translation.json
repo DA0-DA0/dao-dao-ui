@@ -8,8 +8,6 @@
   "actionCategory": {
     "advancedDescription": "Execute custom actions and bulk import actions.",
     "advancedLabel": "Advanced",
-    "appearanceDescription": "Customize the appearance of this DAO's page.",
-    "appearanceLabel": "Appearance",
     "authorizationsDescription": "Grant, revoke, and perform authorizations.",
     "authorizationsLabel": "Authorizations",
     "chainGovernanceDescription": "Participate in the blockchain's governance.",

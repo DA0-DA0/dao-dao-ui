@@ -1,4 +1,3 @@
-export * from './appearance'
 export * from './advanced'
 export * from './authorizations'
 export * from './chain-governance'

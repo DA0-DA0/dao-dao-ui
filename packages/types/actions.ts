@@ -21,7 +21,6 @@ export enum ActionCategoryKey {
   CommonlyUsed = 'commonlyUsed',
   Authorizations = 'authorizations',
   ChainGovernance = 'chainGovernance',
-  Appearance = 'appearance',
   DaoGovernance = 'daoGovernance',
   SubDaos = 'subDaos',
   SmartContracting = 'smartContracting',

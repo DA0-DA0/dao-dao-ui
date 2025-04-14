@@ -29,7 +29,6 @@ export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => {
     categories.makeRewardsActionCategory,
     categories.makeDaoGovernanceActionCategory,
     categories.makeSubDaosActionCategory,
-    categories.makeAppearanceActionCategory,
     categories.makeManageNftsActionCategory,
     categories.makeSmartContractingActionCategory,
     categories.makeAuthorizationsActionCategory,

@@ -8,8 +8,6 @@
   "actionCategory": {
     "advancedDescription": "Ejecuta acciones personalizadas e importa acciones en masa.",
     "advancedLabel": "Avanzado",
-    "appearanceDescription": "Personaliza la apariencia de la página de este DAO.",
-    "appearanceLabel": "Apariencia",
     "authorizationsDescription": "Otorga, revoca y realiza autorizaciones.",
     "authorizationsLabel": "Autorizaciones",
     "chainGovernanceDescription": "Participa en la gobernanza de la blockchain.",
