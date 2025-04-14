@@ -234,8 +234,7 @@ export const deploySets: DeploySet[] = [
       ChainId.JunoMainnet,
       ChainId.JunoTestnet,
 
-      ChainId.KujiraMainnet,
-      ChainId.KujiraTestnet,
+      ChainId.ThorchainDevnet,
 
       'layer',
 
@@ -269,8 +268,7 @@ export const deploySets: DeploySet[] = [
         ChainId.JunoMainnet,
         ChainId.JunoTestnet,
 
-        ChainId.KujiraMainnet,
-        ChainId.KujiraTestnet,
+        ChainId.ThorchainDevnet,
 
         'layer',
 
@@ -333,18 +331,18 @@ export const deploySets: DeploySet[] = [
     }
   ),
 
-  // token factory kujira contract to deploy every time
+  // token factory thorchain contract to deploy every time
   new DeploySet(
-    'token factory kujira',
+    'token factory thorchain',
     'always',
     [
       new DeploySetContract(
-        'cw_tokenfactory_issuer-kujira',
+        'cw_tokenfactory_issuer-thorchain',
         'cw_tokenfactory_issuer'
       ),
     ],
     {
-      chainIds: [ChainId.KujiraMainnet, ChainId.KujiraTestnet],
+      chainIds: [ChainId.ThorchainDevnet],
     }
   ),
 
@@ -363,11 +361,16 @@ export const deploySets: DeploySet[] = [
     }
   ),
 
-  // token staking contract to deploy every time
+  // token staking (non-thorchain) contract to deploy every time
   new DeploySet(
-    'token staking',
+    'token staking (non-thorchain)',
     'always',
-    [new DeploySetContract('dao_voting_token_staked')],
+    [
+      new DeploySetContract(
+        'dao_voting_token_staked-default',
+        'dao_voting_token_staked'
+      ),
+    ],
     {
       chainIds: [
         ChainId.BitsongMainnet,
@@ -378,9 +381,6 @@ export const deploySets: DeploySet[] = [
 
         ChainId.JunoMainnet,
         ChainId.JunoTestnet,
-
-        ChainId.KujiraMainnet,
-        ChainId.KujiraTestnet,
 
         'layer',
 
@@ -406,6 +406,21 @@ export const deploySets: DeploySet[] = [
 
         ChainId.BabylonTestnet,
       ],
+    }
+  ),
+
+  // token staking (thorchain) contract to deploy every time
+  new DeploySet(
+    'token staking (thorchain)',
+    'always',
+    [
+      new DeploySetContract(
+        'dao_voting_token_staked-thorchain',
+        'dao_voting_token_staked'
+      ),
+    ],
+    {
+      chainIds: [ChainId.ThorchainDevnet],
     }
   ),
 
