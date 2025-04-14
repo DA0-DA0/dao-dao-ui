@@ -522,7 +522,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#5064fb',
         factoryContractAddress:
-          'cosmos1pt9cc828wcnrwr9x5u3mtdwvcce7ykrxd7gmneyqgexrpa74m3esp0jn9v',
+          'cosmos1kp83xmg04ramd3n82p5chnekzem4yxmeawrgx4uv4ldszqtcedgqvqrwn0',
         explorerUrlTemplates: {
           tx: 'https://explorer.polypore.xyz/provider/tx/REPLACE',
           gov: 'https://explorer.polypore.xyz/provider/gov',
@@ -535,7 +535,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
           // No NFTs on the Hub.
           [NftBasedCreatorId]: 'unsupported',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       {
         chainId: ChainId.JunoTestnet,
@@ -543,14 +543,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#f74a49',
         factoryContractAddress:
-          'juno1hm4y6fzgxgu688jgf7ek66px6xkrtmn3gyk8fax3eawhp68c2d5qcyjvu4',
+          'juno10kkn698hpzm07kj0klhj3hrkxjsmngj9598esypm5kh9hfpealpq9vjvcw',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
           gov: 'https://testnet.ping.pub/juno/gov',
           govProp: 'https://testnet.ping.pub/juno/gov/REPLACE',
           wallet: 'https://testnet.ping.pub/juno/account/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       {
         chainId: ChainId.OsmosisTestnet,
@@ -558,14 +558,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#5604e8',
         factoryContractAddress:
-          'osmo1qr2a9hk5423z7rfwp2p5jp27nzvaf3zcsuhta6hqtx7gjv4lzugslqts83',
+          'osmo1em9rp0zucf9dm7luqf06n20ke9dj9q0yyyd26k5w348sm8rq7h4qwrx8uw',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/osmosis/tx/REPLACE',
           gov: 'https://testnet.ping.pub/osmosis/gov',
           govProp: 'https://testnet.ping.pub/osmosis/gov/REPLACE',
           wallet: 'https://testnet.ping.pub/osmosis/account/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       {
         chainId: ChainId.StargazeTestnet,
@@ -573,14 +573,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#8ac3cc',
         factoryContractAddress:
-          'stars1wahchy39f5zqzdk948z49pp84c0vk7ta434tfzfp0c58e3an7qcqr20270',
+          'stars1ezkctzcnrvnwy94d6vjp2zkg68z272qndw688crzhh9nn4ud0q6sw8z03f',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
           gov: 'https://testnet.ping.pub/stargaze/gov',
           govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
           wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       {
         chainId: ChainId.MigalooTestnet,
@@ -588,14 +588,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#3ccd64',
         factoryContractAddress:
-          'migaloo14uk6sst2jwdscw8qf0t4tm8330u9qrw7hr39wrvjvynp0cq9rsvsluga70',
+          'migaloo1x393zjpv0ve7wk2w3d40gwjxeww7n8c0unxtdf87u366dlvazryq239pxu',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/migaloo/tx/REPLACE',
           gov: 'https://testnet.ping.pub/migaloo/gov',
           govProp: 'https://testnet.ping.pub/migaloo/gov/REPLACE',
           wallet: 'https://testnet.ping.pub/migaloo/account/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       // Kujira Testnet is halted indefinitely
       // {
@@ -621,13 +621,13 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#000000',
         factoryContractAddress:
-          'neutron1y83whq00v8zdpzmf7rw9jr3hqzc7cuqa5jznd0fe5hyd7ew5jm3s6255nk',
+          'neutron1caflev8smuslum9uque5z2qhma8xxxmap5dafeynekl37s966k8sq034r4',
         govContractAddress: NEUTRON_GOVERNANCE_DAO,
         explorerUrlTemplates: {
           tx: 'https://neutron.celat.one/pion-1/txs/REPLACE',
           wallet: 'https://neutron.celat.one/pion-1/accounts/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       // BitSong Testnet is halted indefinitely
       // {
@@ -647,14 +647,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#d71d6a',
         factoryContractAddress:
-          'omniflix1cqjm2yqkts8tetgkvd222cuk6tqlgsd6vssvduq0d3l6glc5xcfswk9ylt',
+          'omniflix1dlz906ww79sq49yykjvvlkf9fu0tv4u94gywfd7ldrtyjd8873hqufdvuc',
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/omniflix/tx/REPLACE',
           gov: 'https://testnet.ping.pub/omniflix/gov',
           govProp: 'https://testnet.ping.pub/omniflix/gov/REPLACE',
           wallet: 'https://testnet.ping.pub/omniflix/account/REPLACE',
         },
-        latestVersion: ContractVersion.V260,
+        latestVersion: ContractVersion.V270,
       },
       {
         chainId: ChainId.SecretTestnet,
@@ -802,8 +802,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://cosmos-api.polkachu.com',
   },
   [ChainId.CosmosHubProviderTestnet]: {
-    rpc: 'https://rpc.provider-sentry-01.rs-testnet.polypore.xyz',
-    rest: 'https://rest.provider-sentry-01.rs-testnet.polypore.xyz',
+    rpc: 'https://cosmos-testnet-rpc.polkachu.com',
+    rest: 'https://cosmos-testnet-api.polkachu.com',
   },
   [ChainId.TerraMainnet]: {
     rpc: 'https://terra-rpc.polkachu.com',
