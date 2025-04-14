@@ -65,7 +65,7 @@ program.option(
 )
 program.option(
   '-v, --version <version>',
-  'contract version to save code IDs under in the config when deploying DAO contracts (e.g. 1.0.0)'
+  'contract version to deploy when deploying DAO contracts (e.g. 1.0.0)'
 )
 program.option(
   '-a, --authz <granter>',

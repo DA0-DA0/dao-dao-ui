@@ -7,6 +7,7 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "deploy": "tsx ./deploy/script.ts",
+    "deploy:parallel": "tsx ./deploy/parallel.ts",
     "polytone": "tsx ./polytone/script.ts"
   },
   "devDependencies": {

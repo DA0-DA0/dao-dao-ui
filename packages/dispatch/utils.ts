@@ -251,7 +251,7 @@ export const uploadContract = async ({
 
       return Number(codeId)
     },
-    1_000
+    3_000
   )
 }
 
