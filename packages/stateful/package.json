@@ -22,6 +22,7 @@
     "@cosmos-kit/exodus": "^2.13.0",
     "@cosmos-kit/fin": "^2.14.0",
     "@cosmos-kit/frontier": "^2.13.0",
+    "@cosmos-kit/galaxy-station": "^2.14.0",
     "@cosmos-kit/keplr": "^2.15.0",
     "@cosmos-kit/leap": "^2.15.0",
     "@cosmos-kit/leap-metamask-cosmos-snap": "^0.15.0",
