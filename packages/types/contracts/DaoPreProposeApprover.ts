@@ -92,16 +92,17 @@ export type DepositRefundPolicy = 'always' | 'only_passed' | 'never'
 export type PreProposeSubmissionPolicy =
   | {
       anyone: {
-        denylist: string[]
+        denylist: Addr[]
       }
     }
   | {
       specific: {
-        allowlist: string[]
+        allowlist: Addr[]
         dao_members: boolean
-        denylist: string[]
+        denylist: Addr[]
       }
     }
+export type Addr = string
 export type ExecuteExt = {
   reset_approver: {}
 }
@@ -143,6 +144,9 @@ export type QueryMsg =
       dao: {}
     }
   | {
+      info: {}
+    }
+  | {
       config: {}
     }
   | {
@@ -177,6 +181,18 @@ export type QueryExt =
         id: number
       }
     }
+export type MigrateMsg =
+  | {
+      from_under_v250: {
+        policy?: PreProposeSubmissionPolicy | null
+      }
+    }
+  | {
+      extension: {
+        msg: Empty
+      }
+    }
+export interface Empty {}
 export type Boolean = boolean
 export type CheckedDenom =
   | {
@@ -185,7 +201,6 @@ export type CheckedDenom =
   | {
       cw20: Addr
     }
-export type Addr = string
 export interface Config {
   deposit_info?: CheckedDepositInfo | null
   /**
@@ -205,6 +220,13 @@ export interface CheckedDepositInfo {
 export interface DepositInfoResponse {
   deposit_info?: CheckedDepositInfo | null
   proposer: Addr
+}
+export interface InfoResponse {
+  info: ContractVersion
+}
+export interface ContractVersion {
+  contract: string
+  version: string
 }
 export interface HooksResponse {
   hooks: string[]

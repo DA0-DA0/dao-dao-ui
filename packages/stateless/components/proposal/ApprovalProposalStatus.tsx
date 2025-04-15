@@ -10,20 +10,20 @@ import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
 import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 
-export type PreProposeApprovalProposalStatusProps = {
+export type ApprovalProposalStatusProps = {
   status: ProposalStatus
 } & Omit<
   StatusDisplayProps,
   'Icon' | 'iconClassName' | 'label' | 'labelClassName'
 >
 
-export const PreProposeApprovalProposalStatus = ({
+export const ApprovalProposalStatus = ({
   status,
   ...props
-}: PreProposeApprovalProposalStatusProps) => {
+}: ApprovalProposalStatusProps) => {
   const { t } = useTranslation()
   const { labelI18nKey, Icon, iconClassName, textClassName } =
-    PreProposeApprovalProposalStatusMap[keyFromPreProposeStatus(status)]
+    ApprovalProposalStatusMap[keyFromPreProposeStatus(status)]
 
   return (
     <StatusDisplay
@@ -36,7 +36,7 @@ export const PreProposeApprovalProposalStatus = ({
   )
 }
 
-export const PreProposeApprovalProposalStatusMap: Record<
+export const ApprovalProposalStatusMap: Record<
   ProposalStatusKey,
   {
     labelI18nKey: string

@@ -31,6 +31,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       anyoneCanPropose,
       onlyMembersExecute,
       allowRevoting,
+      approver,
       veto,
     },
   },
@@ -41,6 +42,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     maxVotingPeriod: convertDurationWithUnitsToDuration(votingDuration),
     allowRevoting,
     veto: convertVetoConfigToCosmos(veto),
+    approver: approver.enabled ? approver.address : undefined,
     submissionPolicy: anyoneCanPropose ? 'anyone' : 'members',
     onlyMembersExecute: onlyMembersExecute,
   } as const

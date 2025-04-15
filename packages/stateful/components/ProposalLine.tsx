@@ -57,11 +57,11 @@ const InnerProposalLine = ({
 }: InnerProposalLineProps) => {
   const { t } = useTranslation()
   const {
-    components: { ProposalLine, PreProposeApprovalProposalLine },
+    components: { ProposalLine, ApprovalProposalLine },
   } = useProposalModuleAdapter()
 
   const Component = proposalId.includes('*')
-    ? PreProposeApprovalProposalLine
+    ? ApprovalProposalLine
     : ProposalLine
   if (!Component) {
     return (

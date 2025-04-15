@@ -15,7 +15,7 @@ export const useLoadingWalletVoteInfo = ():
   | LoadingData<WalletVoteInfo<Vote>> => {
   const {
     proposalModule: _proposalModule,
-    options: { proposalNumber, isPreProposeApprovalProposal },
+    options: { proposalNumber, isApprovalProposal },
   } = useProposalModuleAdapterContext()
 
   const proposalModule =
@@ -86,7 +86,7 @@ export const useLoadingWalletVoteInfo = ():
 
   // Return undefined when no permit on Secret Network or when pre-propose
   // proposal (which doesn't have voting).
-  if ((isSecretNetwork && !permit) || isPreProposeApprovalProposal) {
+  if ((isSecretNetwork && !permit) || isApprovalProposal) {
     return undefined
   }
 

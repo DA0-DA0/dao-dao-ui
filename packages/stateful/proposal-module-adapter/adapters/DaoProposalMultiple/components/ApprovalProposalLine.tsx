@@ -1,23 +1,22 @@
 import {
+  ApprovalProposalStatus,
   LineLoader,
-  PreProposeApprovalProposalStatus,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import {
   ApprovalProposalContextType,
+  ApprovalProposalWithMetadata,
   BaseProposalLineProps,
-  PreProposeApprovalProposalWithMeteadata,
 } from '@dao-dao/types'
+import { MultipleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useLoadingPreProposeApprovalProposal } from '../hooks'
+import { useLoadingApprovalProposal } from '../hooks'
 
-export const PreProposeApprovalProposalLine = (
-  props: BaseProposalLineProps
-) => {
-  const loadingProposal = useLoadingPreProposeApprovalProposal()
+export const ApprovalProposalLine = (props: BaseProposalLineProps) => {
+  const loadingProposal = useLoadingApprovalProposal()
 
   return (
     <SuspenseLoader
@@ -25,20 +24,17 @@ export const PreProposeApprovalProposalLine = (
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (
-        <InnerPreProposeApprovalProposalLine
-          {...props}
-          proposal={loadingProposal.data}
-        />
+        <InnerApprovalProposalLine {...props} proposal={loadingProposal.data} />
       )}
     </SuspenseLoader>
   )
 }
 
-const InnerPreProposeApprovalProposalLine = ({
+const InnerApprovalProposalLine = ({
   proposal,
   ...props
 }: BaseProposalLineProps & {
-  proposal: PreProposeApprovalProposalWithMeteadata
+  proposal: ApprovalProposalWithMetadata<MultipleChoiceApprovalProposal>
 }) => {
   const {
     proposalModule: { prefix: proposalPrefix },
@@ -48,7 +44,7 @@ const InnerPreProposeApprovalProposalLine = ({
   return (
     <StatelessProposalLine
       Status={(props) => (
-        <PreProposeApprovalProposalStatus {...props} status={proposal.status} />
+        <ApprovalProposalStatus {...props} status={proposal.status} />
       )}
       approvalContext={{
         type: ApprovalProposalContextType.Approval,

@@ -25,7 +25,7 @@ import {
   useLoadingVotesInfo,
 } from '../hooks'
 import { MultipleChoiceOptionData, VotesInfo } from '../types'
-import { MultipleChoiceOptionViewer } from './MultipleChoiceOptionViewer'
+import { ProposalMessagesDisplay } from './ProposalMessagesDisplay'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<MultipleChoiceNewProposalForm>
@@ -73,8 +73,6 @@ export const InnerProposalInnerContentDisplay = ({
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
   votesInfo: VotesInfo
 }) => {
-  const { t } = useTranslation()
-
   const statusKey = getProposalStatusKey(proposal.status)
 
   // Map action data to each proposal choice.
@@ -139,38 +137,29 @@ export const InnerProposalInnerContentDisplay = ({
   ])
 
   return (
-    <div>
-      <p className="title-text mb-2">{t('title.voteOptions')}</p>
-
-      {optionsData.map((data, index) => (
-        <MultipleChoiceOptionViewer
-          key={index}
-          SuspenseLoader={SuspenseLoader}
-          data={data}
-          lastOption={index === optionsData.length - 1}
-          onLoad={
-            setDuplicateFormData &&
-            data.choice.option_type !== 'none' &&
-            data.choice.msgs.length > 0
-              ? (loadedData) =>
-                  setLoadedData((d) => ({
-                    ...d,
-                    [data.choice.index]: loadedData,
-                  }))
-              : undefined
-          }
-          winner={
-            (statusKey === ProposalStatusEnum.Passed ||
-              statusKey === ProposalStatusEnum.Executed ||
-              statusKey === ProposalStatusEnum.ExecutionFailed ||
-              statusKey === 'veto_timelock' ||
-              statusKey === ProposalStatusEnum.NeutronTimelocked) &&
-            winningChoice
-              ? winningChoice.index === data.choice.index
-              : undefined
-          }
-        />
-      ))}
-    </div>
+    <ProposalMessagesDisplay
+      onLoad={
+        setDuplicateFormData
+          ? (data, loadedData) =>
+              data.choice.option_type !== 'none' &&
+              data.choice.msgs.length > 0 &&
+              setLoadedData((d) => ({
+                ...d,
+                [data.choice.index]: loadedData,
+              }))
+          : undefined
+      }
+      optionsData={optionsData}
+      winningOptionIndex={
+        (statusKey === ProposalStatusEnum.Passed ||
+          statusKey === ProposalStatusEnum.Executed ||
+          statusKey === ProposalStatusEnum.ExecutionFailed ||
+          statusKey === 'veto_timelock' ||
+          statusKey === ProposalStatusEnum.NeutronTimelocked) &&
+        winningChoice
+          ? winningChoice.index
+          : undefined
+      }
+    />
   )
 }

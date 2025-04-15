@@ -17,6 +17,7 @@ export interface IProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
   Proposal = any,
   ProposalResponse = any,
+  ApprovalProposal = any,
   VoteResponse = any,
   VoteInfo = any,
   Vote = any,
@@ -97,6 +98,7 @@ export interface IProposalModuleBase<
   }): Promise<{
     proposalNumber: number
     proposalId: string
+    isApprovalProposal?: boolean
   }>
 
   /**
@@ -148,6 +150,22 @@ export interface IProposalModuleBase<
    * Fetch a proposal.
    */
   getProposal(options: { proposalId: number }): Promise<ProposalResponse>
+
+  /**
+   * Query options to fetch an approval proposal from the pre-propose-approval
+   * module, if configured.
+   */
+  getApprovalProposalQuery(options: {
+    proposalId: number
+  }): FetchQueryOptions<ApprovalProposal>
+
+  /**
+   * Fetch an approval proposal from the pre-propose-approval module, if
+   * configured.
+   */
+  getApprovalProposal(options: {
+    proposalId: number
+  }): Promise<ApprovalProposal>
 
   /**
    * Query options to fetch the vote on a proposal by a given address. If voter

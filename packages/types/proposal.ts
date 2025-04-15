@@ -2,8 +2,9 @@ import { ReactNode } from 'react'
 
 import { ProposalCardProps } from './components/ProposalCard'
 import { ProposalStatus } from './contracts'
-import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
+import { ProposalStatusKey as ApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 import { ProposalResponse } from './contracts/DaoProposalSingle.v2'
+import { SingleChoiceProposal as NeutronCwdSubdaoTimelockSingleProposal } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { DurationWithUnits } from './units'
 
 export type ProposalCreatedCardProps = Omit<
@@ -39,7 +40,7 @@ export enum ApprovalProposalContextType {
 export type ApprovalProposalContext =
   | {
       type: ApprovalProposalContextType.Approval
-      status: PreProposeApprovalProposalStatus
+      status: ApprovalProposalStatus
     }
   | {
       type: ApprovalProposalContextType.Approver
@@ -67,7 +68,8 @@ export type ProposalVetoConfig = {
 export type NeutronTimelockOverrule = {
   dao: string
   proposalModulePrefix: string
-  proposal: ProposalResponse
+  overruleProposal: ProposalResponse
+  timelockProposal: NeutronCwdSubdaoTimelockSingleProposal
 }
 
 export type ProposalTimestampInfo = {

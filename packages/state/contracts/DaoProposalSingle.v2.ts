@@ -12,11 +12,11 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   Addr,
   Coin,
   Config,
-  CosmosMsgForEmpty,
   Duration,
   HooksResponse,
   InfoResponse,
@@ -232,7 +232,7 @@ export interface DaoProposalSingleV2Interface
       vote,
     }: {
       description: string
-      msgs: CosmosMsgForEmpty[]
+      msgs: UnifiedCosmosMsg[]
       proposer?: string
       title: string
       vote?: SingleChoiceAutoVote
@@ -414,7 +414,7 @@ export class DaoProposalSingleV2Client
       vote,
     }: {
       description: string
-      msgs: CosmosMsgForEmpty[]
+      msgs: UnifiedCosmosMsg[]
       proposer?: string
       title: string
       vote?: SingleChoiceAutoVote

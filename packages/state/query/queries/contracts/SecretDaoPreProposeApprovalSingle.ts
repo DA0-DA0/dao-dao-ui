@@ -129,7 +129,7 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeApprovalSingleProposalModuleQuery<TData>): UseQueryOptions<
+  }: SecretSingleChoiceApprovalProposalModuleQuery<TData>): UseQueryOptions<
     AnyContractInfo,
     Error,
     TData
@@ -213,7 +213,7 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeApprovalSingleProposalSubmittedHooksQuery<TData>): UseQueryOptions<
+  }: SecretSingleChoiceApprovalProposalSubmittedHooksQuery<TData>): UseQueryOptions<
     HooksResponse,
     Error,
     TData
@@ -274,9 +274,8 @@ export interface SecretDaoPreProposeApprovalSingleQueryExtensionQuery<TData>
     msg: QueryExt
   }
 }
-export interface SecretDaoPreProposeApprovalSingleProposalSubmittedHooksQuery<
-  TData,
-> extends SecretDaoPreProposeApprovalSingleReactQuery<HooksResponse, TData> {}
+export interface SecretSingleChoiceApprovalProposalSubmittedHooksQuery<TData>
+  extends SecretDaoPreProposeApprovalSingleReactQuery<HooksResponse, TData> {}
 export interface SecretDaoPreProposeApprovalSingleDepositInfoQuery<TData>
   extends SecretDaoPreProposeApprovalSingleReactQuery<
     DepositInfoResponse,
@@ -290,5 +289,5 @@ export interface SecretDaoPreProposeApprovalSingleConfigQuery<TData>
   extends SecretDaoPreProposeApprovalSingleReactQuery<Config, TData> {}
 export interface SecretDaoPreProposeApprovalSingleDaoQuery<TData>
   extends SecretDaoPreProposeApprovalSingleReactQuery<AnyContractInfo, TData> {}
-export interface SecretDaoPreProposeApprovalSingleProposalModuleQuery<TData>
+export interface SecretSingleChoiceApprovalProposalModuleQuery<TData>
   extends SecretDaoPreProposeApprovalSingleReactQuery<AnyContractInfo, TData> {}

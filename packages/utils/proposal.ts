@@ -32,7 +32,7 @@ export const extractProposalInfo = (
 ): {
   prefix: string
   proposalNumber: number
-  isPreProposeApprovalProposal: boolean
+  isApprovalProposal: boolean
 } => {
   // Prefix is alphabetical, followed by numeric prop number. If there is an
   // asterisk between the prefix and the prop number, this is a pre-propose
@@ -45,7 +45,7 @@ export const extractProposalInfo = (
 
   // Undefined if matching group doesn't exist, i.e. no prefix exists.
   const prefix = proposalIdParts[1] ?? ''
-  const isPreProposeApprovalProposal = proposalIdParts[2] === '*'
+  const isApprovalProposal = proposalIdParts[2] === '*'
   const proposalNumber = Number(proposalIdParts[3])
 
   if (isNaN(proposalNumber)) {
@@ -55,7 +55,7 @@ export const extractProposalInfo = (
   return {
     prefix,
     proposalNumber,
-    isPreProposeApprovalProposal,
+    isApprovalProposal,
   }
 }
 

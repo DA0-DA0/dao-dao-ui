@@ -318,10 +318,7 @@ export const makeUsePublishProposal =
           refreshBalances()
         }
 
-        return {
-          ...response,
-          isPreProposeApprovalProposal: response.proposalId.includes('*'),
-        }
+        return response
       },
       [
         isWalletConnected,

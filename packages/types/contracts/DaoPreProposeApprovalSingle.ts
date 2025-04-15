@@ -4,6 +4,8 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
+import { ApprovalProposal, UnifiedCosmosMsg } from './common'
+
 export type Uint128 = string
 export type DepositToken =
   | {
@@ -28,16 +30,17 @@ export type DepositRefundPolicy = 'always' | 'only_passed' | 'never'
 export type PreProposeSubmissionPolicy =
   | {
       anyone: {
-        denylist: string[]
+        denylist: Addr[]
       }
     }
   | {
       specific: {
-        allowlist: string[]
+        allowlist: Addr[]
         dao_members: boolean
-        denylist: string[]
+        denylist: Addr[]
       }
     }
+export type Addr = string
 export interface InstantiateMsg {
   deposit_info?: UncheckedDepositInfo | null
   extension: InstantiateExt
@@ -93,7 +96,7 @@ export type ExecuteMsg =
     }
   | {
       extension: {
-        msg: ExecuteExt
+        msg: ApprovalExecuteExt
       }
     }
   | {
@@ -115,150 +118,17 @@ export type ExecuteMsg =
 export type ProposeMessage = {
   propose: {
     description: string
-    msgs: CosmosMsgForEmpty[]
+    msgs: UnifiedCosmosMsg[]
     title: string
     vote?: SingleChoiceAutoVote | null
   }
 }
-export type CosmosMsgForEmpty =
-  | {
-      bank: BankMsg
-    }
-  | {
-      custom: Empty
-    }
-  | {
-      staking: StakingMsg
-    }
-  | {
-      distribution: DistributionMsg
-    }
-  | {
-      stargate: {
-        type_url: string
-        value: Binary
-      }
-    }
-  | {
-      ibc: IbcMsg
-    }
-  | {
-      wasm: WasmMsg
-    }
-  | {
-      gov: GovMsg
-    }
-export type BankMsg =
-  | {
-      send: {
-        amount: Coin[]
-        to_address: string
-      }
-    }
-  | {
-      burn: {
-        amount: Coin[]
-      }
-    }
-export type StakingMsg =
-  | {
-      delegate: {
-        amount: Coin
-        validator: string
-      }
-    }
-  | {
-      undelegate: {
-        amount: Coin
-        validator: string
-      }
-    }
-  | {
-      redelegate: {
-        amount: Coin
-        dst_validator: string
-        src_validator: string
-      }
-    }
-export type DistributionMsg =
-  | {
-      set_withdraw_address: {
-        address: string
-      }
-    }
-  | {
-      withdraw_delegator_reward: {
-        validator: string
-      }
-    }
 export type Binary = string
-export type IbcMsg =
-  | {
-      transfer: {
-        amount: Coin
-        channel_id: string
-        timeout: IbcTimeout
-        to_address: string
-      }
-    }
-  | {
-      send_packet: {
-        channel_id: string
-        data: Binary
-        timeout: IbcTimeout
-      }
-    }
-  | {
-      close_channel: {
-        channel_id: string
-      }
-    }
 export type Timestamp = Uint64
 export type Uint64 = string
-export type WasmMsg =
-  | {
-      execute: {
-        contract_addr: string
-        funds: Coin[]
-        msg: Binary
-      }
-    }
-  | {
-      instantiate: {
-        admin?: string | null
-        code_id: number
-        funds: Coin[]
-        label: string
-        msg: Binary
-      }
-    }
-  | {
-      migrate: {
-        contract_addr: string
-        msg: Binary
-        new_code_id: number
-      }
-    }
-  | {
-      update_admin: {
-        admin: string
-        contract_addr: string
-      }
-    }
-  | {
-      clear_admin: {
-        contract_addr: string
-      }
-    }
-export type GovMsg = {
-  vote: {
-    proposal_id: number
-    vote: VoteOption
-  }
-}
-export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
+export type Decimal = string
 export type Vote = 'yes' | 'no' | 'abstain'
-export type ExecuteExt =
+export type ApprovalExecuteExt =
   | {
       approve: {
         id: number
@@ -302,14 +172,6 @@ export interface Coin {
   denom: string
 }
 export interface Empty {}
-export interface IbcTimeout {
-  block?: IbcTimeoutBlock | null
-  timestamp?: Timestamp | null
-}
-export interface IbcTimeoutBlock {
-  height: number
-  revision: number
-}
 export interface SingleChoiceAutoVote {
   rationale?: string | null
   vote: Vote
@@ -320,6 +182,9 @@ export type QueryMsg =
     }
   | {
       dao: {}
+    }
+  | {
+      info: {}
     }
   | {
       config: {}
@@ -395,6 +260,17 @@ export type QueryExt =
         id: number
       }
     }
+export type MigrateMsg =
+  | {
+      from_under_v250: {
+        policy?: PreProposeSubmissionPolicy | null
+      }
+    }
+  | {
+      extension: {
+        msg: Empty
+      }
+    }
 export type Boolean = boolean
 export type CheckedDenom =
   | {
@@ -403,7 +279,6 @@ export type CheckedDenom =
   | {
       cw20: Addr
     }
-export type Addr = string
 export interface Config {
   deposit_info?: CheckedDepositInfo | null
   /**
@@ -424,6 +299,13 @@ export interface DepositInfoResponse {
   deposit_info?: CheckedDepositInfo | null
   proposer: Addr
 }
+export interface InfoResponse {
+  info: ContractVersion
+}
+export interface ContractVersion {
+  contract: string
+  version: string
+}
 export interface HooksResponse {
   hooks: string[]
 }
@@ -440,19 +322,12 @@ export type ProposalStatus =
       rejected: {}
     }
 export type ProposalStatusKey = 'pending' | 'approved' | 'rejected'
-export type ProposeMsg = {
+export type SingleChoiceProposeMsg = {
   title: string
   description: string
-  msgs: CosmosMsgForEmpty[]
-  proposer: string | null
+  msgs: UnifiedCosmosMsg[]
+  proposer?: string | null
+  vote?: SingleChoiceAutoVote | null
 }
-export type Proposal = {
-  status: ProposalStatus
-  approval_id: number
-  proposer: string
-  msg: ProposeMsg
-  deposit: CheckedDepositInfo
-  // Extra from indexer.
-  createdAt?: string
-  completedAt?: string
-}
+export type SingleChoiceApprovalProposal =
+  ApprovalProposal<SingleChoiceProposeMsg>

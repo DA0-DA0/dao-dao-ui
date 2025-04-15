@@ -27,7 +27,7 @@ export const isFeatureSupportedByVersion = (
     case Feature.ModuleInstantiateFunds:
       return versionGte(version, ContractVersion.V230)
     case Feature.VotingModuleTokenTypeFix:
-    case Feature.Approval:
+    case Feature.SingleChoiceApproval:
     case Feature.Veto:
       return versionGte(version, ContractVersion.V240)
     case Feature.CastVoteOnProposalCreation:
@@ -35,6 +35,7 @@ export const isFeatureSupportedByVersion = (
     case Feature.GranularSubmissionPolicy:
       return versionGte(version, ContractVersion.V250)
     case Feature.UnlimitedNftClaims:
+    case Feature.MultipleChoiceApproval:
       return versionGte(version, ContractVersion.V260)
     case Feature.VoteDelegation:
     case Feature.InitialActions:

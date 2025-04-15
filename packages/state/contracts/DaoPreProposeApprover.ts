@@ -14,11 +14,13 @@ import {
 import {
   Addr,
   ApproverProposeMessage,
+  Binary,
   Boolean,
   Config,
   DepositInfoResponse,
   ExecuteExt,
   HooksResponse,
+  InfoResponse,
   PreProposeSubmissionPolicy,
   QueryExt,
   Status,
@@ -31,6 +33,7 @@ export interface DaoPreProposeApproverReadOnlyInterface {
   contractAddress: string
   proposalModule: () => Promise<Addr>
   dao: () => Promise<Addr>
+  info: () => Promise<InfoResponse>
   config: () => Promise<Config>
   depositInfo: ({
     proposalId,
@@ -39,7 +42,7 @@ export interface DaoPreProposeApproverReadOnlyInterface {
   }) => Promise<DepositInfoResponse>
   canPropose: ({ address }: { address: string }) => Promise<Boolean>
   proposalSubmittedHooks: () => Promise<HooksResponse>
-  queryExtension: ({ msg }: { msg: QueryExt }) => Promise<any>
+  queryExtension: ({ msg }: { msg: QueryExt }) => Promise<Binary>
 }
 export class DaoPreProposeApproverQueryClient
   implements DaoPreProposeApproverReadOnlyInterface
@@ -51,6 +54,7 @@ export class DaoPreProposeApproverQueryClient
     this.contractAddress = contractAddress
     this.proposalModule = this.proposalModule.bind(this)
     this.dao = this.dao.bind(this)
+    this.info = this.info.bind(this)
     this.config = this.config.bind(this)
     this.depositInfo = this.depositInfo.bind(this)
     this.canPropose = this.canPropose.bind(this)
@@ -65,6 +69,11 @@ export class DaoPreProposeApproverQueryClient
   dao = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dao: {},
+    })
+  }
+  info = async (): Promise<InfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      info: {},
     })
   }
   config = async (): Promise<Config> => {
@@ -95,7 +104,7 @@ export class DaoPreProposeApproverQueryClient
       proposal_submitted_hooks: {},
     })
   }
-  queryExtension = async ({ msg }: { msg: QueryExt }): Promise<any> => {
+  queryExtension = async ({ msg }: { msg: QueryExt }): Promise<Binary> => {
     return this.client.queryContractSmart(this.contractAddress, {
       query_extension: {
         msg,

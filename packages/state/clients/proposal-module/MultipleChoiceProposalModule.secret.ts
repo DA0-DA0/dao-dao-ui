@@ -9,6 +9,7 @@ import {
   MultipleChoiceNewProposalData,
   SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
+import { MultipleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import {
   InstantiateMsg as SecretDaoPreProposeMultipleInstantiateMsg,
   UncheckedDepositInfo,
@@ -51,6 +52,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   MultipleChoiceNewProposalData,
   ProposalResponse,
+  MultipleChoiceApprovalProposal,
   VoteResponse,
   VoteInfo,
   MultipleChoiceVote,

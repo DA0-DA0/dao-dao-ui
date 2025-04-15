@@ -1,15 +1,13 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { usePlausible } from 'next-plausible'
+import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
-import {
-  DaoDaoCoreSelectors,
-  DaoProposalSingleCommonSelectors,
-  blocksPerYearSelector,
-} from '@dao-dao/state'
+import { DaoDaoCoreSelectors, blocksPerYearSelector } from '@dao-dao/state'
 import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
@@ -26,6 +24,7 @@ import {
   SingleChoiceNewProposalData,
   SingleChoiceNewProposalForm,
 } from '@dao-dao/types'
+import { Config } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   convertExpirationToDate,
   dateToWdhms,
@@ -62,6 +61,7 @@ export const NewProposal = ({
   } = useDao()
   const { address, isWalletConnecting, isWalletConnected, getStargateClient } =
     useWallet()
+  const queryClient = useQueryClient()
 
   const { watch } = useFormContext<SingleChoiceNewProposalForm>()
   const proposalTitle = watch('title')
@@ -99,118 +99,118 @@ export const NewProposal = ({
   } = usePublishProposal()
 
   const plausible = usePlausible<PlausibleEvents>()
-  const createProposal = useRecoilCallback(
-    ({ snapshot }) =>
-      async (newProposalData: SingleChoiceNewProposalData) => {
-        if (!isWalletConnected || !address) {
-          toast.error(t('error.logInToContinue'))
-          return
-        }
+  const createProposal = useCallback(
+    async (newProposalData: SingleChoiceNewProposalData) => {
+      if (!isWalletConnected || !address) {
+        toast.error(t('error.logInToContinue'))
+        return
+      }
 
-        if (blocksPerYearLoadable.state !== 'hasValue') {
-          toast.error(t('error.loadingData'))
-          return
-        }
-        const blocksPerYear = blocksPerYearLoadable.contents
+      if (blocksPerYearLoadable.state !== 'hasValue') {
+        toast.error(t('error.loadingData'))
+        return
+      }
+      const blocksPerYear = blocksPerYearLoadable.contents
 
-        try {
-          const { proposalNumber, proposalId, isPreProposeApprovalProposal } =
-            await publishProposal(newProposalData, {
-              // On failed simulation, allow the user to bypass the simulation
-              // and create the proposal anyway for 3 seconds.
-              failedSimulationBypassSeconds: 3,
-            })
+      try {
+        const {
+          proposalNumber,
+          proposalId,
+          isApprovalProposal = false,
+        } = await publishProposal(newProposalData, {
+          // On failed simulation, allow the user to bypass the simulation
+          // and create the proposal anyway for 3 seconds.
+          failedSimulationBypassSeconds: 3,
+        })
 
-          plausible('daoProposalCreate', {
-            props: {
-              chainId: proposalModule.chainId,
-              dao: proposalModule.dao.coreAddress,
-              walletAddress: address,
-              proposalModule: proposalModule.address,
-              proposalModuleType: proposalModule.contractName,
-              proposalNumber,
-              proposalId,
-              approval: isPreProposeApprovalProposal,
-            },
-          })
-
-          // Get proposal info to display card.
-          const proposalInfo = await makeGetProposalInfo({
-            chain: proposalModule.dao.chain,
-            coreAddress: proposalModule.dao.coreAddress,
-            proposalModule,
+        plausible('daoProposalCreate', {
+          props: {
+            chainId: proposalModule.chainId,
+            dao: proposalModule.dao.coreAddress,
+            walletAddress: address,
+            proposalModule: proposalModule.address,
+            proposalModuleType: proposalModule.contractName,
             proposalNumber,
             proposalId,
-            isPreProposeApprovalProposal,
-          })()
-          const expirationDate =
-            proposalInfo?.expiration &&
-            convertExpirationToDate(
-              blocksPerYear,
-              proposalInfo.expiration,
-              (await (await getStargateClient()).getBlock()).header.height
-            )
+            approval: isApprovalProposal,
+          },
+        })
 
-          const config = await snapshot.getPromise(
-            DaoProposalSingleCommonSelectors.configSelector({
-              chainId: proposalModule.chainId,
-              contractAddress: proposalModule.address,
-            })
+        // Get proposal info to display card.
+        const proposalInfo = await makeGetProposalInfo({
+          queryClient,
+          chain: proposalModule.dao.chain,
+          coreAddress: proposalModule.dao.coreAddress,
+          proposalModule,
+          proposalNumber,
+          proposalId,
+          isApprovalProposal,
+        })()
+        const expirationDate =
+          proposalInfo?.expiration &&
+          convertExpirationToDate(
+            blocksPerYear,
+            proposalInfo.expiration,
+            (await (await getStargateClient()).getBlock()).header.height
           )
 
-          const { threshold, quorum } = processTQ(config.threshold)
+        const config: Config = await queryClient.fetchQuery(
+          proposalModule.getConfigQuery()
+        )
 
-          onCreateSuccess(
-            proposalInfo
-              ? {
-                  id: proposalId,
-                  title: newProposalData.title,
-                  description: newProposalData.description,
-                  info: [
-                    {
-                      Icon: BookOutlined,
-                      label: `${t('title.threshold')}: ${threshold.display}`,
-                    },
-                    ...(quorum
-                      ? [
-                          {
-                            Icon: FlagOutlined,
-                            label: `${t('title.quorum')}: ${quorum.display}`,
-                          },
-                        ]
-                      : []),
-                    ...(expirationDate
-                      ? [
-                          {
-                            Icon: Timelapse,
-                            label: dateToWdhms(expirationDate),
-                          },
-                        ]
-                      : []),
-                  ],
-                  dao: {
-                    name: daoName,
-                    coreAddress,
-                    imageUrl: daoImageUrl,
+        const { threshold, quorum } = processTQ(config.threshold)
+
+        onCreateSuccess(
+          proposalInfo
+            ? {
+                id: proposalId,
+                title: newProposalData.title,
+                description: newProposalData.description,
+                info: [
+                  {
+                    Icon: BookOutlined,
+                    label: `${t('title.threshold')}: ${threshold.display}`,
                   },
-                }
-              : {
-                  id: proposalId,
-                  title: newProposalData.title,
-                  description: newProposalData.description,
-                  info: [],
-                  dao: {
-                    name: daoName,
-                    coreAddress,
-                    imageUrl: daoImageUrl,
-                  },
-                }
-          )
-        } catch (err) {
-          console.error(err)
-          toast.error(processError(err))
-        }
-      },
+                  ...(quorum
+                    ? [
+                        {
+                          Icon: FlagOutlined,
+                          label: `${t('title.quorum')}: ${quorum.display}`,
+                        },
+                      ]
+                    : []),
+                  ...(expirationDate
+                    ? [
+                        {
+                          Icon: Timelapse,
+                          label: dateToWdhms(expirationDate),
+                        },
+                      ]
+                    : []),
+                ],
+                dao: {
+                  name: daoName,
+                  coreAddress,
+                  imageUrl: daoImageUrl,
+                },
+              }
+            : {
+                id: proposalId,
+                title: newProposalData.title,
+                description: newProposalData.description,
+                info: [],
+                dao: {
+                  name: daoName,
+                  coreAddress,
+                  imageUrl: daoImageUrl,
+                },
+              }
+        )
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+      }
+    },
     [
       isWalletConnected,
       publishProposal,
@@ -225,6 +225,7 @@ export const NewProposal = ({
       daoImageUrl,
       plausible,
       address,
+      queryClient,
     ]
   )
 

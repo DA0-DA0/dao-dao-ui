@@ -36,9 +36,9 @@ import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
+import { DaoApprovalProposalContentDisplay } from './DaoApprovalProposalContentDisplay'
 import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
 import { DaoProposalProps } from './DaoPageWrapper'
-import { DaoPreProposeApprovalProposalContentDisplay } from './DaoPreProposeApprovalProposalContentDisplay'
 import { DaoProposalContentDisplay } from './DaoProposalContentDisplay'
 
 interface InnerDaoProposalProps {
@@ -55,12 +55,12 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     useProposalModuleAdapterCommonContext()
 
   const {
-    options: { proposalModule, isPreProposeApprovalProposal },
+    options: { proposalModule, isApprovalProposal },
     adapter: {
       components: {
         ProposalStatusAndInfo,
         ProposalVoter,
-        PreProposeApprovalProposalStatusAndInfo,
+        ApprovalProposalStatusAndInfo,
         ProposalVoteTally,
         ProposalVotes,
       },
@@ -269,13 +269,12 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
       <Proposal
         ProposalStatusAndInfo={
-          isPreProposeApprovalProposal &&
-          PreProposeApprovalProposalStatusAndInfo
-            ? PreProposeApprovalProposalStatusAndInfo
+          isApprovalProposal && ApprovalProposalStatusAndInfo
+            ? ApprovalProposalStatusAndInfo
             : CachedProposalStatusAndInfo
         }
         VotesCast={
-          isPreProposeApprovalProposal
+          isApprovalProposal
             ? undefined
             : isSecretNetwork(dao.chainId)
               ? ProposalVotesPrivate
@@ -284,17 +283,13 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
             <DaoApproverProposalContentDisplay proposalInfo={proposalInfo} />
-          ) : isPreProposeApprovalProposal ? (
-            <DaoPreProposeApprovalProposalContentDisplay
-              proposalInfo={proposalInfo}
-            />
+          ) : isApprovalProposal ? (
+            <DaoApprovalProposalContentDisplay proposalInfo={proposalInfo} />
           ) : (
             <DaoProposalContentDisplay proposalInfo={proposalInfo} />
           )
         }
-        voteTally={
-          isPreProposeApprovalProposal ? undefined : <ProposalVoteTally />
-        }
+        voteTally={isApprovalProposal ? undefined : <ProposalVoteTally />}
       />
 
       <SelfRelayExecuteModal

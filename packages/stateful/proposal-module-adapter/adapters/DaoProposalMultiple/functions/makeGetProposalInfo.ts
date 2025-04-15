@@ -1,11 +1,6 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-
-import { DaoProposalMultipleQueryClient, queryIndexer } from '@dao-dao/state'
 import {
   CommonProposalInfo,
-  ContractVersionInfo,
   IProposalModuleAdapterOptions,
-  InfoResponse,
 } from '@dao-dao/types'
 import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -15,76 +10,36 @@ export const makeGetProposalInfo =
     chain: { chainId },
     proposalModule,
     proposalNumber,
-    isPreProposeApprovalProposal,
+    isApprovalProposal,
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
-    // Multiple choice does not support pre-propose-approval right now.
-    if (isPreProposeApprovalProposal) {
-      return
-    }
+    // Get pre-propose approval proposal from pre propose module.
+    if (isApprovalProposal && proposalModule.prePropose) {
+      const approvalProposal = await proposalModule.getApprovalProposal({
+        proposalId: proposalNumber,
+      })
 
-    // Lazily connect if necessary.
-    let _cosmWasmClient: CosmWasmClient
-    const getCosmWasmClient = async () => {
-      if (!_cosmWasmClient) {
-        _cosmWasmClient = await getCosmWasmClientForChainId(chainId)
+      if (!approvalProposal) {
+        return
       }
-      return _cosmWasmClient
+
+      return {
+        id: `${proposalModule.prefix}*${approvalProposal.approval_id}`,
+        title: approvalProposal.msg.title,
+        description: approvalProposal.msg.description,
+        expiration: null,
+        createdAtEpoch: approvalProposal.createdAt
+          ? new Date(approvalProposal.createdAt).getTime()
+          : null,
+        createdByAddress: approvalProposal.proposer,
+      }
     }
 
     let proposalResponse: ProposalResponse | undefined
     try {
-      let info: ContractVersionInfo | undefined
-      // Try indexer first.
-      try {
-        info = await queryIndexer<ContractVersionInfo>({
-          type: 'contract',
-          address: proposalModule.address,
-          formula: 'info',
-          chainId,
-        })
-      } catch (err) {
-        // Ignore error.
-        console.error(err)
-      }
-      // If indexer fails, fallback to querying chain.
-      if (!info) {
-        info = (
-          (await (
-            await getCosmWasmClient()
-          ).queryContractSmart(proposalModule.address, {
-            info: {},
-          })) as InfoResponse
-        ).info
-      }
-
-      // Try indexer first.
-      try {
-        proposalResponse = await queryIndexer({
-          type: 'contract',
-          address: proposalModule.address,
-          formula: 'daoProposalMultiple/proposal',
-          chainId,
-          args: {
-            id: proposalNumber,
-          },
-        })
-      } catch (err) {
-        // Ignore error.
-        console.error(err)
-      }
-      // If indexer fails, fallback to querying chain.
-      if (!proposalResponse) {
-        const cosmWasmClient = await getCosmWasmClient()
-        const queryClient = new DaoProposalMultipleQueryClient(
-          cosmWasmClient,
-          proposalModule.address
-        )
-
-        proposalResponse = await queryClient.proposal({
-          proposalId: proposalNumber,
-        })
-      }
+      proposalResponse = await proposalModule.getProposal({
+        proposalId: proposalNumber,
+      })
     } catch (err) {
       // If proposal doesn't exist, handle just return undefined instead of
       // throwing an error. Rethrow all other errors.
@@ -102,35 +57,17 @@ export const makeGetProposalInfo =
       return
     }
 
-    const { id, proposal } = proposalResponse
+    const { id, proposal, createdAt } = proposalResponse
 
-    // Try indexer first.
-    let createdAtEpoch: number | null = null
-    try {
-      const createdAt = await queryIndexer<string>({
-        type: 'contract',
-        address: proposalModule.address,
-        formula: 'daoProposalMultiple/proposalCreatedAt',
-        chainId,
-        args: {
-          id,
-        },
-      })
-      // If indexer returned a value, assume it's a date.
-      if (createdAt) {
-        createdAtEpoch = new Date(createdAt).getTime()
-      }
-    } catch (err) {
-      // Ignore error.
-      console.error(err)
-    }
+    let createdAtEpoch: number | null = createdAt ? Date.parse(createdAt) : null
     // If indexer fails, fallback to querying block info from chain.
-
     if (!createdAtEpoch) {
       try {
         createdAtEpoch = new Date(
           (
-            await (await getCosmWasmClient()).getBlock(proposal.start_height)
+            await (
+              await getCosmWasmClientForChainId(chainId)
+            ).getBlock(proposal.start_height)
           ).header.time
         ).getTime()
       } catch (err) {

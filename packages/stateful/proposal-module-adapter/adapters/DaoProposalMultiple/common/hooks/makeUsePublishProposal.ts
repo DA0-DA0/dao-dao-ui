@@ -324,8 +324,15 @@ export const makeUsePublishProposal =
         // added by other proposal module forms.
         const proposalData: MultipleChoiceNewProposalData = {
           title: data.title,
-          description: data.description,
-          choices: data.choices,
+          // Ensure description is not undefined.
+          description: data.description || '',
+          choices: {
+            options: data.choices.options.map(({ description, ...option }) => ({
+              ...option,
+              // Ensure description is not undefined.
+              description: description || '',
+            })),
+          },
         }
 
         const response = await proposalModule.propose({

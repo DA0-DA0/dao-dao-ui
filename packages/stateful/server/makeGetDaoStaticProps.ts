@@ -371,7 +371,13 @@ export const makeGetDaoProposalStaticProps = ({
 }: GetDaoProposalStaticPropsMakerOptions) =>
   makeGetDaoStaticProps({
     ...options,
-    getProps: async ({ context: { params = {} }, t, chain, dao }) => {
+    getProps: async ({
+      context: { params = {} },
+      t,
+      chain,
+      dao,
+      queryClient,
+    }) => {
       const proposalId = params[proposalIdParamKey]
 
       // If invalid proposal ID, not found.
@@ -542,7 +548,11 @@ export const makeGetDaoProposalStaticProps = ({
           adapter: {
             functions: { getProposalInfo },
           },
-        } = await matchAndLoadAdapter(dao, proposalId)
+        } = await matchAndLoadAdapter({
+          queryClient,
+          dao,
+          proposalId,
+        })
 
         // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
         if (!isNaN(Number(proposalId))) {

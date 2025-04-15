@@ -1,4 +1,6 @@
 export * from './useCastVote'
+export * from './useLoadingApprovalProposal'
+export * from './useLoadingApprovalVoteOptions'
 export * from './useLoadingDepositInfo'
 export * from './useLoadingVoteOptions'
 export * from './useLoadingProposalExecutionTxHash'

@@ -93,9 +93,9 @@ export enum Feature {
    */
   VotingModuleTokenTypeFix,
   /**
-   * Approval was added.
+   * Approval was added to single choice proposal modules.
    */
-  Approval,
+  SingleChoiceApproval,
   /**
    * Veto was added.
    */
@@ -121,4 +121,8 @@ export enum Feature {
    * Initial actions were added.
    */
   InitialActions,
+  /**
+   * Approval was added to multiple choice proposal modules.
+   */
+  MultipleChoiceApproval,
 }

@@ -25,6 +25,10 @@ export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'
 export { CwVestingClient, CwVestingQueryClient } from './CwVesting'
 export { DaoDaoCoreClient, DaoDaoCoreQueryClient } from './DaoDaoCore'
 export {
+  DaoPreProposeApprovalMultipleClient,
+  DaoPreProposeApprovalMultipleQueryClient,
+} from './DaoPreProposeApprovalMultiple'
+export {
   DaoPreProposeApprovalSingleClient,
   DaoPreProposeApprovalSingleQueryClient,
 } from './DaoPreProposeApprovalSingle'

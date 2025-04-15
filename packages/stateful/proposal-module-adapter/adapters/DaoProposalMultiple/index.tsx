@@ -1,7 +1,9 @@
 import {
   MultipleChoiceNewProposalForm,
+  PreProposeModuleType,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
+import { MultipleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
@@ -16,9 +18,14 @@ import {
   makeUsePublishProposal,
   maxVotingPeriodSelector,
   proposalCountSelector,
+  reversePreProposeCompletedProposalInfosSelector,
+  reversePreProposePendingProposalInfosSelector,
   reverseProposalInfosSelector,
 } from './common'
 import {
+  ApprovalProposalInnerContentDisplay,
+  ApprovalProposalLine,
+  ApprovalProposalStatusAndInfo,
   ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -31,6 +38,7 @@ import { getInstantiateInfo } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
   useCastVote,
+  useLoadingApprovalProposal,
   useLoadingProposalExecutionTxHash,
   useLoadingProposalStatus,
   useLoadingVoteOptions,
@@ -43,7 +51,8 @@ import { DaoCreationExtraVotingConfig } from './types'
 export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   DaoCreationExtraVotingConfig,
   MultipleChoiceVote,
-  MultipleChoiceNewProposalForm
+  MultipleChoiceNewProposalForm,
+  MultipleChoiceApprovalProposal
 > = {
   id: DaoProposalMultipleAdapterId,
   contractNames: DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
@@ -94,6 +103,24 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
             ...props,
           }),
         depositInfo: depositInfoSelector,
+        ...(proposalModule.prePropose?.type === PreProposeModuleType.Approval
+          ? {
+              reversePreProposePendingProposalInfos: (props) =>
+                reversePreProposePendingProposalInfosSelector({
+                  chainId: proposalModule.chainId,
+                  proposalModuleAddress: proposalModule.prePropose!.address,
+                  proposalModulePrefix: proposalModule.prefix,
+                  ...props,
+                }),
+              reversePreProposeCompletedProposalInfos: (props) =>
+                reversePreProposeCompletedProposalInfosSelector({
+                  chainId: proposalModule.chainId,
+                  proposalModuleAddress: proposalModule.prePropose!.address,
+                  proposalModulePrefix: proposalModule.prefix,
+                  ...props,
+                }),
+            }
+          : {}),
         maxVotingPeriod: maxVotingPeriodSelector({
           chainId: proposalModule.chainId,
           proposalModuleAddress: proposalModule.address,
@@ -133,11 +160,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
 
-      // No multiple choice approval flow yet.
-      useLoadingPreProposeApprovalProposal: () => ({
-        loading: false,
-        data: undefined,
-      }),
+      useLoadingApprovalProposal,
     },
 
     // Components
@@ -149,6 +172,10 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       ProposalVotes,
       ProposalVoteTally,
       ProposalLine,
+
+      ApprovalProposalStatusAndInfo,
+      ApprovalProposalInnerContentDisplay,
+      ApprovalProposalLine,
     },
   }),
 

@@ -1,3 +1,5 @@
+import { QueryClient } from '@tanstack/react-query'
+
 import {
   IDaoBase,
   IProposalModuleAdapterCommon,
@@ -71,18 +73,23 @@ export const matchAndLoadCommon = (
   }
 }
 
-export const matchAndLoadAdapter = (
-  dao: IDaoBase,
+export const matchAndLoadAdapter = ({
+  dao,
+  proposalId,
+  queryClient,
+}: {
+  queryClient: QueryClient
+  dao: IDaoBase
   proposalId: string
-): IProposalModuleContext => {
+}): IProposalModuleContext => {
   let proposalPrefix: string
   let proposalNumber: number
-  let isPreProposeApprovalProposal: boolean
+  let isApprovalProposal: boolean
   try {
     const info = extractProposalInfo(proposalId)
     proposalPrefix = info.prefix
     proposalNumber = info.proposalNumber
-    isPreProposeApprovalProposal = info.isPreProposeApprovalProposal
+    isApprovalProposal = info.isApprovalProposal
   } catch (err) {
     throw new ProposalModuleAdapterError(
       err instanceof Error ? err.message : 'Failed to parse proposal ID.'
@@ -117,12 +124,13 @@ export const matchAndLoadAdapter = (
   }
 
   const adapterOptions: IProposalModuleAdapterOptions = {
+    queryClient,
     chain: dao.chain,
     coreAddress: dao.coreAddress,
     proposalModule,
     proposalId,
     proposalNumber,
-    isPreProposeApprovalProposal,
+    isApprovalProposal,
   }
 
   return {

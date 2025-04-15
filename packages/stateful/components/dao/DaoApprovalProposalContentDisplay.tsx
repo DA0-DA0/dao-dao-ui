@@ -20,26 +20,25 @@ import { useProposalModuleAdapterContext } from '../../proposal-module-adapter'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 
-export type DaoPreProposeApprovalProposalContentDisplayProps = {
+export type DaoApprovalProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
 }
 
-export const DaoPreProposeApprovalProposalContentDisplay = ({
+export const DaoApprovalProposalContentDisplay = ({
   proposalInfo,
-}: DaoPreProposeApprovalProposalContentDisplayProps) => {
+}: DaoApprovalProposalContentDisplayProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDao()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const {
     id,
     adapter: {
-      components: { PreProposeApprovalInnerContentDisplay },
-      hooks: { useProposalRefreshers, useLoadingPreProposeApprovalProposal },
+      components: { ApprovalProposalInnerContentDisplay },
+      hooks: { useProposalRefreshers, useLoadingApprovalProposal },
     },
   } = useProposalModuleAdapterContext()
 
-  const loadingPreProposeApprovalProposal =
-    useLoadingPreProposeApprovalProposal()
+  const loadingApprovalProposal = useLoadingApprovalProposal()
 
   const creatorAddress = proposalInfo.createdByAddress
   const { entity } = useEntity(creatorAddress)
@@ -63,7 +62,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       })
     : undefined
 
-  if (!PreProposeApprovalInnerContentDisplay) {
+  if (!ApprovalProposalInnerContentDisplay) {
     return (
       <StatusCard
         content={t('error.unsupportedApprovalFailedRender')}
@@ -72,10 +71,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
     )
   }
 
-  if (
-    loadingPreProposeApprovalProposal.loading ||
-    !loadingPreProposeApprovalProposal.data
-  ) {
+  if (loadingApprovalProposal.loading || !loadingApprovalProposal.data) {
     return <Loader />
   }
 
@@ -85,9 +81,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       IconButtonLink={IconButtonLink}
       approvalContext={{
         type: ApprovalProposalContextType.Approval,
-        status: keyFromPreProposeStatus(
-          loadingPreProposeApprovalProposal.data.status
-        ),
+        status: keyFromPreProposeStatus(loadingApprovalProposal.data.status),
       }}
       createdAt={
         proposalInfo.createdAtEpoch !== null
@@ -101,7 +95,7 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       description={proposalInfo.description}
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
-        <PreProposeApprovalInnerContentDisplay
+        <ApprovalProposalInnerContentDisplay
           setDuplicateFormData={setDuplicateFormData}
         />
       }

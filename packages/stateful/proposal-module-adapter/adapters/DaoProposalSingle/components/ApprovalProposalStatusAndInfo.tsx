@@ -12,9 +12,9 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ApprovalProposalStatusMap,
   Button,
   Logo,
-  PreProposeApprovalProposalStatusMap,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
@@ -22,11 +22,16 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
+  ApprovalProposalWithMetadata,
   BasePreProposeProposalStatusAndInfoProps,
-  PreProposeApprovalProposalWithMeteadata,
   PreProposeModuleType,
 } from '@dao-dao/types'
-import { keyFromPreProposeStatus, processError } from '@dao-dao/utils'
+import { SingleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import {
+  findWasmAttributeValue,
+  keyFromPreProposeStatus,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   ButtonLink,
@@ -36,16 +41,13 @@ import {
 import { DaoPreProposeApprovalSingleHooks } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import {
-  useLoadingPreProposeApprovalProposal,
-  useProposalRefreshers,
-} from '../hooks'
+import { useLoadingApprovalProposal, useProposalRefreshers } from '../hooks'
 import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
-export const PreProposeApprovalProposalStatusAndInfo = (
+export const ApprovalProposalStatusAndInfo = (
   props: BasePreProposeProposalStatusAndInfoProps
 ) => {
-  const loadingProposal = useLoadingPreProposeApprovalProposal()
+  const loadingProposal = useLoadingApprovalProposal()
 
   return (
     <SuspenseLoader
@@ -53,7 +55,7 @@ export const PreProposeApprovalProposalStatusAndInfo = (
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (
-        <InnerPreProposeApprovalProposalStatusAndInfo
+        <InnerApprovalProposalStatusAndInfo
           {...props}
           proposal={loadingProposal.data}
         />
@@ -62,15 +64,15 @@ export const PreProposeApprovalProposalStatusAndInfo = (
   )
 }
 
-const InnerPreProposeApprovalProposalStatusAndInfo = ({
+const InnerApprovalProposalStatusAndInfo = ({
   proposal: { proposer, timestampDisplay, ...proposal },
   ...props
 }: BasePreProposeProposalStatusAndInfoProps & {
-  proposal: PreProposeApprovalProposalWithMeteadata
+  proposal: ApprovalProposalWithMetadata<SingleChoiceApprovalProposal>
 }) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDao()
-  const { getDaoProposalPath } = useDaoNavHelpers()
+  const { chainId, coreAddress } = useDao()
+  const { getDaoProposalPath, goToDaoProposal } = useDaoNavHelpers()
   const {
     proposalModule: { prefix, prePropose },
   } = useProposalModuleAdapterOptions()
@@ -148,9 +150,7 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
       Icon: RotateRightOutlined,
       label: t('title.status'),
       Value: (props) => (
-        <p {...props}>
-          {t(PreProposeApprovalProposalStatusMap[statusKey].labelI18nKey)}
-        </p>
+        <p {...props}>{t(ApprovalProposalStatusMap[statusKey].labelI18nKey)}</p>
       ),
     },
     ...(timestampDisplay
@@ -199,7 +199,7 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
 
     setLoading('approve')
     try {
-      await doExtension({
+      const { events } = await doExtension({
         msg: {
           approve: {
             id: proposal.approval_id,
@@ -207,13 +207,26 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
         },
       })
 
+      // Find created proposal ID from events.
+      const proposalId = Number(
+        findWasmAttributeValue(
+          chainId,
+          events,
+          prePropose.address,
+          'proposal_id'
+        ) ?? -1
+      )
+
       toast.success(t('success.proposalApproved'))
 
       refreshProposalAndAll()
+
+      await goToDaoProposal(coreAddress, prefix + proposalId)
+
+      // Don't stop loading on success since we're redirecting to the proposal.
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
-    } finally {
       setLoading(false)
     }
   }
@@ -249,9 +262,11 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
     <StatelessProposalStatusAndInfo
       {...props}
       action={
-        // If connected wallet is the approver, show buttons to approve or
-        // reject the pending proposal.
-        isWalletConnected && address === prePropose.config.approver
+        // If connected wallet is the approver, and the proposal is pending,
+        // show buttons to approve or reject the pending proposal.
+        isWalletConnected &&
+        address === prePropose.config.approver &&
+        statusKey === 'pending'
           ? {
               header: (
                 <div className="flex flex-col gap-2">

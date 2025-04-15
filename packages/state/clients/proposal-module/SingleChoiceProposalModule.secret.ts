@@ -9,6 +9,7 @@ import {
   SecretModuleInstantiateInfo,
   SingleChoiceNewProposalData,
 } from '@dao-dao/types'
+import { SingleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { InstantiateMsg as SecretDaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
 import {
   InstantiateMsg as SecretDaoPreProposeSingleInstantiateMsg,
@@ -53,6 +54,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   SecretCwDao,
   SingleChoiceNewProposalData,
   ProposalResponse,
+  SingleChoiceApprovalProposal,
   VoteResponse,
   VoteInfo,
   Vote,
@@ -270,7 +272,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     const permit = await this.dao.getPermit(sender)
 
     let proposalNumber: number
-    let isPreProposeApprovalProposal = false
+    let isApprovalProposal = false
 
     if (this.prePropose) {
       const { events } = await new SecretDaoPreProposeSingleClient(
@@ -290,13 +292,13 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         },
       })
 
-      isPreProposeApprovalProposal =
+      isApprovalProposal =
         this.prePropose.contractName ===
           ContractName.PreProposeApprovalSingle ||
         this.prePropose.contractName === ContractName.PreProposeApprovalMultiple
       proposalNumber =
         // pre-propose-approval proposals have a different event
-        isPreProposeApprovalProposal
+        isApprovalProposal
           ? Number(
               findWasmAttributeValue(
                 this.chainId,
@@ -348,7 +350,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
       // Proposal IDs are the the prefix plus the proposal number. If a
       // pre-propose-approval proposal, an asterisk is inserted in the middle.
       proposalId: `${this.prefix}${
-        isPreProposeApprovalProposal ? '*' : ''
+        isApprovalProposal ? '*' : ''
       }${proposalNumber}`,
     }
   }

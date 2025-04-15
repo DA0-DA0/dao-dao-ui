@@ -1,3 +1,4 @@
+import { QueryClient } from '@tanstack/react-query'
 import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -17,7 +18,6 @@ import {
   ProposalStatus,
   UnifiedCosmosMsg,
 } from './contracts/common'
-import { Proposal as DaoPreProposeApprovalProposal } from './contracts/DaoPreProposeApprovalSingle'
 import {
   MultipleChoiceOptions,
   MultipleChoiceVote,
@@ -68,7 +68,10 @@ export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
   }
 }
 
-export type IProposalModuleAdapter<Vote extends unknown = any> = {
+export type IProposalModuleAdapter<
+  Vote extends unknown = any,
+  ApprovalProposal extends unknown = any,
+> = {
   // Functions
   functions: {
     getProposalInfo: () => Promise<CommonProposalInfo | undefined>
@@ -92,8 +95,8 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
       castingVote: boolean
     }
 
-    useLoadingPreProposeApprovalProposal: () => LoadingData<
-      PreProposeApprovalProposalWithMeteadata | undefined
+    useLoadingApprovalProposal: () => LoadingData<
+      ApprovalProposalWithMetadata<ApprovalProposal> | undefined
     >
   }
 
@@ -107,9 +110,9 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
     ProposalVoteTally: ComponentType
     ProposalLine: ComponentType<BaseProposalLineProps>
 
-    PreProposeApprovalProposalStatusAndInfo?: ComponentType<BasePreProposeProposalStatusAndInfoProps>
-    PreProposeApprovalInnerContentDisplay?: ComponentType<BasePreProposeApprovalInnerContentDisplayProps>
-    PreProposeApprovalProposalLine?: ComponentType<BaseProposalLineProps>
+    ApprovalProposalStatusAndInfo?: ComponentType<BasePreProposeProposalStatusAndInfoProps>
+    ApprovalProposalInnerContentDisplay?: ComponentType<BaseApprovalProposalInnerContentDisplayProps>
+    ApprovalProposalLine?: ComponentType<BaseProposalLineProps>
   }
 }
 
@@ -117,6 +120,7 @@ export type ProposalModuleAdapter<
   DaoCreationExtraVotingConfig extends FieldValues = any,
   Vote extends unknown = any,
   FormData extends FieldValues = any,
+  ApprovalProposal extends unknown = any,
 > = {
   id: string
   contractNames: string[]
@@ -125,7 +129,9 @@ export type ProposalModuleAdapter<
     options: IProposalModuleAdapterCommonOptions
   ) => IProposalModuleAdapterCommon<FormData>
 
-  load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter<Vote>
+  load: (
+    options: IProposalModuleAdapterOptions
+  ) => IProposalModuleAdapter<Vote, ApprovalProposal>
 
   queries: {
     proposalCount: {
@@ -152,6 +158,10 @@ export type IProposalModuleAdapterCommonOptions = {
 }
 
 export type IProposalModuleAdapterOptions = {
+  /**
+   * The query client.
+   */
+  queryClient: QueryClient
   /**
    * The DAO's native chain.
    */
@@ -180,15 +190,12 @@ export type IProposalModuleAdapterOptions = {
    * true, the proposal ID should contain an asterisk (*) between the proposal
    * module prefix and proposal number.
    */
-  isPreProposeApprovalProposal: boolean
+  isApprovalProposal: boolean
 }
 
 export type IProposalModuleAdapterInitialOptions = Omit<
   IProposalModuleAdapterOptions,
-  | 'proposalModule'
-  | 'proposalId'
-  | 'proposalNumber'
-  | 'isPreProposeApprovalProposal'
+  'proposalModule' | 'proposalId' | 'proposalNumber' | 'isApprovalProposal'
 >
 
 /**
@@ -299,7 +306,7 @@ export type BaseProposalInnerContentDisplayProps<
   setDuplicateFormData?: (data: FormData) => void
 }
 
-export type BasePreProposeApprovalInnerContentDisplayProps =
+export type BaseApprovalProposalInnerContentDisplayProps =
   BaseProposalInnerContentDisplayProps
 
 export type BaseProposalWalletVoteProps<T> = {
@@ -391,14 +398,15 @@ export type PercentOrMajorityValue = {
   value: number
 }
 
-export type PreProposeApprovalProposalWithMeteadata =
-  DaoPreProposeApprovalProposal & {
-    timestampDisplay: ProposalTimestampInfo['display']
-    // If this pre-propose-approval proposal is being approved by a
-    // pre-propose-approver proposal in another DAO, this is the approval
-    // proposal ID.
-    approverProposalId?: string
-  }
+export type ApprovalProposalWithMetadata<
+  ApprovalProposal extends unknown = any,
+> = ApprovalProposal & {
+  timestampDisplay: ProposalTimestampInfo['display']
+  // If this pre-propose-approval proposal is being approved by a
+  // pre-propose-approver proposal in another DAO, this is the approval
+  // proposal ID.
+  approverProposalId?: string
+}
 
 export type SingleChoiceNewProposalForm = {
   title: string

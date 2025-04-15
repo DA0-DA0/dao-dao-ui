@@ -10,29 +10,31 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 
 export type BecomeApproverData = {
-  address: string
-  // Loaded once created from `address`.
-  dao?: string
+  addresses: string
+}
+
+export type DaoWithPreProposeAddresses = {
+  dao: string
+  preProposeAddresses: string[]
 }
 
 export type BecomeApproverOptions = {
-  options: LoadingDataWithError<
-    {
-      dao: string
-      preProposeAddress: string
-    }[]
-  >
+  // Loaded once created from `addresses` for rendering.
+  loadedDaos: LoadingDataWithError<string[]>
+  options: LoadingDataWithError<DaoWithPreProposeAddresses[]>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const BecomeApproverComponent: ActionComponent<
   BecomeApproverOptions
-> = ({ fieldNamePrefix, isCreating, options: { options, EntityDisplay } }) => {
+> = ({
+  fieldNamePrefix,
+  isCreating,
+  options: { loadedDaos, options, EntityDisplay },
+}) => {
   const { t } = useTranslation()
   const { name: daoName } = useDao()
   const { watch, setValue } = useFormContext<BecomeApproverData>()
-
-  const dao = watch((fieldNamePrefix + 'dao') as 'dao')
 
   return (
     <>
@@ -43,24 +45,36 @@ export const BecomeApproverComponent: ActionComponent<
         })}
       </p>
 
-      {isCreating && !options.loading ? (
-        options.errored ? (
+      {isCreating ? (
+        options.loading ? (
+          <Loader />
+        ) : options.errored ? (
           <ErrorPage error={options.error} />
         ) : (
           <RadioInput
-            fieldName={(fieldNamePrefix + 'address') as 'address'}
-            options={options.data.map(({ dao, preProposeAddress }) => ({
+            fieldName={(fieldNamePrefix + 'addresses') as 'addresses'}
+            options={options.data.map(({ dao, preProposeAddresses }) => ({
               display: <EntityDisplay address={dao} />,
-              value: preProposeAddress,
+              value: preProposeAddresses.join(','),
             }))}
             setValue={setValue}
             watch={watch}
           />
         )
-      ) : dao ? (
-        <EntityDisplay address={dao} />
-      ) : (
+      ) : loadedDaos.loading ? (
         <Loader />
+      ) : loadedDaos.errored ? (
+        <ErrorPage error={loadedDaos.error} />
+      ) : !loadedDaos.data.length ? (
+        <p className="body-text text-text-interactive-error">
+          {t('info.noDaosFound')}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {loadedDaos.data.map((dao) => (
+            <EntityDisplay key={dao} address={dao} />
+          ))}
+        </div>
       )}
     </>
   )

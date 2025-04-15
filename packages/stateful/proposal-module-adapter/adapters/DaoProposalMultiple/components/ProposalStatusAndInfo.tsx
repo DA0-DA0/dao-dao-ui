@@ -6,9 +6,10 @@ import {
   Redo,
   RotateRightOutlined,
   Tag,
+  ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentProps, ComponentType, useCallback } from 'react'
+import { ComponentProps, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
@@ -24,6 +25,7 @@ import {
   TooltipTruncatedText,
   useConfiguredChainContext,
   useDao,
+  useDaoNavHelpers,
   useExecuteAt,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
@@ -31,6 +33,7 @@ import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
+  PreProposeModuleType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import {
@@ -39,8 +42,11 @@ import {
   getProposalStatusKey,
 } from '@dao-dao/utils'
 
-import { EntityDisplay, SuspenseLoader } from '../../../../components'
-import { ButtonLink } from '../../../../components/ButtonLink'
+import {
+  ButtonLink,
+  EntityDisplay,
+  SuspenseLoader,
+} from '../../../../components'
 import {
   useAwaitNextBlock,
   useProposalActionState,
@@ -57,6 +63,7 @@ import {
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 import { ProposalVoter } from './ProposalVoter'
 
 export const ProposalStatusAndInfo = (
@@ -68,7 +75,7 @@ export const ProposalStatusAndInfo = (
 
   return (
     <SuspenseLoader
-      fallback={<InnerProposalStatusAndInfoLoader {...props} />}
+      fallback={<ProposalStatusAndInfoLoader {...props} />}
       forceFallback={
         loadingProposal.loading ||
         loadingMultipleChoiceVotesInfo.loading ||
@@ -110,6 +117,7 @@ const InnerProposalStatusAndInfo = ({
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
   const { coreAddress } = useDao()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
 
   const config = useRecoilValue(
@@ -122,6 +130,20 @@ const InnerProposalStatusAndInfo = ({
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
+
+  const approver =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval
+      ? proposalModule.prePropose.config.approver
+      : undefined
+  const approverProposalPath =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval &&
+    !!proposalModule.prePropose.config.preProposeApproverContract &&
+    proposal.approverProposalId
+      ? getDaoProposalPath(
+          proposalModule.prePropose.config.approver,
+          proposal.approverProposalId
+        )
+      : undefined
 
   const statusKey = getProposalStatusKey(proposal.status)
 
@@ -192,6 +214,40 @@ const InnerProposalStatusAndInfo = ({
         <EntityDisplay {...props} address={proposal.proposer} noCopy />
       ),
     },
+    ...(approverProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approval'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={approver && <EntityDisplay address={approver} noCopy />}
+              >
+                <ButtonLink
+                  href={approverProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approverProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : approver
+        ? ([
+            {
+              Icon: ThumbUpOutlined,
+              label: t('title.approver'),
+              Value: (props) => (
+                <EntityDisplay {...props} address={approver} noCopy />
+              ),
+            },
+          ] as ProposalStatusAndInfoProps['info'])
+        : []),
     ...vetoInfoItems,
     {
       Icon: RotateRightOutlined,
@@ -384,51 +440,6 @@ const InnerProposalStatusAndInfo = ({
       info={info}
       status={status}
       vetoOrEarlyExecute={vetoOrEarlyExecute}
-    />
-  )
-}
-
-const InnerProposalStatusAndInfoLoader = (
-  props: BaseProposalStatusAndInfoProps
-) => {
-  const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDao()
-
-  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
-    <p className={clsx('animate-pulse', className)}>...</p>
-  )
-  const info: ProposalStatusAndInfoProps['info'] = [
-    {
-      Icon: (props) => <Logo {...props} />,
-      label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>
-          {daoName}
-        </ButtonLink>
-      ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: LoaderP,
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: LoaderP,
-    },
-    {
-      Icon: HourglassTopRounded,
-      label: t('title.date'),
-      Value: LoaderP,
-    },
-  ]
-
-  return (
-    <StatelessProposalStatusAndInfo
-      {...props}
-      info={info}
-      status={t('info.loading')}
     />
   )
 }

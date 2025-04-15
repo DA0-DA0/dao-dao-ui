@@ -68,7 +68,7 @@ export type PublishProposal = (
   // Whether or not a pre-propose-approval proposal was created. If this is
   // true, the proposal ID should contain an asterisk (*) between the proposal
   // module prefix and proposal number.
-  isPreProposeApprovalProposal: boolean
+  isApprovalProposal?: boolean
 }>
 
 export interface MakeUsePublishProposalOptions {

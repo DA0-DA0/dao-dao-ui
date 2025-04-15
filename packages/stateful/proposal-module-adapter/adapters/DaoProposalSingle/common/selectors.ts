@@ -21,7 +21,7 @@ import {
   ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
-import { Proposal as PreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import { SingleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
@@ -159,7 +159,7 @@ export const reversePreProposePendingProposalInfosSelector: (
             },
           ],
         })
-      ) as PreProposeApprovalSingleProposal[]
+      ) as SingleChoiceApprovalProposal[]
 
       const proposalInfos: CommonProposalListInfo[] = pendingProposals.map(
         ({ approval_id: id, createdAt }) => ({
@@ -207,7 +207,7 @@ export const reversePreProposeCompletedProposalInfosSelector: (
             },
           ],
         })
-      ) as PreProposeApprovalSingleProposal[]
+      ) as SingleChoiceApprovalProposal[]
 
       const proposalInfos: CommonProposalListInfo[] = completedProposals.map(
         ({ approval_id: id, status, createdAt }) => ({

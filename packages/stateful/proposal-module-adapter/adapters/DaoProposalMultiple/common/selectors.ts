@@ -9,13 +9,17 @@ import {
   DaoPreProposeMultipleSelectors,
   DaoProposalMultipleSelectors,
   blockHeightTimestampSafeSelector,
+  daoPreProposeApprovalMultipleQueries,
+  queryClientAtom,
 } from '@dao-dao/state'
 import {
   CheckedDepositInfo,
   ContractVersion,
   Duration,
+  ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
+import { MultipleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
@@ -111,6 +115,109 @@ export const reverseProposalInfosSelector: (
           proposalNumber: id,
           timestamp: timestamps[index],
           status,
+        })
+      )
+
+      return proposalInfos
+    },
+})
+
+export const reversePreProposePendingProposalInfosSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    proposalModulePrefix: string
+    startBefore: number | undefined
+    limit: number | undefined
+  }>
+) => RecoilValueReadOnly<CommonProposalListInfo[]> = selectorFamily({
+  key: 'daoProposalMultipleReversePreProposePendingProposalInfos',
+  get:
+    ({
+      chainId,
+      proposalModuleAddress,
+      proposalModulePrefix,
+      startBefore,
+      limit,
+    }) =>
+    async ({ get }) => {
+      const queryClient = get(queryClientAtom)
+      const pendingProposals = (await queryClient.fetchQuery(
+        daoPreProposeApprovalMultipleQueries.queryExtension(queryClient, {
+          contractAddress: proposalModuleAddress,
+          chainId,
+          args: {
+            msg: {
+              reverse_pending_proposals: {
+                start_before: startBefore,
+                limit,
+              },
+            },
+          },
+        })
+      )) as MultipleChoiceApprovalProposal[]
+
+      const proposalInfos: CommonProposalListInfo[] = pendingProposals.map(
+        ({ approval_id: id, createdAt }) => ({
+          id: `${proposalModulePrefix}*${id}`,
+          proposalNumber: id,
+          timestamp: createdAt ? new Date(createdAt) : undefined,
+          status: ProposalStatusEnum.Open,
+        })
+      )
+
+      return proposalInfos
+    },
+})
+
+export const reversePreProposeCompletedProposalInfosSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    proposalModulePrefix: string
+    startBefore: number | undefined
+    limit: number | undefined
+  }>
+) => RecoilValueReadOnly<CommonProposalListInfo[]> = selectorFamily({
+  key: 'daoProposalMultipleReversePreProposeCompletedProposalInfos',
+  get:
+    ({
+      chainId,
+      proposalModuleAddress,
+      proposalModulePrefix,
+      startBefore,
+      limit,
+    }) =>
+    async ({ get }) => {
+      const queryClient = get(queryClientAtom)
+      const completedProposals = (await queryClient.fetchQuery(
+        daoPreProposeApprovalMultipleQueries.queryExtension(queryClient, {
+          contractAddress: proposalModuleAddress,
+          chainId,
+          args: {
+            msg: {
+              reverse_completed_proposals: {
+                start_before: startBefore,
+                limit,
+              },
+            },
+          },
+        })
+      )) as MultipleChoiceApprovalProposal[]
+
+      const proposalInfos: CommonProposalListInfo[] = completedProposals.map(
+        ({ approval_id: id, status, createdAt }) => ({
+          id: `${proposalModulePrefix}*${id}`,
+          proposalNumber: id,
+          timestamp: createdAt ? new Date(createdAt) : undefined,
+          status:
+            'pending' in status
+              ? ProposalStatusEnum.Open
+              : 'approved' in status
+                ? ProposalStatusEnum.Executed
+                : ProposalStatusEnum.Closed,
+          // Hide approved proposals from the list since they show up as normal
+          // proposals. No need to show duplicates. But we still want to show
+          // rejected pre-propose proposals.
+          hideFromList: 'approved' in status,
         })
       )
 

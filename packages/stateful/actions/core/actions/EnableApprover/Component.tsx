@@ -3,16 +3,12 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  MultipleChoiceProposalModule,
-  SecretMultipleChoiceProposalModule,
-} from '@dao-dao/state/clients'
-import {
   InputErrorMessage,
   InputLabel,
   useActionOptions,
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import { ActionComponent } from '@dao-dao/types/actions'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 export type EnableApproverData = {
@@ -28,24 +24,12 @@ export const EnableApproverComponent: ActionComponent<
 > = ({ isCreating, fieldNamePrefix, errors, options: { AddressInput } }) => {
   const { t } = useTranslation()
   const {
-    context,
     chain: { bech32Prefix },
   } = useActionOptions()
   const { register } = useFormContext<EnableApproverData>()
 
   return (
     <>
-      {context.type === ActionContextType.Dao &&
-        context.dao.proposalModules.some(
-          (m) =>
-            m instanceof MultipleChoiceProposalModule ||
-            m instanceof SecretMultipleChoiceProposalModule
-        ) && (
-          <p className="body-text text-text-interactive-error max-w-prose">
-            {t('error.multipleChoiceApprovalNotYetSupported')}
-          </p>
-        )}
-
       <p className="body-text max-w-prose">
         {t('info.enableApproverExplanation')}
       </p>

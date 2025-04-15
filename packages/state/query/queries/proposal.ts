@@ -1,10 +1,12 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
+  NeutronTimelockOverrule,
   PreProposeModule,
   PreProposeModuleType,
   PreProposeModuleTypedConfig,
 } from '@dao-dao/types'
+import { SingleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { PreProposeSubmissionPolicy } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from '@dao-dao/types/contracts/NeutronCwdSubdaoTimelockSingle'
 import {
@@ -15,6 +17,7 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
+import { getDao } from '../../clients'
 import {
   DaoPreProposeApprovalSingleQueryClient,
   DaoPreProposeApproverQueryClient,
@@ -22,6 +25,13 @@ import {
   NeutronCwdSubdaoTimelockSingleQueryClient,
 } from '../../contracts'
 import { contractQueries } from './contract'
+import {
+  daoPreProposeApprovalSingleQueries,
+  daoPreProposeApproverQueries,
+  daoProposalSingleV2Queries,
+  neutronCwdPreProposeSingleOverruleQueries,
+  neutronCwdSubdaoTimelockSingleQueries,
+} from './contracts'
 import { daoPreProposeSingleQueries } from './contracts/DaoPreProposeSingle'
 import { indexerQueries } from './indexer'
 
@@ -362,6 +372,275 @@ export const fetchProposalExecutionTxHash = async ({
   return events?.[0]?.hash ?? null
 }
 
+/**
+ * Given the pre-propose approval ID of a pending proposal that has its approver
+ * set to a pre-propose-approver contract, retrieve the automatically-created
+ * proposal's ID in the approver's DAO.
+ */
+const fetchApproverIdForPreProposeApprovalId = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    preProposeAddress,
+    proposalNumber,
+    isApprovalProposal,
+    approver,
+    preProposeApproverContract,
+  }: {
+    chainId: string
+    preProposeAddress: string
+    proposalNumber: number
+    isApprovalProposal: boolean
+    approver: string
+    preProposeApproverContract: string
+  }
+): Promise<string> => {
+  const approverDao = getDao({
+    queryClient,
+    chainId,
+    coreAddress: approver,
+  })
+  await approverDao.init()
+
+  const preProposeApprovalNumber = isApprovalProposal
+    ? proposalNumber
+    : // Get pre-propose proposal ID that was accepted to create this
+      // proposal.
+      await queryClient.fetchQuery(
+        daoPreProposeApprovalSingleQueries.queryExtension(queryClient, {
+          chainId,
+          contractAddress: preProposeAddress,
+          args: {
+            msg: {
+              completed_proposal_id_for_created_proposal_id: {
+                id: proposalNumber,
+              },
+            },
+          },
+        })
+      )
+
+  const approverProposalNumber = await queryClient.fetchQuery<number | null>(
+    daoPreProposeApproverQueries.queryExtension(queryClient, {
+      chainId,
+      contractAddress: preProposeApproverContract,
+      args: {
+        msg: {
+          approver_proposal_id_for_pre_propose_approval_id: {
+            id: Number(preProposeApprovalNumber),
+          },
+        },
+      },
+    })
+  )
+
+  // If no proposal number found, approver must not have been setup when
+  // this pre-propose approval proposal was created.
+  if (!approverProposalNumber) {
+    throw new Error(
+      'no approver proposal created for this pre-propose approval proposal'
+    )
+  }
+
+  // Get prefix of proposal module with dao-pre-propose-approver attached
+  // so we can link to the approver proposal.
+  const approverDaoApproverProposalModulePrefix =
+    approverDao.proposalModules.find(
+      (approverDaoProposalModule) =>
+        approverDaoProposalModule.prePropose?.type ===
+          PreProposeModuleType.Approver &&
+        approverDaoProposalModule.prePropose.address ===
+          preProposeApproverContract
+    )?.prefix
+
+  // The approver proposal module will not be found if it was disabled, so
+  // error since we can't determine the prefix.
+  if (!approverDaoApproverProposalModulePrefix) {
+    throw new Error(`failed to find approver proposal module for ${approver}`)
+  }
+
+  return `${approverDaoApproverProposalModulePrefix}${approverProposalNumber}`
+}
+
+/**
+ * Given an approver's proposal that approved a pre-propose approval proposal,
+ * retrieve the approved (completed) pre-propose approval proposal ID.
+ */
+const fetchApprovedIdForPreProposeApproverId = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    preProposeAddress,
+    proposalNumber,
+    approvalDao,
+    preProposeApprovalContract,
+  }: {
+    chainId: string
+    preProposeAddress: string
+    proposalNumber: number
+    approvalDao: string
+    preProposeApprovalContract: string
+  }
+): Promise<string> => {
+  const approvalDaoClient = getDao({
+    queryClient,
+    chainId,
+    coreAddress: approvalDao,
+  })
+  await approvalDaoClient.init()
+
+  const approvalProposalNumber = await queryClient.fetchQuery(
+    daoPreProposeApproverQueries.queryExtension(queryClient, {
+      chainId,
+      contractAddress: preProposeAddress,
+      args: {
+        msg: {
+          pre_propose_approval_id_for_approver_proposal_id: {
+            id: proposalNumber,
+          },
+        },
+      },
+    })
+  )
+
+  // Get prefix of proposal module with dao-pre-propose-approval attached so
+  // we can link to the created proposal.
+  const approvalDaoApprovalProposalModulePrefix =
+    approvalDaoClient.proposalModules.find(
+      (approvalDaoProposalModule) =>
+        approvalDaoProposalModule.prePropose?.type ===
+          PreProposeModuleType.Approval &&
+        approvalDaoProposalModule.prePropose.address ===
+          preProposeApprovalContract
+    )?.prefix
+
+  // The approval proposal module will not be found if it was disabled, so
+  // error since we can't determine the prefix.
+  if (!approvalDaoApprovalProposalModulePrefix) {
+    throw new Error(
+      `failed to find approval proposal module for ${approvalDao}`
+    )
+  }
+
+  // Get completed pre-propose proposal ID so we can extract the created
+  // proposal ID.
+  const completedApprovalProposal = (await queryClient.fetchQuery(
+    daoPreProposeApprovalSingleQueries.queryExtension(queryClient, {
+      chainId,
+      contractAddress: preProposeApprovalContract,
+      args: {
+        msg: {
+          completed_proposal: {
+            id: approvalProposalNumber,
+          },
+        },
+      },
+    })
+  )) as SingleChoiceApprovalProposal
+
+  // Should never happen if the passed in approver proposal ID was executed
+  // and the proposal was created. Type-check for below.
+  if (!('approved' in completedApprovalProposal.status)) {
+    throw new Error(
+      `pre-propose approval proposal ${approvalProposalNumber} was not approved`
+    )
+  }
+
+  return `${approvalDaoApprovalProposalModulePrefix}${completedApprovalProposal.status.approved.created_proposal_id}`
+}
+
+/**
+ * For the Neutron fork, retrieve the associated timelock and overrule proposal
+ * created in the DAO given a SubDAO's timelock address, overrule pre-propose
+ * address, and the timelocked proposal ID.
+ */
+const fetchNeutronTimelockOverrule = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    preProposeOverruleAddress,
+    timelockAddress,
+    subdaoProposalId,
+  }: {
+    chainId: string
+    preProposeOverruleAddress: string
+    timelockAddress: string
+    subdaoProposalId: number
+  }
+): Promise<NeutronTimelockOverrule> => {
+  const [dao, proposalModuleAddress, overruleProposalId, timelockProposal] =
+    await Promise.all([
+      queryClient.fetchQuery(
+        neutronCwdPreProposeSingleOverruleQueries.dao(queryClient, {
+          chainId,
+          contractAddress: preProposeOverruleAddress,
+        })
+      ),
+      queryClient.fetchQuery(
+        neutronCwdPreProposeSingleOverruleQueries.proposalModule(queryClient, {
+          chainId,
+          contractAddress: preProposeOverruleAddress,
+        })
+      ),
+      queryClient.fetchQuery(
+        neutronCwdPreProposeSingleOverruleQueries.queryExtension(queryClient, {
+          chainId,
+          contractAddress: preProposeOverruleAddress,
+          args: {
+            msg: {
+              overrule_proposal_id: {
+                subdao_proposal_id: subdaoProposalId,
+                timelock_address: timelockAddress,
+              },
+            },
+          },
+        })
+      ),
+      queryClient.fetchQuery(
+        neutronCwdSubdaoTimelockSingleQueries.proposal(queryClient, {
+          chainId,
+          contractAddress: timelockAddress,
+          args: {
+            proposalId: subdaoProposalId,
+          },
+        })
+      ),
+    ])
+
+  const daoClient = getDao({
+    queryClient,
+    chainId,
+    coreAddress: dao,
+  })
+  await daoClient.init()
+
+  const overruleProposal = await queryClient.fetchQuery(
+    daoProposalSingleV2Queries.proposal(queryClient, {
+      chainId,
+      contractAddress: proposalModuleAddress,
+      args: {
+        proposalId: Number(overruleProposalId),
+      },
+    })
+  )
+
+  const proposalModule = daoClient.proposalModules.find(
+    ({ address }) => address === proposalModuleAddress
+  )
+  if (!proposalModule) {
+    throw new Error(
+      `No proposal module found for address ${proposalModuleAddress} in DAO ${dao}`
+    )
+  }
+
+  return {
+    dao,
+    proposalModulePrefix: proposalModule.prefix,
+    overruleProposal,
+    timelockProposal,
+  }
+}
+
 export const proposalQueries = {
   /**
    * Fetch pre-propose module info.
@@ -383,5 +662,45 @@ export const proposalQueries = {
     queryOptions({
       queryKey: ['proposal', 'executionTxHash', options],
       queryFn: () => fetchProposalExecutionTxHash(options),
+    }),
+  /**
+   * Given the pre-propose approval ID of a pending proposal that has its
+   * approver set to a pre-propose-approver contract, retrieve the
+   * automatically-created proposal's ID in the approver's DAO.
+   */
+  approverIdForPreProposeApprovalId: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchApproverIdForPreProposeApprovalId>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['proposal', 'approverIdForPreProposeApprovalId', options],
+      queryFn: () =>
+        fetchApproverIdForPreProposeApprovalId(queryClient, options),
+    }),
+  /**
+   * Given an approver's proposal that approved a pre-propose approval proposal,
+   * retrieve the approved (completed) pre-propose approval proposal ID.
+   */
+  approvedIdForPreProposeApproverId: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchApprovedIdForPreProposeApproverId>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['proposal', 'approvedIdForPreProposeApproverId', options],
+      queryFn: () =>
+        fetchApprovedIdForPreProposeApproverId(queryClient, options),
+    }),
+  /**
+   * For the Neutron fork, retrieve the associated timelock and overrule
+   * proposal created in the DAO given a SubDAO's timelock address, overrule
+   * pre-propose address, and the timelocked proposal ID.
+   */
+  neutronTimelockOverrule: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchNeutronTimelockOverrule>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['proposal', 'neutronTimelockOverrule', options],
+      queryFn: () => fetchNeutronTimelockOverrule(queryClient, options),
     }),
 }

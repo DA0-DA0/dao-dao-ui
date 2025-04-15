@@ -24,6 +24,7 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoDaoCore'
+import { InstantiateMsg as DaoPreProposeApprovalMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { InstantiateMsg as SecretDaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/SecretDaoPreProposeApprovalSingle'
 import {
@@ -60,7 +61,9 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
     // - approver is already enabled
     if (
       options.context.type !== ActionContextType.Dao ||
-      !options.context.dao.supports(Feature.Approval)
+      // Single choice approval is supported by an earlier version than multiple
+      // choice approval, so just check for single choice approval support.
+      !options.context.dao.supports(Feature.SingleChoiceApproval)
     ) {
       throw new Error('Invalid context for enabling approver')
     }
@@ -76,7 +79,20 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
     // and have no pre-propose module or use the normal pre-propose modules.
     this.validProposalModules = options.context.dao.proposalModules.filter(
       (m) =>
-        isFeatureSupportedByVersion(Feature.Approval, m.version) &&
+        // Single choice and multiple choice approval are supported by different
+        // versions.
+        (((m instanceof SingleChoiceProposalModule ||
+          m instanceof SecretSingleChoiceProposalModule) &&
+          isFeatureSupportedByVersion(
+            Feature.SingleChoiceApproval,
+            m.version
+          )) ||
+          ((m instanceof MultipleChoiceProposalModule ||
+            m instanceof SecretMultipleChoiceProposalModule) &&
+            isFeatureSupportedByVersion(
+              Feature.MultipleChoiceApproval,
+              m.version
+            ))) &&
         (!m.prePropose || m.prePropose.type === PreProposeModuleType.Normal)
     )
 
@@ -93,17 +109,10 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
       throw new Error('Invalid context for enabling approver')
     }
 
-    // Error if any are multiple choice since approval does not yet support
-    // multiple choice proposals.
-    if (
-      this.options.context.dao.proposalModules.some(
-        (m) =>
-          m instanceof MultipleChoiceProposalModule ||
-          m instanceof SecretMultipleChoiceProposalModule
-      )
-    ) {
+    // Error if no proposal modules support approval.
+    if (this.validProposalModules.length === 0) {
       throw new Error(
-        this.options.t('error.multipleChoiceApprovalNotYetSupported')
+        this.options.t('error.noProposalModulesSupportingApproval')
       )
     }
 
@@ -119,20 +128,23 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
           m instanceof SingleChoiceProposalModule ||
           m instanceof SecretSingleChoiceProposalModule
 
+        const isMultiple =
+          m instanceof MultipleChoiceProposalModule ||
+          m instanceof SecretMultipleChoiceProposalModule
+
         let codeId
         let codeHash
 
         if (isSingle) {
           codeId = allCodeIds[m.version]?.DaoPreProposeApprovalSingle
           codeHash = allCodeHashes?.[m.version]?.DaoPreProposeApprovalSingle
+        } else if (isMultiple) {
+          codeId = allCodeIds[m.version]?.DaoPreProposeApprovalMultiple
+          codeHash = allCodeHashes?.[m.version]?.DaoPreProposeApprovalMultiple
         } else {
           throw new Error(
-            this.options.t('error.multipleChoiceApprovalNotYetSupported')
+            'Pre-propose approval module code ID not found for this version'
           )
-
-          // TODO(approver-multiple): not yet ready
-          // codeId = allCodeIds[m.version]?.DaoPreProposeApprovalMultiple
-          // codeHash = allCodeHashes[m.version]?.DaoPreProposeApprovalMultiple
         }
 
         if (!codeId) {
@@ -195,7 +207,9 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
           }
           msg = _msg
         } else {
-          const _msg: DaoPreProposeApprovalSingleInstantiateMsg = {
+          const _msg:
+            | DaoPreProposeApprovalSingleInstantiateMsg
+            | DaoPreProposeApprovalMultipleInstantiateMsg = {
             deposit_info: depositInfo && {
               amount: depositInfo.amount,
               denom: {
@@ -320,10 +334,12 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
         // Ensure supported code ID
         Object.values(allCodeIds).some(
           (config) =>
-            // TODO(approver-multiple): also check for DaoPreProposeApprovalMultiple
             config.DaoPreProposeApprovalSingle ===
-            decodedMessage.wasm.execute.msg.update_pre_propose_info.info
-              .module_may_propose.info.code_id
+              decodedMessage.wasm.execute.msg.update_pre_propose_info.info
+                .module_may_propose.info.code_id ||
+            config.DaoPreProposeApprovalMultiple ===
+              decodedMessage.wasm.execute.msg.update_pre_propose_info.info
+                .module_may_propose.info.code_id
         )
       ) {
         const decodedInstantiate = decodeJsonFromBase64(

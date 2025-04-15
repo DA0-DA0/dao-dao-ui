@@ -53,11 +53,22 @@ export type CosmosMsgFor_Empty =
 export type CosmosMsgForEmpty = CosmosMsgFor_Empty
 
 export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
-export type GovMsg = {
-  vote: {
-    proposal_id: number
-    vote: VoteOption
-  }
+export type GovMsg =
+  | {
+      vote: {
+        proposal_id: number
+        vote: VoteOption
+      }
+    }
+  | {
+      vote_weighted: {
+        options: WeightedVoteOption[]
+        proposal_id: number
+      }
+    }
+export interface WeightedVoteOption {
+  option: VoteOption
+  weight: Decimal
 }
 /**
  * The message types of the bank module.
@@ -471,3 +482,28 @@ export type UncheckedDenom =
   | {
       cw20: string
     }
+
+export type ApprovalProposalStatus =
+  | {
+      pending: {}
+    }
+  | {
+      approved: {
+        created_proposal_id: number
+      }
+    }
+  | {
+      rejected: {}
+    }
+export type ApprovalProposalStatusKey = 'pending' | 'approved' | 'rejected'
+export type ApprovalProposal<ProposeMsg extends unknown = any> = {
+  status: ApprovalProposalStatus
+  approval_id: number
+  approver?: string
+  proposer: string
+  msg: ProposeMsg
+  deposit: CheckedDepositInfo
+  // Extra from indexer.
+  createdAt?: string
+  completedAt?: string
+}

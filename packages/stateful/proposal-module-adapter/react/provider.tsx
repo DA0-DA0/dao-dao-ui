@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { ReactNode, useMemo } from 'react'
 
 import { useDao } from '@dao-dao/stateless'
@@ -26,14 +27,19 @@ export const ProposalModuleAdapterProvider = ({
   children,
 }: ProposalModuleAdapterProviderProps) => {
   const dao = useDao()
+  const queryClient = useQueryClient()
   const { context, commonContext } = useMemo(() => {
-    const context = matchAndLoadAdapter(dao, proposalId)
+    const context = matchAndLoadAdapter({
+      queryClient,
+      dao,
+      proposalId,
+    })
     const commonContext = commonContextFromAdapterContext(context)
     return {
       context,
       commonContext,
     }
-  }, [dao, proposalId])
+  }, [dao, proposalId, queryClient])
 
   return (
     <ProposalModuleAdapterBothProviders

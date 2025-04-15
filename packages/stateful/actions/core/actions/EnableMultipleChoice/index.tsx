@@ -12,6 +12,7 @@ import {
   DepositRefundPolicy,
   Feature,
   ModuleInstantiateInfo,
+  PreProposeModuleType,
   TokenType,
   UnifiedCosmosMsg,
 } from '@dao-dao/types'
@@ -27,7 +28,6 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultipl
 import { Config as SingleChoiceConfig } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { Config as SecretSingleChoiceConfig } from '@dao-dao/types/contracts/SecretDaoProposalSingle'
 import {
-  ContractName,
   DaoProposalMultipleAdapterId,
   convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
@@ -58,10 +58,8 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
     // - Neutron fork SubDAO
     // - chain is not supported (type-check, implied by DAO check)
     //
-    // Disallows creation via `hideWithPicker` (at the bottom) if:
-    // - multiple choice proposal module already exists
-    // - single-choice approval flow is enabled, since multiple choice doesn't
-    //   support approval flow right now and that would be confusing.
+    // Disallows creation via `hideWithPicker` (at the bottom) if multiple
+    // choice proposal module already exists.
     if (
       options.context.type !== ActionContextType.Dao ||
       !options.context.dao.supports(Feature.MultipleChoiceProposals) ||
@@ -79,16 +77,12 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       label: options.t('title.enableMultipleChoiceProposals'),
       description: options.t('info.enableMultipleChoiceProposalsDescription'),
       notReusable: true,
-      // Disallow creation if:
-      // - multiple choice proposal module already exists
-      // - single-choice approval flow is enabled, since multiple choice doesn't
-      //   support approval flow right now and that would be confusing.
+      // Disallow creation if multiple choice proposal module already exists
       hideFromPicker: options.context.dao.proposalModules.some(
-        ({ contractName, prePropose }) =>
+        ({ contractName }) =>
           DaoProposalMultipleAdapter.contractNames.some((name) =>
             contractName.includes(name)
-          ) ||
-          prePropose?.contractName === ContractName.PreProposeApprovalSingle
+          )
       ),
     })
   }
@@ -110,6 +104,23 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       )
     if (!singleChoiceProposalModule) {
       throw new Error('No single choice proposal module found')
+    }
+
+    // Error if the single choice proposal module has an approver set but
+    // multiple choice approval is not supported on this chain. We don't want to
+    // create a situation where a DAO has a proposal module that doesn't respect
+    // the designated approver.
+    if (
+      singleChoiceProposalModule.prePropose?.type ===
+        PreProposeModuleType.Approval &&
+      !isFeatureSupportedByVersion(
+        Feature.MultipleChoiceApproval,
+        this.options.chainContext.config.latestVersion
+      )
+    ) {
+      throw new Error(
+        'Multiple choice approval is not supported on this chain yet but the single choice proposal module is has an approver set.'
+      )
     }
 
     const [config, depositInfoWithToken, delegationModule] = await Promise.all([
@@ -210,10 +221,18 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
             : // If no pre-propose module, default to only members can propose.
               false,
           allowRevoting: config.allow_revoting,
-          approver: {
-            enabled: false,
-            address: '',
-          },
+          approver:
+            singleChoiceProposalModule.prePropose?.type ===
+            PreProposeModuleType.Approval
+              ? {
+                  enabled: true,
+                  address:
+                    singleChoiceProposalModule.prePropose.config.approver,
+                }
+              : {
+                  enabled: false,
+                  address: '',
+                },
           veto: convertCosmosVetoConfigToVeto(
             'veto' in config ? config.veto : null
           ),

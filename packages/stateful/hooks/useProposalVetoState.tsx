@@ -169,7 +169,7 @@ export const useProposalVetoState = ({
           getDaoProposalPath(
             neutronTimelockOverrule.dao,
             neutronTimelockOverrule.proposalModulePrefix +
-              neutronTimelockOverrule.proposal.id.toString()
+              neutronTimelockOverrule.overruleProposal.id.toString()
           )
         )
       } else if (
@@ -376,13 +376,13 @@ export const useProposalVetoState = ({
                       href={getDaoProposalPath(
                         neutronTimelockOverrule.dao,
                         neutronTimelockOverrule.proposalModulePrefix +
-                          neutronTimelockOverrule.proposal.id.toString()
+                          neutronTimelockOverrule.overruleProposal.id.toString()
                       )}
                       variant="underline"
                       {...props}
                     >
                       {t('title.proposalId', {
-                        id: neutronTimelockOverrule.proposal.id,
+                        id: neutronTimelockOverrule.overruleProposal.id,
                       })}
                     </ButtonLink>
                   </Tooltip>

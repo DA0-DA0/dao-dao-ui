@@ -1,17 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
-import { constSelector, waitForAll } from 'recoil'
 
 import {
-  DaoProposalSingleCommonSelectors,
-  NeutronCwdSubdaoTimelockSingleSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
+  proposalQueries,
 } from '@dao-dao/state'
 import {
   useCachedLoadable,
-  useCachedLoading,
-  useCachedLoadingWithError,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
@@ -23,19 +20,18 @@ import {
   ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
+import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   convertExpirationToDate,
   formatDate,
   formatDateTimeTz,
-  isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
-import { neutronOverruleProposalForTimelockedProposalSelector } from '../../../../recoil'
-import { useProposalModuleAdapterOptions } from '../../../react'
 import {
-  approvedIdForPreProposeApproverIdSelector,
-  approverIdForPreProposeApprovalIdSelector,
-} from '../selectors'
+  useQueryLoadingData,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
+import { useProposalModuleAdapterOptions } from '../../../react'
 import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -43,24 +39,21 @@ import { ProposalWithMetadata } from '../types'
 export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const { t } = useTranslation()
   const {
-    proposalModule: { address: proposalModuleAddress, version, prePropose },
+    proposalModule,
     proposalNumber,
     chain: { chainId },
   } = useProposalModuleAdapterOptions()
+  const queryClient = useQueryClient()
 
-  const loadingProposalResponse = useCachedLoading(
-    DaoProposalSingleCommonSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      chainId,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    }),
-    undefined,
-    (err) => console.error(err)
-  )
+  const { prePropose } = proposalModule
+
+  const loadingProposalResponse: LoadingData<ProposalResponse | undefined> =
+    useQueryLoadingData(
+      proposalModule.getProposalQuery({
+        proposalId: proposalNumber,
+      }),
+      undefined
+    )
 
   let proposalStatus: ProposalStatus | undefined =
     loadingProposalResponse.loading
@@ -72,39 +65,25 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     chainId === ChainId.NeutronMainnet &&
     prePropose?.type === PreProposeModuleType.NeutronSubdaoSingle &&
     proposalStatus === ProposalStatusEnum.Executed
-  const loadingNeutronTimelockInfo = useCachedLoading(
+  const loadingNeutronTimelockOverrule = useQueryLoadingDataWithError(
     usesNeutronPreProposeTimelockOverruleSystem
-      ? waitForAll([
-          // Proposal timelock state.
-          NeutronCwdSubdaoTimelockSingleSelectors.proposalSelector({
-            chainId,
-            contractAddress: prePropose.config.timelockAddress,
-            params: [
-              {
-                proposalId: proposalNumber,
-              },
-            ],
-          }),
-          // Overrule proposal created in main DAO that controls the timelock
-          // state.
-          neutronOverruleProposalForTimelockedProposalSelector({
-            chainId,
-            preProposeOverruleAddress:
-              prePropose.config.timelockConfig.overrule_pre_propose,
-            timelockAddress: prePropose.config.timelockAddress,
-            subdaoProposalId: proposalNumber,
-          }),
-        ])
-      : constSelector(undefined),
-    undefined,
-    (err) => console.error(err)
+      ? proposalQueries.neutronTimelockOverrule(queryClient, {
+          chainId,
+          preProposeOverruleAddress:
+            prePropose.config.timelockConfig.overrule_pre_propose,
+          timelockAddress: prePropose.config.timelockAddress,
+          subdaoProposalId: proposalNumber,
+        })
+      : undefined
   )
+
   if (
     usesNeutronPreProposeTimelockOverruleSystem &&
-    !loadingNeutronTimelockInfo.loading &&
-    loadingNeutronTimelockInfo.data
+    !loadingNeutronTimelockOverrule.loading &&
+    !loadingNeutronTimelockOverrule.errored
   ) {
-    const timelockProposalStatus = loadingNeutronTimelockInfo.data[0].status
+    const timelockProposalStatus =
+      loadingNeutronTimelockOverrule.data.timelockProposal.status
     proposalStatus =
       timelockProposalStatus === 'timelocked'
         ? ProposalStatusEnum.NeutronTimelocked
@@ -133,26 +112,29 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
 
   //! If this proposal was approved by another proposal via the
   //! pre-propose-approver setup.
-  const approverProposalId = useCachedLoadingWithError(
+  const approverProposalId = useQueryLoadingDataWithError(
     prePropose?.type === PreProposeModuleType.Approval &&
       !!prePropose.config.preProposeApproverContract
-      ? approverIdForPreProposeApprovalIdSelector({
+      ? proposalQueries.approverIdForPreProposeApprovalId(queryClient, {
           chainId,
           preProposeAddress: prePropose.address,
           proposalNumber,
-          isPreProposeApprovalProposal: false,
+          isApprovalProposal: false,
           approver: prePropose.config.approver,
           preProposeApproverContract:
             prePropose.config.preProposeApproverContract,
         })
-      : constSelector(undefined)
+      : {
+          queryKey: ['empty_string'],
+          queryFn: () => '',
+        }
   )
 
   //! If this is an approver proposal that approved another proposal.
-  const approvedProposalId = useCachedLoadingWithError(
+  const approvedProposalId = useQueryLoadingDataWithError(
     prePropose?.type === PreProposeModuleType.Approver &&
       proposalStatus === ProposalStatusEnum.Executed
-      ? approvedIdForPreProposeApproverIdSelector({
+      ? proposalQueries.approvedIdForPreProposeApproverId(queryClient, {
           chainId,
           preProposeAddress: prePropose.address,
           proposalNumber,
@@ -160,7 +142,10 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
           preProposeApprovalContract:
             prePropose.config.preProposeApprovalContract,
         })
-      : constSelector(undefined)
+      : {
+          queryKey: ['empty_string'],
+          queryFn: () => '',
+        }
   )
 
   if (
@@ -170,7 +155,8 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.state !== 'hasValue' ||
     approverProposalId.loading ||
     approvedProposalId.loading ||
-    loadingNeutronTimelockInfo.loading
+    (usesNeutronPreProposeTimelockOverruleSystem &&
+      loadingNeutronTimelockOverrule.loading)
   ) {
     return { loading: true }
   }
@@ -193,19 +179,20 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
           blockHeightLoadable.contents
         )
       : proposalStatus === ProposalStatusEnum.NeutronTimelocked &&
-          loadingNeutronTimelockInfo.data
+          !loadingNeutronTimelockOverrule.loading &&
+          !loadingNeutronTimelockOverrule.errored
         ? convertExpirationToDate(
             blocksPerYearLoadable.contents,
-            loadingNeutronTimelockInfo.data[1].proposal.proposal.expiration,
+            loadingNeutronTimelockOverrule.data.overruleProposal.proposal
+              .expiration,
             blockHeightLoadable.contents
           )
         : undefined
 
   const votingOpen =
     proposalStatus === ProposalStatusEnum.Open ||
-    (!!version &&
-      // Voting up until expiration on finished proposals may be supported.
-      isFeatureSupportedByVersion(Feature.VoteUntilExpiration, version) &&
+    // Voting up until expiration on finished proposals may be supported.
+    (proposalModule.supports(Feature.VoteUntilExpiration) &&
       // `expirationDate` will be undefined if expiration is set to never, which
       // the contract does not allow, so this is just a type-check.
       !!expirationDate &&
@@ -292,13 +279,17 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       // On error, just return undefined so we still render the proposal.
       approverProposalId: approverProposalId.errored
         ? undefined
-        : approverProposalId.data,
+        : approverProposalId.data || undefined,
       // On error, just return undefined so we still render the proposal.
       approvedProposalId: approvedProposalId.errored
         ? undefined
-        : approvedProposalId.data,
+        : approvedProposalId.data || undefined,
       vetoTimelockExpiration,
-      neutronTimelockOverrule: loadingNeutronTimelockInfo.data?.[1],
+      neutronTimelockOverrule:
+        loadingNeutronTimelockOverrule.loading ||
+        loadingNeutronTimelockOverrule.errored
+          ? undefined
+          : loadingNeutronTimelockOverrule.data,
     },
   }
 }

@@ -10,10 +10,14 @@ import {
   Duration,
   Feature,
   ModuleInstantiateInfo,
+  PreProposeModuleType,
   SingleChoiceNewProposalData,
   UnvotedDelegatedVotingPower,
 } from '@dao-dao/types'
-import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import {
+  InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg,
+  SingleChoiceApprovalProposal,
+} from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import {
   InstantiateMsg as DaoPreProposeSingleInstantiateMsg,
   UncheckedDepositInfo,
@@ -48,6 +52,7 @@ import {
 import {
   contractQueries,
   cwProposalSingleV1Queries,
+  daoPreProposeApprovalSingleQueries,
   daoPreProposeSingleQueries,
   daoProposalSingleV2Queries,
   daoVoteDelegationQueries,
@@ -60,6 +65,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   SingleChoiceNewProposalData,
   ProposalResponse,
+  SingleChoiceApprovalProposal,
   VoteResponse,
   VoteInfo,
   Vote,
@@ -142,7 +148,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
                   extension: {
                     approver: config.approver,
                   },
-                } as DaoPreProposeApprovalSingleInstantiateMsg)
+                } satisfies DaoPreProposeApprovalSingleInstantiateMsg)
               : ({
                   ...preProposeCommon,
                   extension: {},
@@ -276,6 +282,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }): Promise<{
     proposalNumber: number
     proposalId: string
+    isApprovalProposal: boolean
   }> {
     if (vote && !this.supports(Feature.CastVoteOnProposalCreation)) {
       throw new Error(
@@ -298,7 +305,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         : signingClient
 
     let proposalNumber: number
-    let isPreProposeApprovalProposal = false
+    let isApprovalProposal = false
 
     // V1 does not support pre-propose.
     if (this.version === ContractVersion.V1) {
@@ -349,13 +356,11 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
         txOptions
       )
 
-      isPreProposeApprovalProposal =
-        this.prePropose.contractName ===
-          ContractName.PreProposeApprovalSingle ||
-        this.prePropose.contractName === ContractName.PreProposeApprovalMultiple
+      isApprovalProposal =
+        this.prePropose.contractName === ContractName.PreProposeApprovalSingle
       proposalNumber =
         // pre-propose-approval proposals have a different event
-        isPreProposeApprovalProposal
+        isApprovalProposal
           ? Number(
               findWasmAttributeValue(
                 this.chainId,
@@ -408,8 +413,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       // Proposal IDs are the the prefix plus the proposal number. If a
       // pre-propose-approval proposal, an asterisk is inserted in the middle.
       proposalId: `${this.prefix}${
-        isPreProposeApprovalProposal ? '*' : ''
+        isApprovalProposal ? '*' : ''
       }${proposalNumber}`,
+      isApprovalProposal,
     }
   }
 
@@ -541,10 +547,29 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
-  async getProposal(
-    ...params: Parameters<SingleChoiceProposalModule['getProposalQuery']>
-  ): Promise<ProposalResponse> {
-    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  getApprovalProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<SingleChoiceApprovalProposal> {
+    if (!this.prePropose) {
+      throw new Error('Pre-propose module not found')
+    }
+    if (this.prePropose.type !== PreProposeModuleType.Approval) {
+      throw new Error('Pre-propose module is not an approval module')
+    }
+
+    return daoPreProposeApprovalSingleQueries.queryExtension(this.queryClient, {
+      chainId: this.chainId,
+      contractAddress: this.prePropose.address,
+      args: {
+        msg: {
+          proposal: {
+            id: proposalId,
+          },
+        },
+      },
+    })
   }
 
   getVoteQuery({

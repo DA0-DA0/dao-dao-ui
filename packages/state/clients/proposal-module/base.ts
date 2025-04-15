@@ -25,6 +25,7 @@ export abstract class ProposalModuleBase<
   Dao extends IDaoBase = IDaoBase,
   Proposal = any,
   ProposalResponse = any,
+  ApprovalProposal = any,
   VoteResponse = any,
   VoteInfo = any,
   Vote = any,
@@ -34,6 +35,7 @@ export abstract class ProposalModuleBase<
       Dao,
       Proposal,
       ProposalResponse,
+      ApprovalProposal,
       VoteResponse,
       VoteInfo,
       Vote,
@@ -175,6 +177,7 @@ export abstract class ProposalModuleBase<
   }): Promise<{
     proposalNumber: number
     proposalId: string
+    isApprovalProposal?: boolean
   }>
 
   /**
@@ -225,9 +228,33 @@ export abstract class ProposalModuleBase<
   /**
    * Fetch a proposal.
    */
-  abstract getProposal(options: {
+  async getProposal(options: {
     proposalId: number
-  }): Promise<ProposalResponse>
+  }): Promise<ProposalResponse> {
+    return await this.queryClient.fetchQuery(this.getProposalQuery(options))
+  }
+
+  /**
+   * Query options to fetch an approval proposal from the pre-propose-approval
+   * module, if configured.
+   */
+  getApprovalProposalQuery(_options: {
+    proposalId: number
+  }): FetchQueryOptions<ApprovalProposal> {
+    throw new Error('Not implemented')
+  }
+
+  /**
+   * Fetch an approval proposal from the pre-propose-approval module, if
+   * configured.
+   */
+  async getApprovalProposal(options: {
+    proposalId: number
+  }): Promise<ApprovalProposal> {
+    return await this.queryClient.fetchQuery(
+      this.getApprovalProposalQuery(options)
+    )
+  }
 
   /**
    * Query options to fetch the vote on a proposal by a given address. If voter

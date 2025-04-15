@@ -29,6 +29,7 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
+  ContractName,
   DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES,
   getNativeTokenForChainId,
   isFeatureSupportedByVersion,
@@ -132,6 +133,17 @@ export class DaoProposalMultipleUpdatePreProposeConfigAction extends ActionBase<
     if (!proposalModule.prePropose) {
       throw new Error(
         'Pre-propose config can only be updated when a pre-propose module is being used.'
+      )
+    }
+
+    if (
+      proposalModule.prePropose.contractName !==
+        ContractName.PreProposeMultiple &&
+      proposalModule.prePropose.contractName !==
+        ContractName.PreProposeApprovalMultiple
+    ) {
+      throw new Error(
+        `Cannot update config for pre-propose module with name: ${proposalModule.prePropose.contractName}`
       )
     }
 

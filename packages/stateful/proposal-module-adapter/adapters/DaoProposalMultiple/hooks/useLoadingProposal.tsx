@@ -1,27 +1,33 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
-  DaoProposalMultipleSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
+  proposalQueries,
 } from '@dao-dao/state'
 import {
   useCachedLoadable,
-  useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   LoadingData,
+  PreProposeModuleType,
   ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
+import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   convertExpirationToDate,
   formatDate,
   formatDateTimeTz,
 } from '@dao-dao/utils'
 
+import {
+  useQueryLoadingData,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { ProposalWithMetadata } from '../types'
 
@@ -30,27 +36,21 @@ import { ProposalWithMetadata } from '../types'
 export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const { t } = useTranslation()
   const {
-    proposalModule: { address: proposalModuleAddress },
+    proposalModule,
     proposalNumber,
     chain: { chainId },
   } = useProposalModuleAdapterOptions()
+  const queryClient = useQueryClient()
 
-  const loadingProposalResponse = useCachedLoading(
-    DaoProposalMultipleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      chainId,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    }),
-    undefined,
-    // If proposal undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
-  )
+  const { prePropose } = proposalModule
+
+  const loadingProposalResponse: LoadingData<ProposalResponse | undefined> =
+    useQueryLoadingData(
+      proposalModule.getProposalQuery({
+        proposalId: proposalNumber,
+      }),
+      undefined
+    )
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
@@ -64,13 +64,35 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       chainId,
     })
   )
+
+  //! If this proposal was approved by another proposal via the
+  //! pre-propose-approver setup.
+  const approverProposalId = useQueryLoadingDataWithError(
+    prePropose?.type === PreProposeModuleType.Approval &&
+      !!prePropose.config.preProposeApproverContract
+      ? proposalQueries.approverIdForPreProposeApprovalId(queryClient, {
+          chainId,
+          preProposeAddress: prePropose.address,
+          proposalNumber,
+          isApprovalProposal: false,
+          approver: prePropose.config.approver,
+          preProposeApproverContract:
+            prePropose.config.preProposeApproverContract,
+        })
+      : {
+          queryKey: ['empty_string'],
+          queryFn: () => '',
+        }
+  )
+
   // Since an error will be thrown on a selector error, this .data check is just
   // a typecheck. It will not return loading forever if the selector fails.
   if (
     loadingProposalResponse.loading ||
     !loadingProposalResponse.data ||
     blocksPerYearLoadable.state !== 'hasValue' ||
-    blockHeightLoadable.state !== 'hasValue'
+    blockHeightLoadable.state !== 'hasValue' ||
+    approverProposalId.loading
   ) {
     return { loading: true }
   }
@@ -181,6 +203,10 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       votingOpen,
       executedAt:
         typeof executedAt === 'string' ? new Date(executedAt) : undefined,
+      // On error, just return undefined so we still render the proposal.
+      approverProposalId: approverProposalId.errored
+        ? undefined
+        : approverProposalId.data || undefined,
       vetoTimelockExpiration,
     },
   }

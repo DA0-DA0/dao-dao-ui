@@ -11,7 +11,6 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DaoCreationVotingConfigWithApprover,
-  DaoCreationVotingConfigWithEnableMultipleChoice,
 } from '@dao-dao/types'
 import { makeValidateAddress } from '@dao-dao/utils'
 
@@ -26,10 +25,7 @@ const ApproverInput = ({
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<
-  DaoCreationVotingConfigWithApprover &
-    DaoCreationVotingConfigWithEnableMultipleChoice
->) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithApprover>) => {
   const { bech32Prefix } = useChain()
 
   return (
@@ -37,10 +33,6 @@ const ApproverInput = ({
       <FormSwitchCard
         containerClassName="self-start"
         fieldName="approver.enabled"
-        onToggle={(enabled) =>
-          // Multiple choice does not work with an approver right now.
-          enabled && setValue('enableMultipleChoice', false)
-        }
         setValue={setValue}
         sizing="sm"
         value={enabled}
@@ -73,15 +65,13 @@ const ApproverReview = ({
   return enabled ? <EntityDisplay address={address} /> : <>{t('info.none')}</>
 }
 
-export const makeApproverVotingConfigItem = (): DaoCreationVotingConfigItem<
-  DaoCreationVotingConfigWithApprover &
-    DaoCreationVotingConfigWithEnableMultipleChoice
-> => ({
-  Icon: PersonRaisingHandEmoji,
-  nameI18nKey: 'title.approver',
-  descriptionI18nKey: 'form.approverDescription',
-  tooltipI18nKey: 'info.daoApproverExplanation',
-  Input: ApproverInput,
-  getInputError: () => undefined,
-  Review: ApproverReview,
-})
+export const makeApproverVotingConfigItem =
+  (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithApprover> => ({
+    Icon: PersonRaisingHandEmoji,
+    nameI18nKey: 'title.approver',
+    descriptionI18nKey: 'form.approverDescription',
+    tooltipI18nKey: 'info.daoApproverExplanation',
+    Input: ApproverInput,
+    getInputError: () => undefined,
+    Review: ApproverReview,
+  })

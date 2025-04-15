@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ApprovalProposalContextType,
-  BasePreProposeApprovalInnerContentDisplayProps,
+  BaseApprovalProposalInnerContentDisplayProps,
   CommonProposalInfo,
   PreProposeModuleType,
 } from '@dao-dao/types'
@@ -40,7 +40,7 @@ type InnerDaoApproverProposalContentDisplayWithInnerContentProps = Omit<
   InnerDaoApproverProposalContentDisplayProps,
   'innerContentDisplay'
 > &
-  Omit<BasePreProposeApprovalInnerContentDisplayProps, 'actionsForMatching'>
+  Omit<BaseApprovalProposalInnerContentDisplayProps, 'actionsForMatching'>
 
 export const DaoApproverProposalContentDisplay = ({
   proposalInfo,
@@ -172,21 +172,20 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
 }: InnerDaoApproverProposalContentDisplayWithInnerContentProps) => {
   const { t } = useTranslation()
   const {
-    hooks: { useLoadingPreProposeApprovalProposal },
-    components: { PreProposeApprovalInnerContentDisplay },
+    hooks: { useLoadingApprovalProposal },
+    components: { ApprovalProposalInnerContentDisplay },
   } = useProposalModuleAdapter()
 
-  const loadingPreProposeApprovalProposal =
-    useLoadingPreProposeApprovalProposal()
+  const loadingApprovalProposal = useLoadingApprovalProposal()
   const creatorAddress =
-    (!loadingPreProposeApprovalProposal.loading &&
-      loadingPreProposeApprovalProposal.data?.proposer) ||
+    (!loadingApprovalProposal.loading &&
+      loadingApprovalProposal.data?.proposer) ||
     // Fallback to approval proposal creator passed in from main component.
     props.creator?.address ||
     ''
   const { entity } = useEntity(creatorAddress)
 
-  if (!PreProposeApprovalInnerContentDisplay) {
+  if (!ApprovalProposalInnerContentDisplay) {
     return (
       <StatusCard
         content={t('error.unsupportedApprovalFailedRender')}
@@ -202,7 +201,7 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
         address: creatorAddress,
         entity,
       }}
-      innerContentDisplay={<PreProposeApprovalInnerContentDisplay />}
+      innerContentDisplay={<ApprovalProposalInnerContentDisplay />}
     />
   )
 }

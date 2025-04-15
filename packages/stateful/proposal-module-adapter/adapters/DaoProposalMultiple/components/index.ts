@@ -1,3 +1,6 @@
+export * from './ApprovalProposalInnerContentDisplay'
+export * from './ApprovalProposalLine'
+export * from './ApprovalProposalStatusAndInfo'
 export * from './MultipleChoiceOptionEditor'
 export * from './MultipleChoiceOptionViewer'
 export * from './ProposalInnerContentDisplay'

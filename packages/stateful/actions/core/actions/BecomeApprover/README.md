@@ -18,9 +18,9 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "address": "<ADDRESS>"
+  "addresses": "<ADDRESS>,<ADDRESS>,..."
 }
 ```
 
-`address` refers to the `dao-pre-propose-approval-*` contract created with this
-DAO as the approver.
+`addresses` is a comma-separated list of the `dao-pre-propose-approval-*`
+contracts created with this DAO as the approver.

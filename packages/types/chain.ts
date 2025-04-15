@@ -294,6 +294,7 @@ export type CodeIdConfig = {
   CwTokenfactoryIssuer: number
   CwVesting: number
   DaoDaoCore: number
+  DaoPreProposeApprovalMultiple?: number
   DaoPreProposeApprovalSingle: number
   DaoPreProposeApprover: number
   DaoPreProposeMultiple: number

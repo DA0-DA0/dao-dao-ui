@@ -4,6 +4,7 @@ import {
   ProposalModuleAdapter,
   SingleChoiceNewProposalForm,
 } from '@dao-dao/types'
+import { SingleChoiceApprovalProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
@@ -24,9 +25,9 @@ import {
   reverseProposalInfosSelector,
 } from './common'
 import {
-  PreProposeApprovalInnerContentDisplay,
-  PreProposeApprovalProposalLine,
-  PreProposeApprovalProposalStatusAndInfo,
+  ApprovalProposalInnerContentDisplay,
+  ApprovalProposalLine,
+  ApprovalProposalStatusAndInfo,
   ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -39,7 +40,7 @@ import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
   useCastVote,
-  useLoadingPreProposeApprovalProposal,
+  useLoadingApprovalProposal,
   useLoadingProposalExecutionTxHash,
   useLoadingProposalStatus,
   useLoadingVoteOptions,
@@ -52,7 +53,8 @@ import { DaoCreationExtraVotingConfig } from './types'
 export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   DaoCreationExtraVotingConfig,
   Vote,
-  SingleChoiceNewProposalForm
+  SingleChoiceNewProposalForm,
+  SingleChoiceApprovalProposal
 > = {
   id: DaoProposalSingleAdapterId,
   contractNames: DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
@@ -162,7 +164,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
 
-      useLoadingPreProposeApprovalProposal,
+      useLoadingApprovalProposal,
     },
 
     // Components
@@ -175,9 +177,9 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       ProposalVoteTally,
       ProposalLine,
 
-      PreProposeApprovalProposalStatusAndInfo,
-      PreProposeApprovalInnerContentDisplay,
-      PreProposeApprovalProposalLine,
+      ApprovalProposalStatusAndInfo,
+      ApprovalProposalInnerContentDisplay,
+      ApprovalProposalLine,
     },
   }),
 

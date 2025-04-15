@@ -1,14 +1,8 @@
-import { DataObject } from '@mui/icons-material'
-import { useMemo, useState } from 'react'
-import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
+import { useMemo } from 'react'
 
 import {
   ActionCardLoader,
-  ActionsMatchAndRender,
-  Button,
   ProposalExecutionMetadataRenderer,
-  RawActionsRenderer,
   useDao,
 } from '@dao-dao/stateless'
 import {
@@ -27,6 +21,7 @@ import {
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
+import { ProposalMessagesDisplay } from './ProposalMessagesDisplay'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<SingleChoiceNewProposalForm>
@@ -54,8 +49,6 @@ const InnerProposalInnerContentDisplay = ({
 }: BaseProposalInnerContentDisplayProps<SingleChoiceNewProposalForm> & {
   proposal: Proposal | SingleChoiceProposal
 }) => {
-  const { t } = useTranslation()
-  const [showRaw, setShowRaw] = useState(false)
   const { chainId } = useDao()
 
   const actionMessagesToDisplay = useMemo(() => {
@@ -132,31 +125,10 @@ const InnerProposalInnerContentDisplay = ({
 
   return (
     <div className="flex flex-col gap-3">
-      {actionMessagesToDisplay.length ? (
-        <>
-          <ActionsMatchAndRender
-            SuspenseLoader={SuspenseLoader}
-            messages={actionMessagesToDisplay}
-            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-            onLoad={onLoad}
-          />
-
-          <Button
-            className="self-start"
-            onClick={() => setShowRaw((s) => !s)}
-            variant="ghost"
-          >
-            <DataObject className="text-icon-secondary" />
-            <p className="secondary-text">
-              {showRaw ? t('button.hideRawData') : t('button.showRawData')}
-            </p>
-          </Button>
-
-          {showRaw && <RawActionsRenderer messages={proposal.msgs} />}
-        </>
-      ) : (
-        <p className="caption-text italic">{t('info.noProposalActions')}</p>
-      )}
+      <ProposalMessagesDisplay
+        messages={actionMessagesToDisplay}
+        onLoad={onLoad}
+      />
 
       <ProposalExecutionMetadataRenderer className="mt-3" metadata={metadata} />
     </div>

@@ -10,8 +10,13 @@ import {
   Feature,
   ModuleInstantiateInfo,
   MultipleChoiceNewProposalData,
+  PreProposeModuleType,
   UnvotedDelegatedVotingPower,
 } from '@dao-dao/types'
+import {
+  InstantiateMsg as DaoPreProposeApprovalMultipleInstantiateMsg,
+  MultipleChoiceApprovalProposal,
+} from '@dao-dao/types/contracts/DaoPreProposeApprovalMultiple'
 import {
   InstantiateMsg as DaoPreProposeMultipleInstantiateMsg,
   UncheckedDepositInfo,
@@ -28,6 +33,7 @@ import {
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  ContractName,
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
   SupportedSigningCosmWasmClient,
   encodeJsonToBase64,
@@ -43,6 +49,7 @@ import {
 } from '../../contracts'
 import {
   contractQueries,
+  daoPreProposeApprovalMultipleQueries,
   daoPreProposeMultipleQueries,
   daoProposalMultipleQueries,
   daoVoteDelegationQueries,
@@ -55,6 +62,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   CwDao,
   MultipleChoiceNewProposalData,
   ProposalResponse,
+  MultipleChoiceApprovalProposal,
   VoteResponse,
   VoteInfo,
   MultipleChoiceVote,
@@ -74,6 +82,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       minVotingPeriod?: Duration
       allowRevoting: boolean
       veto?: VetoConfig | null
+      approver?: string
       deposit?: UncheckedDepositInfo | null
       submissionPolicy: 'members' | 'anyone'
       /**
@@ -106,48 +115,79 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     const {
       DaoProposalMultiple: daoProposalMultipleCodeId,
       DaoPreProposeMultiple: daoPreProposeMultipleCodeId,
+      DaoPreProposeApprovalMultiple: daoPreProposeApprovalMultipleCodeId,
     } = allCodeIds[contractVersion] ?? {}
 
-    if (!daoProposalMultipleCodeId || !daoPreProposeMultipleCodeId) {
+    if (
+      config.approver &&
+      !isFeatureSupportedByVersion(
+        Feature.MultipleChoiceApproval,
+        latestVersion
+      )
+    ) {
+      throw new Error(
+        `Multiple choice approval is not supported by version ${latestVersion} on chain ${chainId}`
+      )
+    }
+
+    const preProposeCodeId = config.approver
+      ? daoPreProposeApprovalMultipleCodeId
+      : daoPreProposeMultipleCodeId
+
+    if (!daoProposalMultipleCodeId || !preProposeCodeId) {
       throw new Error(
         `Code IDs not found for version ${contractVersion} on chain ${chainId}`
       )
+    }
+
+    const preProposeCommon = {
+      deposit_info: config.deposit,
+      ...(isFeatureSupportedByVersion(
+        Feature.GranularSubmissionPolicy,
+        contractVersion
+      )
+        ? {
+            submission_policy:
+              config.submissionPolicy === 'anyone'
+                ? {
+                    anyone: {
+                      denylist: [],
+                    },
+                  }
+                : {
+                    specific: {
+                      dao_members: true,
+                      allowlist: [],
+                      denylist: [],
+                    },
+                  },
+          }
+        : {
+            open_proposal_submission: config.submissionPolicy === 'anyone',
+          }),
     }
 
     const pre_propose_info: PreProposeInfo = {
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: daoPreProposeMultipleCodeId,
-          label: `dao-pre-propose-multiple_${Date.now()}`,
-          msg: encodeJsonToBase64({
-            deposit_info: config.deposit,
-            extension: {},
-            ...(isFeatureSupportedByVersion(
-              Feature.GranularSubmissionPolicy,
-              contractVersion
-            )
-              ? {
-                  submission_policy:
-                    config.submissionPolicy === 'anyone'
-                      ? {
-                          anyone: {
-                            denylist: [],
-                          },
-                        }
-                      : {
-                          specific: {
-                            dao_members: true,
-                            allowlist: [],
-                            denylist: [],
-                          },
-                        },
-                }
-              : {
-                  open_proposal_submission:
-                    config.submissionPolicy === 'anyone',
-                }),
-          } satisfies DaoPreProposeMultipleInstantiateMsg),
+          code_id: preProposeCodeId,
+          label: `dao-pre-propose${
+            config.approver ? '-approval' : ''
+          }-multiple_${Date.now()}`,
+          msg: encodeJsonToBase64(
+            config.approver
+              ? ({
+                  ...(preProposeCommon as any),
+                  extension: {
+                    approver: config.approver,
+                  },
+                } satisfies DaoPreProposeApprovalMultipleInstantiateMsg)
+              : ({
+                  ...preProposeCommon,
+                  extension: {},
+                } satisfies DaoPreProposeMultipleInstantiateMsg)
+          ),
           // This function is used by the enable multiple choice action, and
           // DAOs before v2.3.0 still might want to enable multiple choice, so
           // make sure to support the old version without the `funds` field.
@@ -296,6 +336,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }): Promise<{
     proposalNumber: number
     proposalId: string
+    isApprovalProposal: boolean
   }> {
     if (vote && !this.supports(Feature.CastVoteOnProposalCreation)) {
       throw new Error(
@@ -318,6 +359,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         : signingClient
 
     let proposalNumber: number
+    let isApprovalProposal = false
 
     if (this.prePropose) {
       const { events } = await new DaoPreProposeMultipleClient(
@@ -340,14 +382,27 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
         txOptions
       )
 
-      proposalNumber = Number(
-        findWasmAttributeValue(
-          this.chainId,
-          events,
-          this.address,
-          'proposal_id'
-        ) ?? -1
-      )
+      isApprovalProposal =
+        this.prePropose.contractName === ContractName.PreProposeApprovalMultiple
+      proposalNumber =
+        // pre-propose-approval proposals have a different event
+        isApprovalProposal
+          ? Number(
+              findWasmAttributeValue(
+                this.chainId,
+                events,
+                this.prePropose.address,
+                'id'
+              ) ?? -1
+            )
+          : Number(
+              findWasmAttributeValue(
+                this.chainId,
+                events,
+                this.address,
+                'proposal_id'
+              ) ?? -1
+            )
     } else {
       const { events } = await new DaoProposalMultipleClient(
         client,
@@ -381,8 +436,12 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
     return {
       proposalNumber,
-      // Proposal IDs are the the prefix plus the proposal number.
-      proposalId: `${this.prefix}${proposalNumber}`,
+      // Proposal IDs are the the prefix plus the proposal number. If a
+      // pre-propose-approval proposal, an asterisk is inserted in the middle.
+      proposalId: `${this.prefix}${
+        isApprovalProposal ? '*' : ''
+      }${proposalNumber}`,
+      isApprovalProposal,
     }
   }
 
@@ -497,10 +556,32 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
-  async getProposal(
-    ...params: Parameters<MultipleChoiceProposalModule['getProposalQuery']>
-  ): Promise<ProposalResponse> {
-    return await this.queryClient.fetchQuery(this.getProposalQuery(...params))
+  getApprovalProposalQuery({
+    proposalId,
+  }: {
+    proposalId: number
+  }): FetchQueryOptions<MultipleChoiceApprovalProposal> {
+    if (!this.prePropose) {
+      throw new Error('Pre-propose module not found')
+    }
+    if (this.prePropose.type !== PreProposeModuleType.Approval) {
+      throw new Error('Pre-propose module is not an approval module')
+    }
+
+    return daoPreProposeApprovalMultipleQueries.queryExtension(
+      this.queryClient,
+      {
+        chainId: this.chainId,
+        contractAddress: this.prePropose.address,
+        args: {
+          msg: {
+            proposal: {
+              id: proposalId,
+            },
+          },
+        },
+      }
+    )
   }
 
   getVoteQuery({
