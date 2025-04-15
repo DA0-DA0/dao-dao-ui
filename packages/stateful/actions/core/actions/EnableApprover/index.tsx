@@ -118,8 +118,10 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
 
     const { allCodeIds, allCodeHashes } = this.options.chainContext.config
 
+    const timestamp = Date.now()
+
     return await Promise.all(
-      this.validProposalModules.map(async (m) => {
+      this.validProposalModules.map(async (m, index) => {
         const isSecretSingle = m instanceof SecretSingleChoiceProposalModule
         const isSecretMultiple = m instanceof SecretMultipleChoiceProposalModule
         const isSecret = isSecretSingle || isSecretMultiple
@@ -263,7 +265,7 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
                         funds: [],
                         label: `dao-pre-propose-approval-${
                           isSingle ? 'single' : 'multiple'
-                        }_${Date.now()}`,
+                        }_${timestamp}_${index}`,
                         msg: encodeJsonToBase64(msg),
                       } as SecretModuleInstantiateInfo)
                     : ({
@@ -271,7 +273,7 @@ export class EnableApproverAction extends ActionBase<EnableApproverData> {
                         code_id: codeId,
                         label: `dao-pre-propose-approval-${
                           isSingle ? 'single' : 'multiple'
-                        }_${Date.now()}`,
+                        }_${timestamp}_${index}`,
                         msg: encodeJsonToBase64(msg),
                         // Conditionally include funds field.
                         ...(isFeatureSupportedByVersion(

@@ -57,6 +57,7 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId },
   } = useActionOptions()
+  const queryClient = useQueryClient()
 
   const { watch } = useFormContext<BecomeApproverData>()
   const preProposeApprovalContracts =
@@ -81,7 +82,6 @@ const Component: ActionComponent = (props) => {
     }),
   })
 
-  const queryClient = useQueryClient()
   const options = useQueryLoadingDataWithError(
     daoQueries.listPotentialApprovalDaos(queryClient, {
       chainId,
@@ -174,13 +174,15 @@ export class BecomeApproverAction extends ActionBase<BecomeApproverData> {
     const preProposeApproverCodeId =
       this.options.chainContext.config.codeIds.DaoPreProposeApprover
 
+    const timestamp = Date.now()
+
     // Add single choice proposal modules that will be used to approve/reject
     // proposals from the pre-propose-approval-* contracts in the other DAO.
     const infos: ModuleInstantiateInfo[] = preProposeApprovalContracts.map(
-      (preProposeApprovalContract) => ({
+      (preProposeApprovalContract, index) => ({
         admin: { core_module: {} },
         code_id: singleChoiceProposalModuleCodeId,
-        label: `dao-proposal-single_approver_${Date.now()}`,
+        label: `dao-proposal-single_approver_${timestamp}_${index}`,
         msg: encodeJsonToBase64({
           threshold: config.threshold,
           allow_revoting: config.allow_revoting,
@@ -200,7 +202,7 @@ export class BecomeApproverAction extends ActionBase<BecomeApproverData> {
               info: {
                 admin: { core_module: {} },
                 code_id: preProposeApproverCodeId,
-                label: `dao-pre-propose-approver_${Date.now()}`,
+                label: `dao-pre-propose-approver_${timestamp}_${index}`,
                 msg: encodeJsonToBase64({
                   pre_propose_approval_contract: preProposeApprovalContract,
                 } as DaoPreProposeApproverInstantiateMsg),
@@ -226,86 +228,85 @@ export class BecomeApproverAction extends ActionBase<BecomeApproverData> {
     })
   }
 
-  match(messages: ProcessedMessage[]): ActionMatch {
-    // Loop through all messages, stopping once one does NOT match. Match only
-    // adjacent valid messages.
-    let matchedMessages = 0
-    for (; matchedMessages < messages.length; matchedMessages++) {
-      const decodedMessage = messages[matchedMessages].decodedMessage
+  match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
+    if (
+      !objectMatchesStructure(decodedMessage, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_proposal_modules: {
+                // Any number of modules can be added.
+                to_add: {},
+                // None are disabled.
+                to_disable: [],
+              },
+            },
+          },
+        },
+      })
+    ) {
+      return false
+    }
 
-      if (
-        !objectMatchesStructure(decodedMessage, {
-          wasm: {
-            execute: {
-              contract_addr: {},
-              funds: {},
-              msg: {
-                update_proposal_modules: {
-                  to_add: [
-                    {
-                      admin: {},
-                      code_id: {},
-                      label: {},
-                      msg: {},
-                    },
-                  ],
-                  to_disable: [],
+    // Ensure all modules being added are the approver modules.
+    const infos = decodedMessage.wasm.execute.msg.update_proposal_modules
+      .to_add as ModuleInstantiateInfo[]
+    const existAndAllMatch =
+      infos.length > 0 &&
+      infos.every((info) => {
+        if (
+          !objectMatchesStructure(info, {
+            admin: {},
+            code_id: {},
+            label: {},
+            msg: {},
+          })
+        ) {
+          return false
+        }
+
+        const parsedMsg = decodeJsonFromBase64(info.msg)
+        if (
+          (!info.label.startsWith('dao-proposal-single_approver') &&
+            // backwards compatibility
+            !info.label.endsWith(`${DaoProposalSingleAdapterId}_approver`)) ||
+          !objectMatchesStructure(parsedMsg, {
+            pre_propose_info: {
+              module_may_propose: {
+                info: {
+                  msg: {},
                 },
               },
             },
-          },
-        })
-      ) {
-        break
-      }
+          }) ||
+          !parsedMsg.pre_propose_info.module_may_propose.info.label.includes(
+            'approver'
+          )
+        ) {
+          return false
+        }
 
-      const info =
-        decodedMessage.wasm.execute.msg.update_proposal_modules.to_add[0]
-      const parsedMsg = decodeJsonFromBase64(info.msg, true)
-      if (
-        (!info.label.startsWith('dao-proposal-single_approver') &&
-          // backwards compatibility
-          !info.label.endsWith(`${DaoProposalSingleAdapterId}_approver`)) ||
-        !objectMatchesStructure(parsedMsg, {
-          pre_propose_info: {
-            module_may_propose: {
-              info: {
-                msg: {},
-              },
-            },
-          },
-        }) ||
-        !parsedMsg.pre_propose_info.module_may_propose.info.label.includes(
-          'approver'
+        const parsedPreProposeMsg = decodeJsonFromBase64(
+          parsedMsg.pre_propose_info.module_may_propose.info.msg
         )
-      ) {
-        break
-      }
-
-      const parsedPreProposeMsg = decodeJsonFromBase64(
-        parsedMsg.pre_propose_info.module_may_propose.info.msg,
-        true
-      )
-      if (
-        !objectMatchesStructure(parsedPreProposeMsg, {
+        return objectMatchesStructure(parsedPreProposeMsg, {
           pre_propose_approval_contract: {},
         })
-      ) {
-        break
-      }
-    }
+      })
 
-    return matchedMessages
+    return existAndAllMatch
   }
 
-  decode(messages: ProcessedMessage[]): BecomeApproverData {
-    const preProposeApprovalContracts = messages.map(
-      ({ decodedMessage }): string =>
+  decode([{ decodedMessage }]: ProcessedMessage[]): BecomeApproverData {
+    const preProposeApprovalContracts = (
+      decodedMessage.wasm.execute.msg.update_proposal_modules
+        .to_add as ModuleInstantiateInfo[]
+    ).map(
+      ({ msg }): string =>
         decodeJsonFromBase64(
-          decodeJsonFromBase64(
-            decodedMessage.wasm.execute.msg.update_proposal_modules.to_add[0]
-              .msg
-          ).pre_propose_info.module_may_propose.info.msg
+          decodeJsonFromBase64(msg).pre_propose_info.module_may_propose.info.msg
         ).pre_propose_approval_contract
     )
 
