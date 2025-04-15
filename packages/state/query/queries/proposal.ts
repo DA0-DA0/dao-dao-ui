@@ -394,7 +394,7 @@ const fetchApproverIdForPreProposeApprovalId = async (
     approver: string
     preProposeApproverContract: string
   }
-): Promise<string> => {
+): Promise<string | null> => {
   const approverDao = getDao({
     queryClient,
     chainId,
@@ -420,6 +420,12 @@ const fetchApproverIdForPreProposeApprovalId = async (
         })
       )
 
+  // If no proposal number found, approver must not have been setup when this
+  // pre-propose approval proposal was created.
+  if (!preProposeApprovalNumber) {
+    return null
+  }
+
   const approverProposalNumber = await queryClient.fetchQuery<number | null>(
     daoPreProposeApproverQueries.queryExtension(queryClient, {
       chainId,
@@ -434,12 +440,10 @@ const fetchApproverIdForPreProposeApprovalId = async (
     })
   )
 
-  // If no proposal number found, approver must not have been setup when
-  // this pre-propose approval proposal was created.
+  // If no proposal number found, approver must not have been setup when this
+  // pre-propose approval proposal was created.
   if (!approverProposalNumber) {
-    throw new Error(
-      'no approver proposal created for this pre-propose approval proposal'
-    )
+    return null
   }
 
   // Get prefix of proposal module with dao-pre-propose-approver attached
