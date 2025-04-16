@@ -19,7 +19,7 @@ export const MembershipBasedCreator: DaoCreator = {
     tiers: [
       {
         name: '',
-        weight: 1,
+        weight: 1_000,
         members: [
           {
             address: '',
