@@ -109,9 +109,10 @@ export enum ActionKey {
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
 
-  // Become SubDAO
+  // SubDAO ownership transfers
   AcceptSubDao = 'acceptSubDao',
   BecomeSubDao = 'becomeSubDao',
+  TransferSubDao = 'transferSubDao',
 
   // Rewards
   CreateRewardDistribution = 'createRewardDistribution',

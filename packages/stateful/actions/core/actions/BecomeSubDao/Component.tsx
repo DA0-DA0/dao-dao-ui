@@ -42,7 +42,7 @@ export const BecomeSubDaoComponent: ActionComponent<
         </p>
 
         <div className="space-y-1">
-          <InputLabel name={t('form.becomeSubDaoAdminInputLabel')} />
+          <InputLabel name={t('form.newParentDao')} />
           <AddressInput
             containerClassName="flex-1"
             disabled={!isCreating}

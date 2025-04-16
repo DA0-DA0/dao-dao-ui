@@ -18,10 +18,13 @@ export const makeSubDaosActionCategory: ActionCategoryMaker = ({
           ActionKey.ManageSubDaos,
           ActionKey.BecomeSubDao,
           ActionKey.AcceptSubDao,
+          ActionKey.TransferSubDao,
         ]
       : [
-          // Allow non-DAOs to become the parent of DAOs. This may be chain
-          // governance or a DAO's polytone proxy for cross-chain SubDAOs.
+          // Allow non-DAOs to become the parent of DAOs and transfer their
+          // SubDAOs. This may be chain governance or a DAO's polytone proxy for
+          // cross-chain SubDAOs.
           ActionKey.AcceptSubDao,
+          ActionKey.TransferSubDao,
         ],
 })

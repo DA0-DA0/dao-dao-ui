@@ -60,17 +60,24 @@ export class BecomeSubDaoAction extends ActionBase<BecomeSubDaoData> {
   }
 
   match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
-    return objectMatchesStructure(decodedMessage, {
-      wasm: {
-        execute: {
-          msg: {
-            nominate_admin: {
-              admin: {},
+    return (
+      objectMatchesStructure(decodedMessage, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            msg: {
+              nominate_admin: {
+                admin: {},
+              },
             },
           },
         },
-      },
-    })
+        // Only match if this DAO is self-executing, since this indicates that
+        // this changes from self-admin to a different admin. An admin
+        // transferring a different DAO's admin is a different action
+        // (TransferSubDAO).
+      }) && decodedMessage.wasm.execute.contract_addr === this.options.address
+    )
   }
 
   decode([{ decodedMessage }]: ProcessedMessage[]): BecomeSubDaoData {
