@@ -52,6 +52,11 @@ interface DeploymentResult {
 // Queue for managing concurrent deployments
 class DeploymentQueue {
   private queue: string[] = []
+  /**
+   * The longest chain ID in the queue. Used to determine padding for chain IDs
+   * when printing so that all chains print at the same width.
+   */
+  private longestChainId: number
   private running = new Set<string>()
   private maxConcurrent: number
   private scriptPath: string
@@ -60,6 +65,7 @@ class DeploymentQueue {
 
   constructor(chains: string[], maxConcurrent: number) {
     this.queue = [...chains]
+    this.longestChainId = Math.max(...chains.map((c) => c.length))
     this.maxConcurrent = maxConcurrent
     this.scriptPath = path.join(__dirname, 'script.ts')
 
@@ -102,7 +108,9 @@ class DeploymentQueue {
       version,
     ]
 
-    log(chainColor(`Starting deployment for ${chainId}...`))
+    const prefix = `[${chainId}]`.padEnd(this.longestChainId + 4, ' ')
+
+    log(chainColor(prefix + 'Starting deployment...'))
 
     let configOutput = ''
     let errorOutput = ''
@@ -120,7 +128,7 @@ class DeploymentQueue {
         .split('\n')
         .filter((line: string) => line.trim())
         .forEach((line: string) => {
-          log(chainColor(`[${chainId}] `) + line)
+          log(chainColor(prefix + line))
         })
     })
 
@@ -132,7 +140,7 @@ class DeploymentQueue {
         .split('\n')
         .filter((line: string) => line.trim())
         .forEach((line: string) => {
-          log(chainColor(`[${chainId}] ` + line))
+          log(chainColor(prefix + line))
         })
     })
 
@@ -157,7 +165,7 @@ class DeploymentQueue {
       }
 
       if (code === 0) {
-        log(chainColor(`✓ Deployment completed for ${chainId}`))
+        log(chainColor(prefix + '✓ Deployment completed'))
         this.results.push({
           chainId,
           success: true,
@@ -167,9 +175,7 @@ class DeploymentQueue {
         const error = errorOutput.trim() || 'Unknown error'
         log(
           chalk.red(
-            chainColor(
-              `✗ Deployment failed for ${chainId} with exit code ${code}`
-            )
+            chainColor(prefix + `✗ Deployment failed with exit code ${code}`)
           )
         )
         this.results.push({
