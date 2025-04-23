@@ -125,19 +125,9 @@ export const deploySets: DeploySet[] = [
     new DeploySetContract('cw4_group'),
   ]),
 
-  // the admin factory contract to deploy on all chains every time except Terra
-  // Classic since it doesn't support instantiate2
-  new DeploySet(
-    'admin factory',
-    'always',
-    [new DeploySetContract('cw_admin_factory')],
-    {
-      skipChainIds: [ChainId.TerraClassicMainnet],
-    }
-  ),
-
   // the core DAO contracts to deploy on all chains every time
   new DeploySet('core DAO stuff', 'always', [
+    new DeploySetContract('cw_admin_factory'),
     new DeploySetContract('cw_payroll_factory'),
     new DeploySetContract('cw_token_swap'),
     new DeploySetContract('dao_dao_core'),

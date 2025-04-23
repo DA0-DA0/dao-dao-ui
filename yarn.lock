@@ -2044,6 +2044,11 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.86.tgz#a5eef445f0456968d6acc8a0e95aaf8df01e99b1"
   integrity sha512-wqp+0a9eeDj9Tjta0dpZGyQB0FKEVrM6R1h6hd/up04abE4UY/IhgmgEdKOazEV7BCECxWeXY3eI4tZA7SwwNA==
 
+"@chain-registry/types@0.46.11":
+  version "0.46.11"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.11.tgz#68efa85ba5ed4d451218a515a06239594b4125dd"
+  integrity sha512-ASeCtZ3i6g4buyP/43qRnkJo2w50bpX6hsZOapkwOYqAGY83ZE+NZMUcv0UUsiVBHKqC3hAWTLjFNF5q7GR4Gg==
+
 "@chain-registry/types@0.50.111", "@chain-registry/types@^0.50.111":
   version "0.50.111"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.111.tgz#d2cf7f537420e8532b342d6ff099847774f6caaa"
@@ -2074,6 +2079,16 @@
     "@chain-registry/types" "^0.50.108"
     bignumber.js "9.1.2"
     sha.js "^2.4.11"
+
+"@classic-terra/terra.proto@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@classic-terra/terra.proto/-/terra.proto-1.1.0.tgz#e314d89f59b49e79a04db25f66f658e5e5aa1890"
+  integrity sha512-bYhQG5LUaGF0KPRY9hYT/HEcd1QExZPQd6zLV/rQkCe/eDxfwFRLzZHpaaAdfWoAAZjsRWqJbUCqCg7gXBbJpw==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -2675,6 +2690,33 @@
   integrity sha512-cF1ji3AntBmJlD9VmnEEpXiF6cW2IQOb5TubUUNiAuwdNCMEJCAYElQCM+ozEHAizEtaBeN5rhKqCTcf694zNQ==
   dependencies:
     "@cosmos-kit/frontier-extension" "^2.13.0"
+
+"@cosmos-kit/galaxy-station-extension@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-extension/-/galaxy-station-extension-2.14.0.tgz#256e30d1c0ccb92b9e881411f119ed467fccf880"
+  integrity sha512-Y0P59lSa29iJn1kjOnOl3ruf7rgSGeWKaye94xPSWgMRYqoGwpjnsKhzPUz1bqbsXEzzwe5RxNU0P+cRdZLe6w==
+  dependencies:
+    "@chain-registry/types" "0.46.11"
+    "@cosmos-kit/core" "^2.16.0"
+    "@hexxagon/feather.js" "^1.0.9-beta.8"
+    "@hexxagon/station-connector" "^1.0.17"
+
+"@cosmos-kit/galaxy-station-mobile@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-mobile/-/galaxy-station-mobile-2.14.0.tgz#c25103d5146525cdad9c331ec0c0ef65904e06fe"
+  integrity sha512-7+ljgxf0jE8y57vqWw4wOUQ/T4G5QOIislw+zQSeDKK0W/CjLJFdU2j5uifBIvLL90mvlsV1d+a5Ot5/D5i48g==
+  dependencies:
+    "@chain-registry/keplr" "^1.69.13"
+    "@cosmos-kit/core" "^2.16.0"
+    "@cosmos-kit/walletconnect" "^2.13.0"
+
+"@cosmos-kit/galaxy-station@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station/-/galaxy-station-2.14.0.tgz#f7632bbfb666fb3adff0538b9e764cb690335fb0"
+  integrity sha512-Xn5vr9oBM5iRXBHP2bRfMzNAU3uKtdkFs1Ju5Rh2kfKbwTuO1K/lfsAFU20+XOt7GMYPeMzRHN7J+UpQv4Qy9Q==
+  dependencies:
+    "@cosmos-kit/galaxy-station-extension" "^2.14.0"
+    "@cosmos-kit/galaxy-station-mobile" "^2.14.0"
 
 "@cosmos-kit/keplr-extension@^2.15.0":
   version "2.15.0"
@@ -4459,6 +4501,34 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
+
+"@hexxagon/feather.js@^1.0.9-beta.8":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@hexxagon/feather.js/-/feather.js-1.0.11.tgz#a16f64275d701b3e49273be83407a1b8453b5062"
+  integrity sha512-PkPV4USLqmu9r+9UdGt3dYAcc1xS6ykZGUt+pfXrso/D0XSQUASKSHk6ZLbnU2Aum1zWjzS+3EJYCeG3IUYOWg==
+  dependencies:
+    "@classic-terra/terra.proto" "^1.1.0"
+    "@terra-money/legacy.proto" "npm:@terra-money/terra.proto@^0.1.7"
+    "@terra-money/terra.proto" "3.0.5"
+    axios "^0.27.2"
+    bech32 "^2.0.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bufferutil "^4.0.3"
+    decimal.js "^10.2.1"
+    jscrypto "^1.0.1"
+    readable-stream "^3.6.0"
+    secp256k1 "^4.0.2"
+    tmp "^0.2.1"
+    utf-8-validate "^5.0.5"
+    ws "^7.5.9"
+
+"@hexxagon/station-connector@^1.0.17":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@hexxagon/station-connector/-/station-connector-1.0.19.tgz#d04f7e5293dda24edd4014d29aa82149375124aa"
+  integrity sha512-VR84MowCciK+/xvRAAXKXWf8Bc/IAkUQHwBi/MH3p3JNshNdEbUeCYwzriIDJYSVCslZlnIgrA0AgmyIEHyaLQ==
+  dependencies:
+    bech32 "^2.0.0"
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
@@ -9111,6 +9181,16 @@
   integrity sha512-0xQ1haSJnY6ltjhptFoVa1yhNUIBsbCAEQCUukSY93GSo6tt+DN4RAku9i1ulfY/UizXnxH/mn+6aJyTCZGGcg==
   dependencies:
     bech32 "^2.0.0"
+
+"@terra-money/terra.proto@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@terra-money/terra.proto/-/terra.proto-3.0.5.tgz#96f17410a044459412491959b615c52faa2eb338"
+  integrity sha512-8tvT41qte2mpiNoHq2dMmV7soMxwf4ckuJ+F2pMrb7iVcqaBo30/dIfyTdFm5mEH5i5P6cTJggm+UlIZBSPhwQ==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
 
 "@terra-money/terra.proto@^4.0.3":
   version "4.0.10"
