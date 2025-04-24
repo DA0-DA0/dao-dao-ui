@@ -659,6 +659,18 @@ export class SpendAction extends ActionBase<SpendData> {
           fromChainId,
           toChainId
         )
+
+        // Add IBC transfer fee if sending from Neutron.
+        const fee =
+          fromChainId === ChainId.NeutronMainnet ||
+          fromChainId === ChainId.NeutronTestnet
+            ? (
+                await this.options.queryClient.fetchQuery(
+                  neutronQueries.ibcTransferFee(this.options.queryClient)
+                )
+              )?.fee
+            : undefined
+
         msg = makeStargateMessage({
           stargate: {
             typeUrl:
@@ -666,24 +678,26 @@ export class SpendAction extends ActionBase<SpendData> {
               fromChainId === ChainId.NeutronTestnet
                 ? NeutronMsgTransfer.typeUrl
                 : MsgTransfer.typeUrl,
-            value: {
-              sourcePort: 'transfer',
-              sourceChannel,
+            value: (fromChainId === ChainId.NeutronMainnet ||
+            fromChainId === ChainId.NeutronTestnet
+              ? NeutronMsgTransfer
+              : MsgTransfer
+            ).fromAmino({
+              source_port: 'transfer',
+              source_channel: sourceChannel,
               token: amount.toCoin(denom),
               sender: from,
               receiver: to,
-              timeoutTimestamp,
+              timeout_timestamp: timeoutTimestamp.toString(),
+              timeout_height: undefined,
               memo: '',
-              // Add Neutron IBC transfer fee if sending from Neutron.
-              ...((fromChainId === ChainId.NeutronMainnet ||
-                fromChainId === ChainId.NeutronTestnet) && {
-                fee: (
-                  await this.options.queryClient.fetchQuery(
-                    neutronQueries.ibcTransferFee(this.options.queryClient)
-                  )
-                )?.fee,
-              }),
-            } as NeutronMsgTransfer,
+              encoding: '',
+              fee: fee && {
+                recv_fee: fee.recvFee,
+                ack_fee: fee.ackFee,
+                timeout_fee: fee.timeoutFee,
+              },
+            }),
           },
         })
       } else {
@@ -721,7 +735,8 @@ export class SpendAction extends ActionBase<SpendData> {
                       `"timeout":${timeoutTimestamp.toString()}`
                     )) ||
                   '',
-                timeout_timestamp: timeoutTimestamp,
+                encoding: '',
+                timeout_timestamp: timeoutTimestamp.toString(),
                 timeout_height: undefined,
               }),
               // Add Neutron IBC transfer fee if sending from Neutron.
