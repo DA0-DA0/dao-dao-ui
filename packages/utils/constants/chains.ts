@@ -203,6 +203,193 @@ assets.push({
   ],
 })
 
+// Intergaze (Stargaze + Initia)
+// https://github.com/initia-labs/initia-registry/blob/main/mainnets/intergaze/chain.json
+const intergazeChain = convertChainRegistryChainToAnyChain({
+  $schema: '../../chain.schema.json',
+  chain_name: 'intergaze',
+  pretty_name: 'Intergaze',
+  chain_id: 'intergaze-1',
+  bech32_prefix: 'init',
+  network_type: 'mainnet',
+  codebase: {
+    git_repo: 'https://github.com/public-awesome/intergaze',
+    recommended_version: 'v1.0.0-rc.5',
+    genesis: {
+      genesis_url: 'https://rpc.intergaze-apis.com/genesis',
+    },
+  },
+  peers: {
+    seeds: [],
+    persistent_peers: [],
+  },
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc.intergaze-apis.com',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://rest.intergaze-apis.com',
+      },
+    ],
+    grpc: [
+      {
+        address: 'grpc.intergaze-apis.com:443',
+      },
+    ],
+  },
+  // @ts-ignore
+  key_algos: ['initia_ethsecp256k1', 'secp256k1'],
+  slip44: 60,
+  fees: {
+    fee_tokens: [
+      {
+        denom:
+          'l2/fb936ffef4eb4019d82941992cc09ae2788ce7197fcb08cb00c4fe6f5e79184e',
+        fixed_min_gas_price: 0.03,
+      },
+    ],
+  },
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/intergaze.png',
+    },
+  ],
+  logo_URIs: {
+    png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/intergaze.png',
+  },
+  metadata: {
+    op_bridge_id: '31',
+    op_denoms: ['uinit'],
+    executor_uri: 'https://executor.intergaze-apis.com',
+    ibc_channels: [
+      {
+        chain_id: 'interwoven-1',
+        port_id:
+          'wasm.init1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtq7947m6',
+        channel_id: 'channel-1',
+        version: 'ics721-1',
+      },
+      {
+        chain_id: 'interwoven-1',
+        port_id: 'transfer',
+        channel_id: 'channel-0',
+        version: 'ics20-1',
+      },
+    ],
+    assetlist:
+      'https://raw.githubusercontent.com/initia-labs/initia-registry/main/mainnets/intergaze/assetlist.json',
+    minitia: {
+      type: 'miniwasm',
+      version: 'v1.0.2',
+    },
+  },
+})
+chains.push(intergazeChain)
+// https://github.com/initia-labs/initia-registry/blob/main/mainnets/intergaze/assetlist.json
+assets.push({
+  chain_name: intergazeChain.chainName,
+  assets: [
+    {
+      description: 'The native token of Initia',
+      denom_units: [
+        {
+          denom:
+            'l2/fb936ffef4eb4019d82941992cc09ae2788ce7197fcb08cb00c4fe6f5e79184e',
+          exponent: 0,
+        },
+        {
+          denom: 'INIT',
+          exponent: 6,
+        },
+      ],
+      base: 'l2/fb936ffef4eb4019d82941992cc09ae2788ce7197fcb08cb00c4fe6f5e79184e',
+      display: 'INIT',
+      traces: [
+        {
+          // @ts-ignore
+          type: 'op',
+          counterparty: {
+            base_denom: 'uinit',
+            chain_name: 'initia',
+          },
+          chain: {
+            // @ts-ignore
+            bridge_id: '31',
+          },
+        },
+      ],
+      name: 'Initia Native Token',
+      symbol: 'INIT',
+      coingecko_id: '',
+      images: [
+        {
+          png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/INIT.png',
+        },
+      ],
+      logo_URIs: {
+        png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/INIT.png',
+      },
+    },
+    {
+      description: 'USDC on Initia',
+      denom_units: [
+        {
+          denom:
+            'l2/db147f1ded7ffcc336f5f8d1eff83c4feb95fcfff5c84f1b9c135444b816e48e',
+          exponent: 0,
+        },
+        {
+          denom: 'USDC',
+          exponent: 6,
+        },
+      ],
+      base: 'l2/db147f1ded7ffcc336f5f8d1eff83c4feb95fcfff5c84f1b9c135444b816e48e',
+      display: 'USDC',
+      name: 'USD Coin',
+      symbol: 'USDC',
+      coingecko_id: '',
+      traces: [
+        {
+          type: 'ibc',
+          counterparty: {
+            chain_name: 'noble',
+            base_denom: 'uusdc',
+            channel_id: 'channel-129',
+          },
+          chain: {
+            channel_id: 'channel-3',
+            path: 'transfer/channel-3/uusdc',
+          },
+        },
+        {
+          // @ts-ignore
+          type: 'op',
+          counterparty: {
+            base_denom:
+              'ibc/6490A7EAB61059BFC1CDDEB05917DD70BDF3A611654162A1A47DB930D40D8AF4',
+            chain_name: 'initia',
+          },
+          chain: {
+            // @ts-ignore
+            bridge_id: '31',
+          },
+        },
+      ],
+      images: [
+        {
+          png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/USDC.png',
+        },
+      ],
+      logo_URIs: {
+        png: 'https://raw.githubusercontent.com/initia-labs/initia-registry/main/images/USDC.png',
+      },
+    },
+  ],
+})
+
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
   'thorchain',
