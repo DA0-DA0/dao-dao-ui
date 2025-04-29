@@ -10,7 +10,7 @@ import {
   makeReactQueryClient,
 } from '@dao-dao/state'
 import { ContractVersion, SupportedChainConfig } from '@dao-dao/types'
-import { getChainForChainId, getRpcForChainId } from '@dao-dao/utils'
+import { getChainForChainId, getRpcForChainId, retry } from '@dao-dao/utils'
 
 import { getDispatchConfig } from '../config'
 import { instantiateContract } from '../utils'
@@ -165,10 +165,12 @@ const main = async () => {
     )
   )
 
-  const client = await SigningCosmWasmClient.connectWithSigner(
-    getRpcForChainId(chainId),
-    signer,
-    makeGetSignerOptions(queryClient)(chainName)
+  const client = await retry(5, async (attempt) =>
+    SigningCosmWasmClient.connectWithSigner(
+      getRpcForChainId(chainId, attempt - 1),
+      signer,
+      makeGetSignerOptions(queryClient)(chainName)
+    )
   )
 
   log()

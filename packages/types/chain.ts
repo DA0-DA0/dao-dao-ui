@@ -102,6 +102,7 @@ export enum ChainId {
   SecretTestnet = 'pulsar-3',
   BabylonTestnet = 'bbn-test-5',
   ThorchainDevnet = 'dev-1',
+  IntergazeMainnet = 'intergaze-1',
 
   // Local testing chain powered by Starship.
   StarshipTestChain = 'starship-chain',

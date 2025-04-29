@@ -209,7 +209,7 @@ const intergazeChain = convertChainRegistryChainToAnyChain({
   $schema: '../../chain.schema.json',
   chain_name: 'intergaze',
   pretty_name: 'Intergaze',
-  chain_id: 'intergaze-1',
+  chain_id: ChainId.IntergazeMainnet,
   bech32_prefix: 'init',
   network_type: 'mainnet',
   codebase: {

@@ -116,4 +116,10 @@ export const chains: Record<string, ChainConfig> = {
     proxyCodeId: 26,
     voiceCodeId: 27,
   },
+  [ChainId.IntergazeMainnet]: {
+    listenerCodeId: 28,
+    noteCodeId: 29,
+    proxyCodeId: 30,
+    voiceCodeId: 31,
+  },
 }
