@@ -53,7 +53,9 @@ export const ProposalModuleSelector = ({
 
           return (
             adapter && {
-              label: t(`proposalModuleLabel.${adapter.id}`),
+              label:
+                t(`proposalModuleLabel.${adapter.id}`) +
+                ` (${proposalModule.prefix})`,
               value: proposalModule,
             }
           )

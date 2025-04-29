@@ -1664,11 +1664,13 @@
   },
   "proposalModuleInfoCardsTitle": {
     "DaoProposalMultiple": "<0>Multiple choice proposals</0>",
+    "DaoProposalMultiple_approval": "<0>Approval proposals for</0><1/>",
     "DaoProposalSingle": "<0>Single choice proposals</0>",
     "DaoProposalSingle_approval": "<0>Approval proposals for</0><1/>"
   },
   "proposalModuleLabel": {
     "DaoProposalMultiple": "Multiple Choice",
+    "DaoProposalMultiple_approval": "Multiple Choice Approval",
     "DaoProposalSingle": "Single Choice",
     "DaoProposalSingle_approval": "Single Choice Approval"
   },
