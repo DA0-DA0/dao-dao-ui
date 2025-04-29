@@ -742,6 +742,15 @@
       "remoteConnection": "connection-270",
       "voice": "inj147yyg4ccmpwjut9e8marlmupx6myw8lj2wg4gn"
     },
+    "intergaze-1": {
+      "listener": "stars1x0ny4mk7rwts2v5gk9sv6yyuqzwwysq26sygtekga9h33y8qptxsusntzf",
+      "localChannel": "channel-446",
+      "localConnection": "connection-335",
+      "note": "stars18qv7ghrnnarfxyw5ts2mu706qldcdw0p5zdwf6k0j2ke7uvt2kyqh5e8lg",
+      "remoteChannel": "channel-4",
+      "remoteConnection": "connection-1",
+      "voice": "init1a6c2pw6h3u684s5dwgktfkgg6jmsvlmsffppnpr0wg77e9kx9fns8p4jaa"
+    },
     "juno-1": {
       "listener": "stars18mw7avlq5t0anxsavca5ch7ju0w6mjwu0jz55exfnhp0wz7rchasxurdf8",
       "localChannel": "channel-199",

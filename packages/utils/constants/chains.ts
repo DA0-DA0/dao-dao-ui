@@ -1056,6 +1056,10 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://thornode-devnet-rpc.bryanlabs.net',
     rest: 'https://thornode-devnet-api.bryanlabs.net',
   },
+  [ChainId.IntergazeMainnet]: {
+    rpc: 'https://rpc.intergaze-apis.com',
+    rest: 'https://rest.intergaze-apis.com',
+  },
 }
 
 export const GAS_OVERRIDES: Partial<

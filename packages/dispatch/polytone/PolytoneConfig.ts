@@ -11,7 +11,7 @@ import { PolytoneConnection } from '@dao-dao/types'
  */
 const polytoneConfigPath = path.join(
   __dirname,
-  '../../../utils/constants/polytone.json'
+  '../../utils/constants/polytone.json'
 )
 
 type PolytoneConfigData = Record<string, Record<string, PolytoneConnection>>

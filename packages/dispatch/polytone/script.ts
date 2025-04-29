@@ -31,7 +31,7 @@ const { log } = console
 /**
  * Path to the config file.
  */
-const configPath = path.join(__dirname, '../../config.toml')
+const configPath = path.join(__dirname, '../config.toml')
 
 if (!fs.existsSync(configPath)) {
   log(chalk.red(`Config file not found at ${configPath}`))
