@@ -1,7 +1,7 @@
 import { fromBase64, toBase64 } from '@cosmjs/encoding'
 
 import { ActionBase, PickEmoji } from '@dao-dao/stateless'
-import { ChainId, UnifiedCosmosMsg, makeStargateMessage } from '@dao-dao/types'
+import { UnifiedCosmosMsg, makeStargateMessage } from '@dao-dao/types'
 import {
   ActionContextType,
   ActionKey,
@@ -41,14 +41,6 @@ export class ValidatorActionsAction extends ActionBase<ValidatorActionsData> {
       throw new Error(
         'Validator actions are not available from chain governance'
       )
-    }
-
-    // Neutron does not have validators.
-    if (
-      options.chain.chainId === ChainId.NeutronMainnet ||
-      options.chain.chainId === ChainId.NeutronTestnet
-    ) {
-      throw new Error('Validator actions are not available on Neutron')
     }
 
     super(options, {

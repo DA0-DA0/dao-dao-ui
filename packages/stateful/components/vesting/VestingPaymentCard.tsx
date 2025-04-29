@@ -19,7 +19,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
-  ChainId,
   EntityType,
   StatefulVestingPaymentCardProps,
 } from '@dao-dao/types'
@@ -257,9 +256,6 @@ export const VestingPaymentCard = ({
 
   const recipientIsWallet = vest.recipient === walletAddress
   const canManageStaking =
-    // Neutron does not support staking.
-    chainId !== ChainId.NeutronMainnet &&
-    chainId !== ChainId.NeutronTestnet &&
     (recipientIsWallet || recipientIsDao) &&
     // Vested token is native token of chain.
     token.denomOrAddress === getNativeTokenForChainId(chainId).denomOrAddress

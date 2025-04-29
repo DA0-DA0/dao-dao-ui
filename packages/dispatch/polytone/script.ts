@@ -14,13 +14,11 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
-import { ChainId } from '@dao-dao/types'
 import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   getNativeTokenForChainId,
   getRpcForChainId,
   ibcProtoRpcClientRouter,
-  interchainSecurityProtoRpcClientRouter,
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
@@ -429,44 +427,6 @@ const main = async () => {
   let link: Link
 
   if (newConnection) {
-    // For Neutron, which is a consumer chain, fetch unbonding period from
-    // consumer chain params so we can compute trust period manually instead of
-    // letting @confio/relayer fail attempting to query staking params which do
-    // not exist on consumer chains. This is needed to create a new
-    // connection/clients.
-    const neutronIbcClient =
-      srcChainId === ChainId.NeutronMainnet
-        ? srcIbcClient
-        : destChainId === ChainId.NeutronMainnet
-          ? destIbcClient
-          : undefined
-    if (neutronIbcClient) {
-      neutronIbcClient.query.staking.params = async () => {
-        const interchainSecurityClient =
-          await interchainSecurityProtoRpcClientRouter.connect(
-            ChainId.NeutronMainnet
-          )
-        const ccvUnbondingPeriod = (
-          await interchainSecurityClient.ccv.consumer.v1.queryParams()
-        ).params?.unbondingPeriod
-        if (!ccvUnbondingPeriod) {
-          throw new Error('No CCV unbonding period found')
-        }
-
-        return {
-          params: {
-            unbondingTime: ccvUnbondingPeriod,
-            // Not used.
-            maxValidators: -1,
-            maxEntries: -1,
-            historicalEntries: -1,
-            bondDenom: '',
-            minCommissionRate: '',
-          },
-        }
-      }
-    }
-
     // replace auto fee with larger chain multiplier to cover gas
     const srcOriginalSignAndBroadcast = srcIbcClient.sign.signAndBroadcast.bind(
       srcIbcClient.sign

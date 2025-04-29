@@ -372,17 +372,6 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
-      // Neutron does not have staking.
-      if (
-        chainId === ChainId.NeutronMainnet ||
-        chainId === ChainId.NeutronTestnet
-      ) {
-        return {
-          amount: '0',
-          denom: getNativeTokenForChainId(chainId).denomOrAddress,
-        }
-      }
-
       const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
@@ -455,14 +444,6 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
   get:
     ({ chainId }) =>
     async ({ get }) => {
-      // Neutron does not have staking.
-      if (
-        chainId === ChainId.NeutronMainnet ||
-        chainId === ChainId.NeutronTestnet
-      ) {
-        return 0
-      }
-
       const client = get(cosmosRpcClientForChainSelector(chainId))
       try {
         const { params } = await client.staking.v1beta1.params()

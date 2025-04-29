@@ -259,17 +259,6 @@ export const fetchNativeStakedBalance = async ({
   chainId: string
   address: string
 }): Promise<Coin> => {
-  // Neutron does not have staking.
-  if (
-    chainId === ChainId.NeutronMainnet ||
-    chainId === ChainId.NeutronTestnet
-  ) {
-    return {
-      amount: '0',
-      denom: getNativeTokenForChainId(chainId).denomOrAddress,
-    }
-  }
-
   const client = await stargateClientRouter.connect(chainId)
   const balance = await client.getBalanceStaked(address)
 
@@ -289,14 +278,6 @@ export const fetchTotalNativeStakedBalance = async ({
 }: {
   chainId: string
 }): Promise<string> => {
-  // Neutron does not have staking.
-  if (
-    chainId === ChainId.NeutronMainnet ||
-    chainId === ChainId.NeutronTestnet
-  ) {
-    return '0'
-  }
-
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
   const { pool } = await client.staking.v1beta1.pool()
 
@@ -340,17 +321,6 @@ export const fetchNativeDelegationInfo = async (
     address: string
   }
 ): Promise<NativeDelegationInfo> => {
-  // Neutron does not support staking.
-  if (
-    chainId === ChainId.NeutronMainnet ||
-    chainId === ChainId.NeutronTestnet
-  ) {
-    return {
-      delegations: [],
-      unbondingDelegations: [],
-    }
-  }
-
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
 
   try {
@@ -482,14 +452,6 @@ export const fetchNativeUnstakingDurationSeconds = async ({
 }: {
   chainId: string
 }): Promise<number> => {
-  // Neutron does not have staking.
-  if (
-    chainId === ChainId.NeutronMainnet ||
-    chainId === ChainId.NeutronTestnet
-  ) {
-    return 0
-  }
-
   const client = await cosmosProtoRpcClientRouter.connect(chainId)
   try {
     const { params } = await client.staking.v1beta1.params()
