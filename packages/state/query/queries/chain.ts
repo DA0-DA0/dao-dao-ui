@@ -333,9 +333,15 @@ export const fetchNativeDelegationInfo = async (
       'delegationResponses'
     )
     const rewards = (
-      await client.distribution.v1beta1.delegationTotalRewards({
-        delegatorAddress: address,
-      })
+      await client.distribution.v1beta1
+        .delegationTotalRewards({
+          delegatorAddress: address,
+        })
+        // Some chains (like Neutron) have staking but no rewards. If so, return
+        // an empty array. For other errors, rethrow.
+        .catch((err) =>
+          isNonexistentQueryError(err) ? { rewards: [] } : Promise.reject(err)
+        )
     ).rewards
     const unbondingDelegations = await getAllRpcResponse(
       client.staking.v1beta1.delegatorUnbondingDelegations,
@@ -345,6 +351,9 @@ export const fetchNativeDelegationInfo = async (
       },
       'unbondingResponses'
     )
+      // Some chains (like Neutron) have staking but no unbonding. If so, return
+      // an empty array. For other errors, rethrow.
+      .catch((err) => (isNonexistentQueryError(err) ? [] : Promise.reject(err)))
 
     const uniqueValidators = uniq([
       ...delegations.flatMap(
@@ -387,8 +396,14 @@ export const fetchNativeDelegationInfo = async (
                 denom === getNativeTokenForChainId(chainId).denomOrAddress
             )
 
-          if (!validator || !pendingReward) {
+          if (!validator) {
             return []
+          }
+
+          // In case chain does not have rewards.
+          pendingReward ||= {
+            amount: '0',
+            denom: delegationBalance.denom,
           }
 
           // Truncate.
