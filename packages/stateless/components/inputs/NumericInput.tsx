@@ -62,7 +62,25 @@ export const NumericInput = <
     {}
   )
 
-  const lastValueSet = useRef('')
+  const latestValueSet = useRef('')
+
+  const strValue = typeof value === 'string' ? value : ''
+  // If we set the ending in a decimal point (and any trailing zeroes), and the
+  // current value is the same but without the decimal point/zeroes, show the
+  // decimal point. We don't want to clear the decimal point/zeroes in case this
+  // input is controlled and the parent component transforms the value manually
+  // into a number and back (which would clear the decimal point). This would
+  // prevent people from entering decimal values.
+  const displayValue =
+    latestValueSet.current.startsWith(strValue) &&
+    // Either the latest input typed adds a decimal point and trailing zeroes
+    // (e.g. 5 => 5.0), or the current value has a decimal point and the latest
+    // input added trailing zeroes after the decimal point (e.g. 5.1 => 5.10).
+    (latestValueSet.current.slice(strValue.length).match(/^\.[0\s]*$/) ||
+      (strValue.includes('.') &&
+        latestValueSet.current.slice(strValue.length).match(/^[0\s]+$/)))
+      ? latestValueSet.current
+      : value
 
   return (
     <div
@@ -177,18 +195,8 @@ export const NumericInput = <
             : setValue &&
               (({ target }) => {
                 const value = (target as HTMLInputElement).value
+                latestValueSet.current = value
 
-                // If a decimal point is entered, and we already set the same
-                // value without a decimal point, don't set again. We don't want
-                // to clear the decimal point in the case that this input is
-                // controlled and the parent component transforms the value
-                // manually into a number and back (which would clear the
-                // decimal point).
-                if (value === lastValueSet.current + '.') {
-                  return
-                }
-
-                lastValueSet.current = value
                 setValue(
                   fieldName ?? '',
                   numericValue
@@ -208,7 +216,7 @@ export const NumericInput = <
           e.preventDefault()
         }}
         type="number"
-        value={value}
+        value={displayValue}
         {...props}
         {...(fieldName &&
           register?.(fieldName, {
