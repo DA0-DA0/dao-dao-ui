@@ -17,7 +17,6 @@ import {
   feemarket,
   ibc,
   interchain_security,
-  juno,
   kujira,
   neutron,
   noble,
@@ -239,11 +238,6 @@ export const neutronProtoRpcClientRouter = makeProtoRpcClientRouter(
   neutron,
   'neutron'
 )
-
-/*
- * Router for connecting to an RPC client with Juno protobufs.
- */
-export const junoProtoRpcClientRouter = makeProtoRpcClientRouter(juno, 'juno')
 
 /*
  * Router for connecting to an RPC client with Kujira protobufs.

@@ -2,14 +2,11 @@ import { GeneratedType, Registry, OfflineSigner } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, AminoTypes, SigningStargateClient } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 import * as junoFeeshareV1TxRegistry from "./feeshare/v1/tx.registry";
-import * as junoMintTxRegistry from "./mint/tx.registry";
 import * as junoFeeshareV1TxAmino from "./feeshare/v1/tx.amino";
-import * as junoMintTxAmino from "./mint/tx.amino";
 export const junoAminoConverters = {
-  ...junoFeeshareV1TxAmino.AminoConverter,
-  ...junoMintTxAmino.AminoConverter
+  ...junoFeeshareV1TxAmino.AminoConverter
 };
-export const junoProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...junoFeeshareV1TxRegistry.registry, ...junoMintTxRegistry.registry];
+export const junoProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...junoFeeshareV1TxRegistry.registry];
 export const getSigningJunoClientOptions = ({
   defaultTypes = defaultRegistryTypes
 }: {

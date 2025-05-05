@@ -40,7 +40,6 @@ export const createRPCMsgClient = async ({
   juno: {
     feeshare: {
       v1: new (await import("./feeshare/v1/tx.rpc.msg")).MsgClientImpl(rpc)
-    },
-    mint: new (await import("./mint/tx.rpc.msg")).MsgClientImpl(rpc)
+    }
   }
 });

@@ -70,7 +70,6 @@ telescope({
           'ibc.core.client.v1',
           'ibc.core.connection.v1',
           'juno.feeshare.v1',
-          'juno.mint',
           'neutron.contractmanager.v1',
           'neutron.cron',
           'neutron.dex',

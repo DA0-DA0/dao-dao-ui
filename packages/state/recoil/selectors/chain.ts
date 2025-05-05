@@ -45,7 +45,7 @@ import {
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
-  junoProtoRpcClientRouter,
+  isNonexistentQueryError,
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
@@ -137,15 +137,6 @@ export const neutronRpcClientSelector = selector({
   get: async () =>
     await neutronProtoRpcClientRouter.connect(
       MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
-    ),
-  dangerouslyAllowMutability: true,
-})
-
-export const junoRpcClientSelector = selector({
-  key: 'junoRpcClient',
-  get: async () =>
-    await junoProtoRpcClientRouter.connect(
-      MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet
     ),
   dangerouslyAllowMutability: true,
 })
@@ -411,22 +402,13 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
   get:
     ({ chainId }) =>
     async ({ get }) => {
-      // If on juno mainnet or testnet, use juno RPC.
-      if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
-        const client = get(junoRpcClientSelector)
-        return Number((await client.mint.params()).params?.blocksPerYear ?? -1)
-      }
-
       const client = get(cosmosRpcClientForChainSelector(chainId))
       try {
         return Number(
           (await client.mint.v1beta1.params()).params?.blocksPerYear ?? -1
         )
       } catch (err) {
-        if (
-          err instanceof Error &&
-          err.message.includes('unknown query path')
-        ) {
+        if (isNonexistentQueryError(err)) {
           return -1
         }
 
