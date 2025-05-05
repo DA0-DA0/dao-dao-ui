@@ -1,0 +1,31 @@
+diff --git a/node_modules/@tanstack/query-devtools/build/chunk/V5T5VJKG.js b/node_modules/@tanstack/query-devtools/build/chunk/V5T5VJKG.js
+index 231e353..b8ecb40 100644
+--- a/node_modules/@tanstack/query-devtools/build/chunk/V5T5VJKG.js
++++ b/node_modules/@tanstack/query-devtools/build/chunk/V5T5VJKG.js
+@@ -2699,7 +2699,7 @@ function getQueryStatusColor({
+   observerCount,
+   isStale
+ }) {
+-  return queryState.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
++  return queryState?.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState?.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
+ }
+ function getMutationStatusColor({
+   status,
+diff --git a/node_modules/@tanstack/query-devtools/src/utils.tsx b/node_modules/@tanstack/query-devtools/src/utils.tsx
+index 9a826cd..a8dd24b 100644
+--- a/node_modules/@tanstack/query-devtools/src/utils.tsx
++++ b/node_modules/@tanstack/query-devtools/src/utils.tsx
+@@ -35,11 +35,11 @@ export function getQueryStatusColor({
+   observerCount: number
+   isStale: boolean
+ }) {
+-  return queryState.fetchStatus === 'fetching'
++  return queryState?.fetchStatus === 'fetching'
+     ? 'blue'
+     : !observerCount
+       ? 'gray'
+-      : queryState.fetchStatus === 'paused'
++      : queryState?.fetchStatus === 'paused'
+         ? 'purple'
+         : isStale
+           ? 'yellow'
