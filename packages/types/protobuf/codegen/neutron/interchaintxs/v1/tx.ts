@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
+import { Order } from "../../../ibc/core/channel/v1/channel";
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Fee, FeeAmino, FeeSDKType } from "../../feerefunder/fee";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
@@ -10,6 +11,7 @@ export interface MsgRegisterInterchainAccount {
   connectionId: string;
   interchainAccountId: string;
   registerFee: Coin[];
+  ordering: Order;
 }
 export interface MsgRegisterInterchainAccountProtoMsg {
   typeUrl: "/neutron.interchaintxs.v1.MsgRegisterInterchainAccount";
@@ -21,6 +23,7 @@ export interface MsgRegisterInterchainAccountAmino {
   connection_id?: string;
   interchain_account_id?: string;
   register_fee?: CoinAmino[];
+  ordering?: Order;
 }
 export interface MsgRegisterInterchainAccountAminoMsg {
   type: "/neutron.interchaintxs.v1.MsgRegisterInterchainAccount";
@@ -32,12 +35,16 @@ export interface MsgRegisterInterchainAccountSDKType {
   connection_id: string;
   interchain_account_id: string;
   register_fee: CoinSDKType[];
+  ordering: Order;
 }
 /**
  * MsgRegisterInterchainAccountResponse is the response type for
  * MsgRegisterInterchainAccount.
  */
-export interface MsgRegisterInterchainAccountResponse {}
+export interface MsgRegisterInterchainAccountResponse {
+  channelId: string;
+  portId: string;
+}
 export interface MsgRegisterInterchainAccountResponseProtoMsg {
   typeUrl: "/neutron.interchaintxs.v1.MsgRegisterInterchainAccountResponse";
   value: Uint8Array;
@@ -46,7 +53,10 @@ export interface MsgRegisterInterchainAccountResponseProtoMsg {
  * MsgRegisterInterchainAccountResponse is the response type for
  * MsgRegisterInterchainAccount.
  */
-export interface MsgRegisterInterchainAccountResponseAmino {}
+export interface MsgRegisterInterchainAccountResponseAmino {
+  channel_id?: string;
+  port_id?: string;
+}
 export interface MsgRegisterInterchainAccountResponseAminoMsg {
   type: "/neutron.interchaintxs.v1.MsgRegisterInterchainAccountResponse";
   value: MsgRegisterInterchainAccountResponseAmino;
@@ -55,7 +65,10 @@ export interface MsgRegisterInterchainAccountResponseAminoMsg {
  * MsgRegisterInterchainAccountResponse is the response type for
  * MsgRegisterInterchainAccount.
  */
-export interface MsgRegisterInterchainAccountResponseSDKType {}
+export interface MsgRegisterInterchainAccountResponseSDKType {
+  channel_id: string;
+  port_id: string;
+}
 /** MsgSubmitTx defines the payload for Msg/SubmitTx */
 export interface MsgSubmitTx {
   fromAddress: string;
@@ -216,7 +229,8 @@ function createBaseMsgRegisterInterchainAccount(): MsgRegisterInterchainAccount 
     fromAddress: "",
     connectionId: "",
     interchainAccountId: "",
-    registerFee: []
+    registerFee: [],
+    ordering: 0
   };
 }
 export const MsgRegisterInterchainAccount = {
@@ -233,6 +247,9 @@ export const MsgRegisterInterchainAccount = {
     }
     for (const v of message.registerFee) {
       Coin.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.ordering !== 0) {
+      writer.uint32(40).int32(message.ordering);
     }
     return writer;
   },
@@ -255,6 +272,9 @@ export const MsgRegisterInterchainAccount = {
         case 4:
           message.registerFee.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
+        case 5:
+          message.ordering = (reader.int32() as any);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -268,6 +288,7 @@ export const MsgRegisterInterchainAccount = {
     message.connectionId = object.connectionId ?? "";
     message.interchainAccountId = object.interchainAccountId ?? "";
     message.registerFee = object.registerFee?.map(e => Coin.fromPartial(e)) || [];
+    message.ordering = object.ordering ?? 0;
     return message;
   },
   fromAmino(object: MsgRegisterInterchainAccountAmino): MsgRegisterInterchainAccount {
@@ -282,6 +303,9 @@ export const MsgRegisterInterchainAccount = {
       message.interchainAccountId = object.interchain_account_id;
     }
     message.registerFee = object.register_fee?.map(e => Coin.fromAmino(e)) || [];
+    if (object.ordering !== undefined && object.ordering !== null) {
+      message.ordering = object.ordering;
+    }
     return message;
   },
   toAmino(message: MsgRegisterInterchainAccount, useInterfaces: boolean = false): MsgRegisterInterchainAccountAmino {
@@ -294,6 +318,7 @@ export const MsgRegisterInterchainAccount = {
     } else {
       obj.register_fee = message.registerFee;
     }
+    obj.ordering = message.ordering === 0 ? undefined : message.ordering;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainAccountAminoMsg): MsgRegisterInterchainAccount {
@@ -313,11 +338,20 @@ export const MsgRegisterInterchainAccount = {
   }
 };
 function createBaseMsgRegisterInterchainAccountResponse(): MsgRegisterInterchainAccountResponse {
-  return {};
+  return {
+    channelId: "",
+    portId: ""
+  };
 }
 export const MsgRegisterInterchainAccountResponse = {
   typeUrl: "/neutron.interchaintxs.v1.MsgRegisterInterchainAccountResponse",
-  encode(_: MsgRegisterInterchainAccountResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+  encode(message: MsgRegisterInterchainAccountResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.channelId !== "") {
+      writer.uint32(10).string(message.channelId);
+    }
+    if (message.portId !== "") {
+      writer.uint32(18).string(message.portId);
+    }
     return writer;
   },
   decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRegisterInterchainAccountResponse {
@@ -327,6 +361,12 @@ export const MsgRegisterInterchainAccountResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.channelId = reader.string();
+          break;
+        case 2:
+          message.portId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -334,16 +374,26 @@ export const MsgRegisterInterchainAccountResponse = {
     }
     return message;
   },
-  fromPartial(_: Partial<MsgRegisterInterchainAccountResponse>): MsgRegisterInterchainAccountResponse {
+  fromPartial(object: Partial<MsgRegisterInterchainAccountResponse>): MsgRegisterInterchainAccountResponse {
     const message = createBaseMsgRegisterInterchainAccountResponse();
+    message.channelId = object.channelId ?? "";
+    message.portId = object.portId ?? "";
     return message;
   },
-  fromAmino(_: MsgRegisterInterchainAccountResponseAmino): MsgRegisterInterchainAccountResponse {
+  fromAmino(object: MsgRegisterInterchainAccountResponseAmino): MsgRegisterInterchainAccountResponse {
     const message = createBaseMsgRegisterInterchainAccountResponse();
+    if (object.channel_id !== undefined && object.channel_id !== null) {
+      message.channelId = object.channel_id;
+    }
+    if (object.port_id !== undefined && object.port_id !== null) {
+      message.portId = object.port_id;
+    }
     return message;
   },
-  toAmino(_: MsgRegisterInterchainAccountResponse, useInterfaces: boolean = false): MsgRegisterInterchainAccountResponseAmino {
+  toAmino(message: MsgRegisterInterchainAccountResponse, useInterfaces: boolean = false): MsgRegisterInterchainAccountResponseAmino {
     const obj: any = {};
+    obj.channel_id = message.channelId === "" ? undefined : message.channelId;
+    obj.port_id = message.portId === "" ? undefined : message.portId;
     return obj;
   },
   fromAminoMsg(object: MsgRegisterInterchainAccountResponseAminoMsg): MsgRegisterInterchainAccountResponse {

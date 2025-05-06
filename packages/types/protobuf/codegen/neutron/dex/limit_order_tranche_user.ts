@@ -8,6 +8,7 @@ export interface LimitOrderTrancheUser {
   address: string;
   sharesOwned: string;
   sharesWithdrawn: string;
+  /** TODO: remove this in next release. It is no longer used */
   sharesCancelled: string;
   orderType: LimitOrderType;
 }
@@ -22,6 +23,7 @@ export interface LimitOrderTrancheUserAmino {
   address?: string;
   shares_owned: string;
   shares_withdrawn: string;
+  /** TODO: remove this in next release. It is no longer used */
   shares_cancelled: string;
   order_type?: LimitOrderType;
 }

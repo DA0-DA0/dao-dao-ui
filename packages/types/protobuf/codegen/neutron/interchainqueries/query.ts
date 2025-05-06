@@ -5,152 +5,214 @@ import { RegisteredQuery, RegisteredQueryAmino, RegisteredQuerySDKType } from ".
 import { QueryResult, QueryResultAmino, QueryResultSDKType } from "./tx";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes } from "../../helpers";
-/** QueryParamsRequest is request type for the Query/Params RPC method. */
+/** Request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryParamsRequest";
   value: Uint8Array;
 }
-/** QueryParamsRequest is request type for the Query/Params RPC method. */
+/** Request type for the Query/Params RPC method. */
 export interface QueryParamsRequestAmino {}
 export interface QueryParamsRequestAminoMsg {
   type: "/neutron.interchainqueries.QueryParamsRequest";
   value: QueryParamsRequestAmino;
 }
-/** QueryParamsRequest is request type for the Query/Params RPC method. */
+/** Request type for the Query/Params RPC method. */
 export interface QueryParamsRequestSDKType {}
-/** QueryParamsResponse is response type for the Query/Params RPC method. */
+/** Response type for the Query/Params RPC method. */
 export interface QueryParamsResponse {
-  /** params holds all the parameters of this module. */
+  /** Contains all parameters of the module. */
   params: Params | undefined;
 }
 export interface QueryParamsResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryParamsResponse";
   value: Uint8Array;
 }
-/** QueryParamsResponse is response type for the Query/Params RPC method. */
+/** Response type for the Query/Params RPC method. */
 export interface QueryParamsResponseAmino {
-  /** params holds all the parameters of this module. */
+  /** Contains all parameters of the module. */
   params?: ParamsAmino | undefined;
 }
 export interface QueryParamsResponseAminoMsg {
   type: "/neutron.interchainqueries.QueryParamsResponse";
   value: QueryParamsResponseAmino;
 }
-/** QueryParamsResponse is response type for the Query/Params RPC method. */
+/** Response type for the Query/Params RPC method. */
 export interface QueryParamsResponseSDKType {
   params: ParamsSDKType | undefined;
 }
+/** Request type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesRequest {
+  /**
+   * A list of owners of Interchain Queries. Query response will contain only Interchain Queries
+   * that are owned by one of the owners in the list. If none, Interchain Queries are not filtered
+   * out by the owner field.
+   */
   owners: string[];
+  /**
+   * IBC connection ID. Query response will contain only Interchain Queries that have the same IBC
+   * connection ID parameter. If none, Interchain Queries are not filtered out by the connection ID
+   * field.
+   */
   connectionId: string;
+  /**
+   * Pagination parameters for the request. Use values from previous response in the next request
+   * in consecutive requests with paginated responses.
+   */
   pagination?: PageRequest | undefined;
 }
 export interface QueryRegisteredQueriesRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueriesRequest";
   value: Uint8Array;
 }
+/** Request type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesRequestAmino {
+  /**
+   * A list of owners of Interchain Queries. Query response will contain only Interchain Queries
+   * that are owned by one of the owners in the list. If none, Interchain Queries are not filtered
+   * out by the owner field.
+   */
   owners?: string[];
+  /**
+   * IBC connection ID. Query response will contain only Interchain Queries that have the same IBC
+   * connection ID parameter. If none, Interchain Queries are not filtered out by the connection ID
+   * field.
+   */
   connection_id?: string;
+  /**
+   * Pagination parameters for the request. Use values from previous response in the next request
+   * in consecutive requests with paginated responses.
+   */
   pagination?: PageRequestAmino | undefined;
 }
 export interface QueryRegisteredQueriesRequestAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueriesRequest";
   value: QueryRegisteredQueriesRequestAmino;
 }
+/** Request type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesRequestSDKType {
   owners: string[];
   connection_id: string;
   pagination?: PageRequestSDKType | undefined;
 }
+/** Response type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesResponse {
+  /** A list of registered Interchain Queries. */
   registeredQueries: RegisteredQuery[];
-  /** pagination defines the pagination in the response. */
+  /**
+   * Current page information. Use values from previous response in the next request in consecutive
+   * requests with paginated responses.
+   */
   pagination?: PageResponse | undefined;
 }
 export interface QueryRegisteredQueriesResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueriesResponse";
   value: Uint8Array;
 }
+/** Response type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesResponseAmino {
+  /** A list of registered Interchain Queries. */
   registered_queries?: RegisteredQueryAmino[];
-  /** pagination defines the pagination in the response. */
+  /**
+   * Current page information. Use values from previous response in the next request in consecutive
+   * requests with paginated responses.
+   */
   pagination?: PageResponseAmino | undefined;
 }
 export interface QueryRegisteredQueriesResponseAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueriesResponse";
   value: QueryRegisteredQueriesResponseAmino;
 }
+/** Response type for the Query/RegisteredQueries RPC method. */
 export interface QueryRegisteredQueriesResponseSDKType {
   registered_queries: RegisteredQuerySDKType[];
   pagination?: PageResponseSDKType | undefined;
 }
+/** Request type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryRequest {
+  /** ID of an Interchain Query. */
   queryId: bigint;
 }
 export interface QueryRegisteredQueryRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueryRequest";
   value: Uint8Array;
 }
+/** Request type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryRequestAmino {
+  /** ID of an Interchain Query. */
   query_id?: string;
 }
 export interface QueryRegisteredQueryRequestAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueryRequest";
   value: QueryRegisteredQueryRequestAmino;
 }
+/** Request type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryRequestSDKType {
   query_id: bigint;
 }
+/** Response type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryResponse {
+  /** A registered Interchain Query. */
   registeredQuery?: RegisteredQuery | undefined;
 }
 export interface QueryRegisteredQueryResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueryResponse";
   value: Uint8Array;
 }
+/** Response type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryResponseAmino {
+  /** A registered Interchain Query. */
   registered_query?: RegisteredQueryAmino | undefined;
 }
 export interface QueryRegisteredQueryResponseAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueryResponse";
   value: QueryRegisteredQueryResponseAmino;
 }
+/** Response type for the Query/RegisteredQuery RPC method. */
 export interface QueryRegisteredQueryResponseSDKType {
   registered_query?: RegisteredQuerySDKType | undefined;
 }
+/** Request type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultRequest {
+  /** ID of an Interchain Query. */
   queryId: bigint;
 }
 export interface QueryRegisteredQueryResultRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueryResultRequest";
   value: Uint8Array;
 }
+/** Request type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultRequestAmino {
+  /** ID of an Interchain Query. */
   query_id?: string;
 }
 export interface QueryRegisteredQueryResultRequestAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueryResultRequest";
   value: QueryRegisteredQueryResultRequestAmino;
 }
+/** Request type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultRequestSDKType {
   query_id: bigint;
 }
+/** Response type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultResponse {
+  /** The last successfully submitted result of an Interchain Query. */
   result?: QueryResult | undefined;
 }
 export interface QueryRegisteredQueryResultResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryRegisteredQueryResultResponse";
   value: Uint8Array;
 }
+/** Response type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultResponseAmino {
+  /** The last successfully submitted result of an Interchain Query. */
   result?: QueryResultAmino | undefined;
 }
 export interface QueryRegisteredQueryResultResponseAminoMsg {
   type: "/neutron.interchainqueries.QueryRegisteredQueryResultResponse";
   value: QueryRegisteredQueryResultResponseAmino;
 }
+/** Response type for the Query/QueryResult RPC method. */
 export interface QueryRegisteredQueryResultResponseSDKType {
   result?: QueryResultSDKType | undefined;
 }
@@ -177,39 +239,60 @@ export interface TransactionSDKType {
   height: bigint;
   data: Uint8Array;
 }
+/** Request type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeight {
+  /**
+   * Connection ID of an IBC connection to a remote chain. Determines the IBC client used in query
+   * handling.
+   */
   connectionId: string;
 }
 export interface QueryLastRemoteHeightProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryLastRemoteHeight";
   value: Uint8Array;
 }
+/** Request type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeightAmino {
+  /**
+   * Connection ID of an IBC connection to a remote chain. Determines the IBC client used in query
+   * handling.
+   */
   connection_id?: string;
 }
 export interface QueryLastRemoteHeightAminoMsg {
   type: "/neutron.interchainqueries.QueryLastRemoteHeight";
   value: QueryLastRemoteHeightAmino;
 }
+/** Request type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeightSDKType {
   connection_id: string;
 }
+/** Response type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeightResponse {
+  /** The height of the chain that the IBC client is currently on. */
   height: bigint;
+  /** The revision of the chain that the IBC client is currently on. */
+  revision: bigint;
 }
 export interface QueryLastRemoteHeightResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryLastRemoteHeightResponse";
   value: Uint8Array;
 }
+/** Response type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeightResponseAmino {
+  /** The height of the chain that the IBC client is currently on. */
   height?: string;
+  /** The revision of the chain that the IBC client is currently on. */
+  revision?: string;
 }
 export interface QueryLastRemoteHeightResponseAminoMsg {
   type: "/neutron.interchainqueries.QueryLastRemoteHeightResponse";
   value: QueryLastRemoteHeightResponseAmino;
 }
+/** Response type for the Query/LastRemoteHeight RPC method. */
 export interface QueryLastRemoteHeightResponseSDKType {
   height: bigint;
+  revision: bigint;
 }
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
@@ -894,7 +977,8 @@ export const QueryLastRemoteHeight = {
 };
 function createBaseQueryLastRemoteHeightResponse(): QueryLastRemoteHeightResponse {
   return {
-    height: BigInt(0)
+    height: BigInt(0),
+    revision: BigInt(0)
   };
 }
 export const QueryLastRemoteHeightResponse = {
@@ -902,6 +986,9 @@ export const QueryLastRemoteHeightResponse = {
   encode(message: QueryLastRemoteHeightResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.height !== BigInt(0)) {
       writer.uint32(8).uint64(message.height);
+    }
+    if (message.revision !== BigInt(0)) {
+      writer.uint32(16).uint64(message.revision);
     }
     return writer;
   },
@@ -915,6 +1002,9 @@ export const QueryLastRemoteHeightResponse = {
         case 1:
           message.height = reader.uint64();
           break;
+        case 2:
+          message.revision = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -925,6 +1015,7 @@ export const QueryLastRemoteHeightResponse = {
   fromPartial(object: Partial<QueryLastRemoteHeightResponse>): QueryLastRemoteHeightResponse {
     const message = createBaseQueryLastRemoteHeightResponse();
     message.height = object.height !== undefined && object.height !== null ? BigInt(object.height.toString()) : BigInt(0);
+    message.revision = object.revision !== undefined && object.revision !== null ? BigInt(object.revision.toString()) : BigInt(0);
     return message;
   },
   fromAmino(object: QueryLastRemoteHeightResponseAmino): QueryLastRemoteHeightResponse {
@@ -932,11 +1023,15 @@ export const QueryLastRemoteHeightResponse = {
     if (object.height !== undefined && object.height !== null) {
       message.height = BigInt(object.height);
     }
+    if (object.revision !== undefined && object.revision !== null) {
+      message.revision = BigInt(object.revision);
+    }
     return message;
   },
   toAmino(message: QueryLastRemoteHeightResponse, useInterfaces: boolean = false): QueryLastRemoteHeightResponseAmino {
     const obj: any = {};
     obj.height = message.height !== BigInt(0) ? message.height.toString() : undefined;
+    obj.revision = message.revision !== BigInt(0) ? message.revision.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryLastRemoteHeightResponseAminoMsg): QueryLastRemoteHeightResponse {

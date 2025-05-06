@@ -6,48 +6,75 @@ import { Any, AnyAmino, AnySDKType } from "../../google/protobuf/any";
 import { ExecTxResult, ExecTxResultAmino, ExecTxResultSDKType } from "../../tendermint/abci/types";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes } from "../../helpers";
+/** Request type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQuery {
-  /** defines a query type: `kv` or `tx` now */
+  /** The query type identifier: `kv` or `tx`. */
   queryType: string;
   /**
-   * is used to define KV-storage keys for which we want to get values from
-   * remote chain
+   * The KV-storage keys for which we want to get values from remote chain. Only applicable for the
+   * KV Interchain Queries. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
    */
   keys: KVKey[];
-  /** is used to define a filter for transaction search ICQ */
+  /**
+   * A stringified list of filters for remote transactions search. Only applicable for the TX
+   * Interchain Queries. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is
+   * limited by the module's `max_transactions_filters` parameters.
+   */
   transactionsFilter: string;
-  /** is IBC connection ID for getting ConsensusState to verify proofs */
+  /**
+   * The IBC connection ID to the remote chain (the source of querying data). Is used for getting
+   * ConsensusState from the respective IBC client to verify query result proofs.
+   */
   connectionId: string;
-  /** is used to specify how often (in neutron blocks) the query must be updated */
+  /**
+   * Parameter that defines the minimal delay between consecutive query executions (i.e. the
+   * minimal delay between query results update).
+   */
   updatePeriod: bigint;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender: string;
 }
 export interface MsgRegisterInterchainQueryProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgRegisterInterchainQuery";
   value: Uint8Array;
 }
+/** Request type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQueryAmino {
-  /** defines a query type: `kv` or `tx` now */
+  /** The query type identifier: `kv` or `tx`. */
   query_type?: string;
   /**
-   * is used to define KV-storage keys for which we want to get values from
-   * remote chain
+   * The KV-storage keys for which we want to get values from remote chain. Only applicable for the
+   * KV Interchain Queries. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
    */
   keys?: KVKeyAmino[];
-  /** is used to define a filter for transaction search ICQ */
+  /**
+   * A stringified list of filters for remote transactions search. Only applicable for the TX
+   * Interchain Queries. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is
+   * limited by the module's `max_transactions_filters` parameters.
+   */
   transactions_filter?: string;
-  /** is IBC connection ID for getting ConsensusState to verify proofs */
+  /**
+   * The IBC connection ID to the remote chain (the source of querying data). Is used for getting
+   * ConsensusState from the respective IBC client to verify query result proofs.
+   */
   connection_id?: string;
-  /** is used to specify how often (in neutron blocks) the query must be updated */
+  /**
+   * Parameter that defines the minimal delay between consecutive query executions (i.e. the
+   * minimal delay between query results update).
+   */
   update_period?: string;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender?: string;
 }
 export interface MsgRegisterInterchainQueryAminoMsg {
   type: "/neutron.interchainqueries.MsgRegisterInterchainQuery";
   value: MsgRegisterInterchainQueryAmino;
 }
+/** Request type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQuerySDKType {
   query_type: string;
   keys: KVKeySDKType[];
@@ -56,79 +83,155 @@ export interface MsgRegisterInterchainQuerySDKType {
   update_period: bigint;
   sender: string;
 }
+/** Response type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQueryResponse {
+  /** The ID assigned to the registered Interchain Query by the module. */
   id: bigint;
 }
 export interface MsgRegisterInterchainQueryResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgRegisterInterchainQueryResponse";
   value: Uint8Array;
 }
+/** Response type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQueryResponseAmino {
+  /** The ID assigned to the registered Interchain Query by the module. */
   id?: string;
 }
 export interface MsgRegisterInterchainQueryResponseAminoMsg {
   type: "/neutron.interchainqueries.MsgRegisterInterchainQueryResponse";
   value: MsgRegisterInterchainQueryResponseAmino;
 }
+/** Response type for the Msg/RegisterInterchainQuery RPC method. */
 export interface MsgRegisterInterchainQueryResponseSDKType {
   id: bigint;
 }
+/** Request type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResult {
+  /** The ID of the Interchain Query. */
   queryId: bigint;
+  /** The signer of the message. */
   sender: string;
   /**
-   * is the IBC client ID for an IBC connection between Neutron chain and target
-   * chain (where the result was obtained from)
+   * The IBC client ID that corresponds to the IBC connection to the remote chain (where the
+   * query result is coming from).
+   * Deprecated: populating this field does not make any affect
    */
+  /** @deprecated */
   clientId: string;
+  /** The result of the Interchain Query execution. */
   result?: QueryResult | undefined;
 }
 export interface MsgSubmitQueryResultProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgSubmitQueryResult";
   value: Uint8Array;
 }
+/** Request type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResultAmino {
+  /** The ID of the Interchain Query. */
   query_id?: string;
+  /** The signer of the message. */
   sender?: string;
   /**
-   * is the IBC client ID for an IBC connection between Neutron chain and target
-   * chain (where the result was obtained from)
+   * The IBC client ID that corresponds to the IBC connection to the remote chain (where the
+   * query result is coming from).
+   * Deprecated: populating this field does not make any affect
    */
+  /** @deprecated */
   client_id?: string;
+  /** The result of the Interchain Query execution. */
   result?: QueryResultAmino | undefined;
 }
 export interface MsgSubmitQueryResultAminoMsg {
   type: "/neutron.interchainqueries.MsgSubmitQueryResult";
   value: MsgSubmitQueryResultAmino;
 }
+/** Request type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResultSDKType {
   query_id: bigint;
   sender: string;
+  /** @deprecated */
   client_id: string;
   result?: QueryResultSDKType | undefined;
 }
+/**
+ * Contains different information about a single Interchain Query execution result. Currently,
+ * this structure is used both in query result submission via an ICQ Relayer and as a query result
+ * storage for read/write operations to interchainqueries module, but the structure fields are
+ * populated in a bit different ways. When submitting a query result, all fields are populated and
+ * provided to the interchainqueries module in order to verify the result against the IBC client's
+ * state. But in order to lighten the chain state, the interchainqueries module removes the block
+ * field and proofs from the kv_results.
+ */
 export interface QueryResult {
+  /**
+   * A list of a KV Interchain Query execution results. Each result contains query parameters, a
+   * response value and a proof.
+   */
   kvResults: StorageValue[];
+  /**
+   * A TX Interchain Query execution result. Contains metainformation about the blocks of the query
+   * execution height. Only populated when submitting an Interchain Query result for verification
+   * and emptied when saving the result on chain.
+   */
   block?: Block | undefined;
+  /** The height of the chain at the moment of the Interchain Query execution. */
   height: bigint;
+  /** The revision number of the chain at the moment of the Interchain Query execution. */
   revision: bigint;
+  /**
+   * Whether to send the query result to the owner contract as a sudo message. Only applicable for
+   * KV type of Interchain Queries.
+   */
   allowKvCallbacks: boolean;
 }
 export interface QueryResultProtoMsg {
   typeUrl: "/neutron.interchainqueries.QueryResult";
   value: Uint8Array;
 }
+/**
+ * Contains different information about a single Interchain Query execution result. Currently,
+ * this structure is used both in query result submission via an ICQ Relayer and as a query result
+ * storage for read/write operations to interchainqueries module, but the structure fields are
+ * populated in a bit different ways. When submitting a query result, all fields are populated and
+ * provided to the interchainqueries module in order to verify the result against the IBC client's
+ * state. But in order to lighten the chain state, the interchainqueries module removes the block
+ * field and proofs from the kv_results.
+ */
 export interface QueryResultAmino {
+  /**
+   * A list of a KV Interchain Query execution results. Each result contains query parameters, a
+   * response value and a proof.
+   */
   kv_results?: StorageValueAmino[];
+  /**
+   * A TX Interchain Query execution result. Contains metainformation about the blocks of the query
+   * execution height. Only populated when submitting an Interchain Query result for verification
+   * and emptied when saving the result on chain.
+   */
   block?: BlockAmino | undefined;
+  /** The height of the chain at the moment of the Interchain Query execution. */
   height?: string;
+  /** The revision number of the chain at the moment of the Interchain Query execution. */
   revision?: string;
+  /**
+   * Whether to send the query result to the owner contract as a sudo message. Only applicable for
+   * KV type of Interchain Queries.
+   */
   allow_kv_callbacks?: boolean;
 }
 export interface QueryResultAminoMsg {
   type: "/neutron.interchainqueries.QueryResult";
   value: QueryResultAmino;
 }
+/**
+ * Contains different information about a single Interchain Query execution result. Currently,
+ * this structure is used both in query result submission via an ICQ Relayer and as a query result
+ * storage for read/write operations to interchainqueries module, but the structure fields are
+ * populated in a bit different ways. When submitting a query result, all fields are populated and
+ * provided to the interchainqueries module in order to verify the result against the IBC client's
+ * state. But in order to lighten the chain state, the interchainqueries module removes the block
+ * field and proofs from the kv_results.
+ */
 export interface QueryResultSDKType {
   kv_results: StorageValueSDKType[];
   block?: BlockSDKType | undefined;
@@ -136,16 +239,21 @@ export interface QueryResultSDKType {
   revision: bigint;
   allow_kv_callbacks: boolean;
 }
+/** A verifiable result of performing a single KVKey read. */
 export interface StorageValue {
-  /** is the substore name (acc, staking, etc.) */
+  /**
+   * The substore name used in the read operation. Typically, this corresponds to the keeper's
+   * storeKey, usually the module's name, such as "bank", "staking", etc.
+   */
   storagePrefix: string;
-  /** is the key in IAVL store */
+  /** A bytes field representing the key of the data read from the module's storage. */
   key: Uint8Array;
-  /** is the value in IAVL store */
+  /** A bytes field containing the value associated with the key in the store. */
   value: Uint8Array;
   /**
-   * is the Merkle Proof which proves existence of key-value pair in IAVL
-   * storage
+   * The Merkle Proof which proves existence/nonexistence of key-value pair in IAVL storage. Is
+   * used to verify
+   * the pair against the respective remote chain's header.
    */
   proof?: ProofOps | undefined;
 }
@@ -153,16 +261,21 @@ export interface StorageValueProtoMsg {
   typeUrl: "/neutron.interchainqueries.StorageValue";
   value: Uint8Array;
 }
+/** A verifiable result of performing a single KVKey read. */
 export interface StorageValueAmino {
-  /** is the substore name (acc, staking, etc.) */
+  /**
+   * The substore name used in the read operation. Typically, this corresponds to the keeper's
+   * storeKey, usually the module's name, such as "bank", "staking", etc.
+   */
   storage_prefix?: string;
-  /** is the key in IAVL store */
+  /** A bytes field representing the key of the data read from the module's storage. */
   key?: string;
-  /** is the value in IAVL store */
+  /** A bytes field containing the value associated with the key in the store. */
   value?: string;
   /**
-   * is the Merkle Proof which proves existence of key-value pair in IAVL
-   * storage
+   * The Merkle Proof which proves existence/nonexistence of key-value pair in IAVL storage. Is
+   * used to verify
+   * the pair against the respective remote chain's header.
    */
   Proof?: ProofOpsAmino | undefined;
 }
@@ -170,159 +283,210 @@ export interface StorageValueAminoMsg {
   type: "/neutron.interchainqueries.StorageValue";
   value: StorageValueAmino;
 }
+/** A verifiable result of performing a single KVKey read. */
 export interface StorageValueSDKType {
   storage_prefix: string;
   key: Uint8Array;
   value: Uint8Array;
   Proof?: ProofOpsSDKType | undefined;
 }
+/** A single verifiable result of an Interchain Query of TX type. */
 export interface Block {
   /**
-   * We need to know block X+1 to verify response of transaction for block X
-   * since LastResultsHash is root hash of all results from the txs from the
-   * previous block
+   * The header of the block next to the block the transaction is included in. It is needed to know
+   * block X+1 header to verify response of transaction for block X since LastResultsHash is root
+   * hash of all results of the txs from the previous block.
    */
   nextBlockHeader?: Any | undefined;
-  /** We need to know block X to verify inclusion of transaction for block X */
+  /**
+   * The header of the block the transaction is included in. It is needed to know block header to
+   * verify inclusion of the transaction.
+   */
   header?: Any | undefined;
+  /** The transaction matched by the Interchain Query's transaction filter. */
   tx?: TxValue | undefined;
 }
 export interface BlockProtoMsg {
   typeUrl: "/neutron.interchainqueries.Block";
   value: Uint8Array;
 }
+/** A single verifiable result of an Interchain Query of TX type. */
 export interface BlockAmino {
   /**
-   * We need to know block X+1 to verify response of transaction for block X
-   * since LastResultsHash is root hash of all results from the txs from the
-   * previous block
+   * The header of the block next to the block the transaction is included in. It is needed to know
+   * block X+1 header to verify response of transaction for block X since LastResultsHash is root
+   * hash of all results of the txs from the previous block.
    */
   next_block_header?: AnyAmino | undefined;
-  /** We need to know block X to verify inclusion of transaction for block X */
+  /**
+   * The header of the block the transaction is included in. It is needed to know block header to
+   * verify inclusion of the transaction.
+   */
   header?: AnyAmino | undefined;
+  /** The transaction matched by the Interchain Query's transaction filter. */
   tx?: TxValueAmino | undefined;
 }
 export interface BlockAminoMsg {
   type: "/neutron.interchainqueries.Block";
   value: BlockAmino;
 }
+/** A single verifiable result of an Interchain Query of TX type. */
 export interface BlockSDKType {
   next_block_header?: AnySDKType | undefined;
   header?: AnySDKType | undefined;
   tx?: TxValueSDKType | undefined;
 }
+/** Contains transaction body, response, and proofs of inclusion and delivery. */
 export interface TxValue {
+  /** The result of the transaction execution. */
   response?: ExecTxResult | undefined;
   /**
-   * is the Merkle Proof which proves existence of response in block with height
-   * next_block_header.Height
+   * The Merkle Proof which proves existence of response in the block next to the block the
+   * transaction is included in.
    */
   deliveryProof?: Proof | undefined;
-  /**
-   * is the Merkle Proof which proves existence of data in block with height
-   * header.Height
-   */
+  /** The Merkle Proof which proves inclusion of the transaction in the block. */
   inclusionProof?: Proof | undefined;
-  /** is body of the transaction */
+  /** The arbitrary data typed body of the transaction. */
   data: Uint8Array;
 }
 export interface TxValueProtoMsg {
   typeUrl: "/neutron.interchainqueries.TxValue";
   value: Uint8Array;
 }
+/** Contains transaction body, response, and proofs of inclusion and delivery. */
 export interface TxValueAmino {
+  /** The result of the transaction execution. */
   response?: ExecTxResultAmino | undefined;
   /**
-   * is the Merkle Proof which proves existence of response in block with height
-   * next_block_header.Height
+   * The Merkle Proof which proves existence of response in the block next to the block the
+   * transaction is included in.
    */
   delivery_proof?: ProofAmino | undefined;
-  /**
-   * is the Merkle Proof which proves existence of data in block with height
-   * header.Height
-   */
+  /** The Merkle Proof which proves inclusion of the transaction in the block. */
   inclusion_proof?: ProofAmino | undefined;
-  /** is body of the transaction */
+  /** The arbitrary data typed body of the transaction. */
   data?: string;
 }
 export interface TxValueAminoMsg {
   type: "/neutron.interchainqueries.TxValue";
   value: TxValueAmino;
 }
+/** Contains transaction body, response, and proofs of inclusion and delivery. */
 export interface TxValueSDKType {
   response?: ExecTxResultSDKType | undefined;
   delivery_proof?: ProofSDKType | undefined;
   inclusion_proof?: ProofSDKType | undefined;
   data: Uint8Array;
 }
+/** Response type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResultResponse {}
 export interface MsgSubmitQueryResultResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgSubmitQueryResultResponse";
   value: Uint8Array;
 }
+/** Response type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResultResponseAmino {}
 export interface MsgSubmitQueryResultResponseAminoMsg {
   type: "/neutron.interchainqueries.MsgSubmitQueryResultResponse";
   value: MsgSubmitQueryResultResponseAmino;
 }
+/** Response type for the Msg/SubmitQueryResult RPC method. */
 export interface MsgSubmitQueryResultResponseSDKType {}
+/** Request type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryRequest {
+  /** The ID of the query to remove. */
   queryId: bigint;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender: string;
 }
 export interface MsgRemoveInterchainQueryRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgRemoveInterchainQueryRequest";
   value: Uint8Array;
 }
+/** Request type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryRequestAmino {
+  /** The ID of the query to remove. */
   query_id?: string;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender?: string;
 }
 export interface MsgRemoveInterchainQueryRequestAminoMsg {
   type: "/neutron.interchainqueries.MsgRemoveInterchainQueryRequest";
   value: MsgRemoveInterchainQueryRequestAmino;
 }
+/** Request type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryRequestSDKType {
   query_id: bigint;
   sender: string;
 }
+/** Response type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryResponse {}
 export interface MsgRemoveInterchainQueryResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgRemoveInterchainQueryResponse";
   value: Uint8Array;
 }
+/** Response type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryResponseAmino {}
 export interface MsgRemoveInterchainQueryResponseAminoMsg {
   type: "/neutron.interchainqueries.MsgRemoveInterchainQueryResponse";
   value: MsgRemoveInterchainQueryResponseAmino;
 }
+/** Response type for the Msg/RemoveInterchainQuery RPC method. */
 export interface MsgRemoveInterchainQueryResponseSDKType {}
+/** Request type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryRequest {
+  /** The ID of the query to update. */
   queryId: bigint;
+  /**
+   * A new list of KV-storage keys for which to get values from the remote chain. Only applicable
+   * for a KV Interchain Query. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
+   */
   newKeys: KVKey[];
+  /** A new minimal delay between consecutive query executions. */
   newUpdatePeriod: bigint;
+  /**
+   * A new list of filters for remote transactions search. Only applicable for a TX Interchain
+   * Query. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is
+   * limited by the module's `max_transactions_filters` parameters.
+   */
   newTransactionsFilter: string;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender: string;
 }
 export interface MsgUpdateInterchainQueryRequestProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgUpdateInterchainQueryRequest";
   value: Uint8Array;
 }
+/** Request type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryRequestAmino {
+  /** The ID of the query to update. */
   query_id?: string;
+  /**
+   * A new list of KV-storage keys for which to get values from the remote chain. Only applicable
+   * for a KV Interchain Query. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
+   */
   new_keys?: KVKeyAmino[];
+  /** A new minimal delay between consecutive query executions. */
   new_update_period?: string;
+  /**
+   * A new list of filters for remote transactions search. Only applicable for a TX Interchain
+   * Query. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is
+   * limited by the module's `max_transactions_filters` parameters.
+   */
   new_transactions_filter?: string;
-  /** is the signer of the message */
+  /** The signer of the message. */
   sender?: string;
 }
 export interface MsgUpdateInterchainQueryRequestAminoMsg {
   type: "/neutron.interchainqueries.MsgUpdateInterchainQueryRequest";
   value: MsgUpdateInterchainQueryRequestAmino;
 }
+/** Request type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryRequestSDKType {
   query_id: bigint;
   new_keys: KVKeySDKType[];
@@ -330,92 +494,60 @@ export interface MsgUpdateInterchainQueryRequestSDKType {
   new_transactions_filter: string;
   sender: string;
 }
+/** Response type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryResponse {}
 export interface MsgUpdateInterchainQueryResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgUpdateInterchainQueryResponse";
   value: Uint8Array;
 }
+/** Response type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryResponseAmino {}
 export interface MsgUpdateInterchainQueryResponseAminoMsg {
   type: "/neutron.interchainqueries.MsgUpdateInterchainQueryResponse";
   value: MsgUpdateInterchainQueryResponseAmino;
 }
+/** Response type for the Msg/UpdateInterchainQuery RPC method. */
 export interface MsgUpdateInterchainQueryResponseSDKType {}
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- * 
- * Since: 0.47
- */
+/** Request type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParams {
-  /** Authority is the address of the governance account. */
+  /** The address of the authority of the module. */
   authority: string;
-  /**
-   * params defines the x/interchainqueries parameters to update.
-   * 
-   * NOTE: All parameters must be supplied.
-   */
+  /** The new parameters of the module. All parameters must be supplied. */
   params: Params | undefined;
 }
 export interface MsgUpdateParamsProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgUpdateParams";
   value: Uint8Array;
 }
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- * 
- * Since: 0.47
- */
+/** Request type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParamsAmino {
-  /** Authority is the address of the governance account. */
+  /** The address of the authority of the module. */
   authority?: string;
-  /**
-   * params defines the x/interchainqueries parameters to update.
-   * 
-   * NOTE: All parameters must be supplied.
-   */
+  /** The new parameters of the module. All parameters must be supplied. */
   params: ParamsAmino | undefined;
 }
 export interface MsgUpdateParamsAminoMsg {
   type: "interchainqueries/MsgUpdateParams";
   value: MsgUpdateParamsAmino;
 }
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- * 
- * Since: 0.47
- */
+/** Request type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParamsSDKType {
   authority: string;
   params: ParamsSDKType | undefined;
 }
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- * 
- * Since: 0.47
- */
+/** Response type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParamsResponse {}
 export interface MsgUpdateParamsResponseProtoMsg {
   typeUrl: "/neutron.interchainqueries.MsgUpdateParamsResponse";
   value: Uint8Array;
 }
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- * 
- * Since: 0.47
- */
+/** Response type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParamsResponseAmino {}
 export interface MsgUpdateParamsResponseAminoMsg {
   type: "/neutron.interchainqueries.MsgUpdateParamsResponse";
   value: MsgUpdateParamsResponseAmino;
 }
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- * 
- * Since: 0.47
- */
+/** Response type for the Msg/UpdateParams RPC method. */
 export interface MsgUpdateParamsResponseSDKType {}
 function createBaseMsgRegisterInterchainQuery(): MsgRegisterInterchainQuery {
   return {

@@ -3,66 +3,111 @@ import { Height, HeightAmino, HeightSDKType, Params, ParamsAmino, ParamsSDKType 
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { bytesFromBase64, base64FromBytes } from "../../helpers";
+/** Information about an Interchain Query registered in the interchainqueries module. */
 export interface RegisteredQuery {
   /** The unique id of the registered query. */
   id: bigint;
-  /** The address that registered the query. */
+  /** The address of the contract that registered the query. */
   owner: string;
-  /** The query type identifier: `kv` or `tx` now */
+  /** The query type identifier: `kv` or `tx`. */
   queryType: string;
-  /** The KV-storage keys for which we want to get values from remote chain */
+  /**
+   * The KV-storage keys for which to get values from the remote chain. Only applicable for the
+   * KV Interchain Queries. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
+   */
   keys: KVKey[];
-  /** The filter for transaction search ICQ */
+  /**
+   * A stringified list of filters for remote transactions search. Only applicable for the TX
+   * Interchain Queries. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is limited
+   * by the module's `max_transactions_filters` parameters.
+   */
   transactionsFilter: string;
-  /** The IBC connection ID for getting ConsensusState to verify proofs */
+  /**
+   * The IBC connection ID to the remote chain (the source of querying data). Is used for getting
+   * ConsensusState from the respective IBC client to verify query result proofs.
+   */
   connectionId: string;
-  /** Parameter that defines how often the query must be updated. */
+  /**
+   * Parameter that defines the minimal delay between consecutive query executions (i.e. the
+   * minimal delay between query results update).
+   */
   updatePeriod: bigint;
-  /** The local chain last block height when the query result was updated. */
+  /** The local chain block height of the last query results update. */
   lastSubmittedResultLocalHeight: bigint;
-  /** The remote chain last block height when the query result was updated. */
+  /** The remote chain block height that corresponds to the last query result update. */
   lastSubmittedResultRemoteHeight?: Height | undefined;
-  /** Amount of coins deposited for the query. */
+  /**
+   * Amount of coins paid for the Interchain Query registration. The deposit is paid back to the
+   * remover. The remover can be either the query owner (during the submit timeout) or anybody.
+   */
   deposit: Coin[];
-  /** Timeout before query becomes available for everybody to remove. */
+  /**
+   * The duration, measured in blocks, that must pass since the query's registration or its last
+   * result submission before the query becomes eligible for removal by anyone.
+   */
   submitTimeout: bigint;
-  /** The local chain height when the query was registered. */
+  /** The local chain block height of the Interchain Query registration. */
   registeredAtHeight: bigint;
 }
 export interface RegisteredQueryProtoMsg {
   typeUrl: "/neutron.interchainqueries.RegisteredQuery";
   value: Uint8Array;
 }
+/** Information about an Interchain Query registered in the interchainqueries module. */
 export interface RegisteredQueryAmino {
   /** The unique id of the registered query. */
   id?: string;
-  /** The address that registered the query. */
+  /** The address of the contract that registered the query. */
   owner?: string;
-  /** The query type identifier: `kv` or `tx` now */
+  /** The query type identifier: `kv` or `tx`. */
   query_type?: string;
-  /** The KV-storage keys for which we want to get values from remote chain */
+  /**
+   * The KV-storage keys for which to get values from the remote chain. Only applicable for the
+   * KV Interchain Queries. Max amount of keys is limited by the module's `max_kv_query_keys_count`
+   * parameters.
+   */
   keys?: KVKeyAmino[];
-  /** The filter for transaction search ICQ */
+  /**
+   * A stringified list of filters for remote transactions search. Only applicable for the TX
+   * Interchain Queries. Example: "[{\"field\":\"tx.height\",\"op\":\"Gte\",\"value\":2644737}]".
+   * Supported operators: "eq", "lt", "gt", "lte", "gte". Max amount of filter conditions is limited
+   * by the module's `max_transactions_filters` parameters.
+   */
   transactions_filter?: string;
-  /** The IBC connection ID for getting ConsensusState to verify proofs */
+  /**
+   * The IBC connection ID to the remote chain (the source of querying data). Is used for getting
+   * ConsensusState from the respective IBC client to verify query result proofs.
+   */
   connection_id?: string;
-  /** Parameter that defines how often the query must be updated. */
+  /**
+   * Parameter that defines the minimal delay between consecutive query executions (i.e. the
+   * minimal delay between query results update).
+   */
   update_period?: string;
-  /** The local chain last block height when the query result was updated. */
+  /** The local chain block height of the last query results update. */
   last_submitted_result_local_height?: string;
-  /** The remote chain last block height when the query result was updated. */
+  /** The remote chain block height that corresponds to the last query result update. */
   last_submitted_result_remote_height?: HeightAmino | undefined;
-  /** Amount of coins deposited for the query. */
+  /**
+   * Amount of coins paid for the Interchain Query registration. The deposit is paid back to the
+   * remover. The remover can be either the query owner (during the submit timeout) or anybody.
+   */
   deposit?: CoinAmino[];
-  /** Timeout before query becomes available for everybody to remove. */
+  /**
+   * The duration, measured in blocks, that must pass since the query's registration or its last
+   * result submission before the query becomes eligible for removal by anyone.
+   */
   submit_timeout?: string;
-  /** The local chain height when the query was registered. */
+  /** The local chain block height of the Interchain Query registration. */
   registered_at_height?: string;
 }
 export interface RegisteredQueryAminoMsg {
   type: "/neutron.interchainqueries.RegisteredQuery";
   value: RegisteredQueryAmino;
 }
+/** Information about an Interchain Query registered in the interchainqueries module. */
 export interface RegisteredQuerySDKType {
   id: bigint;
   owner: string;
@@ -77,55 +122,62 @@ export interface RegisteredQuerySDKType {
   submit_timeout: bigint;
   registered_at_height: bigint;
 }
+/** Represents a path to an IAVL storage node. */
 export interface KVKey {
   /**
-   * Path (storage prefix) to the storage where you want to read value by key
-   * (usually name of cosmos-sdk module: 'staking', 'bank', etc.)
+   * The substore name used in an Interchain Query. Typically, this corresponds to the keeper's
+   * storeKey, usually the module's name, such as "bank", "staking", etc.
    */
   path: string;
-  /** Key you want to read from the storage */
+  /** A bytes field representing the key for specific data in the module's storage. */
   key: Uint8Array;
 }
 export interface KVKeyProtoMsg {
   typeUrl: "/neutron.interchainqueries.KVKey";
   value: Uint8Array;
 }
+/** Represents a path to an IAVL storage node. */
 export interface KVKeyAmino {
   /**
-   * Path (storage prefix) to the storage where you want to read value by key
-   * (usually name of cosmos-sdk module: 'staking', 'bank', etc.)
+   * The substore name used in an Interchain Query. Typically, this corresponds to the keeper's
+   * storeKey, usually the module's name, such as "bank", "staking", etc.
    */
   path?: string;
-  /** Key you want to read from the storage */
+  /** A bytes field representing the key for specific data in the module's storage. */
   key?: string;
 }
 export interface KVKeyAminoMsg {
   type: "/neutron.interchainqueries.KVKey";
   value: KVKeyAmino;
 }
+/** Represents a path to an IAVL storage node. */
 export interface KVKeySDKType {
   path: string;
   key: Uint8Array;
 }
-/** GenesisState defines the interchainqueries module's genesis state. */
+/** The interchainqueries module's genesis state model. */
 export interface GenesisState {
+  /** The parameters of the module. */
   params: Params | undefined;
+  /** A list of registered Interchain Queries. */
   registeredQueries: RegisteredQuery[];
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/neutron.interchainqueries.GenesisState";
   value: Uint8Array;
 }
-/** GenesisState defines the interchainqueries module's genesis state. */
+/** The interchainqueries module's genesis state model. */
 export interface GenesisStateAmino {
+  /** The parameters of the module. */
   params?: ParamsAmino | undefined;
+  /** A list of registered Interchain Queries. */
   registered_queries?: RegisteredQueryAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "/neutron.interchainqueries.GenesisState";
   value: GenesisStateAmino;
 }
-/** GenesisState defines the interchainqueries module's genesis state. */
+/** The interchainqueries module's genesis state model. */
 export interface GenesisStateSDKType {
   params: ParamsSDKType | undefined;
   registered_queries: RegisteredQuerySDKType[];

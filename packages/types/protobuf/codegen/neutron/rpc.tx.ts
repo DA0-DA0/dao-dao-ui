@@ -45,6 +45,7 @@ export const createRPCMsgClient = async ({
     interchainqueries: new (await import("./interchainqueries/tx.rpc.msg")).MsgClientImpl(rpc),
     interchaintxs: {
       v1: new (await import("./interchaintxs/v1/tx.rpc.msg")).MsgClientImpl(rpc)
-    }
+    },
+    revenue: new (await import("./revenue/tx.rpc.msg")).MsgClientImpl(rpc)
   }
 });

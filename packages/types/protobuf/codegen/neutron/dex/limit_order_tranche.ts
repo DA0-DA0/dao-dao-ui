@@ -32,15 +32,16 @@ export interface LimitOrderTranche {
   totalMakerDenom: string;
   totalTakerDenom: string;
   /**
-   * expiration_time is represented as an RFC 3339 formatted date.
-   * LimitOrders with expiration_time set are valid as long as blockTime <= expiration_time.
-   * JIT orders also use expiration_time to handle deletion, but represent a special case.
-   * All JIT orders have an expiration_time of 0001-01-01T00:00:00Z, and an exception is made to
-   * still treat these orders as live. Order deletion still functions the
-   * same, and the orders will be deleted at the end of the block.
+   * JIT orders also use expiration_time to handle deletion but represent a special case
+   * All JIT orders have a expiration_time of 0 and an exception is made to still treat these orders as live
+   * Order deletion still functions the same and the orders will be deleted at the end of the block
    */
   expirationTime?: Date | undefined;
+  /** DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used. */
+  /** @deprecated */
   priceTakerToMaker: string;
+  /** This is the price of the LimitOrder denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB ) */
+  makerPrice: string;
 }
 export interface LimitOrderTrancheProtoMsg {
   typeUrl: "/neutron.dex.LimitOrderTranche";
@@ -53,15 +54,16 @@ export interface LimitOrderTrancheAmino {
   total_maker_denom: string;
   total_taker_denom: string;
   /**
-   * expiration_time is represented as an RFC 3339 formatted date.
-   * LimitOrders with expiration_time set are valid as long as blockTime <= expiration_time.
-   * JIT orders also use expiration_time to handle deletion, but represent a special case.
-   * All JIT orders have an expiration_time of 0001-01-01T00:00:00Z, and an exception is made to
-   * still treat these orders as live. Order deletion still functions the
-   * same, and the orders will be deleted at the end of the block.
+   * JIT orders also use expiration_time to handle deletion but represent a special case
+   * All JIT orders have a expiration_time of 0 and an exception is made to still treat these orders as live
+   * Order deletion still functions the same and the orders will be deleted at the end of the block
    */
   expiration_time?: string | undefined;
+  /** DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used. */
+  /** @deprecated */
   price_taker_to_maker: string;
+  /** This is the price of the LimitOrder denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB ) */
+  maker_price: string;
 }
 export interface LimitOrderTrancheAminoMsg {
   type: "/neutron.dex.LimitOrderTranche";
@@ -74,7 +76,9 @@ export interface LimitOrderTrancheSDKType {
   total_maker_denom: string;
   total_taker_denom: string;
   expiration_time?: Date | undefined;
+  /** @deprecated */
   price_taker_to_maker: string;
+  maker_price: string;
 }
 function createBaseLimitOrderTrancheKey(): LimitOrderTrancheKey {
   return {
@@ -171,7 +175,8 @@ function createBaseLimitOrderTranche(): LimitOrderTranche {
     totalMakerDenom: "",
     totalTakerDenom: "",
     expirationTime: undefined,
-    priceTakerToMaker: ""
+    priceTakerToMaker: "",
+    makerPrice: ""
   };
 }
 export const LimitOrderTranche = {
@@ -197,6 +202,9 @@ export const LimitOrderTranche = {
     }
     if (message.priceTakerToMaker !== "") {
       writer.uint32(58).string(message.priceTakerToMaker);
+    }
+    if (message.makerPrice !== "") {
+      writer.uint32(66).string(message.makerPrice);
     }
     return writer;
   },
@@ -228,6 +236,9 @@ export const LimitOrderTranche = {
         case 7:
           message.priceTakerToMaker = reader.string();
           break;
+        case 8:
+          message.makerPrice = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -244,6 +255,7 @@ export const LimitOrderTranche = {
     message.totalTakerDenom = object.totalTakerDenom ?? "";
     message.expirationTime = object.expirationTime ?? undefined;
     message.priceTakerToMaker = object.priceTakerToMaker ?? "";
+    message.makerPrice = object.makerPrice ?? "";
     return message;
   },
   fromAmino(object: LimitOrderTrancheAmino): LimitOrderTranche {
@@ -269,6 +281,9 @@ export const LimitOrderTranche = {
     if (object.price_taker_to_maker !== undefined && object.price_taker_to_maker !== null) {
       message.priceTakerToMaker = object.price_taker_to_maker;
     }
+    if (object.maker_price !== undefined && object.maker_price !== null) {
+      message.makerPrice = object.maker_price;
+    }
     return message;
   },
   toAmino(message: LimitOrderTranche, useInterfaces: boolean = false): LimitOrderTrancheAmino {
@@ -280,6 +295,7 @@ export const LimitOrderTranche = {
     obj.total_taker_denom = message.totalTakerDenom ?? "";
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
     obj.price_taker_to_maker = message.priceTakerToMaker ?? "";
+    obj.maker_price = message.makerPrice ?? "";
     return obj;
   },
   fromAminoMsg(object: LimitOrderTrancheAminoMsg): LimitOrderTranche {

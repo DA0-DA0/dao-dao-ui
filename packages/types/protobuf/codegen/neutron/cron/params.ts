@@ -1,5 +1,5 @@
 import { BinaryReader, BinaryWriter } from "../../binary";
-/** Params defines the parameters for the module. */
+/** Defines the parameters for the module. */
 export interface Params {
   /** Security address that can remove schedules */
   securityAddress: string;
@@ -10,7 +10,7 @@ export interface ParamsProtoMsg {
   typeUrl: "/neutron.cron.Params";
   value: Uint8Array;
 }
-/** Params defines the parameters for the module. */
+/** Defines the parameters for the module. */
 export interface ParamsAmino {
   /** Security address that can remove schedules */
   security_address?: string;
@@ -21,7 +21,7 @@ export interface ParamsAminoMsg {
   type: "/neutron.cron.Params";
   value: ParamsAmino;
 }
-/** Params defines the parameters for the module. */
+/** Defines the parameters for the module. */
 export interface ParamsSDKType {
   security_address: string;
   limit: bigint;

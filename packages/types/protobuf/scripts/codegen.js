@@ -77,6 +77,7 @@ telescope({
           'neutron.feerefunder',
           'neutron.interchainqueries',
           'neutron.interchaintxs.v1',
+          'neutron.revenue',
           'neutron.transfer.v1',
           'noble.tariff',
           'osmosis.concentratedliquidity.v1beta1',

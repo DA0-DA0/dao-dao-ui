@@ -2,7 +2,7 @@ import { Timestamp } from "../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { toTimestamp, fromTimestamp, bytesFromBase64, base64FromBytes } from "../../helpers";
 export interface LimitOrderExpiration {
-  /** see limitOrderTranche.proto for details on goodTilDate */
+  /** see limitOrderTranche.proto for details on expiration_time */
   expirationTime: Date | undefined;
   trancheRef: Uint8Array;
 }
@@ -11,7 +11,7 @@ export interface LimitOrderExpirationProtoMsg {
   value: Uint8Array;
 }
 export interface LimitOrderExpirationAmino {
-  /** see limitOrderTranche.proto for details on goodTilDate */
+  /** see limitOrderTranche.proto for details on expiration_time */
   expiration_time?: string | undefined;
   tranche_ref?: string;
 }

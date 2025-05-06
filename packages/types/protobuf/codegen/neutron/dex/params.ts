@@ -2,7 +2,14 @@ import { BinaryReader, BinaryWriter } from "../../binary";
 /** Params defines the parameters for the module. */
 export interface Params {
   feeTiers: bigint[];
-  maxTrueTakerSpread: string;
+  paused: boolean;
+  maxJitsPerBlock: bigint;
+  goodTilPurgeAllowance: bigint;
+  /**
+   * Whitelisted_lps have special LP privileges;
+   * currently, the only such privilege is depositing outside of the allowed fee_tiers.
+   */
+  whitelistedLps: string[];
 }
 export interface ParamsProtoMsg {
   typeUrl: "/neutron.dex.Params";
@@ -11,7 +18,14 @@ export interface ParamsProtoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
   fee_tiers?: string[];
-  max_true_taker_spread: string;
+  paused: boolean;
+  max_jits_per_block?: string;
+  good_til_purge_allowance?: string;
+  /**
+   * Whitelisted_lps have special LP privileges;
+   * currently, the only such privilege is depositing outside of the allowed fee_tiers.
+   */
+  whitelisted_lps: string[];
 }
 export interface ParamsAminoMsg {
   type: "/neutron.dex.Params";
@@ -20,12 +34,18 @@ export interface ParamsAminoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsSDKType {
   fee_tiers: bigint[];
-  max_true_taker_spread: string;
+  paused: boolean;
+  max_jits_per_block: bigint;
+  good_til_purge_allowance: bigint;
+  whitelisted_lps: string[];
 }
 function createBaseParams(): Params {
   return {
     feeTiers: [],
-    maxTrueTakerSpread: ""
+    paused: false,
+    maxJitsPerBlock: BigInt(0),
+    goodTilPurgeAllowance: BigInt(0),
+    whitelistedLps: []
   };
 }
 export const Params = {
@@ -36,8 +56,17 @@ export const Params = {
       writer.uint64(v);
     }
     writer.ldelim();
-    if (message.maxTrueTakerSpread !== "") {
-      writer.uint32(18).string(message.maxTrueTakerSpread);
+    if (message.paused === true) {
+      writer.uint32(24).bool(message.paused);
+    }
+    if (message.maxJitsPerBlock !== BigInt(0)) {
+      writer.uint32(32).uint64(message.maxJitsPerBlock);
+    }
+    if (message.goodTilPurgeAllowance !== BigInt(0)) {
+      writer.uint32(40).uint64(message.goodTilPurgeAllowance);
+    }
+    for (const v of message.whitelistedLps) {
+      writer.uint32(50).string(v!);
     }
     return writer;
   },
@@ -58,8 +87,17 @@ export const Params = {
             message.feeTiers.push(reader.uint64());
           }
           break;
-        case 2:
-          message.maxTrueTakerSpread = reader.string();
+        case 3:
+          message.paused = reader.bool();
+          break;
+        case 4:
+          message.maxJitsPerBlock = reader.uint64();
+          break;
+        case 5:
+          message.goodTilPurgeAllowance = reader.uint64();
+          break;
+        case 6:
+          message.whitelistedLps.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -71,15 +109,25 @@ export const Params = {
   fromPartial(object: Partial<Params>): Params {
     const message = createBaseParams();
     message.feeTiers = object.feeTiers?.map(e => BigInt(e.toString())) || [];
-    message.maxTrueTakerSpread = object.maxTrueTakerSpread ?? "";
+    message.paused = object.paused ?? false;
+    message.maxJitsPerBlock = object.maxJitsPerBlock !== undefined && object.maxJitsPerBlock !== null ? BigInt(object.maxJitsPerBlock.toString()) : BigInt(0);
+    message.goodTilPurgeAllowance = object.goodTilPurgeAllowance !== undefined && object.goodTilPurgeAllowance !== null ? BigInt(object.goodTilPurgeAllowance.toString()) : BigInt(0);
+    message.whitelistedLps = object.whitelistedLps?.map(e => e) || [];
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
     const message = createBaseParams();
     message.feeTiers = object.fee_tiers?.map(e => BigInt(e)) || [];
-    if (object.max_true_taker_spread !== undefined && object.max_true_taker_spread !== null) {
-      message.maxTrueTakerSpread = object.max_true_taker_spread;
+    if (object.paused !== undefined && object.paused !== null) {
+      message.paused = object.paused;
     }
+    if (object.max_jits_per_block !== undefined && object.max_jits_per_block !== null) {
+      message.maxJitsPerBlock = BigInt(object.max_jits_per_block);
+    }
+    if (object.good_til_purge_allowance !== undefined && object.good_til_purge_allowance !== null) {
+      message.goodTilPurgeAllowance = BigInt(object.good_til_purge_allowance);
+    }
+    message.whitelistedLps = object.whitelisted_lps?.map(e => e) || [];
     return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
@@ -89,7 +137,14 @@ export const Params = {
     } else {
       obj.fee_tiers = message.feeTiers;
     }
-    obj.max_true_taker_spread = message.maxTrueTakerSpread ?? "";
+    obj.paused = message.paused ?? false;
+    obj.max_jits_per_block = message.maxJitsPerBlock !== BigInt(0) ? message.maxJitsPerBlock.toString() : undefined;
+    obj.good_til_purge_allowance = message.goodTilPurgeAllowance !== BigInt(0) ? message.goodTilPurgeAllowance.toString() : undefined;
+    if (message.whitelistedLps) {
+      obj.whitelisted_lps = message.whitelistedLps.map(e => e);
+    } else {
+      obj.whitelisted_lps = message.whitelistedLps;
+    }
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

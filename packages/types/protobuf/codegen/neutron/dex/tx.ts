@@ -56,6 +56,9 @@ export function limitOrderTypeToJSON(object: LimitOrderType): string {
 }
 export interface DepositOptions {
   disableAutoswap: boolean;
+  failTxOnBel: boolean;
+  swapOnDeposit: boolean;
+  swapOnDepositSlopToleranceBps: bigint;
 }
 export interface DepositOptionsProtoMsg {
   typeUrl: "/neutron.dex.DepositOptions";
@@ -63,6 +66,9 @@ export interface DepositOptionsProtoMsg {
 }
 export interface DepositOptionsAmino {
   disable_autoswap?: boolean;
+  fail_tx_on_bel?: boolean;
+  swap_on_deposit?: boolean;
+  swap_on_deposit_slop_tolerance_bps?: string;
 }
 export interface DepositOptionsAminoMsg {
   type: "/neutron.dex.DepositOptions";
@@ -70,6 +76,9 @@ export interface DepositOptionsAminoMsg {
 }
 export interface DepositOptionsSDKType {
   disable_autoswap: boolean;
+  fail_tx_on_bel: boolean;
+  swap_on_deposit: boolean;
+  swap_on_deposit_slop_tolerance_bps: bigint;
 }
 export interface MsgDeposit {
   creator: string;
@@ -98,7 +107,7 @@ export interface MsgDepositAmino {
   options?: DepositOptionsAmino[];
 }
 export interface MsgDepositAminoMsg {
-  type: "/neutron.dex.MsgDeposit";
+  type: "dex/MsgDeposit";
   value: MsgDepositAmino;
 }
 export interface MsgDepositSDKType {
@@ -112,9 +121,31 @@ export interface MsgDepositSDKType {
   fees: bigint[];
   options: DepositOptionsSDKType[];
 }
+export interface FailedDeposit {
+  depositIdx: bigint;
+  error: string;
+}
+export interface FailedDepositProtoMsg {
+  typeUrl: "/neutron.dex.FailedDeposit";
+  value: Uint8Array;
+}
+export interface FailedDepositAmino {
+  deposit_idx?: string;
+  error?: string;
+}
+export interface FailedDepositAminoMsg {
+  type: "/neutron.dex.FailedDeposit";
+  value: FailedDepositAmino;
+}
+export interface FailedDepositSDKType {
+  deposit_idx: bigint;
+  error: string;
+}
 export interface MsgDepositResponse {
   reserve0Deposited: string[];
   reserve1Deposited: string[];
+  failedDeposits: FailedDeposit[];
+  sharesIssued: Coin[];
 }
 export interface MsgDepositResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgDepositResponse";
@@ -123,6 +154,8 @@ export interface MsgDepositResponseProtoMsg {
 export interface MsgDepositResponseAmino {
   reserve0_deposited: string[];
   reserve1_deposited: string[];
+  failed_deposits?: FailedDepositAmino[];
+  shares_issued: CoinAmino[];
 }
 export interface MsgDepositResponseAminoMsg {
   type: "/neutron.dex.MsgDepositResponse";
@@ -131,6 +164,8 @@ export interface MsgDepositResponseAminoMsg {
 export interface MsgDepositResponseSDKType {
   reserve0_deposited: string[];
   reserve1_deposited: string[];
+  failed_deposits: FailedDepositSDKType[];
+  shares_issued: CoinSDKType[];
 }
 export interface MsgWithdrawal {
   creator: string;
@@ -155,7 +190,7 @@ export interface MsgWithdrawalAmino {
   fees?: string[];
 }
 export interface MsgWithdrawalAminoMsg {
-  type: "/neutron.dex.MsgWithdrawal";
+  type: "dex/MsgWithdrawal";
   value: MsgWithdrawalAmino;
 }
 export interface MsgWithdrawalSDKType {
@@ -167,28 +202,49 @@ export interface MsgWithdrawalSDKType {
   tick_indexes_a_to_b: bigint[];
   fees: bigint[];
 }
-export interface MsgWithdrawalResponse {}
+export interface MsgWithdrawalResponse {
+  reserve0Withdrawn: string;
+  reserve1Withdrawn: string;
+  sharesBurned: Coin[];
+}
 export interface MsgWithdrawalResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgWithdrawalResponse";
   value: Uint8Array;
 }
-export interface MsgWithdrawalResponseAmino {}
+export interface MsgWithdrawalResponseAmino {
+  reserve0_withdrawn: string;
+  reserve1_withdrawn: string;
+  shares_burned: CoinAmino[];
+}
 export interface MsgWithdrawalResponseAminoMsg {
   type: "/neutron.dex.MsgWithdrawalResponse";
   value: MsgWithdrawalResponseAmino;
 }
-export interface MsgWithdrawalResponseSDKType {}
+export interface MsgWithdrawalResponseSDKType {
+  reserve0_withdrawn: string;
+  reserve1_withdrawn: string;
+  shares_burned: CoinSDKType[];
+}
 export interface MsgPlaceLimitOrder {
   creator: string;
   receiver: string;
   tokenIn: string;
   tokenOut: string;
+  /** DEPRECATED: tick_index_in_to_out will be removed in future release; limit_sell_price should be used instead. */
+  /** @deprecated */
   tickIndexInToOut: bigint;
   amountIn: string;
   orderType: LimitOrderType;
   /** expirationTime is only valid iff orderType == GOOD_TIL_TIME. */
   expirationTime?: Date | undefined;
   maxAmountOut?: string;
+  limitSellPrice?: string;
+  /**
+   * min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
+   * if the min_average_sell_price is not met the trade will fail.
+   * If min_average_sell_price is omitted limit_sell_price will be used instead
+   */
+  minAverageSellPrice?: string;
 }
 export interface MsgPlaceLimitOrderProtoMsg {
   typeUrl: "/neutron.dex.MsgPlaceLimitOrder";
@@ -199,15 +255,24 @@ export interface MsgPlaceLimitOrderAmino {
   receiver?: string;
   token_in?: string;
   token_out?: string;
+  /** DEPRECATED: tick_index_in_to_out will be removed in future release; limit_sell_price should be used instead. */
+  /** @deprecated */
   tick_index_in_to_out?: string;
   amount_in: string;
   order_type?: LimitOrderType;
   /** expirationTime is only valid iff orderType == GOOD_TIL_TIME. */
   expiration_time?: string | undefined;
   max_amount_out: string;
+  limit_sell_price: string;
+  /**
+   * min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
+   * if the min_average_sell_price is not met the trade will fail.
+   * If min_average_sell_price is omitted limit_sell_price will be used instead
+   */
+  min_average_sell_price: string;
 }
 export interface MsgPlaceLimitOrderAminoMsg {
-  type: "/neutron.dex.MsgPlaceLimitOrder";
+  type: "dex/MsgPlaceLimitOrder";
   value: MsgPlaceLimitOrderAmino;
 }
 export interface MsgPlaceLimitOrderSDKType {
@@ -215,11 +280,14 @@ export interface MsgPlaceLimitOrderSDKType {
   receiver: string;
   token_in: string;
   token_out: string;
+  /** @deprecated */
   tick_index_in_to_out: bigint;
   amount_in: string;
   order_type: LimitOrderType;
   expiration_time?: Date | undefined;
   max_amount_out?: string;
+  limit_sell_price?: string;
+  min_average_sell_price?: string;
 }
 export interface MsgPlaceLimitOrderResponse {
   trancheKey: string;
@@ -232,6 +300,8 @@ export interface MsgPlaceLimitOrderResponse {
    * maker portion which will have withdrawn in the future
    */
   takerCoinOut: Coin | undefined;
+  /** Total amount of the token in that was immediately swapped for takerOutCoin */
+  takerCoinIn: Coin | undefined;
 }
 export interface MsgPlaceLimitOrderResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgPlaceLimitOrderResponse";
@@ -248,6 +318,8 @@ export interface MsgPlaceLimitOrderResponseAmino {
    * maker portion which will have withdrawn in the future
    */
   taker_coin_out: CoinAmino | undefined;
+  /** Total amount of the token in that was immediately swapped for takerOutCoin */
+  taker_coin_in: CoinAmino | undefined;
 }
 export interface MsgPlaceLimitOrderResponseAminoMsg {
   type: "/neutron.dex.MsgPlaceLimitOrderResponse";
@@ -257,6 +329,7 @@ export interface MsgPlaceLimitOrderResponseSDKType {
   trancheKey: string;
   coin_in: CoinSDKType | undefined;
   taker_coin_out: CoinSDKType | undefined;
+  taker_coin_in: CoinSDKType | undefined;
 }
 export interface MsgWithdrawFilledLimitOrder {
   creator: string;
@@ -271,24 +344,37 @@ export interface MsgWithdrawFilledLimitOrderAmino {
   tranche_key?: string;
 }
 export interface MsgWithdrawFilledLimitOrderAminoMsg {
-  type: "/neutron.dex.MsgWithdrawFilledLimitOrder";
+  type: "dex/MsgWithdrawFilledLimitOrder";
   value: MsgWithdrawFilledLimitOrderAmino;
 }
 export interface MsgWithdrawFilledLimitOrderSDKType {
   creator: string;
   tranche_key: string;
 }
-export interface MsgWithdrawFilledLimitOrderResponse {}
+export interface MsgWithdrawFilledLimitOrderResponse {
+  /** Total amount of taker reserves that were withdrawn */
+  takerCoinOut: Coin | undefined;
+  /** Total amount of maker reserves that were withdrawn --only applies to inactive LimitOrders */
+  makerCoinOut: Coin | undefined;
+}
 export interface MsgWithdrawFilledLimitOrderResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgWithdrawFilledLimitOrderResponse";
   value: Uint8Array;
 }
-export interface MsgWithdrawFilledLimitOrderResponseAmino {}
+export interface MsgWithdrawFilledLimitOrderResponseAmino {
+  /** Total amount of taker reserves that were withdrawn */
+  taker_coin_out: CoinAmino | undefined;
+  /** Total amount of maker reserves that were withdrawn --only applies to inactive LimitOrders */
+  maker_coin_out: CoinAmino | undefined;
+}
 export interface MsgWithdrawFilledLimitOrderResponseAminoMsg {
   type: "/neutron.dex.MsgWithdrawFilledLimitOrderResponse";
   value: MsgWithdrawFilledLimitOrderResponseAmino;
 }
-export interface MsgWithdrawFilledLimitOrderResponseSDKType {}
+export interface MsgWithdrawFilledLimitOrderResponseSDKType {
+  taker_coin_out: CoinSDKType | undefined;
+  maker_coin_out: CoinSDKType | undefined;
+}
 export interface MsgCancelLimitOrder {
   creator: string;
   trancheKey: string;
@@ -302,24 +388,37 @@ export interface MsgCancelLimitOrderAmino {
   tranche_key?: string;
 }
 export interface MsgCancelLimitOrderAminoMsg {
-  type: "/neutron.dex.MsgCancelLimitOrder";
+  type: "dex/MsgCancelLimitOrder";
   value: MsgCancelLimitOrderAmino;
 }
 export interface MsgCancelLimitOrderSDKType {
   creator: string;
   tranche_key: string;
 }
-export interface MsgCancelLimitOrderResponse {}
+export interface MsgCancelLimitOrderResponse {
+  /** Total amount of taker reserves that were withdrawn */
+  takerCoinOut: Coin | undefined;
+  /** Total amount of maker reserves that were canceled */
+  makerCoinOut: Coin | undefined;
+}
 export interface MsgCancelLimitOrderResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgCancelLimitOrderResponse";
   value: Uint8Array;
 }
-export interface MsgCancelLimitOrderResponseAmino {}
+export interface MsgCancelLimitOrderResponseAmino {
+  /** Total amount of taker reserves that were withdrawn */
+  taker_coin_out: CoinAmino | undefined;
+  /** Total amount of maker reserves that were canceled */
+  maker_coin_out: CoinAmino | undefined;
+}
 export interface MsgCancelLimitOrderResponseAminoMsg {
   type: "/neutron.dex.MsgCancelLimitOrderResponse";
   value: MsgCancelLimitOrderResponseAmino;
 }
-export interface MsgCancelLimitOrderResponseSDKType {}
+export interface MsgCancelLimitOrderResponseSDKType {
+  taker_coin_out: CoinSDKType | undefined;
+  maker_coin_out: CoinSDKType | undefined;
+}
 export interface MultiHopRoute {
   hops: string[];
 }
@@ -345,7 +444,7 @@ export interface MsgMultiHopSwap {
   exitLimitPrice: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
-   * best price is chosen otherwise, the first succesful route is used.
+   * best price is chosen otherwise, the first successful route is used.
    */
   pickBestRoute: boolean;
 }
@@ -361,12 +460,12 @@ export interface MsgMultiHopSwapAmino {
   exit_limit_price: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
-   * best price is chosen otherwise, the first succesful route is used.
+   * best price is chosen otherwise, the first successful route is used.
    */
   pick_best_route?: boolean;
 }
 export interface MsgMultiHopSwapAminoMsg {
-  type: "/neutron.dex.MsgMultiHopSwap";
+  type: "dex/MsgMultiHopSwap";
   value: MsgMultiHopSwapAmino;
 }
 export interface MsgMultiHopSwapSDKType {
@@ -379,6 +478,8 @@ export interface MsgMultiHopSwapSDKType {
 }
 export interface MsgMultiHopSwapResponse {
   coinOut: Coin | undefined;
+  route?: MultiHopRoute | undefined;
+  dust: Coin[];
 }
 export interface MsgMultiHopSwapResponseProtoMsg {
   typeUrl: "/neutron.dex.MsgMultiHopSwapResponse";
@@ -386,6 +487,8 @@ export interface MsgMultiHopSwapResponseProtoMsg {
 }
 export interface MsgMultiHopSwapResponseAmino {
   coin_out: CoinAmino | undefined;
+  route?: MultiHopRouteAmino | undefined;
+  dust: CoinAmino[];
 }
 export interface MsgMultiHopSwapResponseAminoMsg {
   type: "/neutron.dex.MsgMultiHopSwapResponse";
@@ -393,6 +496,8 @@ export interface MsgMultiHopSwapResponseAminoMsg {
 }
 export interface MsgMultiHopSwapResponseSDKType {
   coin_out: CoinSDKType | undefined;
+  route?: MultiHopRouteSDKType | undefined;
+  dust: CoinSDKType[];
 }
 export interface MsgUpdateParams {
   /** Authority is the address of the governance account. */
@@ -449,7 +554,10 @@ export interface MsgUpdateParamsResponseAminoMsg {
 export interface MsgUpdateParamsResponseSDKType {}
 function createBaseDepositOptions(): DepositOptions {
   return {
-    disableAutoswap: false
+    disableAutoswap: false,
+    failTxOnBel: false,
+    swapOnDeposit: false,
+    swapOnDepositSlopToleranceBps: BigInt(0)
   };
 }
 export const DepositOptions = {
@@ -457,6 +565,15 @@ export const DepositOptions = {
   encode(message: DepositOptions, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.disableAutoswap === true) {
       writer.uint32(8).bool(message.disableAutoswap);
+    }
+    if (message.failTxOnBel === true) {
+      writer.uint32(16).bool(message.failTxOnBel);
+    }
+    if (message.swapOnDeposit === true) {
+      writer.uint32(24).bool(message.swapOnDeposit);
+    }
+    if (message.swapOnDepositSlopToleranceBps !== BigInt(0)) {
+      writer.uint32(32).uint64(message.swapOnDepositSlopToleranceBps);
     }
     return writer;
   },
@@ -470,6 +587,15 @@ export const DepositOptions = {
         case 1:
           message.disableAutoswap = reader.bool();
           break;
+        case 2:
+          message.failTxOnBel = reader.bool();
+          break;
+        case 3:
+          message.swapOnDeposit = reader.bool();
+          break;
+        case 4:
+          message.swapOnDepositSlopToleranceBps = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -480,6 +606,9 @@ export const DepositOptions = {
   fromPartial(object: Partial<DepositOptions>): DepositOptions {
     const message = createBaseDepositOptions();
     message.disableAutoswap = object.disableAutoswap ?? false;
+    message.failTxOnBel = object.failTxOnBel ?? false;
+    message.swapOnDeposit = object.swapOnDeposit ?? false;
+    message.swapOnDepositSlopToleranceBps = object.swapOnDepositSlopToleranceBps !== undefined && object.swapOnDepositSlopToleranceBps !== null ? BigInt(object.swapOnDepositSlopToleranceBps.toString()) : BigInt(0);
     return message;
   },
   fromAmino(object: DepositOptionsAmino): DepositOptions {
@@ -487,11 +616,23 @@ export const DepositOptions = {
     if (object.disable_autoswap !== undefined && object.disable_autoswap !== null) {
       message.disableAutoswap = object.disable_autoswap;
     }
+    if (object.fail_tx_on_bel !== undefined && object.fail_tx_on_bel !== null) {
+      message.failTxOnBel = object.fail_tx_on_bel;
+    }
+    if (object.swap_on_deposit !== undefined && object.swap_on_deposit !== null) {
+      message.swapOnDeposit = object.swap_on_deposit;
+    }
+    if (object.swap_on_deposit_slop_tolerance_bps !== undefined && object.swap_on_deposit_slop_tolerance_bps !== null) {
+      message.swapOnDepositSlopToleranceBps = BigInt(object.swap_on_deposit_slop_tolerance_bps);
+    }
     return message;
   },
   toAmino(message: DepositOptions, useInterfaces: boolean = false): DepositOptionsAmino {
     const obj: any = {};
     obj.disable_autoswap = message.disableAutoswap === false ? undefined : message.disableAutoswap;
+    obj.fail_tx_on_bel = message.failTxOnBel === false ? undefined : message.failTxOnBel;
+    obj.swap_on_deposit = message.swapOnDeposit === false ? undefined : message.swapOnDeposit;
+    obj.swap_on_deposit_slop_tolerance_bps = message.swapOnDepositSlopToleranceBps !== BigInt(0) ? message.swapOnDepositSlopToleranceBps.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: DepositOptionsAminoMsg): DepositOptions {
@@ -684,6 +825,12 @@ export const MsgDeposit = {
   fromAminoMsg(object: MsgDepositAminoMsg): MsgDeposit {
     return MsgDeposit.fromAmino(object.value);
   },
+  toAminoMsg(message: MsgDeposit, useInterfaces: boolean = false): MsgDepositAminoMsg {
+    return {
+      type: "dex/MsgDeposit",
+      value: MsgDeposit.toAmino(message, useInterfaces)
+    };
+  },
   fromProtoMsg(message: MsgDepositProtoMsg, useInterfaces: boolean = false): MsgDeposit {
     return MsgDeposit.decode(message.value, undefined, useInterfaces);
   },
@@ -697,10 +844,87 @@ export const MsgDeposit = {
     };
   }
 };
+function createBaseFailedDeposit(): FailedDeposit {
+  return {
+    depositIdx: BigInt(0),
+    error: ""
+  };
+}
+export const FailedDeposit = {
+  typeUrl: "/neutron.dex.FailedDeposit",
+  encode(message: FailedDeposit, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.depositIdx !== BigInt(0)) {
+      writer.uint32(8).uint64(message.depositIdx);
+    }
+    if (message.error !== "") {
+      writer.uint32(18).string(message.error);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): FailedDeposit {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFailedDeposit();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.depositIdx = reader.uint64();
+          break;
+        case 2:
+          message.error = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<FailedDeposit>): FailedDeposit {
+    const message = createBaseFailedDeposit();
+    message.depositIdx = object.depositIdx !== undefined && object.depositIdx !== null ? BigInt(object.depositIdx.toString()) : BigInt(0);
+    message.error = object.error ?? "";
+    return message;
+  },
+  fromAmino(object: FailedDepositAmino): FailedDeposit {
+    const message = createBaseFailedDeposit();
+    if (object.deposit_idx !== undefined && object.deposit_idx !== null) {
+      message.depositIdx = BigInt(object.deposit_idx);
+    }
+    if (object.error !== undefined && object.error !== null) {
+      message.error = object.error;
+    }
+    return message;
+  },
+  toAmino(message: FailedDeposit, useInterfaces: boolean = false): FailedDepositAmino {
+    const obj: any = {};
+    obj.deposit_idx = message.depositIdx !== BigInt(0) ? message.depositIdx.toString() : undefined;
+    obj.error = message.error === "" ? undefined : message.error;
+    return obj;
+  },
+  fromAminoMsg(object: FailedDepositAminoMsg): FailedDeposit {
+    return FailedDeposit.fromAmino(object.value);
+  },
+  fromProtoMsg(message: FailedDepositProtoMsg, useInterfaces: boolean = false): FailedDeposit {
+    return FailedDeposit.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: FailedDeposit): Uint8Array {
+    return FailedDeposit.encode(message).finish();
+  },
+  toProtoMsg(message: FailedDeposit): FailedDepositProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.FailedDeposit",
+      value: FailedDeposit.encode(message).finish()
+    };
+  }
+};
 function createBaseMsgDepositResponse(): MsgDepositResponse {
   return {
     reserve0Deposited: [],
-    reserve1Deposited: []
+    reserve1Deposited: [],
+    failedDeposits: [],
+    sharesIssued: []
   };
 }
 export const MsgDepositResponse = {
@@ -711,6 +935,12 @@ export const MsgDepositResponse = {
     }
     for (const v of message.reserve1Deposited) {
       writer.uint32(18).string(v!);
+    }
+    for (const v of message.failedDeposits) {
+      FailedDeposit.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.sharesIssued) {
+      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -727,6 +957,12 @@ export const MsgDepositResponse = {
         case 2:
           message.reserve1Deposited.push(reader.string());
           break;
+        case 3:
+          message.failedDeposits.push(FailedDeposit.decode(reader, reader.uint32(), useInterfaces));
+          break;
+        case 4:
+          message.sharesIssued.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -738,12 +974,16 @@ export const MsgDepositResponse = {
     const message = createBaseMsgDepositResponse();
     message.reserve0Deposited = object.reserve0Deposited?.map(e => e) || [];
     message.reserve1Deposited = object.reserve1Deposited?.map(e => e) || [];
+    message.failedDeposits = object.failedDeposits?.map(e => FailedDeposit.fromPartial(e)) || [];
+    message.sharesIssued = object.sharesIssued?.map(e => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(object: MsgDepositResponseAmino): MsgDepositResponse {
     const message = createBaseMsgDepositResponse();
     message.reserve0Deposited = object.reserve0_deposited?.map(e => e) || [];
     message.reserve1Deposited = object.reserve1_deposited?.map(e => e) || [];
+    message.failedDeposits = object.failed_deposits?.map(e => FailedDeposit.fromAmino(e)) || [];
+    message.sharesIssued = object.shares_issued?.map(e => Coin.fromAmino(e)) || [];
     return message;
   },
   toAmino(message: MsgDepositResponse, useInterfaces: boolean = false): MsgDepositResponseAmino {
@@ -757,6 +997,16 @@ export const MsgDepositResponse = {
       obj.reserve1_deposited = message.reserve1Deposited.map(e => e);
     } else {
       obj.reserve1_deposited = message.reserve1Deposited;
+    }
+    if (message.failedDeposits) {
+      obj.failed_deposits = message.failedDeposits.map(e => e ? FailedDeposit.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.failed_deposits = message.failedDeposits;
+    }
+    if (message.sharesIssued) {
+      obj.shares_issued = message.sharesIssued.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.shares_issued = message.sharesIssued;
     }
     return obj;
   },
@@ -922,6 +1172,12 @@ export const MsgWithdrawal = {
   fromAminoMsg(object: MsgWithdrawalAminoMsg): MsgWithdrawal {
     return MsgWithdrawal.fromAmino(object.value);
   },
+  toAminoMsg(message: MsgWithdrawal, useInterfaces: boolean = false): MsgWithdrawalAminoMsg {
+    return {
+      type: "dex/MsgWithdrawal",
+      value: MsgWithdrawal.toAmino(message, useInterfaces)
+    };
+  },
   fromProtoMsg(message: MsgWithdrawalProtoMsg, useInterfaces: boolean = false): MsgWithdrawal {
     return MsgWithdrawal.decode(message.value, undefined, useInterfaces);
   },
@@ -936,11 +1192,24 @@ export const MsgWithdrawal = {
   }
 };
 function createBaseMsgWithdrawalResponse(): MsgWithdrawalResponse {
-  return {};
+  return {
+    reserve0Withdrawn: "",
+    reserve1Withdrawn: "",
+    sharesBurned: []
+  };
 }
 export const MsgWithdrawalResponse = {
   typeUrl: "/neutron.dex.MsgWithdrawalResponse",
-  encode(_: MsgWithdrawalResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+  encode(message: MsgWithdrawalResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.reserve0Withdrawn !== "") {
+      writer.uint32(10).string(message.reserve0Withdrawn);
+    }
+    if (message.reserve1Withdrawn !== "") {
+      writer.uint32(18).string(message.reserve1Withdrawn);
+    }
+    for (const v of message.sharesBurned) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     return writer;
   },
   decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawalResponse {
@@ -950,6 +1219,15 @@ export const MsgWithdrawalResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.reserve0Withdrawn = reader.string();
+          break;
+        case 2:
+          message.reserve1Withdrawn = reader.string();
+          break;
+        case 3:
+          message.sharesBurned.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -957,16 +1235,33 @@ export const MsgWithdrawalResponse = {
     }
     return message;
   },
-  fromPartial(_: Partial<MsgWithdrawalResponse>): MsgWithdrawalResponse {
+  fromPartial(object: Partial<MsgWithdrawalResponse>): MsgWithdrawalResponse {
     const message = createBaseMsgWithdrawalResponse();
+    message.reserve0Withdrawn = object.reserve0Withdrawn ?? "";
+    message.reserve1Withdrawn = object.reserve1Withdrawn ?? "";
+    message.sharesBurned = object.sharesBurned?.map(e => Coin.fromPartial(e)) || [];
     return message;
   },
-  fromAmino(_: MsgWithdrawalResponseAmino): MsgWithdrawalResponse {
+  fromAmino(object: MsgWithdrawalResponseAmino): MsgWithdrawalResponse {
     const message = createBaseMsgWithdrawalResponse();
+    if (object.reserve0_withdrawn !== undefined && object.reserve0_withdrawn !== null) {
+      message.reserve0Withdrawn = object.reserve0_withdrawn;
+    }
+    if (object.reserve1_withdrawn !== undefined && object.reserve1_withdrawn !== null) {
+      message.reserve1Withdrawn = object.reserve1_withdrawn;
+    }
+    message.sharesBurned = object.shares_burned?.map(e => Coin.fromAmino(e)) || [];
     return message;
   },
-  toAmino(_: MsgWithdrawalResponse, useInterfaces: boolean = false): MsgWithdrawalResponseAmino {
+  toAmino(message: MsgWithdrawalResponse, useInterfaces: boolean = false): MsgWithdrawalResponseAmino {
     const obj: any = {};
+    obj.reserve0_withdrawn = message.reserve0Withdrawn ?? "";
+    obj.reserve1_withdrawn = message.reserve1Withdrawn ?? "";
+    if (message.sharesBurned) {
+      obj.shares_burned = message.sharesBurned.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.shares_burned = message.sharesBurned;
+    }
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawalResponseAminoMsg): MsgWithdrawalResponse {
@@ -995,7 +1290,9 @@ function createBaseMsgPlaceLimitOrder(): MsgPlaceLimitOrder {
     amountIn: "",
     orderType: 0,
     expirationTime: undefined,
-    maxAmountOut: undefined
+    maxAmountOut: undefined,
+    limitSellPrice: undefined,
+    minAverageSellPrice: undefined
   };
 }
 export const MsgPlaceLimitOrder = {
@@ -1027,6 +1324,12 @@ export const MsgPlaceLimitOrder = {
     }
     if (message.maxAmountOut !== undefined) {
       writer.uint32(82).string(message.maxAmountOut);
+    }
+    if (message.limitSellPrice !== undefined) {
+      writer.uint32(90).string(message.limitSellPrice);
+    }
+    if (message.minAverageSellPrice !== undefined) {
+      writer.uint32(98).string(message.minAverageSellPrice);
     }
     return writer;
   },
@@ -1064,6 +1367,12 @@ export const MsgPlaceLimitOrder = {
         case 10:
           message.maxAmountOut = reader.string();
           break;
+        case 11:
+          message.limitSellPrice = reader.string();
+          break;
+        case 12:
+          message.minAverageSellPrice = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1082,6 +1391,8 @@ export const MsgPlaceLimitOrder = {
     message.orderType = object.orderType ?? 0;
     message.expirationTime = object.expirationTime ?? undefined;
     message.maxAmountOut = object.maxAmountOut ?? undefined;
+    message.limitSellPrice = object.limitSellPrice ?? undefined;
+    message.minAverageSellPrice = object.minAverageSellPrice ?? undefined;
     return message;
   },
   fromAmino(object: MsgPlaceLimitOrderAmino): MsgPlaceLimitOrder {
@@ -1113,6 +1424,12 @@ export const MsgPlaceLimitOrder = {
     if (object.max_amount_out !== undefined && object.max_amount_out !== null) {
       message.maxAmountOut = object.max_amount_out;
     }
+    if (object.limit_sell_price !== undefined && object.limit_sell_price !== null) {
+      message.limitSellPrice = object.limit_sell_price;
+    }
+    if (object.min_average_sell_price !== undefined && object.min_average_sell_price !== null) {
+      message.minAverageSellPrice = object.min_average_sell_price;
+    }
     return message;
   },
   toAmino(message: MsgPlaceLimitOrder, useInterfaces: boolean = false): MsgPlaceLimitOrderAmino {
@@ -1126,10 +1443,18 @@ export const MsgPlaceLimitOrder = {
     obj.order_type = message.orderType === 0 ? undefined : message.orderType;
     obj.expiration_time = message.expirationTime ? Timestamp.toAmino(toTimestamp(message.expirationTime)) : undefined;
     obj.max_amount_out = message.maxAmountOut ?? null;
+    obj.limit_sell_price = message.limitSellPrice ?? null;
+    obj.min_average_sell_price = message.minAverageSellPrice ?? null;
     return obj;
   },
   fromAminoMsg(object: MsgPlaceLimitOrderAminoMsg): MsgPlaceLimitOrder {
     return MsgPlaceLimitOrder.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgPlaceLimitOrder, useInterfaces: boolean = false): MsgPlaceLimitOrderAminoMsg {
+    return {
+      type: "dex/MsgPlaceLimitOrder",
+      value: MsgPlaceLimitOrder.toAmino(message, useInterfaces)
+    };
   },
   fromProtoMsg(message: MsgPlaceLimitOrderProtoMsg, useInterfaces: boolean = false): MsgPlaceLimitOrder {
     return MsgPlaceLimitOrder.decode(message.value, undefined, useInterfaces);
@@ -1148,7 +1473,8 @@ function createBaseMsgPlaceLimitOrderResponse(): MsgPlaceLimitOrderResponse {
   return {
     trancheKey: "",
     coinIn: Coin.fromPartial({}),
-    takerCoinOut: Coin.fromPartial({})
+    takerCoinOut: Coin.fromPartial({}),
+    takerCoinIn: Coin.fromPartial({})
   };
 }
 export const MsgPlaceLimitOrderResponse = {
@@ -1162,6 +1488,9 @@ export const MsgPlaceLimitOrderResponse = {
     }
     if (message.takerCoinOut !== undefined) {
       Coin.encode(message.takerCoinOut, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.takerCoinIn !== undefined) {
+      Coin.encode(message.takerCoinIn, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -1181,6 +1510,9 @@ export const MsgPlaceLimitOrderResponse = {
         case 3:
           message.takerCoinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
+        case 4:
+          message.takerCoinIn = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1193,6 +1525,7 @@ export const MsgPlaceLimitOrderResponse = {
     message.trancheKey = object.trancheKey ?? "";
     message.coinIn = object.coinIn !== undefined && object.coinIn !== null ? Coin.fromPartial(object.coinIn) : undefined;
     message.takerCoinOut = object.takerCoinOut !== undefined && object.takerCoinOut !== null ? Coin.fromPartial(object.takerCoinOut) : undefined;
+    message.takerCoinIn = object.takerCoinIn !== undefined && object.takerCoinIn !== null ? Coin.fromPartial(object.takerCoinIn) : undefined;
     return message;
   },
   fromAmino(object: MsgPlaceLimitOrderResponseAmino): MsgPlaceLimitOrderResponse {
@@ -1206,6 +1539,9 @@ export const MsgPlaceLimitOrderResponse = {
     if (object.taker_coin_out !== undefined && object.taker_coin_out !== null) {
       message.takerCoinOut = Coin.fromAmino(object.taker_coin_out);
     }
+    if (object.taker_coin_in !== undefined && object.taker_coin_in !== null) {
+      message.takerCoinIn = Coin.fromAmino(object.taker_coin_in);
+    }
     return message;
   },
   toAmino(message: MsgPlaceLimitOrderResponse, useInterfaces: boolean = false): MsgPlaceLimitOrderResponseAmino {
@@ -1213,6 +1549,7 @@ export const MsgPlaceLimitOrderResponse = {
     obj.trancheKey = message.trancheKey === "" ? undefined : message.trancheKey;
     obj.coin_in = message.coinIn ? Coin.toAmino(message.coinIn, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     obj.taker_coin_out = message.takerCoinOut ? Coin.toAmino(message.takerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.taker_coin_in = message.takerCoinIn ? Coin.toAmino(message.takerCoinIn, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgPlaceLimitOrderResponseAminoMsg): MsgPlaceLimitOrderResponse {
@@ -1293,6 +1630,12 @@ export const MsgWithdrawFilledLimitOrder = {
   fromAminoMsg(object: MsgWithdrawFilledLimitOrderAminoMsg): MsgWithdrawFilledLimitOrder {
     return MsgWithdrawFilledLimitOrder.fromAmino(object.value);
   },
+  toAminoMsg(message: MsgWithdrawFilledLimitOrder, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrderAminoMsg {
+    return {
+      type: "dex/MsgWithdrawFilledLimitOrder",
+      value: MsgWithdrawFilledLimitOrder.toAmino(message, useInterfaces)
+    };
+  },
   fromProtoMsg(message: MsgWithdrawFilledLimitOrderProtoMsg, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrder {
     return MsgWithdrawFilledLimitOrder.decode(message.value, undefined, useInterfaces);
   },
@@ -1307,11 +1650,20 @@ export const MsgWithdrawFilledLimitOrder = {
   }
 };
 function createBaseMsgWithdrawFilledLimitOrderResponse(): MsgWithdrawFilledLimitOrderResponse {
-  return {};
+  return {
+    takerCoinOut: Coin.fromPartial({}),
+    makerCoinOut: Coin.fromPartial({})
+  };
 }
 export const MsgWithdrawFilledLimitOrderResponse = {
   typeUrl: "/neutron.dex.MsgWithdrawFilledLimitOrderResponse",
-  encode(_: MsgWithdrawFilledLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+  encode(message: MsgWithdrawFilledLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.takerCoinOut !== undefined) {
+      Coin.encode(message.takerCoinOut, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.makerCoinOut !== undefined) {
+      Coin.encode(message.makerCoinOut, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
   decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrderResponse {
@@ -1321,6 +1673,12 @@ export const MsgWithdrawFilledLimitOrderResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.takerCoinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 2:
+          message.makerCoinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1328,16 +1686,26 @@ export const MsgWithdrawFilledLimitOrderResponse = {
     }
     return message;
   },
-  fromPartial(_: Partial<MsgWithdrawFilledLimitOrderResponse>): MsgWithdrawFilledLimitOrderResponse {
+  fromPartial(object: Partial<MsgWithdrawFilledLimitOrderResponse>): MsgWithdrawFilledLimitOrderResponse {
     const message = createBaseMsgWithdrawFilledLimitOrderResponse();
+    message.takerCoinOut = object.takerCoinOut !== undefined && object.takerCoinOut !== null ? Coin.fromPartial(object.takerCoinOut) : undefined;
+    message.makerCoinOut = object.makerCoinOut !== undefined && object.makerCoinOut !== null ? Coin.fromPartial(object.makerCoinOut) : undefined;
     return message;
   },
-  fromAmino(_: MsgWithdrawFilledLimitOrderResponseAmino): MsgWithdrawFilledLimitOrderResponse {
+  fromAmino(object: MsgWithdrawFilledLimitOrderResponseAmino): MsgWithdrawFilledLimitOrderResponse {
     const message = createBaseMsgWithdrawFilledLimitOrderResponse();
+    if (object.taker_coin_out !== undefined && object.taker_coin_out !== null) {
+      message.takerCoinOut = Coin.fromAmino(object.taker_coin_out);
+    }
+    if (object.maker_coin_out !== undefined && object.maker_coin_out !== null) {
+      message.makerCoinOut = Coin.fromAmino(object.maker_coin_out);
+    }
     return message;
   },
-  toAmino(_: MsgWithdrawFilledLimitOrderResponse, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrderResponseAmino {
+  toAmino(message: MsgWithdrawFilledLimitOrderResponse, useInterfaces: boolean = false): MsgWithdrawFilledLimitOrderResponseAmino {
     const obj: any = {};
+    obj.taker_coin_out = message.takerCoinOut ? Coin.toAmino(message.takerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.maker_coin_out = message.makerCoinOut ? Coin.toAmino(message.makerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawFilledLimitOrderResponseAminoMsg): MsgWithdrawFilledLimitOrderResponse {
@@ -1418,6 +1786,12 @@ export const MsgCancelLimitOrder = {
   fromAminoMsg(object: MsgCancelLimitOrderAminoMsg): MsgCancelLimitOrder {
     return MsgCancelLimitOrder.fromAmino(object.value);
   },
+  toAminoMsg(message: MsgCancelLimitOrder, useInterfaces: boolean = false): MsgCancelLimitOrderAminoMsg {
+    return {
+      type: "dex/MsgCancelLimitOrder",
+      value: MsgCancelLimitOrder.toAmino(message, useInterfaces)
+    };
+  },
   fromProtoMsg(message: MsgCancelLimitOrderProtoMsg, useInterfaces: boolean = false): MsgCancelLimitOrder {
     return MsgCancelLimitOrder.decode(message.value, undefined, useInterfaces);
   },
@@ -1432,11 +1806,20 @@ export const MsgCancelLimitOrder = {
   }
 };
 function createBaseMsgCancelLimitOrderResponse(): MsgCancelLimitOrderResponse {
-  return {};
+  return {
+    takerCoinOut: Coin.fromPartial({}),
+    makerCoinOut: Coin.fromPartial({})
+  };
 }
 export const MsgCancelLimitOrderResponse = {
   typeUrl: "/neutron.dex.MsgCancelLimitOrderResponse",
-  encode(_: MsgCancelLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+  encode(message: MsgCancelLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.takerCoinOut !== undefined) {
+      Coin.encode(message.takerCoinOut, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.makerCoinOut !== undefined) {
+      Coin.encode(message.makerCoinOut, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
   decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCancelLimitOrderResponse {
@@ -1446,6 +1829,12 @@ export const MsgCancelLimitOrderResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.takerCoinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 2:
+          message.makerCoinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1453,16 +1842,26 @@ export const MsgCancelLimitOrderResponse = {
     }
     return message;
   },
-  fromPartial(_: Partial<MsgCancelLimitOrderResponse>): MsgCancelLimitOrderResponse {
+  fromPartial(object: Partial<MsgCancelLimitOrderResponse>): MsgCancelLimitOrderResponse {
     const message = createBaseMsgCancelLimitOrderResponse();
+    message.takerCoinOut = object.takerCoinOut !== undefined && object.takerCoinOut !== null ? Coin.fromPartial(object.takerCoinOut) : undefined;
+    message.makerCoinOut = object.makerCoinOut !== undefined && object.makerCoinOut !== null ? Coin.fromPartial(object.makerCoinOut) : undefined;
     return message;
   },
-  fromAmino(_: MsgCancelLimitOrderResponseAmino): MsgCancelLimitOrderResponse {
+  fromAmino(object: MsgCancelLimitOrderResponseAmino): MsgCancelLimitOrderResponse {
     const message = createBaseMsgCancelLimitOrderResponse();
+    if (object.taker_coin_out !== undefined && object.taker_coin_out !== null) {
+      message.takerCoinOut = Coin.fromAmino(object.taker_coin_out);
+    }
+    if (object.maker_coin_out !== undefined && object.maker_coin_out !== null) {
+      message.makerCoinOut = Coin.fromAmino(object.maker_coin_out);
+    }
     return message;
   },
-  toAmino(_: MsgCancelLimitOrderResponse, useInterfaces: boolean = false): MsgCancelLimitOrderResponseAmino {
+  toAmino(message: MsgCancelLimitOrderResponse, useInterfaces: boolean = false): MsgCancelLimitOrderResponseAmino {
     const obj: any = {};
+    obj.taker_coin_out = message.takerCoinOut ? Coin.toAmino(message.takerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.maker_coin_out = message.makerCoinOut ? Coin.toAmino(message.makerCoinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
     return obj;
   },
   fromAminoMsg(object: MsgCancelLimitOrderResponseAminoMsg): MsgCancelLimitOrderResponse {
@@ -1658,6 +2057,12 @@ export const MsgMultiHopSwap = {
   fromAminoMsg(object: MsgMultiHopSwapAminoMsg): MsgMultiHopSwap {
     return MsgMultiHopSwap.fromAmino(object.value);
   },
+  toAminoMsg(message: MsgMultiHopSwap, useInterfaces: boolean = false): MsgMultiHopSwapAminoMsg {
+    return {
+      type: "dex/MsgMultiHopSwap",
+      value: MsgMultiHopSwap.toAmino(message, useInterfaces)
+    };
+  },
   fromProtoMsg(message: MsgMultiHopSwapProtoMsg, useInterfaces: boolean = false): MsgMultiHopSwap {
     return MsgMultiHopSwap.decode(message.value, undefined, useInterfaces);
   },
@@ -1673,7 +2078,9 @@ export const MsgMultiHopSwap = {
 };
 function createBaseMsgMultiHopSwapResponse(): MsgMultiHopSwapResponse {
   return {
-    coinOut: Coin.fromPartial({})
+    coinOut: Coin.fromPartial({}),
+    route: undefined,
+    dust: []
   };
 }
 export const MsgMultiHopSwapResponse = {
@@ -1681,6 +2088,12 @@ export const MsgMultiHopSwapResponse = {
   encode(message: MsgMultiHopSwapResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.coinOut !== undefined) {
       Coin.encode(message.coinOut, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.route !== undefined) {
+      MultiHopRoute.encode(message.route, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.dust) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -1694,6 +2107,12 @@ export const MsgMultiHopSwapResponse = {
         case 1:
           message.coinOut = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
+        case 2:
+          message.route = MultiHopRoute.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        case 3:
+          message.dust.push(Coin.decode(reader, reader.uint32(), useInterfaces));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1704,6 +2123,8 @@ export const MsgMultiHopSwapResponse = {
   fromPartial(object: Partial<MsgMultiHopSwapResponse>): MsgMultiHopSwapResponse {
     const message = createBaseMsgMultiHopSwapResponse();
     message.coinOut = object.coinOut !== undefined && object.coinOut !== null ? Coin.fromPartial(object.coinOut) : undefined;
+    message.route = object.route !== undefined && object.route !== null ? MultiHopRoute.fromPartial(object.route) : undefined;
+    message.dust = object.dust?.map(e => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(object: MsgMultiHopSwapResponseAmino): MsgMultiHopSwapResponse {
@@ -1711,11 +2132,21 @@ export const MsgMultiHopSwapResponse = {
     if (object.coin_out !== undefined && object.coin_out !== null) {
       message.coinOut = Coin.fromAmino(object.coin_out);
     }
+    if (object.route !== undefined && object.route !== null) {
+      message.route = MultiHopRoute.fromAmino(object.route);
+    }
+    message.dust = object.dust?.map(e => Coin.fromAmino(e)) || [];
     return message;
   },
   toAmino(message: MsgMultiHopSwapResponse, useInterfaces: boolean = false): MsgMultiHopSwapResponseAmino {
     const obj: any = {};
     obj.coin_out = message.coinOut ? Coin.toAmino(message.coinOut, useInterfaces) : Coin.toAmino(Coin.fromPartial({}));
+    obj.route = message.route ? MultiHopRoute.toAmino(message.route, useInterfaces) : undefined;
+    if (message.dust) {
+      obj.dust = message.dust.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
+    } else {
+      obj.dust = message.dust;
+    }
     return obj;
   },
   fromAminoMsg(object: MsgMultiHopSwapResponseAminoMsg): MsgMultiHopSwapResponse {

@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageResponseAmino, PageResponseSDKType } from "../../cosmos/base/query/v1beta1/pagination";
-import { MultiHopRoute, MultiHopRouteAmino, MultiHopRouteSDKType, LimitOrderType } from "./tx";
+import { MultiHopRoute, MultiHopRouteAmino, MultiHopRouteSDKType, LimitOrderType, MsgDeposit, MsgDepositAmino, MsgDepositSDKType, MsgWithdrawal, MsgWithdrawalAmino, MsgWithdrawalSDKType, MsgPlaceLimitOrder, MsgPlaceLimitOrderAmino, MsgPlaceLimitOrderSDKType, MsgWithdrawFilledLimitOrder, MsgWithdrawFilledLimitOrderAmino, MsgWithdrawFilledLimitOrderSDKType, MsgCancelLimitOrder, MsgCancelLimitOrderAmino, MsgCancelLimitOrderSDKType, MsgMultiHopSwap, MsgMultiHopSwapAmino, MsgMultiHopSwapSDKType, MsgDepositResponse, MsgDepositResponseAmino, MsgDepositResponseSDKType, MsgWithdrawalResponse, MsgWithdrawalResponseAmino, MsgWithdrawalResponseSDKType, MsgPlaceLimitOrderResponse, MsgPlaceLimitOrderResponseAmino, MsgPlaceLimitOrderResponseSDKType, MsgWithdrawFilledLimitOrderResponse, MsgWithdrawFilledLimitOrderResponseAmino, MsgWithdrawFilledLimitOrderResponseSDKType, MsgCancelLimitOrderResponse, MsgCancelLimitOrderResponseAmino, MsgCancelLimitOrderResponseSDKType, MsgMultiHopSwapResponse, MsgMultiHopSwapResponseAmino, MsgMultiHopSwapResponseSDKType } from "./tx";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { LimitOrderTrancheUser, LimitOrderTrancheUserAmino, LimitOrderTrancheUserSDKType } from "./limit_order_tranche_user";
@@ -52,6 +52,7 @@ export interface QueryParamsResponseSDKType {
 export interface QueryGetLimitOrderTrancheUserRequest {
   address: string;
   trancheKey: string;
+  calcWithdrawableShares: boolean;
 }
 export interface QueryGetLimitOrderTrancheUserRequestProtoMsg {
   typeUrl: "/neutron.dex.QueryGetLimitOrderTrancheUserRequest";
@@ -60,6 +61,7 @@ export interface QueryGetLimitOrderTrancheUserRequestProtoMsg {
 export interface QueryGetLimitOrderTrancheUserRequestAmino {
   address?: string;
   tranche_key?: string;
+  calc_withdrawable_shares?: boolean;
 }
 export interface QueryGetLimitOrderTrancheUserRequestAminoMsg {
   type: "/neutron.dex.QueryGetLimitOrderTrancheUserRequest";
@@ -68,9 +70,11 @@ export interface QueryGetLimitOrderTrancheUserRequestAminoMsg {
 export interface QueryGetLimitOrderTrancheUserRequestSDKType {
   address: string;
   tranche_key: string;
+  calc_withdrawable_shares: boolean;
 }
 export interface QueryGetLimitOrderTrancheUserResponse {
   limitOrderTrancheUser?: LimitOrderTrancheUser | undefined;
+  withdrawableShares?: string;
 }
 export interface QueryGetLimitOrderTrancheUserResponseProtoMsg {
   typeUrl: "/neutron.dex.QueryGetLimitOrderTrancheUserResponse";
@@ -78,6 +82,7 @@ export interface QueryGetLimitOrderTrancheUserResponseProtoMsg {
 }
 export interface QueryGetLimitOrderTrancheUserResponseAmino {
   limit_order_tranche_user?: LimitOrderTrancheUserAmino | undefined;
+  withdrawable_shares: string;
 }
 export interface QueryGetLimitOrderTrancheUserResponseAminoMsg {
   type: "/neutron.dex.QueryGetLimitOrderTrancheUserResponse";
@@ -85,6 +90,7 @@ export interface QueryGetLimitOrderTrancheUserResponseAminoMsg {
 }
 export interface QueryGetLimitOrderTrancheUserResponseSDKType {
   limit_order_tranche_user?: LimitOrderTrancheUserSDKType | undefined;
+  withdrawable_shares?: string;
 }
 export interface QueryAllLimitOrderTrancheUserRequest {
   pagination?: PageRequest | undefined;
@@ -212,6 +218,7 @@ export interface QueryAllLimitOrderTrancheResponseSDKType {
 export interface QueryAllUserDepositsRequest {
   address: string;
   pagination?: PageRequest | undefined;
+  includePoolData: boolean;
 }
 export interface QueryAllUserDepositsRequestProtoMsg {
   typeUrl: "/neutron.dex.QueryAllUserDepositsRequest";
@@ -220,6 +227,7 @@ export interface QueryAllUserDepositsRequestProtoMsg {
 export interface QueryAllUserDepositsRequestAmino {
   address?: string;
   pagination?: PageRequestAmino | undefined;
+  include_pool_data?: boolean;
 }
 export interface QueryAllUserDepositsRequestAminoMsg {
   type: "/neutron.dex.QueryAllUserDepositsRequest";
@@ -228,6 +236,7 @@ export interface QueryAllUserDepositsRequestAminoMsg {
 export interface QueryAllUserDepositsRequestSDKType {
   address: string;
   pagination?: PageRequestSDKType | undefined;
+  include_pool_data: boolean;
 }
 export interface QueryAllUserDepositsResponse {
   deposits?: DepositRecord[];
@@ -249,43 +258,43 @@ export interface QueryAllUserDepositsResponseSDKType {
   deposits?: DepositRecordSDKType[];
   pagination?: PageResponseSDKType | undefined;
 }
-export interface QueryAllUserLimitOrdersRequest {
+export interface QueryAllLimitOrderTrancheUserByAddressRequest {
   address: string;
   pagination?: PageRequest | undefined;
 }
-export interface QueryAllUserLimitOrdersRequestProtoMsg {
-  typeUrl: "/neutron.dex.QueryAllUserLimitOrdersRequest";
+export interface QueryAllLimitOrderTrancheUserByAddressRequestProtoMsg {
+  typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressRequest";
   value: Uint8Array;
 }
-export interface QueryAllUserLimitOrdersRequestAmino {
+export interface QueryAllLimitOrderTrancheUserByAddressRequestAmino {
   address?: string;
   pagination?: PageRequestAmino | undefined;
 }
-export interface QueryAllUserLimitOrdersRequestAminoMsg {
-  type: "/neutron.dex.QueryAllUserLimitOrdersRequest";
-  value: QueryAllUserLimitOrdersRequestAmino;
+export interface QueryAllLimitOrderTrancheUserByAddressRequestAminoMsg {
+  type: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressRequest";
+  value: QueryAllLimitOrderTrancheUserByAddressRequestAmino;
 }
-export interface QueryAllUserLimitOrdersRequestSDKType {
+export interface QueryAllLimitOrderTrancheUserByAddressRequestSDKType {
   address: string;
   pagination?: PageRequestSDKType | undefined;
 }
-export interface QueryAllUserLimitOrdersResponse {
+export interface QueryAllLimitOrderTrancheUserByAddressResponse {
   limitOrders?: LimitOrderTrancheUser[];
   pagination?: PageResponse | undefined;
 }
-export interface QueryAllUserLimitOrdersResponseProtoMsg {
-  typeUrl: "/neutron.dex.QueryAllUserLimitOrdersResponse";
+export interface QueryAllLimitOrderTrancheUserByAddressResponseProtoMsg {
+  typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressResponse";
   value: Uint8Array;
 }
-export interface QueryAllUserLimitOrdersResponseAmino {
+export interface QueryAllLimitOrderTrancheUserByAddressResponseAmino {
   limit_orders?: LimitOrderTrancheUserAmino[];
   pagination?: PageResponseAmino | undefined;
 }
-export interface QueryAllUserLimitOrdersResponseAminoMsg {
-  type: "/neutron.dex.QueryAllUserLimitOrdersResponse";
-  value: QueryAllUserLimitOrdersResponseAmino;
+export interface QueryAllLimitOrderTrancheUserByAddressResponseAminoMsg {
+  type: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressResponse";
+  value: QueryAllLimitOrderTrancheUserByAddressResponseAmino;
 }
-export interface QueryAllUserLimitOrdersResponseSDKType {
+export interface QueryAllLimitOrderTrancheUserByAddressResponseSDKType {
   limit_orders?: LimitOrderTrancheUserSDKType[];
   pagination?: PageResponseSDKType | undefined;
 }
@@ -499,6 +508,7 @@ export interface QueryGetPoolReservesResponseSDKType {
   pool_reserves?: PoolReservesSDKType | undefined;
 }
 export interface QueryEstimateMultiHopSwapRequest {
+  /** DEPRECATED: Use QuerySimulateMultiHopSwap */
   creator: string;
   receiver: string;
   routes: MultiHopRoute[];
@@ -506,7 +516,7 @@ export interface QueryEstimateMultiHopSwapRequest {
   exitLimitPrice: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
-   * best price is chosen otherwise, the first succesful route is used.
+   * best price is chosen otherwise, the first successful route is used.
    */
   pickBestRoute: boolean;
 }
@@ -515,6 +525,7 @@ export interface QueryEstimateMultiHopSwapRequestProtoMsg {
   value: Uint8Array;
 }
 export interface QueryEstimateMultiHopSwapRequestAmino {
+  /** DEPRECATED: Use QuerySimulateMultiHopSwap */
   creator?: string;
   receiver?: string;
   routes?: MultiHopRouteAmino[];
@@ -522,7 +533,7 @@ export interface QueryEstimateMultiHopSwapRequestAmino {
   exit_limit_price: string;
   /**
    * If pickBestRoute == true then all routes are run and the route with the
-   * best price is chosen otherwise, the first succesful route is used.
+   * best price is chosen otherwise, the first successful route is used.
    */
   pick_best_route?: boolean;
 }
@@ -556,6 +567,7 @@ export interface QueryEstimateMultiHopSwapResponseSDKType {
   coin_out: CoinSDKType | undefined;
 }
 export interface QueryEstimatePlaceLimitOrderRequest {
+  /** DEPRECATED: Use QuerySimulatePlaceLimitOrder */
   creator: string;
   receiver: string;
   tokenIn: string;
@@ -572,6 +584,7 @@ export interface QueryEstimatePlaceLimitOrderRequestProtoMsg {
   value: Uint8Array;
 }
 export interface QueryEstimatePlaceLimitOrderRequestAmino {
+  /** DEPRECATED: Use QuerySimulatePlaceLimitOrder */
   creator?: string;
   receiver?: string;
   token_in?: string;
@@ -773,6 +786,210 @@ export interface QueryAllPoolMetadataResponseSDKType {
   pool_metadata: PoolMetadataSDKType[];
   pagination?: PageResponseSDKType | undefined;
 }
+export interface QuerySimulateDepositRequest {
+  msg?: MsgDeposit | undefined;
+}
+export interface QuerySimulateDepositRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateDepositRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulateDepositRequestAmino {
+  msg?: MsgDepositAmino | undefined;
+}
+export interface QuerySimulateDepositRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulateDepositRequest";
+  value: QuerySimulateDepositRequestAmino;
+}
+export interface QuerySimulateDepositRequestSDKType {
+  msg?: MsgDepositSDKType | undefined;
+}
+export interface QuerySimulateDepositResponse {
+  resp?: MsgDepositResponse | undefined;
+}
+export interface QuerySimulateDepositResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateDepositResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulateDepositResponseAmino {
+  resp?: MsgDepositResponseAmino | undefined;
+}
+export interface QuerySimulateDepositResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulateDepositResponse";
+  value: QuerySimulateDepositResponseAmino;
+}
+export interface QuerySimulateDepositResponseSDKType {
+  resp?: MsgDepositResponseSDKType | undefined;
+}
+export interface QuerySimulateWithdrawalRequest {
+  msg?: MsgWithdrawal | undefined;
+}
+export interface QuerySimulateWithdrawalRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawalRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulateWithdrawalRequestAmino {
+  msg?: MsgWithdrawalAmino | undefined;
+}
+export interface QuerySimulateWithdrawalRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulateWithdrawalRequest";
+  value: QuerySimulateWithdrawalRequestAmino;
+}
+export interface QuerySimulateWithdrawalRequestSDKType {
+  msg?: MsgWithdrawalSDKType | undefined;
+}
+export interface QuerySimulateWithdrawalResponse {
+  resp?: MsgWithdrawalResponse | undefined;
+}
+export interface QuerySimulateWithdrawalResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawalResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulateWithdrawalResponseAmino {
+  resp?: MsgWithdrawalResponseAmino | undefined;
+}
+export interface QuerySimulateWithdrawalResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulateWithdrawalResponse";
+  value: QuerySimulateWithdrawalResponseAmino;
+}
+export interface QuerySimulateWithdrawalResponseSDKType {
+  resp?: MsgWithdrawalResponseSDKType | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderRequest {
+  msg?: MsgPlaceLimitOrder | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulatePlaceLimitOrderRequestAmino {
+  msg?: MsgPlaceLimitOrderAmino | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulatePlaceLimitOrderRequest";
+  value: QuerySimulatePlaceLimitOrderRequestAmino;
+}
+export interface QuerySimulatePlaceLimitOrderRequestSDKType {
+  msg?: MsgPlaceLimitOrderSDKType | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderResponse {
+  resp?: MsgPlaceLimitOrderResponse | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulatePlaceLimitOrderResponseAmino {
+  resp?: MsgPlaceLimitOrderResponseAmino | undefined;
+}
+export interface QuerySimulatePlaceLimitOrderResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulatePlaceLimitOrderResponse";
+  value: QuerySimulatePlaceLimitOrderResponseAmino;
+}
+export interface QuerySimulatePlaceLimitOrderResponseSDKType {
+  resp?: MsgPlaceLimitOrderResponseSDKType | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderRequest {
+  msg?: MsgWithdrawFilledLimitOrder | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderRequestAmino {
+  msg?: MsgWithdrawFilledLimitOrderAmino | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderRequest";
+  value: QuerySimulateWithdrawFilledLimitOrderRequestAmino;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderRequestSDKType {
+  msg?: MsgWithdrawFilledLimitOrderSDKType | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderResponse {
+  resp?: MsgWithdrawFilledLimitOrderResponse | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderResponseAmino {
+  resp?: MsgWithdrawFilledLimitOrderResponseAmino | undefined;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderResponse";
+  value: QuerySimulateWithdrawFilledLimitOrderResponseAmino;
+}
+export interface QuerySimulateWithdrawFilledLimitOrderResponseSDKType {
+  resp?: MsgWithdrawFilledLimitOrderResponseSDKType | undefined;
+}
+export interface QuerySimulateCancelLimitOrderRequest {
+  msg?: MsgCancelLimitOrder | undefined;
+}
+export interface QuerySimulateCancelLimitOrderRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulateCancelLimitOrderRequestAmino {
+  msg?: MsgCancelLimitOrderAmino | undefined;
+}
+export interface QuerySimulateCancelLimitOrderRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulateCancelLimitOrderRequest";
+  value: QuerySimulateCancelLimitOrderRequestAmino;
+}
+export interface QuerySimulateCancelLimitOrderRequestSDKType {
+  msg?: MsgCancelLimitOrderSDKType | undefined;
+}
+export interface QuerySimulateCancelLimitOrderResponse {
+  resp?: MsgCancelLimitOrderResponse | undefined;
+}
+export interface QuerySimulateCancelLimitOrderResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulateCancelLimitOrderResponseAmino {
+  resp?: MsgCancelLimitOrderResponseAmino | undefined;
+}
+export interface QuerySimulateCancelLimitOrderResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulateCancelLimitOrderResponse";
+  value: QuerySimulateCancelLimitOrderResponseAmino;
+}
+export interface QuerySimulateCancelLimitOrderResponseSDKType {
+  resp?: MsgCancelLimitOrderResponseSDKType | undefined;
+}
+export interface QuerySimulateMultiHopSwapRequest {
+  msg?: MsgMultiHopSwap | undefined;
+}
+export interface QuerySimulateMultiHopSwapRequestProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapRequest";
+  value: Uint8Array;
+}
+export interface QuerySimulateMultiHopSwapRequestAmino {
+  msg?: MsgMultiHopSwapAmino | undefined;
+}
+export interface QuerySimulateMultiHopSwapRequestAminoMsg {
+  type: "/neutron.dex.QuerySimulateMultiHopSwapRequest";
+  value: QuerySimulateMultiHopSwapRequestAmino;
+}
+export interface QuerySimulateMultiHopSwapRequestSDKType {
+  msg?: MsgMultiHopSwapSDKType | undefined;
+}
+export interface QuerySimulateMultiHopSwapResponse {
+  resp?: MsgMultiHopSwapResponse | undefined;
+}
+export interface QuerySimulateMultiHopSwapResponseProtoMsg {
+  typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapResponse";
+  value: Uint8Array;
+}
+export interface QuerySimulateMultiHopSwapResponseAmino {
+  resp?: MsgMultiHopSwapResponseAmino | undefined;
+}
+export interface QuerySimulateMultiHopSwapResponseAminoMsg {
+  type: "/neutron.dex.QuerySimulateMultiHopSwapResponse";
+  value: QuerySimulateMultiHopSwapResponseAmino;
+}
+export interface QuerySimulateMultiHopSwapResponseSDKType {
+  resp?: MsgMultiHopSwapResponseSDKType | undefined;
+}
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
 }
@@ -889,7 +1106,8 @@ export const QueryParamsResponse = {
 function createBaseQueryGetLimitOrderTrancheUserRequest(): QueryGetLimitOrderTrancheUserRequest {
   return {
     address: "",
-    trancheKey: ""
+    trancheKey: "",
+    calcWithdrawableShares: false
   };
 }
 export const QueryGetLimitOrderTrancheUserRequest = {
@@ -900,6 +1118,9 @@ export const QueryGetLimitOrderTrancheUserRequest = {
     }
     if (message.trancheKey !== "") {
       writer.uint32(18).string(message.trancheKey);
+    }
+    if (message.calcWithdrawableShares === true) {
+      writer.uint32(24).bool(message.calcWithdrawableShares);
     }
     return writer;
   },
@@ -916,6 +1137,9 @@ export const QueryGetLimitOrderTrancheUserRequest = {
         case 2:
           message.trancheKey = reader.string();
           break;
+        case 3:
+          message.calcWithdrawableShares = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -927,6 +1151,7 @@ export const QueryGetLimitOrderTrancheUserRequest = {
     const message = createBaseQueryGetLimitOrderTrancheUserRequest();
     message.address = object.address ?? "";
     message.trancheKey = object.trancheKey ?? "";
+    message.calcWithdrawableShares = object.calcWithdrawableShares ?? false;
     return message;
   },
   fromAmino(object: QueryGetLimitOrderTrancheUserRequestAmino): QueryGetLimitOrderTrancheUserRequest {
@@ -937,12 +1162,16 @@ export const QueryGetLimitOrderTrancheUserRequest = {
     if (object.tranche_key !== undefined && object.tranche_key !== null) {
       message.trancheKey = object.tranche_key;
     }
+    if (object.calc_withdrawable_shares !== undefined && object.calc_withdrawable_shares !== null) {
+      message.calcWithdrawableShares = object.calc_withdrawable_shares;
+    }
     return message;
   },
   toAmino(message: QueryGetLimitOrderTrancheUserRequest, useInterfaces: boolean = false): QueryGetLimitOrderTrancheUserRequestAmino {
     const obj: any = {};
     obj.address = message.address === "" ? undefined : message.address;
     obj.tranche_key = message.trancheKey === "" ? undefined : message.trancheKey;
+    obj.calc_withdrawable_shares = message.calcWithdrawableShares === false ? undefined : message.calcWithdrawableShares;
     return obj;
   },
   fromAminoMsg(object: QueryGetLimitOrderTrancheUserRequestAminoMsg): QueryGetLimitOrderTrancheUserRequest {
@@ -963,7 +1192,8 @@ export const QueryGetLimitOrderTrancheUserRequest = {
 };
 function createBaseQueryGetLimitOrderTrancheUserResponse(): QueryGetLimitOrderTrancheUserResponse {
   return {
-    limitOrderTrancheUser: undefined
+    limitOrderTrancheUser: undefined,
+    withdrawableShares: undefined
   };
 }
 export const QueryGetLimitOrderTrancheUserResponse = {
@@ -971,6 +1201,9 @@ export const QueryGetLimitOrderTrancheUserResponse = {
   encode(message: QueryGetLimitOrderTrancheUserResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.limitOrderTrancheUser !== undefined) {
       LimitOrderTrancheUser.encode(message.limitOrderTrancheUser, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.withdrawableShares !== undefined) {
+      writer.uint32(18).string(message.withdrawableShares);
     }
     return writer;
   },
@@ -984,6 +1217,9 @@ export const QueryGetLimitOrderTrancheUserResponse = {
         case 1:
           message.limitOrderTrancheUser = LimitOrderTrancheUser.decode(reader, reader.uint32(), useInterfaces);
           break;
+        case 2:
+          message.withdrawableShares = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -994,6 +1230,7 @@ export const QueryGetLimitOrderTrancheUserResponse = {
   fromPartial(object: Partial<QueryGetLimitOrderTrancheUserResponse>): QueryGetLimitOrderTrancheUserResponse {
     const message = createBaseQueryGetLimitOrderTrancheUserResponse();
     message.limitOrderTrancheUser = object.limitOrderTrancheUser !== undefined && object.limitOrderTrancheUser !== null ? LimitOrderTrancheUser.fromPartial(object.limitOrderTrancheUser) : undefined;
+    message.withdrawableShares = object.withdrawableShares ?? undefined;
     return message;
   },
   fromAmino(object: QueryGetLimitOrderTrancheUserResponseAmino): QueryGetLimitOrderTrancheUserResponse {
@@ -1001,11 +1238,15 @@ export const QueryGetLimitOrderTrancheUserResponse = {
     if (object.limit_order_tranche_user !== undefined && object.limit_order_tranche_user !== null) {
       message.limitOrderTrancheUser = LimitOrderTrancheUser.fromAmino(object.limit_order_tranche_user);
     }
+    if (object.withdrawable_shares !== undefined && object.withdrawable_shares !== null) {
+      message.withdrawableShares = object.withdrawable_shares;
+    }
     return message;
   },
   toAmino(message: QueryGetLimitOrderTrancheUserResponse, useInterfaces: boolean = false): QueryGetLimitOrderTrancheUserResponseAmino {
     const obj: any = {};
     obj.limit_order_tranche_user = message.limitOrderTrancheUser ? LimitOrderTrancheUser.toAmino(message.limitOrderTrancheUser, useInterfaces) : undefined;
+    obj.withdrawable_shares = message.withdrawableShares ?? null;
     return obj;
   },
   fromAminoMsg(object: QueryGetLimitOrderTrancheUserResponseAminoMsg): QueryGetLimitOrderTrancheUserResponse {
@@ -1493,7 +1734,8 @@ export const QueryAllLimitOrderTrancheResponse = {
 function createBaseQueryAllUserDepositsRequest(): QueryAllUserDepositsRequest {
   return {
     address: "",
-    pagination: undefined
+    pagination: undefined,
+    includePoolData: false
   };
 }
 export const QueryAllUserDepositsRequest = {
@@ -1504,6 +1746,9 @@ export const QueryAllUserDepositsRequest = {
     }
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.includePoolData === true) {
+      writer.uint32(24).bool(message.includePoolData);
     }
     return writer;
   },
@@ -1520,6 +1765,9 @@ export const QueryAllUserDepositsRequest = {
         case 2:
           message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
+        case 3:
+          message.includePoolData = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1531,6 +1779,7 @@ export const QueryAllUserDepositsRequest = {
     const message = createBaseQueryAllUserDepositsRequest();
     message.address = object.address ?? "";
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    message.includePoolData = object.includePoolData ?? false;
     return message;
   },
   fromAmino(object: QueryAllUserDepositsRequestAmino): QueryAllUserDepositsRequest {
@@ -1541,12 +1790,16 @@ export const QueryAllUserDepositsRequest = {
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromAmino(object.pagination);
     }
+    if (object.include_pool_data !== undefined && object.include_pool_data !== null) {
+      message.includePoolData = object.include_pool_data;
+    }
     return message;
   },
   toAmino(message: QueryAllUserDepositsRequest, useInterfaces: boolean = false): QueryAllUserDepositsRequestAmino {
     const obj: any = {};
     obj.address = message.address === "" ? undefined : message.address;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
+    obj.include_pool_data = message.includePoolData === false ? undefined : message.includePoolData;
     return obj;
   },
   fromAminoMsg(object: QueryAllUserDepositsRequestAminoMsg): QueryAllUserDepositsRequest {
@@ -1642,15 +1895,15 @@ export const QueryAllUserDepositsResponse = {
     };
   }
 };
-function createBaseQueryAllUserLimitOrdersRequest(): QueryAllUserLimitOrdersRequest {
+function createBaseQueryAllLimitOrderTrancheUserByAddressRequest(): QueryAllLimitOrderTrancheUserByAddressRequest {
   return {
     address: "",
     pagination: undefined
   };
 }
-export const QueryAllUserLimitOrdersRequest = {
-  typeUrl: "/neutron.dex.QueryAllUserLimitOrdersRequest",
-  encode(message: QueryAllUserLimitOrdersRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+export const QueryAllLimitOrderTrancheUserByAddressRequest = {
+  typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressRequest",
+  encode(message: QueryAllLimitOrderTrancheUserByAddressRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
@@ -1659,10 +1912,10 @@ export const QueryAllUserLimitOrdersRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllUserLimitOrdersRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAllUserLimitOrdersRequest();
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1679,14 +1932,14 @@ export const QueryAllUserLimitOrdersRequest = {
     }
     return message;
   },
-  fromPartial(object: Partial<QueryAllUserLimitOrdersRequest>): QueryAllUserLimitOrdersRequest {
-    const message = createBaseQueryAllUserLimitOrdersRequest();
+  fromPartial(object: Partial<QueryAllLimitOrderTrancheUserByAddressRequest>): QueryAllLimitOrderTrancheUserByAddressRequest {
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressRequest();
     message.address = object.address ?? "";
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   },
-  fromAmino(object: QueryAllUserLimitOrdersRequestAmino): QueryAllUserLimitOrdersRequest {
-    const message = createBaseQueryAllUserLimitOrdersRequest();
+  fromAmino(object: QueryAllLimitOrderTrancheUserByAddressRequestAmino): QueryAllLimitOrderTrancheUserByAddressRequest {
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressRequest();
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     }
@@ -1695,37 +1948,37 @@ export const QueryAllUserLimitOrdersRequest = {
     }
     return message;
   },
-  toAmino(message: QueryAllUserLimitOrdersRequest, useInterfaces: boolean = false): QueryAllUserLimitOrdersRequestAmino {
+  toAmino(message: QueryAllLimitOrderTrancheUserByAddressRequest, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressRequestAmino {
     const obj: any = {};
     obj.address = message.address === "" ? undefined : message.address;
     obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
-  fromAminoMsg(object: QueryAllUserLimitOrdersRequestAminoMsg): QueryAllUserLimitOrdersRequest {
-    return QueryAllUserLimitOrdersRequest.fromAmino(object.value);
+  fromAminoMsg(object: QueryAllLimitOrderTrancheUserByAddressRequestAminoMsg): QueryAllLimitOrderTrancheUserByAddressRequest {
+    return QueryAllLimitOrderTrancheUserByAddressRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryAllUserLimitOrdersRequestProtoMsg, useInterfaces: boolean = false): QueryAllUserLimitOrdersRequest {
-    return QueryAllUserLimitOrdersRequest.decode(message.value, undefined, useInterfaces);
+  fromProtoMsg(message: QueryAllLimitOrderTrancheUserByAddressRequestProtoMsg, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressRequest {
+    return QueryAllLimitOrderTrancheUserByAddressRequest.decode(message.value, undefined, useInterfaces);
   },
-  toProto(message: QueryAllUserLimitOrdersRequest): Uint8Array {
-    return QueryAllUserLimitOrdersRequest.encode(message).finish();
+  toProto(message: QueryAllLimitOrderTrancheUserByAddressRequest): Uint8Array {
+    return QueryAllLimitOrderTrancheUserByAddressRequest.encode(message).finish();
   },
-  toProtoMsg(message: QueryAllUserLimitOrdersRequest): QueryAllUserLimitOrdersRequestProtoMsg {
+  toProtoMsg(message: QueryAllLimitOrderTrancheUserByAddressRequest): QueryAllLimitOrderTrancheUserByAddressRequestProtoMsg {
     return {
-      typeUrl: "/neutron.dex.QueryAllUserLimitOrdersRequest",
-      value: QueryAllUserLimitOrdersRequest.encode(message).finish()
+      typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressRequest",
+      value: QueryAllLimitOrderTrancheUserByAddressRequest.encode(message).finish()
     };
   }
 };
-function createBaseQueryAllUserLimitOrdersResponse(): QueryAllUserLimitOrdersResponse {
+function createBaseQueryAllLimitOrderTrancheUserByAddressResponse(): QueryAllLimitOrderTrancheUserByAddressResponse {
   return {
     limitOrders: [],
     pagination: undefined
   };
 }
-export const QueryAllUserLimitOrdersResponse = {
-  typeUrl: "/neutron.dex.QueryAllUserLimitOrdersResponse",
-  encode(message: QueryAllUserLimitOrdersResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+export const QueryAllLimitOrderTrancheUserByAddressResponse = {
+  typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressResponse",
+  encode(message: QueryAllLimitOrderTrancheUserByAddressResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     for (const v of message.limitOrders) {
       LimitOrderTrancheUser.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -1734,10 +1987,10 @@ export const QueryAllUserLimitOrdersResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllUserLimitOrdersResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAllUserLimitOrdersResponse();
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1754,21 +2007,21 @@ export const QueryAllUserLimitOrdersResponse = {
     }
     return message;
   },
-  fromPartial(object: Partial<QueryAllUserLimitOrdersResponse>): QueryAllUserLimitOrdersResponse {
-    const message = createBaseQueryAllUserLimitOrdersResponse();
+  fromPartial(object: Partial<QueryAllLimitOrderTrancheUserByAddressResponse>): QueryAllLimitOrderTrancheUserByAddressResponse {
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressResponse();
     message.limitOrders = object.limitOrders?.map(e => LimitOrderTrancheUser.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   },
-  fromAmino(object: QueryAllUserLimitOrdersResponseAmino): QueryAllUserLimitOrdersResponse {
-    const message = createBaseQueryAllUserLimitOrdersResponse();
+  fromAmino(object: QueryAllLimitOrderTrancheUserByAddressResponseAmino): QueryAllLimitOrderTrancheUserByAddressResponse {
+    const message = createBaseQueryAllLimitOrderTrancheUserByAddressResponse();
     message.limitOrders = object.limit_orders?.map(e => LimitOrderTrancheUser.fromAmino(e)) || [];
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageResponse.fromAmino(object.pagination);
     }
     return message;
   },
-  toAmino(message: QueryAllUserLimitOrdersResponse, useInterfaces: boolean = false): QueryAllUserLimitOrdersResponseAmino {
+  toAmino(message: QueryAllLimitOrderTrancheUserByAddressResponse, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressResponseAmino {
     const obj: any = {};
     if (message.limitOrders) {
       obj.limit_orders = message.limitOrders.map(e => e ? LimitOrderTrancheUser.toAmino(e, useInterfaces) : undefined);
@@ -1778,19 +2031,19 @@ export const QueryAllUserLimitOrdersResponse = {
     obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
-  fromAminoMsg(object: QueryAllUserLimitOrdersResponseAminoMsg): QueryAllUserLimitOrdersResponse {
-    return QueryAllUserLimitOrdersResponse.fromAmino(object.value);
+  fromAminoMsg(object: QueryAllLimitOrderTrancheUserByAddressResponseAminoMsg): QueryAllLimitOrderTrancheUserByAddressResponse {
+    return QueryAllLimitOrderTrancheUserByAddressResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryAllUserLimitOrdersResponseProtoMsg, useInterfaces: boolean = false): QueryAllUserLimitOrdersResponse {
-    return QueryAllUserLimitOrdersResponse.decode(message.value, undefined, useInterfaces);
+  fromProtoMsg(message: QueryAllLimitOrderTrancheUserByAddressResponseProtoMsg, useInterfaces: boolean = false): QueryAllLimitOrderTrancheUserByAddressResponse {
+    return QueryAllLimitOrderTrancheUserByAddressResponse.decode(message.value, undefined, useInterfaces);
   },
-  toProto(message: QueryAllUserLimitOrdersResponse): Uint8Array {
-    return QueryAllUserLimitOrdersResponse.encode(message).finish();
+  toProto(message: QueryAllLimitOrderTrancheUserByAddressResponse): Uint8Array {
+    return QueryAllLimitOrderTrancheUserByAddressResponse.encode(message).finish();
   },
-  toProtoMsg(message: QueryAllUserLimitOrdersResponse): QueryAllUserLimitOrdersResponseProtoMsg {
+  toProtoMsg(message: QueryAllLimitOrderTrancheUserByAddressResponse): QueryAllLimitOrderTrancheUserByAddressResponseProtoMsg {
     return {
-      typeUrl: "/neutron.dex.QueryAllUserLimitOrdersResponse",
-      value: QueryAllUserLimitOrdersResponse.encode(message).finish()
+      typeUrl: "/neutron.dex.QueryAllLimitOrderTrancheUserByAddressResponse",
+      value: QueryAllLimitOrderTrancheUserByAddressResponse.encode(message).finish()
     };
   }
 };
@@ -3496,6 +3749,762 @@ export const QueryAllPoolMetadataResponse = {
     return {
       typeUrl: "/neutron.dex.QueryAllPoolMetadataResponse",
       value: QueryAllPoolMetadataResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateDepositRequest(): QuerySimulateDepositRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulateDepositRequest = {
+  typeUrl: "/neutron.dex.QuerySimulateDepositRequest",
+  encode(message: QuerySimulateDepositRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgDeposit.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateDepositRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateDepositRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgDeposit.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateDepositRequest>): QuerySimulateDepositRequest {
+    const message = createBaseQuerySimulateDepositRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgDeposit.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateDepositRequestAmino): QuerySimulateDepositRequest {
+    const message = createBaseQuerySimulateDepositRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgDeposit.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateDepositRequest, useInterfaces: boolean = false): QuerySimulateDepositRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgDeposit.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateDepositRequestAminoMsg): QuerySimulateDepositRequest {
+    return QuerySimulateDepositRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateDepositRequestProtoMsg, useInterfaces: boolean = false): QuerySimulateDepositRequest {
+    return QuerySimulateDepositRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateDepositRequest): Uint8Array {
+    return QuerySimulateDepositRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateDepositRequest): QuerySimulateDepositRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateDepositRequest",
+      value: QuerySimulateDepositRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateDepositResponse(): QuerySimulateDepositResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulateDepositResponse = {
+  typeUrl: "/neutron.dex.QuerySimulateDepositResponse",
+  encode(message: QuerySimulateDepositResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgDepositResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateDepositResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateDepositResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgDepositResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateDepositResponse>): QuerySimulateDepositResponse {
+    const message = createBaseQuerySimulateDepositResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgDepositResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateDepositResponseAmino): QuerySimulateDepositResponse {
+    const message = createBaseQuerySimulateDepositResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgDepositResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateDepositResponse, useInterfaces: boolean = false): QuerySimulateDepositResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgDepositResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateDepositResponseAminoMsg): QuerySimulateDepositResponse {
+    return QuerySimulateDepositResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateDepositResponseProtoMsg, useInterfaces: boolean = false): QuerySimulateDepositResponse {
+    return QuerySimulateDepositResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateDepositResponse): Uint8Array {
+    return QuerySimulateDepositResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateDepositResponse): QuerySimulateDepositResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateDepositResponse",
+      value: QuerySimulateDepositResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateWithdrawalRequest(): QuerySimulateWithdrawalRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulateWithdrawalRequest = {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawalRequest",
+  encode(message: QuerySimulateWithdrawalRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgWithdrawal.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateWithdrawalRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateWithdrawalRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgWithdrawal.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateWithdrawalRequest>): QuerySimulateWithdrawalRequest {
+    const message = createBaseQuerySimulateWithdrawalRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgWithdrawal.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateWithdrawalRequestAmino): QuerySimulateWithdrawalRequest {
+    const message = createBaseQuerySimulateWithdrawalRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgWithdrawal.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateWithdrawalRequest, useInterfaces: boolean = false): QuerySimulateWithdrawalRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgWithdrawal.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateWithdrawalRequestAminoMsg): QuerySimulateWithdrawalRequest {
+    return QuerySimulateWithdrawalRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateWithdrawalRequestProtoMsg, useInterfaces: boolean = false): QuerySimulateWithdrawalRequest {
+    return QuerySimulateWithdrawalRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateWithdrawalRequest): Uint8Array {
+    return QuerySimulateWithdrawalRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateWithdrawalRequest): QuerySimulateWithdrawalRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateWithdrawalRequest",
+      value: QuerySimulateWithdrawalRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateWithdrawalResponse(): QuerySimulateWithdrawalResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulateWithdrawalResponse = {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawalResponse",
+  encode(message: QuerySimulateWithdrawalResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgWithdrawalResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateWithdrawalResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateWithdrawalResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgWithdrawalResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateWithdrawalResponse>): QuerySimulateWithdrawalResponse {
+    const message = createBaseQuerySimulateWithdrawalResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgWithdrawalResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateWithdrawalResponseAmino): QuerySimulateWithdrawalResponse {
+    const message = createBaseQuerySimulateWithdrawalResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgWithdrawalResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateWithdrawalResponse, useInterfaces: boolean = false): QuerySimulateWithdrawalResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgWithdrawalResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateWithdrawalResponseAminoMsg): QuerySimulateWithdrawalResponse {
+    return QuerySimulateWithdrawalResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateWithdrawalResponseProtoMsg, useInterfaces: boolean = false): QuerySimulateWithdrawalResponse {
+    return QuerySimulateWithdrawalResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateWithdrawalResponse): Uint8Array {
+    return QuerySimulateWithdrawalResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateWithdrawalResponse): QuerySimulateWithdrawalResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateWithdrawalResponse",
+      value: QuerySimulateWithdrawalResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulatePlaceLimitOrderRequest(): QuerySimulatePlaceLimitOrderRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulatePlaceLimitOrderRequest = {
+  typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderRequest",
+  encode(message: QuerySimulatePlaceLimitOrderRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgPlaceLimitOrder.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulatePlaceLimitOrderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgPlaceLimitOrder.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulatePlaceLimitOrderRequest>): QuerySimulatePlaceLimitOrderRequest {
+    const message = createBaseQuerySimulatePlaceLimitOrderRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgPlaceLimitOrder.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulatePlaceLimitOrderRequestAmino): QuerySimulatePlaceLimitOrderRequest {
+    const message = createBaseQuerySimulatePlaceLimitOrderRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgPlaceLimitOrder.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulatePlaceLimitOrderRequest, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgPlaceLimitOrder.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulatePlaceLimitOrderRequestAminoMsg): QuerySimulatePlaceLimitOrderRequest {
+    return QuerySimulatePlaceLimitOrderRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulatePlaceLimitOrderRequestProtoMsg, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderRequest {
+    return QuerySimulatePlaceLimitOrderRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulatePlaceLimitOrderRequest): Uint8Array {
+    return QuerySimulatePlaceLimitOrderRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulatePlaceLimitOrderRequest): QuerySimulatePlaceLimitOrderRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderRequest",
+      value: QuerySimulatePlaceLimitOrderRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulatePlaceLimitOrderResponse(): QuerySimulatePlaceLimitOrderResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulatePlaceLimitOrderResponse = {
+  typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderResponse",
+  encode(message: QuerySimulatePlaceLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgPlaceLimitOrderResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulatePlaceLimitOrderResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgPlaceLimitOrderResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulatePlaceLimitOrderResponse>): QuerySimulatePlaceLimitOrderResponse {
+    const message = createBaseQuerySimulatePlaceLimitOrderResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgPlaceLimitOrderResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulatePlaceLimitOrderResponseAmino): QuerySimulatePlaceLimitOrderResponse {
+    const message = createBaseQuerySimulatePlaceLimitOrderResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgPlaceLimitOrderResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulatePlaceLimitOrderResponse, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgPlaceLimitOrderResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulatePlaceLimitOrderResponseAminoMsg): QuerySimulatePlaceLimitOrderResponse {
+    return QuerySimulatePlaceLimitOrderResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulatePlaceLimitOrderResponseProtoMsg, useInterfaces: boolean = false): QuerySimulatePlaceLimitOrderResponse {
+    return QuerySimulatePlaceLimitOrderResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulatePlaceLimitOrderResponse): Uint8Array {
+    return QuerySimulatePlaceLimitOrderResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulatePlaceLimitOrderResponse): QuerySimulatePlaceLimitOrderResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulatePlaceLimitOrderResponse",
+      value: QuerySimulatePlaceLimitOrderResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateWithdrawFilledLimitOrderRequest(): QuerySimulateWithdrawFilledLimitOrderRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulateWithdrawFilledLimitOrderRequest = {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderRequest",
+  encode(message: QuerySimulateWithdrawFilledLimitOrderRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgWithdrawFilledLimitOrder.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgWithdrawFilledLimitOrder.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateWithdrawFilledLimitOrderRequest>): QuerySimulateWithdrawFilledLimitOrderRequest {
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgWithdrawFilledLimitOrder.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateWithdrawFilledLimitOrderRequestAmino): QuerySimulateWithdrawFilledLimitOrderRequest {
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgWithdrawFilledLimitOrder.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateWithdrawFilledLimitOrderRequest, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgWithdrawFilledLimitOrder.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateWithdrawFilledLimitOrderRequestAminoMsg): QuerySimulateWithdrawFilledLimitOrderRequest {
+    return QuerySimulateWithdrawFilledLimitOrderRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateWithdrawFilledLimitOrderRequestProtoMsg, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderRequest {
+    return QuerySimulateWithdrawFilledLimitOrderRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateWithdrawFilledLimitOrderRequest): Uint8Array {
+    return QuerySimulateWithdrawFilledLimitOrderRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateWithdrawFilledLimitOrderRequest): QuerySimulateWithdrawFilledLimitOrderRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderRequest",
+      value: QuerySimulateWithdrawFilledLimitOrderRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateWithdrawFilledLimitOrderResponse(): QuerySimulateWithdrawFilledLimitOrderResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulateWithdrawFilledLimitOrderResponse = {
+  typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderResponse",
+  encode(message: QuerySimulateWithdrawFilledLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgWithdrawFilledLimitOrderResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgWithdrawFilledLimitOrderResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateWithdrawFilledLimitOrderResponse>): QuerySimulateWithdrawFilledLimitOrderResponse {
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgWithdrawFilledLimitOrderResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateWithdrawFilledLimitOrderResponseAmino): QuerySimulateWithdrawFilledLimitOrderResponse {
+    const message = createBaseQuerySimulateWithdrawFilledLimitOrderResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgWithdrawFilledLimitOrderResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateWithdrawFilledLimitOrderResponse, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgWithdrawFilledLimitOrderResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateWithdrawFilledLimitOrderResponseAminoMsg): QuerySimulateWithdrawFilledLimitOrderResponse {
+    return QuerySimulateWithdrawFilledLimitOrderResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateWithdrawFilledLimitOrderResponseProtoMsg, useInterfaces: boolean = false): QuerySimulateWithdrawFilledLimitOrderResponse {
+    return QuerySimulateWithdrawFilledLimitOrderResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateWithdrawFilledLimitOrderResponse): Uint8Array {
+    return QuerySimulateWithdrawFilledLimitOrderResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateWithdrawFilledLimitOrderResponse): QuerySimulateWithdrawFilledLimitOrderResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateWithdrawFilledLimitOrderResponse",
+      value: QuerySimulateWithdrawFilledLimitOrderResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateCancelLimitOrderRequest(): QuerySimulateCancelLimitOrderRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulateCancelLimitOrderRequest = {
+  typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderRequest",
+  encode(message: QuerySimulateCancelLimitOrderRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgCancelLimitOrder.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateCancelLimitOrderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgCancelLimitOrder.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateCancelLimitOrderRequest>): QuerySimulateCancelLimitOrderRequest {
+    const message = createBaseQuerySimulateCancelLimitOrderRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgCancelLimitOrder.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateCancelLimitOrderRequestAmino): QuerySimulateCancelLimitOrderRequest {
+    const message = createBaseQuerySimulateCancelLimitOrderRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgCancelLimitOrder.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateCancelLimitOrderRequest, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgCancelLimitOrder.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateCancelLimitOrderRequestAminoMsg): QuerySimulateCancelLimitOrderRequest {
+    return QuerySimulateCancelLimitOrderRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateCancelLimitOrderRequestProtoMsg, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderRequest {
+    return QuerySimulateCancelLimitOrderRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateCancelLimitOrderRequest): Uint8Array {
+    return QuerySimulateCancelLimitOrderRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateCancelLimitOrderRequest): QuerySimulateCancelLimitOrderRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderRequest",
+      value: QuerySimulateCancelLimitOrderRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateCancelLimitOrderResponse(): QuerySimulateCancelLimitOrderResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulateCancelLimitOrderResponse = {
+  typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderResponse",
+  encode(message: QuerySimulateCancelLimitOrderResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgCancelLimitOrderResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateCancelLimitOrderResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgCancelLimitOrderResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateCancelLimitOrderResponse>): QuerySimulateCancelLimitOrderResponse {
+    const message = createBaseQuerySimulateCancelLimitOrderResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgCancelLimitOrderResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateCancelLimitOrderResponseAmino): QuerySimulateCancelLimitOrderResponse {
+    const message = createBaseQuerySimulateCancelLimitOrderResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgCancelLimitOrderResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateCancelLimitOrderResponse, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgCancelLimitOrderResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateCancelLimitOrderResponseAminoMsg): QuerySimulateCancelLimitOrderResponse {
+    return QuerySimulateCancelLimitOrderResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateCancelLimitOrderResponseProtoMsg, useInterfaces: boolean = false): QuerySimulateCancelLimitOrderResponse {
+    return QuerySimulateCancelLimitOrderResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateCancelLimitOrderResponse): Uint8Array {
+    return QuerySimulateCancelLimitOrderResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateCancelLimitOrderResponse): QuerySimulateCancelLimitOrderResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateCancelLimitOrderResponse",
+      value: QuerySimulateCancelLimitOrderResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateMultiHopSwapRequest(): QuerySimulateMultiHopSwapRequest {
+  return {
+    msg: undefined
+  };
+}
+export const QuerySimulateMultiHopSwapRequest = {
+  typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapRequest",
+  encode(message: QuerySimulateMultiHopSwapRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.msg !== undefined) {
+      MsgMultiHopSwap.encode(message.msg, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateMultiHopSwapRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateMultiHopSwapRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.msg = MsgMultiHopSwap.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateMultiHopSwapRequest>): QuerySimulateMultiHopSwapRequest {
+    const message = createBaseQuerySimulateMultiHopSwapRequest();
+    message.msg = object.msg !== undefined && object.msg !== null ? MsgMultiHopSwap.fromPartial(object.msg) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateMultiHopSwapRequestAmino): QuerySimulateMultiHopSwapRequest {
+    const message = createBaseQuerySimulateMultiHopSwapRequest();
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = MsgMultiHopSwap.fromAmino(object.msg);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateMultiHopSwapRequest, useInterfaces: boolean = false): QuerySimulateMultiHopSwapRequestAmino {
+    const obj: any = {};
+    obj.msg = message.msg ? MsgMultiHopSwap.toAmino(message.msg, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateMultiHopSwapRequestAminoMsg): QuerySimulateMultiHopSwapRequest {
+    return QuerySimulateMultiHopSwapRequest.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateMultiHopSwapRequestProtoMsg, useInterfaces: boolean = false): QuerySimulateMultiHopSwapRequest {
+    return QuerySimulateMultiHopSwapRequest.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateMultiHopSwapRequest): Uint8Array {
+    return QuerySimulateMultiHopSwapRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateMultiHopSwapRequest): QuerySimulateMultiHopSwapRequestProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapRequest",
+      value: QuerySimulateMultiHopSwapRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQuerySimulateMultiHopSwapResponse(): QuerySimulateMultiHopSwapResponse {
+  return {
+    resp: undefined
+  };
+}
+export const QuerySimulateMultiHopSwapResponse = {
+  typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapResponse",
+  encode(message: QuerySimulateMultiHopSwapResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.resp !== undefined) {
+      MsgMultiHopSwapResponse.encode(message.resp, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySimulateMultiHopSwapResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySimulateMultiHopSwapResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.resp = MsgMultiHopSwapResponse.decode(reader, reader.uint32(), useInterfaces);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QuerySimulateMultiHopSwapResponse>): QuerySimulateMultiHopSwapResponse {
+    const message = createBaseQuerySimulateMultiHopSwapResponse();
+    message.resp = object.resp !== undefined && object.resp !== null ? MsgMultiHopSwapResponse.fromPartial(object.resp) : undefined;
+    return message;
+  },
+  fromAmino(object: QuerySimulateMultiHopSwapResponseAmino): QuerySimulateMultiHopSwapResponse {
+    const message = createBaseQuerySimulateMultiHopSwapResponse();
+    if (object.resp !== undefined && object.resp !== null) {
+      message.resp = MsgMultiHopSwapResponse.fromAmino(object.resp);
+    }
+    return message;
+  },
+  toAmino(message: QuerySimulateMultiHopSwapResponse, useInterfaces: boolean = false): QuerySimulateMultiHopSwapResponseAmino {
+    const obj: any = {};
+    obj.resp = message.resp ? MsgMultiHopSwapResponse.toAmino(message.resp, useInterfaces) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QuerySimulateMultiHopSwapResponseAminoMsg): QuerySimulateMultiHopSwapResponse {
+    return QuerySimulateMultiHopSwapResponse.fromAmino(object.value);
+  },
+  fromProtoMsg(message: QuerySimulateMultiHopSwapResponseProtoMsg, useInterfaces: boolean = false): QuerySimulateMultiHopSwapResponse {
+    return QuerySimulateMultiHopSwapResponse.decode(message.value, undefined, useInterfaces);
+  },
+  toProto(message: QuerySimulateMultiHopSwapResponse): Uint8Array {
+    return QuerySimulateMultiHopSwapResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QuerySimulateMultiHopSwapResponse): QuerySimulateMultiHopSwapResponseProtoMsg {
+    return {
+      typeUrl: "/neutron.dex.QuerySimulateMultiHopSwapResponse",
+      value: QuerySimulateMultiHopSwapResponse.encode(message).finish()
     };
   }
 };

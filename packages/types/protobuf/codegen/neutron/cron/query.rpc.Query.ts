@@ -2,7 +2,7 @@ import { Rpc } from "../../helpers";
 import { BinaryReader } from "../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
 import { QueryParamsRequest, QueryParamsResponse, QueryGetScheduleRequest, QueryGetScheduleResponse, QuerySchedulesRequest, QuerySchedulesResponse } from "./query";
-/** Query defines the gRPC querier service. */
+/** Defines the gRPC querier service. */
 export interface Query {
   /** Queries the parameters of the module. */
   params(request?: QueryParamsRequest): Promise<QueryParamsResponse>;

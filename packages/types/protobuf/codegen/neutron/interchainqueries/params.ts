@@ -1,56 +1,68 @@
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../binary";
-/** Params defines the parameters for the module. */
+/** The parameters for the module. */
 export interface Params {
   /**
-   * Defines amount of blocks required before query becomes available for
-   * removal by anybody
+   * The duration, measured in blocks, that must pass since the query's registration or its last
+   * result submission before the query becomes eligible for removal by anyone. Is used to set
+   * `submit_timeout` on Interchain Query registration.
    */
   querySubmitTimeout: bigint;
-  /** Amount of coins deposited for the query. */
+  /** Amount of coins required to be provided as deposit on Interchain Query registration. */
   queryDeposit: Coin[];
   /**
-   * Amount of tx hashes to be removed during a single EndBlock. Can vary to
-   * balance between network cleaning speed and EndBlock duration. A zero value
-   * means no limit.
+   * Amount of tx hashes to be removed during a single EndBlock. Can vary to balance between
+   * network cleaning speed and EndBlock duration. A zero value means no limit.
    */
   txQueryRemovalLimit: bigint;
+  /** Maximum amount of keys in a registered key value query */
+  maxKvQueryKeysCount: bigint;
+  /** max_transactions_filters defines maximum allowed amount of tx filters in msgRegisterInterchainQuery */
+  maxTransactionsFilters: bigint;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/neutron.interchainqueries.Params";
   value: Uint8Array;
 }
-/** Params defines the parameters for the module. */
+/** The parameters for the module. */
 export interface ParamsAmino {
   /**
-   * Defines amount of blocks required before query becomes available for
-   * removal by anybody
+   * The duration, measured in blocks, that must pass since the query's registration or its last
+   * result submission before the query becomes eligible for removal by anyone. Is used to set
+   * `submit_timeout` on Interchain Query registration.
    */
   query_submit_timeout?: string;
-  /** Amount of coins deposited for the query. */
+  /** Amount of coins required to be provided as deposit on Interchain Query registration. */
   query_deposit?: CoinAmino[];
   /**
-   * Amount of tx hashes to be removed during a single EndBlock. Can vary to
-   * balance between network cleaning speed and EndBlock duration. A zero value
-   * means no limit.
+   * Amount of tx hashes to be removed during a single EndBlock. Can vary to balance between
+   * network cleaning speed and EndBlock duration. A zero value means no limit.
    */
   tx_query_removal_limit?: string;
+  /** Maximum amount of keys in a registered key value query */
+  max_kv_query_keys_count?: string;
+  /** max_transactions_filters defines maximum allowed amount of tx filters in msgRegisterInterchainQuery */
+  max_transactions_filters?: string;
 }
 export interface ParamsAminoMsg {
   type: "/neutron.interchainqueries.Params";
   value: ParamsAmino;
 }
-/** Params defines the parameters for the module. */
+/** The parameters for the module. */
 export interface ParamsSDKType {
   query_submit_timeout: bigint;
   query_deposit: CoinSDKType[];
   tx_query_removal_limit: bigint;
+  max_kv_query_keys_count: bigint;
+  max_transactions_filters: bigint;
 }
 function createBaseParams(): Params {
   return {
     querySubmitTimeout: BigInt(0),
     queryDeposit: [],
-    txQueryRemovalLimit: BigInt(0)
+    txQueryRemovalLimit: BigInt(0),
+    maxKvQueryKeysCount: BigInt(0),
+    maxTransactionsFilters: BigInt(0)
   };
 }
 export const Params = {
@@ -64,6 +76,12 @@ export const Params = {
     }
     if (message.txQueryRemovalLimit !== BigInt(0)) {
       writer.uint32(24).uint64(message.txQueryRemovalLimit);
+    }
+    if (message.maxKvQueryKeysCount !== BigInt(0)) {
+      writer.uint32(32).uint64(message.maxKvQueryKeysCount);
+    }
+    if (message.maxTransactionsFilters !== BigInt(0)) {
+      writer.uint32(40).uint64(message.maxTransactionsFilters);
     }
     return writer;
   },
@@ -83,6 +101,12 @@ export const Params = {
         case 3:
           message.txQueryRemovalLimit = reader.uint64();
           break;
+        case 4:
+          message.maxKvQueryKeysCount = reader.uint64();
+          break;
+        case 5:
+          message.maxTransactionsFilters = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -95,6 +119,8 @@ export const Params = {
     message.querySubmitTimeout = object.querySubmitTimeout !== undefined && object.querySubmitTimeout !== null ? BigInt(object.querySubmitTimeout.toString()) : BigInt(0);
     message.queryDeposit = object.queryDeposit?.map(e => Coin.fromPartial(e)) || [];
     message.txQueryRemovalLimit = object.txQueryRemovalLimit !== undefined && object.txQueryRemovalLimit !== null ? BigInt(object.txQueryRemovalLimit.toString()) : BigInt(0);
+    message.maxKvQueryKeysCount = object.maxKvQueryKeysCount !== undefined && object.maxKvQueryKeysCount !== null ? BigInt(object.maxKvQueryKeysCount.toString()) : BigInt(0);
+    message.maxTransactionsFilters = object.maxTransactionsFilters !== undefined && object.maxTransactionsFilters !== null ? BigInt(object.maxTransactionsFilters.toString()) : BigInt(0);
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -105,6 +131,12 @@ export const Params = {
     message.queryDeposit = object.query_deposit?.map(e => Coin.fromAmino(e)) || [];
     if (object.tx_query_removal_limit !== undefined && object.tx_query_removal_limit !== null) {
       message.txQueryRemovalLimit = BigInt(object.tx_query_removal_limit);
+    }
+    if (object.max_kv_query_keys_count !== undefined && object.max_kv_query_keys_count !== null) {
+      message.maxKvQueryKeysCount = BigInt(object.max_kv_query_keys_count);
+    }
+    if (object.max_transactions_filters !== undefined && object.max_transactions_filters !== null) {
+      message.maxTransactionsFilters = BigInt(object.max_transactions_filters);
     }
     return message;
   },
@@ -117,6 +149,8 @@ export const Params = {
       obj.query_deposit = message.queryDeposit;
     }
     obj.tx_query_removal_limit = message.txQueryRemovalLimit !== BigInt(0) ? message.txQueryRemovalLimit.toString() : undefined;
+    obj.max_kv_query_keys_count = message.maxKvQueryKeysCount !== BigInt(0) ? message.maxKvQueryKeysCount.toString() : undefined;
+    obj.max_transactions_filters = message.maxTransactionsFilters !== BigInt(0) ? message.maxTransactionsFilters.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

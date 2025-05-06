@@ -1,78 +1,127 @@
 import { BinaryReader, BinaryWriter } from "../../binary";
+/** Defines when messages will be executed in the block */
+export enum ExecutionStage {
+  /** EXECUTION_STAGE_END_BLOCKER - Execution at the end of the block */
+  EXECUTION_STAGE_END_BLOCKER = 0,
+  /** EXECUTION_STAGE_BEGIN_BLOCKER - Execution at the beginning of the block */
+  EXECUTION_STAGE_BEGIN_BLOCKER = 1,
+  UNRECOGNIZED = -1,
+}
+export const ExecutionStageSDKType = ExecutionStage;
+export const ExecutionStageAmino = ExecutionStage;
+export function executionStageFromJSON(object: any): ExecutionStage {
+  switch (object) {
+    case 0:
+    case "EXECUTION_STAGE_END_BLOCKER":
+      return ExecutionStage.EXECUTION_STAGE_END_BLOCKER;
+    case 1:
+    case "EXECUTION_STAGE_BEGIN_BLOCKER":
+      return ExecutionStage.EXECUTION_STAGE_BEGIN_BLOCKER;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ExecutionStage.UNRECOGNIZED;
+  }
+}
+export function executionStageToJSON(object: ExecutionStage): string {
+  switch (object) {
+    case ExecutionStage.EXECUTION_STAGE_END_BLOCKER:
+      return "EXECUTION_STAGE_END_BLOCKER";
+    case ExecutionStage.EXECUTION_STAGE_BEGIN_BLOCKER:
+      return "EXECUTION_STAGE_BEGIN_BLOCKER";
+    case ExecutionStage.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+/** Defines the schedule for execution */
 export interface Schedule {
   /** Name of schedule */
   name: string;
   /** Period in blocks */
   period: bigint;
-  /** Msgs that will be executed every period amount of time */
+  /** Msgs that will be executed every certain number of blocks, specified in the `period` field */
   msgs: MsgExecuteContract[];
   /** Last execution's block height */
   lastExecuteHeight: bigint;
+  /** Stage when messages will be executed */
+  executionStage: ExecutionStage;
 }
 export interface ScheduleProtoMsg {
   typeUrl: "/neutron.cron.Schedule";
   value: Uint8Array;
 }
+/** Defines the schedule for execution */
 export interface ScheduleAmino {
   /** Name of schedule */
   name?: string;
   /** Period in blocks */
   period?: string;
-  /** Msgs that will be executed every period amount of time */
+  /** Msgs that will be executed every certain number of blocks, specified in the `period` field */
   msgs?: MsgExecuteContractAmino[];
   /** Last execution's block height */
   last_execute_height?: string;
+  /** Stage when messages will be executed */
+  execution_stage?: ExecutionStage;
 }
 export interface ScheduleAminoMsg {
   type: "/neutron.cron.Schedule";
   value: ScheduleAmino;
 }
+/** Defines the schedule for execution */
 export interface ScheduleSDKType {
   name: string;
   period: bigint;
   msgs: MsgExecuteContractSDKType[];
   last_execute_height: bigint;
+  execution_stage: ExecutionStage;
 }
+/** Defines the contract and the message to pass */
 export interface MsgExecuteContract {
-  /** Contract is the address of the smart contract */
+  /** The address of the smart contract */
   contract: string;
-  /** Msg is json encoded message to be passed to the contract */
+  /** JSON encoded message to be passed to the contract */
   msg: string;
 }
 export interface MsgExecuteContractProtoMsg {
   typeUrl: "/neutron.cron.MsgExecuteContract";
   value: Uint8Array;
 }
+/** Defines the contract and the message to pass */
 export interface MsgExecuteContractAmino {
-  /** Contract is the address of the smart contract */
+  /** The address of the smart contract */
   contract?: string;
-  /** Msg is json encoded message to be passed to the contract */
+  /** JSON encoded message to be passed to the contract */
   msg?: string;
 }
 export interface MsgExecuteContractAminoMsg {
   type: "/neutron.cron.MsgExecuteContract";
   value: MsgExecuteContractAmino;
 }
+/** Defines the contract and the message to pass */
 export interface MsgExecuteContractSDKType {
   contract: string;
   msg: string;
 }
+/** Defines the number of current schedules */
 export interface ScheduleCount {
-  /** Count is the number of current schedules */
+  /** The number of current schedules */
   count: number;
 }
 export interface ScheduleCountProtoMsg {
   typeUrl: "/neutron.cron.ScheduleCount";
   value: Uint8Array;
 }
+/** Defines the number of current schedules */
 export interface ScheduleCountAmino {
-  /** Count is the number of current schedules */
+  /** The number of current schedules */
   count?: number;
 }
 export interface ScheduleCountAminoMsg {
   type: "/neutron.cron.ScheduleCount";
   value: ScheduleCountAmino;
 }
+/** Defines the number of current schedules */
 export interface ScheduleCountSDKType {
   count: number;
 }
@@ -81,7 +130,8 @@ function createBaseSchedule(): Schedule {
     name: "",
     period: BigInt(0),
     msgs: [],
-    lastExecuteHeight: BigInt(0)
+    lastExecuteHeight: BigInt(0),
+    executionStage: 0
   };
 }
 export const Schedule = {
@@ -98,6 +148,9 @@ export const Schedule = {
     }
     if (message.lastExecuteHeight !== BigInt(0)) {
       writer.uint32(32).uint64(message.lastExecuteHeight);
+    }
+    if (message.executionStage !== 0) {
+      writer.uint32(40).int32(message.executionStage);
     }
     return writer;
   },
@@ -120,6 +173,9 @@ export const Schedule = {
         case 4:
           message.lastExecuteHeight = reader.uint64();
           break;
+        case 5:
+          message.executionStage = (reader.int32() as any);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -133,6 +189,7 @@ export const Schedule = {
     message.period = object.period !== undefined && object.period !== null ? BigInt(object.period.toString()) : BigInt(0);
     message.msgs = object.msgs?.map(e => MsgExecuteContract.fromPartial(e)) || [];
     message.lastExecuteHeight = object.lastExecuteHeight !== undefined && object.lastExecuteHeight !== null ? BigInt(object.lastExecuteHeight.toString()) : BigInt(0);
+    message.executionStage = object.executionStage ?? 0;
     return message;
   },
   fromAmino(object: ScheduleAmino): Schedule {
@@ -147,6 +204,9 @@ export const Schedule = {
     if (object.last_execute_height !== undefined && object.last_execute_height !== null) {
       message.lastExecuteHeight = BigInt(object.last_execute_height);
     }
+    if (object.execution_stage !== undefined && object.execution_stage !== null) {
+      message.executionStage = object.execution_stage;
+    }
     return message;
   },
   toAmino(message: Schedule, useInterfaces: boolean = false): ScheduleAmino {
@@ -159,6 +219,7 @@ export const Schedule = {
       obj.msgs = message.msgs;
     }
     obj.last_execute_height = message.lastExecuteHeight !== BigInt(0) ? message.lastExecuteHeight.toString() : undefined;
+    obj.execution_stage = message.executionStage === 0 ? undefined : message.executionStage;
     return obj;
   },
   fromAminoMsg(object: ScheduleAminoMsg): Schedule {

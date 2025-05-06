@@ -3,17 +3,21 @@ import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageRe
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Schedule, ScheduleAmino, ScheduleSDKType } from "./schedule";
 import { BinaryReader, BinaryWriter } from "../../binary";
+/** The request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestProtoMsg {
   typeUrl: "/neutron.cron.QueryParamsRequest";
   value: Uint8Array;
 }
+/** The request type for the Query/Params RPC method. */
 export interface QueryParamsRequestAmino {}
 export interface QueryParamsRequestAminoMsg {
   type: "/neutron.cron.QueryParamsRequest";
   value: QueryParamsRequestAmino;
 }
+/** The request type for the Query/Params RPC method. */
 export interface QueryParamsRequestSDKType {}
+/** The response type for the Query/Params RPC method. */
 export interface QueryParamsResponse {
   /** params holds all the parameters of this module. */
   params: Params | undefined;
@@ -22,6 +26,7 @@ export interface QueryParamsResponseProtoMsg {
   typeUrl: "/neutron.cron.QueryParamsResponse";
   value: Uint8Array;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QueryParamsResponseAmino {
   /** params holds all the parameters of this module. */
   params?: ParamsAmino | undefined;
@@ -30,9 +35,11 @@ export interface QueryParamsResponseAminoMsg {
   type: "/neutron.cron.QueryParamsResponse";
   value: QueryParamsResponseAmino;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QueryParamsResponseSDKType {
   params: ParamsSDKType | undefined;
 }
+/** The request type for the Query/Schedule RPC method. */
 export interface QueryGetScheduleRequest {
   name: string;
 }
@@ -40,6 +47,7 @@ export interface QueryGetScheduleRequestProtoMsg {
   typeUrl: "/neutron.cron.QueryGetScheduleRequest";
   value: Uint8Array;
 }
+/** The request type for the Query/Schedule RPC method. */
 export interface QueryGetScheduleRequestAmino {
   name?: string;
 }
@@ -47,9 +55,11 @@ export interface QueryGetScheduleRequestAminoMsg {
   type: "/neutron.cron.QueryGetScheduleRequest";
   value: QueryGetScheduleRequestAmino;
 }
+/** The request type for the Query/Schedule RPC method. */
 export interface QueryGetScheduleRequestSDKType {
   name: string;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QueryGetScheduleResponse {
   schedule: Schedule | undefined;
 }
@@ -57,6 +67,7 @@ export interface QueryGetScheduleResponseProtoMsg {
   typeUrl: "/neutron.cron.QueryGetScheduleResponse";
   value: Uint8Array;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QueryGetScheduleResponseAmino {
   schedule?: ScheduleAmino | undefined;
 }
@@ -64,9 +75,11 @@ export interface QueryGetScheduleResponseAminoMsg {
   type: "/neutron.cron.QueryGetScheduleResponse";
   value: QueryGetScheduleResponseAmino;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QueryGetScheduleResponseSDKType {
   schedule: ScheduleSDKType | undefined;
 }
+/** The request type for the Query/Schedules RPC method. */
 export interface QuerySchedulesRequest {
   pagination?: PageRequest | undefined;
 }
@@ -74,6 +87,7 @@ export interface QuerySchedulesRequestProtoMsg {
   typeUrl: "/neutron.cron.QuerySchedulesRequest";
   value: Uint8Array;
 }
+/** The request type for the Query/Schedules RPC method. */
 export interface QuerySchedulesRequestAmino {
   pagination?: PageRequestAmino | undefined;
 }
@@ -81,9 +95,11 @@ export interface QuerySchedulesRequestAminoMsg {
   type: "/neutron.cron.QuerySchedulesRequest";
   value: QuerySchedulesRequestAmino;
 }
+/** The request type for the Query/Schedules RPC method. */
 export interface QuerySchedulesRequestSDKType {
   pagination?: PageRequestSDKType | undefined;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QuerySchedulesResponse {
   schedules: Schedule[];
   pagination?: PageResponse | undefined;
@@ -92,6 +108,7 @@ export interface QuerySchedulesResponseProtoMsg {
   typeUrl: "/neutron.cron.QuerySchedulesResponse";
   value: Uint8Array;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QuerySchedulesResponseAmino {
   schedules?: ScheduleAmino[];
   pagination?: PageResponseAmino | undefined;
@@ -100,6 +117,7 @@ export interface QuerySchedulesResponseAminoMsg {
   type: "/neutron.cron.QuerySchedulesResponse";
   value: QuerySchedulesResponseAmino;
 }
+/** The response type for the Query/Params RPC method. */
 export interface QuerySchedulesResponseSDKType {
   schedules: ScheduleSDKType[];
   pagination?: PageResponseSDKType | undefined;

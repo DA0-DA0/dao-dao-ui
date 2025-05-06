@@ -26,8 +26,17 @@ export interface PoolReservesKeySDKType {
 export interface PoolReserves {
   key?: PoolReservesKey | undefined;
   reservesMakerDenom: string;
+  /** DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used. */
+  /** @deprecated */
   priceTakerToMaker: string;
+  /**
+   * DEPRECATED: price_opposite_taker_maker was an internal implementation detail and will be removed in a future release.
+   * It is being kept strictly for backwards compatibility. The actual field value is unused.
+   */
+  /** @deprecated */
   priceOppositeTakerToMaker: string;
+  /** This is the price of the PoolReserves denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB ) */
+  makerPrice: string;
 }
 export interface PoolReservesProtoMsg {
   typeUrl: "/neutron.dex.PoolReserves";
@@ -36,8 +45,17 @@ export interface PoolReservesProtoMsg {
 export interface PoolReservesAmino {
   key?: PoolReservesKeyAmino | undefined;
   reserves_maker_denom: string;
+  /** DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used. */
+  /** @deprecated */
   price_taker_to_maker: string;
+  /**
+   * DEPRECATED: price_opposite_taker_maker was an internal implementation detail and will be removed in a future release.
+   * It is being kept strictly for backwards compatibility. The actual field value is unused.
+   */
+  /** @deprecated */
   price_opposite_taker_to_maker: string;
+  /** This is the price of the PoolReserves denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB ) */
+  maker_price: string;
 }
 export interface PoolReservesAminoMsg {
   type: "/neutron.dex.PoolReserves";
@@ -46,8 +64,11 @@ export interface PoolReservesAminoMsg {
 export interface PoolReservesSDKType {
   key?: PoolReservesKeySDKType | undefined;
   reserves_maker_denom: string;
+  /** @deprecated */
   price_taker_to_maker: string;
+  /** @deprecated */
   price_opposite_taker_to_maker: string;
+  maker_price: string;
 }
 function createBasePoolReservesKey(): PoolReservesKey {
   return {
@@ -141,7 +162,8 @@ function createBasePoolReserves(): PoolReserves {
     key: undefined,
     reservesMakerDenom: "",
     priceTakerToMaker: "",
-    priceOppositeTakerToMaker: ""
+    priceOppositeTakerToMaker: "",
+    makerPrice: ""
   };
 }
 export const PoolReserves = {
@@ -158,6 +180,9 @@ export const PoolReserves = {
     }
     if (message.priceOppositeTakerToMaker !== "") {
       writer.uint32(34).string(message.priceOppositeTakerToMaker);
+    }
+    if (message.makerPrice !== "") {
+      writer.uint32(42).string(message.makerPrice);
     }
     return writer;
   },
@@ -180,6 +205,9 @@ export const PoolReserves = {
         case 4:
           message.priceOppositeTakerToMaker = reader.string();
           break;
+        case 5:
+          message.makerPrice = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -193,6 +221,7 @@ export const PoolReserves = {
     message.reservesMakerDenom = object.reservesMakerDenom ?? "";
     message.priceTakerToMaker = object.priceTakerToMaker ?? "";
     message.priceOppositeTakerToMaker = object.priceOppositeTakerToMaker ?? "";
+    message.makerPrice = object.makerPrice ?? "";
     return message;
   },
   fromAmino(object: PoolReservesAmino): PoolReserves {
@@ -209,6 +238,9 @@ export const PoolReserves = {
     if (object.price_opposite_taker_to_maker !== undefined && object.price_opposite_taker_to_maker !== null) {
       message.priceOppositeTakerToMaker = object.price_opposite_taker_to_maker;
     }
+    if (object.maker_price !== undefined && object.maker_price !== null) {
+      message.makerPrice = object.maker_price;
+    }
     return message;
   },
   toAmino(message: PoolReserves, useInterfaces: boolean = false): PoolReservesAmino {
@@ -217,6 +249,7 @@ export const PoolReserves = {
     obj.reserves_maker_denom = message.reservesMakerDenom ?? "";
     obj.price_taker_to_maker = message.priceTakerToMaker ?? "";
     obj.price_opposite_taker_to_maker = message.priceOppositeTakerToMaker ?? "";
+    obj.maker_price = message.makerPrice ?? "";
     return obj;
   },
   fromAminoMsg(object: PoolReservesAminoMsg): PoolReserves {

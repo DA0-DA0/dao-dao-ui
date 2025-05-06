@@ -8,16 +8,16 @@ import * as _160 from "./ccv/provider/v1/query";
 import * as _161 from "./ccv/provider/v1/tx";
 import * as _162 from "./ccv/v1/shared_consumer";
 import * as _163 from "./ccv/v1/wire";
-import * as _518 from "./ccv/consumer/v1/tx.amino";
-import * as _519 from "./ccv/provider/v1/tx.amino";
-import * as _520 from "./ccv/consumer/v1/tx.registry";
-import * as _521 from "./ccv/provider/v1/tx.registry";
-import * as _522 from "./ccv/consumer/v1/query.rpc.Query";
-import * as _523 from "./ccv/provider/v1/query.rpc.Query";
-import * as _524 from "./ccv/consumer/v1/tx.rpc.msg";
-import * as _525 from "./ccv/provider/v1/tx.rpc.msg";
-import * as _715 from "./rpc.query";
-import * as _716 from "./rpc.tx";
+import * as _522 from "./ccv/consumer/v1/tx.amino";
+import * as _523 from "./ccv/provider/v1/tx.amino";
+import * as _524 from "./ccv/consumer/v1/tx.registry";
+import * as _525 from "./ccv/provider/v1/tx.registry";
+import * as _526 from "./ccv/consumer/v1/query.rpc.Query";
+import * as _527 from "./ccv/provider/v1/query.rpc.Query";
+import * as _528 from "./ccv/consumer/v1/tx.rpc.msg";
+import * as _529 from "./ccv/provider/v1/tx.rpc.msg";
+import * as _723 from "./rpc.query";
+import * as _724 from "./rpc.tx";
 export namespace interchain_security {
   export namespace ccv {
     export namespace consumer {
@@ -26,10 +26,10 @@ export namespace interchain_security {
         ..._155,
         ..._156,
         ..._157,
-        ..._518,
-        ..._520,
         ..._522,
-        ..._524
+        ..._524,
+        ..._526,
+        ..._528
       };
     }
     export namespace provider {
@@ -38,10 +38,10 @@ export namespace interchain_security {
         ..._159,
         ..._160,
         ..._161,
-        ..._519,
-        ..._521,
         ..._523,
-        ..._525
+        ..._525,
+        ..._527,
+        ..._529
       };
     }
     export const v1 = {
@@ -50,7 +50,7 @@ export namespace interchain_security {
     };
   }
   export const ClientFactory = {
-    ..._715,
-    ..._716
+    ..._723,
+    ..._724
   };
 }
