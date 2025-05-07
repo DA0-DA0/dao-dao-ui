@@ -1,56 +1,56 @@
-import * as _154 from "./ccv/consumer/v1/consumer";
-import * as _155 from "./ccv/consumer/v1/genesis";
-import * as _156 from "./ccv/consumer/v1/query";
-import * as _157 from "./ccv/consumer/v1/tx";
-import * as _158 from "./ccv/provider/v1/genesis";
-import * as _159 from "./ccv/provider/v1/provider";
-import * as _160 from "./ccv/provider/v1/query";
-import * as _161 from "./ccv/provider/v1/tx";
-import * as _162 from "./ccv/v1/shared_consumer";
-import * as _163 from "./ccv/v1/wire";
-import * as _522 from "./ccv/consumer/v1/tx.amino";
-import * as _523 from "./ccv/provider/v1/tx.amino";
-import * as _524 from "./ccv/consumer/v1/tx.registry";
-import * as _525 from "./ccv/provider/v1/tx.registry";
-import * as _526 from "./ccv/consumer/v1/query.rpc.Query";
-import * as _527 from "./ccv/provider/v1/query.rpc.Query";
-import * as _528 from "./ccv/consumer/v1/tx.rpc.msg";
-import * as _529 from "./ccv/provider/v1/tx.rpc.msg";
-import * as _723 from "./rpc.query";
-import * as _724 from "./rpc.tx";
+import * as _161 from "./ccv/consumer/v1/consumer";
+import * as _162 from "./ccv/consumer/v1/genesis";
+import * as _163 from "./ccv/consumer/v1/query";
+import * as _164 from "./ccv/consumer/v1/tx";
+import * as _165 from "./ccv/provider/v1/genesis";
+import * as _166 from "./ccv/provider/v1/provider";
+import * as _167 from "./ccv/provider/v1/query";
+import * as _168 from "./ccv/provider/v1/tx";
+import * as _169 from "./ccv/v1/shared_consumer";
+import * as _170 from "./ccv/v1/wire";
+import * as _533 from "./ccv/consumer/v1/tx.amino";
+import * as _534 from "./ccv/provider/v1/tx.amino";
+import * as _535 from "./ccv/consumer/v1/tx.registry";
+import * as _536 from "./ccv/provider/v1/tx.registry";
+import * as _537 from "./ccv/consumer/v1/query.rpc.Query";
+import * as _538 from "./ccv/provider/v1/query.rpc.Query";
+import * as _539 from "./ccv/consumer/v1/tx.rpc.msg";
+import * as _540 from "./ccv/provider/v1/tx.rpc.msg";
+import * as _736 from "./rpc.query";
+import * as _737 from "./rpc.tx";
 export namespace interchain_security {
   export namespace ccv {
     export namespace consumer {
       export const v1 = {
-        ..._154,
-        ..._155,
-        ..._156,
-        ..._157,
-        ..._522,
-        ..._524,
-        ..._526,
-        ..._528
+        ..._161,
+        ..._162,
+        ..._163,
+        ..._164,
+        ..._533,
+        ..._535,
+        ..._537,
+        ..._539
       };
     }
     export namespace provider {
       export const v1 = {
-        ..._158,
-        ..._159,
-        ..._160,
-        ..._161,
-        ..._523,
-        ..._525,
-        ..._527,
-        ..._529
+        ..._165,
+        ..._166,
+        ..._167,
+        ..._168,
+        ..._534,
+        ..._536,
+        ..._538,
+        ..._540
       };
     }
     export const v1 = {
-      ..._162,
-      ..._163
+      ..._169,
+      ..._170
     };
   }
   export const ClientFactory = {
-    ..._723,
-    ..._724
+    ..._736,
+    ..._737
   };
 }

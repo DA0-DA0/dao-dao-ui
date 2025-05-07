@@ -1,0 +1,18 @@
+syntax = "proto3";
+package elys.estaking;
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/elys-network/elys/x/estaking/types";
+
+message IncentiveInfo {
+  // reward amount in eden for 1 year
+  string eden_amount_per_year = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  // blocks distributed
+  int64 blocks_distributed = 2;
+}

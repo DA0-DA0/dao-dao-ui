@@ -1,0 +1,265 @@
+syntax = "proto3";
+
+package elys.commitment;
+
+import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/elys-network/elys/x/commitment/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+  // CommitClaimedRewards commit the tokens on claimed store to committed
+  rpc CommitClaimedRewards(MsgCommitClaimedRewards)
+      returns (MsgCommitClaimedRewardsResponse);
+
+  // UncommitTokens uncommits the tokens from committed store and make it liquid
+  // immediately
+  rpc UncommitTokens(MsgUncommitTokens) returns (MsgUncommitTokensResponse);
+
+  // Vest converts user's commitment to vesting - start with unclaimed rewards
+  // and if it's not enough deduct from committed bucket mainly utilized for
+  // Eden
+  rpc Vest(MsgVest) returns (MsgVestResponse);
+
+  // VestNow provides functionality to get the token immediately but lower
+  // amount than original e.g. user can burn 1000 ueden and get 800 uelys when
+  // the ratio is 80%
+  rpc VestNow(MsgVestNow) returns (MsgVestNowResponse);
+
+  // VestLiquid converts user's balance to vesting to be utilized for normal
+  // tokens vesting like ATOM vesting
+  rpc VestLiquid(MsgVestLiquid) returns (MsgVestLiquidResponse);
+
+  // CancelVest cancel the user's vesting and the user reject to get vested
+  // tokens
+  rpc CancelVest(MsgCancelVest) returns (MsgCancelVestResponse);
+
+  // ClaimVesting claims already vested amount
+  rpc ClaimVesting(MsgClaimVesting) returns (MsgClaimVestingResponse);
+
+  // UpdateVestingInfo add/update specific vesting info by denom on Params
+  rpc UpdateVestingInfo(MsgUpdateVestingInfo)
+      returns (MsgUpdateVestingInfoResponse);
+
+  // UpdateEnableVestNow add/update enable vest now on Params
+  rpc UpdateEnableVestNow(MsgUpdateEnableVestNow)
+      returns (MsgUpdateEnableVestNowResponse);
+
+  rpc UpdateAirdropParams(MsgUpdateAirdropParams)
+      returns (MsgUpdateAirdropParamsResponse);
+
+  rpc Stake(MsgStake) returns (MsgStakeResponse);
+  rpc Unstake(MsgUnstake) returns (MsgUnstakeResponse);
+
+  rpc ClaimAirdrop(MsgClaimAirdrop) returns (MsgClaimAirdropResponse);
+
+  rpc ClaimKol(MsgClaimKol) returns (MsgClaimKolResponse);
+}
+
+message MsgCommitClaimedRewards {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgCommitClaimedRewards";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgCommitClaimedRewardsResponse {}
+
+message MsgUncommitTokens {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgUncommitTokens";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgUncommitTokensResponse {}
+
+message MsgVest {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgVest";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgVestResponse {}
+
+message MsgCancelVest {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgCancelVest";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgCancelVestResponse {}
+
+message MsgClaimVesting {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "commitment/MsgClaimVesting";
+  string sender = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message MsgClaimVestingResponse {}
+
+message MsgVestNow {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgVestNow";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgVestNowResponse {}
+
+message MsgUpdateVestingInfo {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "commitment/MsgUpdateVestingInfo";
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string base_denom = 2;
+  string vesting_denom = 3;
+  int64 num_blocks = 4;
+  int64 vest_now_factor = 5;
+  int64 num_max_vestings = 6;
+}
+
+message MsgUpdateVestingInfoResponse {}
+
+message MsgUpdateEnableVestNow {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "commitment/MsgUpdateEnableVestNow";
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  bool enable_vest_now = 2;
+}
+
+message MsgUpdateEnableVestNowResponse {}
+
+message MsgVestLiquid {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgVestLiquid";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string denom = 3;
+}
+
+message MsgVestLiquidResponse {}
+
+message MsgStake {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgStake";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string asset = 3;
+  string validator_address = 4
+      [ (cosmos_proto.scalar) = "cosmos.ValidatorAddressString" ];
+}
+
+message MsgStakeResponse {
+  uint64 code = 1;
+  string result = 2;
+}
+
+message MsgUnstake {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "commitment/MsgUnstake";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string asset = 3;
+  string validator_address = 4
+      [ (cosmos_proto.scalar) = "cosmos.ValidatorAddressString" ];
+}
+
+message MsgUnstakeResponse {
+  uint64 code = 1;
+  string result = 2;
+}
+
+message MsgClaimAirdrop {
+  option (cosmos.msg.v1.signer) = "claim_address";
+  option (amino.name) = "commitment/MsgClaimAirdrop";
+  string claim_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+message MsgClaimAirdropResponse {
+  string elys_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string eden_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgClaimKol {
+  option (cosmos.msg.v1.signer) = "claim_address";
+  option (amino.name) = "commitment/MsgClaimKol";
+  string claim_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  bool refund = 2;
+}
+
+message MsgClaimKolResponse {
+  string elys_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string vested_elys_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgUpdateAirdropParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "commitment/MsgUpdateAirdropParams";
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  bool enable_claim = 2;
+  uint64 start_airdrop_claim_height = 3;
+  uint64 end_airdrop_claim_height = 4;
+  uint64 start_kol_claim_height = 5;
+  uint64 end_kol_claim_height = 6;
+}
+
+message MsgUpdateAirdropParamsResponse {}

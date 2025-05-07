@@ -1,28 +1,28 @@
-import * as _105 from "./feemarket/v1/genesis";
-import * as _106 from "./feemarket/v1/params";
-import * as _107 from "./feemarket/v1/query";
-import * as _108 from "./feemarket/v1/tx";
-import * as _490 from "./feemarket/v1/tx.amino";
-import * as _491 from "./feemarket/v1/tx.registry";
-import * as _492 from "./feemarket/v1/query.rpc.Query";
-import * as _493 from "./feemarket/v1/tx.rpc.msg";
-import * as _717 from "./rpc.query";
-import * as _718 from "./rpc.tx";
+import * as _112 from "./feemarket/v1/genesis";
+import * as _113 from "./feemarket/v1/params";
+import * as _114 from "./feemarket/v1/query";
+import * as _115 from "./feemarket/v1/tx";
+import * as _501 from "./feemarket/v1/tx.amino";
+import * as _502 from "./feemarket/v1/tx.registry";
+import * as _503 from "./feemarket/v1/query.rpc.Query";
+import * as _504 from "./feemarket/v1/tx.rpc.msg";
+import * as _730 from "./rpc.query";
+import * as _731 from "./rpc.tx";
 export namespace feemarket {
   export namespace feemarket {
     export const v1 = {
-      ..._105,
-      ..._106,
-      ..._107,
-      ..._108,
-      ..._490,
-      ..._491,
-      ..._492,
-      ..._493
+      ..._112,
+      ..._113,
+      ..._114,
+      ..._115,
+      ..._501,
+      ..._502,
+      ..._503,
+      ..._504
     };
   }
   export const ClientFactory = {
-    ..._717,
-    ..._718
+    ..._730,
+    ..._731
   };
 }

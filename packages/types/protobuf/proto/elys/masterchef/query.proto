@@ -1,0 +1,380 @@
+syntax = "proto3";
+
+package elys.masterchef;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "elys/masterchef/params.proto";
+import "elys/masterchef/external_incentive.proto";
+import "elys/masterchef/pool.proto";
+import "elys/masterchef/types.proto";
+import "elys/commitment/params.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/elys-network/elys/x/masterchef/types";
+
+// Query defines the gRPC querier service.
+service Query {
+
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/params";
+  }
+  rpc ExternalIncentive(QueryExternalIncentiveRequest)
+      returns (QueryExternalIncentiveResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/external_incentive";
+  }
+  rpc PoolInfo(QueryPoolInfoRequest) returns (QueryPoolInfoResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/pool_info";
+  }
+  rpc ListPoolInfos(QueryListPoolInfosRequest)
+      returns (QueryListPoolInfosResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/list_pool_infos";
+  }
+  rpc PoolRewardInfo(QueryPoolRewardInfoRequest)
+      returns (QueryPoolRewardInfoResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/pool_reward_info";
+  }
+  rpc UserRewardInfo(QueryUserRewardInfoRequest)
+      returns (QueryUserRewardInfoResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/user_reward_info";
+  }
+  rpc UserPendingReward(QueryUserPendingRewardRequest)
+      returns (QueryUserPendingRewardResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/pending_reward";
+  }
+  rpc StableStakeApr(QueryStableStakeAprRequest)
+      returns (QueryStableStakeAprResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/stable_stake_apr/{denom}";
+  }
+  rpc PoolAprs(QueryPoolAprsRequest) returns (QueryPoolAprsResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/pool_aprs";
+  }
+
+  // Queries a list of ShowFeeInfo items.
+  rpc ShowFeeInfo(QueryShowFeeInfoRequest) returns (QueryShowFeeInfoResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/show_fee_info/{date}";
+  }
+
+  // Queries a list of ListFeeInfo items.
+  rpc ListFeeInfo(QueryListFeeInfoRequest) returns (QueryListFeeInfoResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/list_fee_info";
+  }
+
+  // Calculate APR
+  rpc Apr(QueryAprRequest) returns (QueryAprResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/apr/{withdraw_type}/{denom}";
+  }
+
+  // Calculate APRs
+  rpc Aprs(QueryAprsRequest) returns (QueryAprsResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/aprs";
+  }
+
+  // Queries PoolReward items
+  rpc PoolRewards(QueryPoolRewardsRequest) returns (QueryPoolRewardsResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/pool_rewards";
+  }
+
+  rpc AllLiquidityPoolTVL(QueryAllLiquidityPoolTVLRequest)
+      returns (QueryAllLiquidityPoolTVLResponse) {
+    option (google.api.http).get =
+        "/elys-network/elys/masterchef/all_liquidity_pool_tvl";
+  }
+
+  rpc ChainTVL(QueryChainTVLRequest) returns (QueryChainTVLResponse) {
+    option (google.api.http).get = "/elys-network/elys/masterchef/chain_tvl";
+  }
+}
+
+message QueryAllLiquidityPoolTVLRequest {}
+
+message QueryAllLiquidityPoolTVLResponse {
+
+  string total = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string pools = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_staking = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryChainTVLRequest {}
+
+message QueryChainTVLResponse {
+
+  string total = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string pools = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_staking = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string staked_elys = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  string staked_eden = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin net_stakings = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+
+  // params holds all the parameters of this module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryExternalIncentiveRequest { uint64 id = 1; }
+
+message QueryExternalIncentiveResponse {
+  ExternalIncentive external_incentive = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryPoolInfoRequest { uint64 pool_id = 1; }
+
+message QueryPoolInfoResponse {
+  PoolInfo pool_info = 1 [ (gogoproto.nullable) = false ];
+  string stable_apr = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryListPoolInfosRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListPoolInfosResponse {
+  repeated QueryPoolInfoResponse list = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryPoolRewardInfoRequest {
+  uint64 pool_id = 1;
+  string reward_denom = 2;
+}
+
+message QueryPoolRewardInfoResponse {
+  PoolRewardInfo pool_reward_info = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryUserRewardInfoRequest {
+  string user = 1;
+  uint64 pool_id = 2;
+  string reward_denom = 3;
+}
+
+message QueryUserRewardInfoResponse {
+  UserRewardInfo user_reward_info = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryUserPendingRewardRequest { string user = 1; }
+
+message RewardInfo {
+  uint64 pool_id = 1;
+  repeated cosmos.base.v1beta1.Coin reward = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message QueryUserPendingRewardResponse {
+  repeated RewardInfo rewards = 1;
+  repeated cosmos.base.v1beta1.Coin total_rewards = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message QueryStableStakeAprRequest { string denom = 1; }
+
+message QueryStableStakeAprResponse {
+  string apr = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryPoolAprsRequest { repeated uint64 pool_ids = 1; }
+
+message QueryPoolAprsResponse {
+  repeated PoolApr data = 1 [ (gogoproto.nullable) = false ];
+}
+
+message PoolApr {
+  uint64 pool_id = 1;
+  string eden_apr = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_dex_apr = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_gas_apr = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string total_apr = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryShowFeeInfoRequest { string date = 1; }
+
+message QueryShowFeeInfoResponse {
+  FeeInfo fee_info = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryListFeeInfoRequest {}
+
+message QueryListFeeInfoResponse {
+  repeated FeeInfo fee_info = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAprRequest {
+  elys.commitment.EarnType withdraw_type = 1;
+  string denom = 2;
+  uint64 days = 3;
+}
+
+message QueryAprResponse {
+  string apr = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryAprsRequest { uint64 days = 1; }
+
+message QueryAprsResponse {
+  string usdc_apr_usdc = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string eden_apr_usdc = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_apr_edenb = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string eden_apr_edenb = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_apr_eden = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string eden_apr_eden = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string edenb_apr_eden = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string usdc_apr_elys = 8 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string eden_apr_elys = 9 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string edenb_apr_elys = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryPoolRewardsRequest {
+  repeated uint64 pool_ids = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+message PoolRewards {
+  uint64 pool_id = 1;
+  string rewards_usd = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin reward_coins = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  cosmos.base.v1beta1.Coin eden_forward = 4 [ (gogoproto.nullable) = false ];
+  string rewards_usd_apr = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string external_rewards_apr = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+message QueryPoolRewardsResponse {
+  repeated PoolRewards pools = 1 [ (gogoproto.nullable) = false ];
+}

@@ -1,0 +1,192 @@
+syntax = "proto3";
+
+package elys.tradeshield;
+
+import "gogoproto/gogo.proto";
+import "elys/tradeshield/order.proto";
+import "elys/tradeshield/params.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/elys-network/elys/x/tradeshield/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+  rpc CreateSpotOrder(MsgCreateSpotOrder) returns (MsgCreateSpotOrderResponse);
+  rpc UpdateSpotOrder(MsgUpdateSpotOrder) returns (MsgUpdateSpotOrderResponse);
+  rpc CancelSpotOrder(MsgCancelSpotOrder) returns (MsgCancelSpotOrderResponse);
+  rpc CancelSpotOrders(MsgCancelSpotOrders)
+      returns (MsgCancelSpotOrdersResponse);
+  rpc CreatePerpetualOpenOrder(MsgCreatePerpetualOpenOrder)
+      returns (MsgCreatePerpetualOpenOrderResponse);
+  rpc CreatePerpetualCloseOrder(MsgCreatePerpetualCloseOrder)
+      returns (MsgCreatePerpetualCloseOrderResponse);
+  rpc UpdatePerpetualOrder(MsgUpdatePerpetualOrder)
+      returns (MsgUpdatePerpetualOrderResponse);
+  rpc CancelPerpetualOrder(MsgCancelPerpetualOrder)
+      returns (MsgCancelPerpetualOrderResponse);
+  rpc CancelPerpetualOrders(MsgCancelPerpetualOrders)
+      returns (MsgCancelPerpetualOrdersResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc ExecuteOrders(MsgExecuteOrders) returns (MsgExecuteOrdersResponse);
+}
+
+message MsgCreateSpotOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgCreateSpotOrder";
+  SpotOrderType order_type = 1;
+  LegacyOrderPriceV1 legacy_order_price_v1 = 2;
+  string order_price = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin order_amount = 3 [ (gogoproto.nullable) = false ];
+  string owner_address = 4 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string order_target_denom = 5;
+}
+
+message MsgCreateSpotOrderResponse { uint64 order_id = 1; }
+
+message MsgUpdateSpotOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgUpdateSpotOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  uint64 order_id = 2;
+  LegacyOrderPriceV1 legacy_order_price_v1 = 3 [ (gogoproto.nullable) = false ];
+  string order_price = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgUpdateSpotOrderResponse {}
+
+message MsgCancelSpotOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgCancelSpotOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  uint64 order_id = 2;
+}
+
+message MsgCancelSpotOrderResponse { uint64 order_id = 1; }
+
+message MsgCancelSpotOrders {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "tradeshield/MsgCancelSpotOrders";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  repeated uint64 spot_order_ids = 2;
+}
+
+message MsgCancelSpotOrdersResponse {}
+
+message MsgCreatePerpetualOpenOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgCreatePerpetualOpenOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  LegacyTriggerPriceV1 legacy_trigger_price_v1 = 2
+      [ (gogoproto.nullable) = false ];
+  string trigger_price = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin collateral = 3 [ (gogoproto.nullable) = false ];
+  string trading_asset = 4;
+  PerpetualPosition position = 5;
+  string leverage = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string take_profit_price = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string stop_loss_price = 8 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  uint64 pool_id = 9;
+}
+
+message MsgCreatePerpetualOpenOrderResponse { uint64 order_id = 1; }
+
+message MsgCreatePerpetualCloseOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/CreatePerpetualCloseOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  LegacyTriggerPriceV1 legacy_trigger_price_v1 = 2
+      [ (gogoproto.nullable) = false ];
+  string trigger_price = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  uint64 position_id = 3;
+}
+
+message MsgCreatePerpetualCloseOrderResponse { uint64 order_id = 1; }
+
+message MsgUpdatePerpetualOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgUpdatePerpetualOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  uint64 order_id = 2;
+  LegacyTriggerPriceV1 legacy_trigger_price_v1 = 3
+      [ (gogoproto.nullable) = false ];
+  string trigger_price = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgUpdatePerpetualOrderResponse {}
+
+message MsgCancelPerpetualOrder {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgCancelPerpetualOrder";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  uint64 order_id = 2;
+}
+
+message MsgCancelPerpetualOrderResponse { uint64 order_id = 1; }
+
+message MsgCancelPerpetualOrders {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "tradeshield/MsgCancelPerpetualOrders";
+  string owner_address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  repeated uint64 order_ids = 2;
+}
+
+message MsgCancelPerpetualOrdersResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "tradeshield/MsgUpdateParams";
+  // authority is the address that controls the module (defaults to x/gov unless
+  // overwritten).
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // NOTE: All parameters must be supplied.
+  Params params = 2;
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgExecuteOrders {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "tradeshield/MsgExecuteOrders";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  repeated uint64 spot_order_ids = 2;
+  repeated uint64 perpetual_order_ids = 3;
+}
+
+message MsgExecuteOrdersResponse {}

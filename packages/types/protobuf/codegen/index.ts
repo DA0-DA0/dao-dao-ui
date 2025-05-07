@@ -16,6 +16,8 @@ export * from "./cosmos/bundle";
 export * from "./cosmos/client";
 export * from "./cosmwasm/bundle";
 export * from "./cosmwasm/client";
+export * from "./elys/bundle";
+export * from "./elys/client";
 export * from "./feemarket/bundle";
 export * from "./feemarket/client";
 export * from "./gaia/bundle";

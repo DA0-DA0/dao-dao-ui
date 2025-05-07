@@ -131,6 +131,7 @@ telescope({
           'Switcheo.carbon.cdp',
           'slinky.marketmap.v1',
           'slinky.oracle.v1',
+          'elys.stablestake',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

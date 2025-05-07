@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package elys.stablestake;
+
+import "gogoproto/gogo.proto";
+import "elys/stablestake/params.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/elys-network/elys/x/stablestake/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+  rpc Bond(MsgBond) returns (MsgBondResponse);
+  rpc Unbond(MsgUnbond) returns (MsgUnbondResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc AddPool(MsgAddPool) returns (MsgAddPoolResponse);
+  rpc UpdatePool(MsgUpdatePool) returns (MsgUpdatePoolResponse);
+}
+message MsgBond {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "stablestake/MsgBond";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  uint64 pool_id = 3;
+}
+
+message MsgBondResponse {}
+
+message MsgUnbond {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "stablestake/MsgUnbond";
+  string creator = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  uint64 pool_id = 3;
+}
+
+message MsgUnbondResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "stablestake/MsgUpdateParams";
+  // authority is the address that controls the module (defaults to x/gov unless
+  // overwritten).
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // NOTE: All parameters must be supplied.
+  Params params = 2;
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgAddPool {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "stablestake/MsgAddPool";
+  string sender = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string deposit_denom = 2;
+  string interest_rate = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_max = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_min = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_increase = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_decrease = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string health_gain_factor = 8 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string max_leverage_ratio = 9 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string max_withdraw_ratio = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgAddPoolResponse { uint64 pool_id = 1; }
+
+message MsgUpdatePool {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "stablestake/MsgUpdatePool";
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  string interest_rate_max = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_min = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_increase = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string interest_rate_decrease = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string health_gain_factor = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string max_leverage_ratio = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  uint64 pool_id = 8;
+}
+
+message MsgUpdatePoolResponse {}

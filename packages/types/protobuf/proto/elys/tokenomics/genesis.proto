@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package elys.tokenomics;
+
+import "gogoproto/gogo.proto";
+import "elys/tokenomics/params.proto";
+import "elys/tokenomics/airdrop.proto";
+import "elys/tokenomics/genesis_inflation.proto";
+import "elys/tokenomics/time_based_inflation.proto";
+
+option go_package = "github.com/elys-network/elys/x/tokenomics/types";
+
+// GenesisState defines the tokenomics module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated Airdrop airdrop_list = 2 [ (gogoproto.nullable) = false ];
+  GenesisInflation genesis_inflation = 3;
+  repeated TimeBasedInflation time_based_inflation_list = 4
+      [ (gogoproto.nullable) = false ];
+}
