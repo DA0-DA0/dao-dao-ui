@@ -953,8 +953,8 @@ export const CHAIN_ENDPOINTS: Partial<
   >
 > = {
   [ChainId.JunoMainnet]: {
-    rpc: 'https://juno-rpc.kleomedes.network',
-    rest: 'https://juno-api.kleomedes.network',
+    rpc: 'https://juno-rpc.polkachu.com',
+    rest: 'https://juno-api.polkachu.com',
   },
   [ChainId.JunoTestnet]: {
     rpc: 'https://juno-testnet-rpc.polkachu.com',
@@ -1001,8 +1001,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://terra-classic-lcd.publicnode.com',
   },
   [ChainId.MigalooMainnet]: {
-    rpc: 'https://migaloo-rpc.kleomedes.network',
-    rest: 'https://migaloo-api.kleomedes.network',
+    rpc: 'https://migaloo-rpc.polkachu.com',
+    rest: 'https://migaloo-api.polkachu.com',
   },
   [ChainId.MigalooTestnet]: {
     rpc: 'https://migaloo-testnet-rpc.polkachu.com',
