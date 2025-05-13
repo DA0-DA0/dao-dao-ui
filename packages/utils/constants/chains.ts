@@ -601,6 +601,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraMainnet,
         name: 'terra',
         mainnet: true,
+        noIndexer: true,
         overrideChainImageUrl: '/chains/terra.png',
         accentColor: '#113da5',
         factoryContractAddress:
@@ -620,6 +621,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraClassicMainnet,
         name: 'terraclassic',
         mainnet: true,
+        noIndexer: true,
         accentColor: '#ffd842',
         noInstantiate2Create: true,
         factoryContractAddress:
