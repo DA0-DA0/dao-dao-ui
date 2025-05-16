@@ -21,27 +21,29 @@ export const TxCrossChainRelayStatus = ({
     return null
   }
 
-  return states.pending.length > 0 ? (
-    needsSelfRelay ? (
-      <StatusCard
-        content={t('info.crossChainMessagesNeedSelfRelay')}
-        onClick={openSelfRelay}
-        size="xs"
-        style="warning"
-      />
-    ) : (
-      <StatusCard
-        content={t('info.relayingCrossChainMessages')}
-        size="xs"
-        style="loading"
-      />
-    )
-  ) : states.errored.length + states.timedOut.length > 0 ? (
+  const hasErrorOrTimedOut = states.errored.length + states.timedOut.length > 0
+  const hasPending = states.pending.length > 0
+  return (
     <StatusCard
-      content={t('error.crossChainMessagesErroredOrTimedOut')}
+      content={
+        hasErrorOrTimedOut
+          ? t('error.crossChainMessagesErroredOrTimedOut')
+          : hasPending
+            ? needsSelfRelay
+              ? t('info.crossChainMessagesNeedSelfRelay')
+              : t('info.relayingCrossChainMessages')
+            : t('success.crossChainMessagesRelayed')
+      }
       iconAtTop
+      onClick={hasPending && needsSelfRelay ? openSelfRelay : undefined}
       size="xs"
-      style="warning"
+      style={
+        hasErrorOrTimedOut || (hasPending && needsSelfRelay)
+          ? 'warning'
+          : hasPending
+            ? 'loading'
+            : 'success'
+      }
     >
       <div className="flex flex-col gap-2 self-stretch">
         {states.all.map((state, index) => (
@@ -82,11 +84,5 @@ export const TxCrossChainRelayStatus = ({
         ))}
       </div>
     </StatusCard>
-  ) : (
-    <StatusCard
-      content={t('success.crossChainMessagesRelayed')}
-      size="xs"
-      style="success"
-    />
   )
 }

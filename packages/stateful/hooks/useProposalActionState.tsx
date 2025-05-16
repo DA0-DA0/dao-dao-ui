@@ -1,5 +1,6 @@
 import { toUtf8 } from '@cosmjs/encoding'
 import { CancelOutlined, Key, Send } from '@mui/icons-material'
+import clsx from 'clsx'
 import { usePlausible } from 'next-plausible'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -312,7 +313,7 @@ export const useProposalActionState = ({
               }
             : undefined,
     footer: (showRelayStatus || isWalletConnected) && (
-      <div className="flex flex-col gap-6">
+      <div className={clsx('flex flex-col gap-6', showRelayStatus && '-mt-4')}>
         {showRelayStatus && <TxCrossChainRelayStatus state={relayState.data} />}
 
         {isWalletConnected && <ProfileProposalCard />}
