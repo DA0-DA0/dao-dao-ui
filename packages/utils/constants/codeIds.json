@@ -392,26 +392,6 @@
       "DaoVotingTokenStaked": 144
     }
   },
-  "dev-1": {
-    "2.6.0": {
-      "Cw1Whitelist": 80,
-      "Cw4Group": 81,
-      "CwAdminFactory": 82,
-      "CwPayrollFactory": 83,
-      "CwTokenSwap": 84,
-      "CwVesting": 95,
-      "DaoDaoCore": 85,
-      "DaoPreProposeApprovalMultiple": 86,
-      "DaoPreProposeApprovalSingle": 87,
-      "DaoPreProposeApprover": 88,
-      "DaoPreProposeMultiple": 89,
-      "DaoPreProposeSingle": 90,
-      "DaoProposalMultiple": 91,
-      "DaoProposalSingle": 92,
-      "DaoRewardsDistributor": 93,
-      "DaoVotingCw4": 94
-    }
-  },
   "elgafar-1": {
     "2.1.0": {
       "Cw4Group": 2887,
@@ -1790,6 +1770,31 @@
       "DaoProposalSingle": 29,
       "DaoRewardsDistributor": 33,
       "DaoVotingCw4": 31,
+      "DaoVotingTokenStaked": 32
+    }
+  },
+  "thorchain-stagenet-2": {
+    "2.7.0": {
+      "Cw1Whitelist": 12,
+      "Cw4Group": 13,
+      "Cw721Base": 14,
+      "CwAdminFactory": 15,
+      "CwPayrollFactory": 16,
+      "CwTokenSwap": 17,
+      "CwTokenfactoryIssuer": 31,
+      "CwVesting": 29,
+      "DaoDaoCore": 18,
+      "DaoPreProposeApprovalMultiple": 19,
+      "DaoPreProposeApprovalSingle": 20,
+      "DaoPreProposeApprover": 21,
+      "DaoPreProposeMultiple": 22,
+      "DaoPreProposeSingle": 23,
+      "DaoProposalMultiple": 24,
+      "DaoProposalSingle": 25,
+      "DaoRewardsDistributor": 26,
+      "DaoVoteDelegation": 27,
+      "DaoVotingCw4": 28,
+      "DaoVotingCw721Staked": 30,
       "DaoVotingTokenStaked": 32
     }
   },

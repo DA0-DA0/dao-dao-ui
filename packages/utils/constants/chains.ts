@@ -137,25 +137,25 @@ if (junoTestnetChain?.chainRegistry) {
   }
 }
 
-// THORChain/Rujira Devnet
-const thorchainDevnetChain = convertChainRegistryChainToAnyChain({
-  chain_id: ChainId.ThorchainDevnet,
-  chain_name: 'thorchaindevnet',
+// THORChain/Rujira Stagenet
+const thorchainStagenetChain = convertChainRegistryChainToAnyChain({
+  chain_id: ChainId.ThorchainStagenet,
+  chain_name: 'thorchainstagenet',
   chain_type: 'cosmos',
   status: 'live',
-  network_type: 'testnet',
-  pretty_name: 'THORChain Devnet',
+  network_type: 'devnet',
+  pretty_name: 'THORChain Stagenet',
   bech32_prefix: 'sthor',
   slip44: 931,
   apis: {
     rpc: [
       {
-        address: 'https://thornode-devnet-rpc.bryanlabs.net:443',
+        address: 'https://stagenet-rpc.ninerealms.com:443',
       },
     ],
     rest: [
       {
-        address: 'https://thornode-devnet-api.bryanlabs.net:443',
+        address: 'https://stagenet-thornode.ninerealms.com:443',
       },
     ],
   },
@@ -163,14 +163,14 @@ const thorchainDevnetChain = convertChainRegistryChainToAnyChain({
     fee_tokens: [
       {
         denom: 'rune',
-        fixed_min_gas_price: 0.02,
+        fixed_min_gas_price: 0,
       },
     ],
   },
 })
-chains.push(thorchainDevnetChain)
+chains.push(thorchainStagenetChain)
 assets.push({
-  chain_name: thorchainDevnetChain.chainName,
+  chain_name: thorchainStagenetChain.chainName,
   assets: [
     {
       description: 'The native token of THORChain',
@@ -882,13 +882,17 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
       },
       {
-        chainId: ChainId.ThorchainDevnet,
+        chainId: ChainId.ThorchainStagenet,
         name: 'thorchain',
         mainnet: false,
         accentColor: '#00eed1',
         factoryContractAddress:
-          'sthor190l0h8jw590kaywzzfdwjyk38w72vm99562e9z9gpj2vas8huveqwvfa9g',
-        latestVersion: ContractVersion.V260,
+          'sthor14haqsatfqxh3jgzn6u7ggnece4vhv0nt8a8ml4rg29mln9hdjfdqaqlt88',
+        explorerUrlTemplates: {
+          tx: 'https://stagenet.thorchain.net/tx/REPLACE',
+          wallet: 'https://stagenet.thorchain.net/address/REPLACE',
+        },
+        latestVersion: ContractVersion.V270,
       },
     ]
 
@@ -1052,9 +1056,9 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://babylon-testnet-rpc.polkachu.com',
     rest: 'https://babylon-testnet-api.polkachu.com',
   },
-  [ChainId.ThorchainDevnet]: {
-    rpc: 'https://thornode-devnet-rpc.bryanlabs.net',
-    rest: 'https://thornode-devnet-api.bryanlabs.net',
+  [ChainId.ThorchainStagenet]: {
+    rpc: 'https://stagenet-rpc.ninerealms.com',
+    rest: 'https://stagenet-thornode.ninerealms.com',
   },
   [ChainId.IntergazeMainnet]: {
     rpc: 'https://rpc.intergaze-apis.com',

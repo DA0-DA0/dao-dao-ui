@@ -26,7 +26,7 @@ export const chainIdToIndexerGroupVarsName: Record<string, string> = {
   [ChainId.TerraMainnet]: 'terra_mainnet',
   [ChainId.TerraClassicMainnet]: 'terraClassic_mainnet',
   [ChainId.BabylonTestnet]: 'babylon_testnet',
-  [ChainId.ThorchainDevnet]: 'thorChain_testnet',
+  [ChainId.ThorchainStagenet]: 'thorChain_stagenet',
 }
 
 /**

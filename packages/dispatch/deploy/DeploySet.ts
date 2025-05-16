@@ -224,7 +224,7 @@ export const deploySets: DeploySet[] = [
       ChainId.JunoMainnet,
       ChainId.JunoTestnet,
 
-      ChainId.ThorchainDevnet,
+      ChainId.ThorchainStagenet,
 
       'layer',
 
@@ -258,7 +258,7 @@ export const deploySets: DeploySet[] = [
         ChainId.JunoMainnet,
         ChainId.JunoTestnet,
 
-        ChainId.ThorchainDevnet,
+        ChainId.ThorchainStagenet,
 
         'layer',
 
@@ -332,7 +332,7 @@ export const deploySets: DeploySet[] = [
       ),
     ],
     {
-      chainIds: [ChainId.ThorchainDevnet],
+      chainIds: [ChainId.ThorchainStagenet],
     }
   ),
 
@@ -410,7 +410,7 @@ export const deploySets: DeploySet[] = [
       ),
     ],
     {
-      chainIds: [ChainId.ThorchainDevnet],
+      chainIds: [ChainId.ThorchainStagenet],
     }
   ),
 

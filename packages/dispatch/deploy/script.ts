@@ -1,3 +1,6 @@
+import { execSync } from 'child_process'
+import path from 'path'
+
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { stringToPath as stringToHdPath } from '@cosmjs/crypto'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
@@ -334,6 +337,9 @@ const main = async () => {
 
       throw err
     }
+
+    // Format the code IDs file.
+    execSync(`cd ${path.join(__dirname, '../../utils')} && yarn format`)
   }
 
   // Instantiate admin factory.
