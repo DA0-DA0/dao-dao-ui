@@ -150,6 +150,7 @@ export enum CommonError {
   ContractNameExists = 'Name already taken.',
   OutOfGas = 'Out of gas.',
   InvalidCoins = 'Invalid coins.',
+  PacketTimeout = 'Cross-chain packet timed out.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -272,6 +273,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     // https://github.com/cosmos/cosmos-sdk/blob/main/types/errors/errors.go
     'codespace: sdk, code: 10',
   ],
+  [CommonError.PacketTimeout]: ['packed timeout elapsed'],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

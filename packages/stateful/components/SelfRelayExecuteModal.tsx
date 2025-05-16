@@ -61,6 +61,7 @@ import { SendAuthorization } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v
 import { toTimestamp } from '@dao-dao/types/protobuf/codegen/helpers'
 import {
   CHAIN_GAS_MULTIPLIER,
+  CommonError,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -949,7 +950,14 @@ export const SelfRelayExecuteModal = ({
       setRelaying(undefined)
     } catch (err) {
       console.error(err)
-      setRelayError(processError(err))
+      setRelayError(
+        processError(err, {
+          transform: {
+            [CommonError.PacketTimeout]:
+              'Cross-chain packet timed out and cannot be relayed. You must submit a new action/proposal.',
+          },
+        })
+      )
       setStatus(RelayStatus.RelayErrored)
       return
     } finally {
