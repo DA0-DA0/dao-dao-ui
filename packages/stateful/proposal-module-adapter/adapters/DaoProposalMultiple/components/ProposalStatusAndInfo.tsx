@@ -297,45 +297,50 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    {
-      Icon: Tag,
-      label: t('info.txAbbr'),
-      Value: (props) =>
-        loadingExecutionTxHash.loading ? (
-          <p className={clsx('animate-pulse', props.className)}>...</p>
-        ) : loadingExecutionTxHash.errored ? (
-          <Tooltip
-            title={processError(loadingExecutionTxHash.error, {
-              forceCapture: false,
-            })}
-          >
-            <p className={clsx('animate-pulse', props.className)}>
-              {t('info.errored')}
-            </p>
-          </Tooltip>
-        ) : loadingExecutionTxHash.data ? (
-          <div className="flex w-full flex-row items-center gap-1 overflow-hidden">
-            <CopyToClipboardUnderline
-              // Will truncate automatically.
-              takeAll
-              value={loadingExecutionTxHash.data}
-              {...props}
-            />
+    ...(statusKey === ProposalStatusEnum.Executed ||
+    statusKey === ProposalStatusEnum.ExecutionFailed
+      ? ([
+          {
+            Icon: Tag,
+            label: t('info.txAbbr'),
+            Value: (props) =>
+              loadingExecutionTxHash.loading ? (
+                <p className={clsx('animate-pulse', props.className)}>...</p>
+              ) : loadingExecutionTxHash.errored ? (
+                <Tooltip
+                  title={processError(loadingExecutionTxHash.error, {
+                    forceCapture: false,
+                  })}
+                >
+                  <p className={clsx('animate-pulse', props.className)}>
+                    {t('info.errored')}
+                  </p>
+                </Tooltip>
+              ) : loadingExecutionTxHash.data ? (
+                <div className="flex w-full flex-row items-center gap-1 overflow-hidden">
+                  <CopyToClipboardUnderline
+                    // Will truncate automatically.
+                    takeAll
+                    value={loadingExecutionTxHash.data}
+                    {...props}
+                  />
 
-            {!!explorerUrlTemplates?.tx && (
-              <IconButtonLink
-                Icon={ArrowOutwardRounded}
-                href={explorerUrlTemplates.tx.replace(
-                  'REPLACE',
-                  loadingExecutionTxHash.data
-                )}
-                size="sm"
-                variant="ghost"
-              />
-            )}
-          </div>
-        ) : null,
-    },
+                  {!!explorerUrlTemplates?.tx && (
+                    <IconButtonLink
+                      Icon={ArrowOutwardRounded}
+                      href={explorerUrlTemplates.tx.replace(
+                        'REPLACE',
+                        loadingExecutionTxHash.data
+                      )}
+                      size="sm"
+                      variant="ghost"
+                    />
+                  )}
+                </div>
+              ) : null,
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
     ...(winningChoice &&
     (statusKey === ProposalStatusEnum.Passed ||
       statusKey === ProposalStatusEnum.Executed ||
