@@ -28,7 +28,7 @@ import {
   DaoCreationVotingConfigItem,
   ProposalDraft,
 } from './dao'
-import { LoadingData } from './misc'
+import { LoadingData, LoadingDataWithError } from './misc'
 import {
   ProposalCreatedCardProps,
   ProposalExecutionMetadata,
@@ -80,7 +80,7 @@ export type IProposalModuleAdapter<
   // Hooks
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
-    useLoadingProposalExecutionTxHash: () => LoadingData<string | null>
+    useLoadingProposalExecutionTxHash: () => LoadingDataWithError<string | null>
     useLoadingProposalStatus: () => LoadingData<{
       status: ProposalStatus
       isVotingOpen: boolean

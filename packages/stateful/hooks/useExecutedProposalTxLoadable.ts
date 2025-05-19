@@ -26,7 +26,7 @@ export const useExecutedProposalTxLoadable = () => {
         loadingExecutionTxHash.loading
         ? undefined
         : // If no execution hash found, likely due to either the proposal not being executed or an RPC not having the transaction, no TX events to load.
-          !loadingExecutionTxHash.data
+          loadingExecutionTxHash.errored || !loadingExecutionTxHash.data
           ? constSelector(undefined)
           : // Otherwise load the events for the given TX hash.
             transactionSelector({

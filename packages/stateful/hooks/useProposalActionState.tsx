@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ChainId,
-  LoadingData,
+  LoadingDataWithError,
   PlausibleEvents,
   PreProposeModuleType,
   ProposalStatusEnum,
@@ -45,7 +45,7 @@ export type UseProposalActionStateOptions = {
   description: string
   relayState: UseTxRelayStateReturn
   statusKey: ProposalStatusKey
-  loadingExecutionTxHash: LoadingData<string | null>
+  loadingExecutionTxHash: LoadingDataWithError<string | null>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -268,7 +268,8 @@ export const useProposalActionState = ({
     !relayState.loading &&
     relayState.data.needsSelfRelay &&
     !loadingExecutionTxHash.loading &&
-    loadingExecutionTxHash.data
+    !loadingExecutionTxHash.errored &&
+    !!loadingExecutionTxHash.data
 
   return {
     action:
@@ -325,7 +326,14 @@ export const useProposalActionState = ({
         {showRelayStatus && (
           <TxCrossChainRelayStatus
             canSelfRelay={
-              !loadingExecutionTxHash.loading && !!loadingExecutionTxHash.data
+              !loadingExecutionTxHash.loading &&
+              !loadingExecutionTxHash.errored &&
+              !!loadingExecutionTxHash.data
+            }
+            selfRelayLoadError={
+              loadingExecutionTxHash.errored
+                ? loadingExecutionTxHash.error
+                : undefined
             }
             state={relayState.data}
           />

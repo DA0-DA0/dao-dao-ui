@@ -11,14 +11,19 @@ import { Tooltip } from '../tooltip'
 export type TxCrossChainRelayStatusProps = {
   state: TxRelayState
   /**
-   * Whether or not all data is loaded and self relay can occur.
+   * Whether or not all data is loaded and self-relay can occur.
    */
   canSelfRelay: boolean
+  /**
+   * The error that occurred when loading the data needed to self-relay.
+   */
+  selfRelayLoadError?: Error
 }
 
 export const TxCrossChainRelayStatus = ({
   state: { hasCrossChainMessages, needsSelfRelay, states, openSelfRelay },
   canSelfRelay,
+  selfRelayLoadError,
 }: TxCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
@@ -35,7 +40,14 @@ export const TxCrossChainRelayStatus = ({
           ? t('error.crossChainMessagesErroredOrTimedOut')
           : hasPending
             ? needsSelfRelay
-              ? t('info.crossChainMessagesNeedSelfRelay')
+              ? t('info.crossChainMessagesNeedSelfRelay', {
+                  context: selfRelayLoadError ? 'errored' : undefined,
+                  error: selfRelayLoadError
+                    ? processError(selfRelayLoadError, {
+                        forceCapture: true,
+                      })
+                    : undefined,
+                })
               : t('info.relayingCrossChainMessages')
             : t('success.crossChainMessagesRelayed')
       }

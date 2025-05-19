@@ -94,14 +94,17 @@ const InnerMainDaoInfoCards = () => {
           ? undefined
           : new Date(instantiationEvent.data.block.header.time),
     },
-    loadingTxHash: instantiationEvent.loading
-      ? instantiationEvent
-      : {
-          loading: false,
-          data: instantiationEvent.errored
-            ? null
-            : instantiationEvent.data.event.hash,
-        },
+    loadingTxHash:
+      instantiationEvent.loading || instantiationEvent.errored
+        ? instantiationEvent
+        : {
+            loading: false,
+            errored: false,
+            updating: instantiationEvent.updating,
+            data: instantiationEvent.errored
+              ? null
+              : instantiationEvent.data.event.hash,
+          },
     openSelfRelayExecute: setSelfRelayExecuteProps,
   })
 
@@ -269,6 +272,11 @@ const InnerMainDaoInfoCards = () => {
               <TxCrossChainRelayStatus
                 canSelfRelay={
                   !instantiationEvent.loading && !instantiationEvent.errored
+                }
+                selfRelayLoadError={
+                  instantiationEvent.errored
+                    ? instantiationEvent.error
+                    : undefined
                 }
                 state={initialActionsRelayState.data}
               />

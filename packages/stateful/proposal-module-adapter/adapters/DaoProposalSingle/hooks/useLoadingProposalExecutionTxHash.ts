@@ -1,15 +1,19 @@
 import { proposalQueries } from '@dao-dao/state/query'
 import {
-  LoadingData,
+  LoadingDataWithError,
   PreProposeModuleType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
 
-import { useQueryLoadingData } from '../../../../hooks'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
 
-export const useLoadingProposalExecutionTxHash = (): LoadingData<
+/**
+ * Returns the transaction hash if the proposal was executed, or null anyways.
+ * Errors when the RPC does not have the transaction anymore.
+ */
+export const useLoadingProposalExecutionTxHash = (): LoadingDataWithError<
   string | null
 > => {
   const {
@@ -20,7 +24,7 @@ export const useLoadingProposalExecutionTxHash = (): LoadingData<
 
   const loadingProposal = useLoadingProposal()
 
-  return useQueryLoadingData(
+  return useQueryLoadingDataWithError(
     loadingProposal.loading
       ? // Returns loading when undefined passed to indicate we are still loading.
         undefined
@@ -42,7 +46,7 @@ export const useLoadingProposalExecutionTxHash = (): LoadingData<
               contractAddress: proposalModuleAddress,
               proposalId: proposalNumber,
             })
-        : // Returns not loading with undefined value when undefined selector passed, indicating there is no data available.
+        : // Returns not loading with null value, indicating there is no data available because the proposal is not executed.
           {
             queryKey: [
               'proposal',
@@ -54,7 +58,6 @@ export const useLoadingProposalExecutionTxHash = (): LoadingData<
               },
             ],
             queryFn: () => null,
-          },
-    null
+          }
   )
 }

@@ -1108,6 +1108,7 @@
     "creationPolicyTooltip": "Who is allowed to create proposals?",
     "crossChainExecuteDescription": "This action executes a cross-chain transaction.",
     "crossChainMessagesNeedSelfRelay": "Some cross-chain messages have not yet been relayed. Please self-relay them to ensure they are executed.",
+    "crossChainMessagesNeedSelfRelay_errored": "Some cross-chain messages have not yet been relayed, and the data needed to self-relay them failed to load. You can manually relay them, try again later, or wait until it times out and submit a new proposal. Error: {{error}}",
     "customActionDescription_dao": "Perform any custom action a wallet can.",
     "customActionDescription_gov": "Perform any custom action.",
     "customActionDescription_wallet": "Perform any custom action.",

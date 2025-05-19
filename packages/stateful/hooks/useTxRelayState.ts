@@ -28,6 +28,7 @@ import {
   CrossChainPacketInfoState,
   CrossChainPacketInfoStatus,
   LoadingData,
+  LoadingDataWithError,
   SelfRelayExecuteModalProps,
   TxRelayState,
   UnifiedCosmosMsg,
@@ -61,7 +62,7 @@ export type UseTxRelayStateOptions = {
         executedAt: Date | undefined
       }
   openSelfRelayExecute: BaseProposalStatusAndInfoProps['openSelfRelayExecute']
-  loadingTxHash: LoadingData<string | null>
+  loadingTxHash: LoadingDataWithError<string | null>
 }
 
 export type UseTxRelayStateReturn = LoadingData<TxRelayState>
@@ -90,7 +91,7 @@ export const useTxRelayState = ({
     (context.type === 'proposal' && context.executed)
 
   const packetsLoadable = useCachedLoadingWithError(
-    loadingTxHash.loading || !loadingTxHash.data
+    loadingTxHash.loading || loadingTxHash.errored || !loadingTxHash.data
       ? constSelector(undefined)
       : transactionPacketsSelector({
           chainId: srcChainId,
@@ -498,7 +499,7 @@ export const useTxRelayState = ({
           states,
           needsSelfRelay: hasCrossChainMessagesNeedingSelfRelay,
           openSelfRelay: () =>
-            executed && !loadingTxHash.loading
+            executed && !loadingTxHash.loading && !loadingTxHash.errored
               ? openSelfRelay(loadingTxHash.data)
               : openSelfRelay(),
         },
