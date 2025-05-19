@@ -266,7 +266,12 @@ const InnerMainDaoInfoCards = () => {
           !initialActionsRelayState.loading &&
           initialActionsRelayState.data.hasCrossChainMessages && (
             <div className="flex flex-col gap-4">
-              <TxCrossChainRelayStatus state={initialActionsRelayState.data} />
+              <TxCrossChainRelayStatus
+                canSelfRelay={
+                  !instantiationEvent.loading && !instantiationEvent.errored
+                }
+                state={initialActionsRelayState.data}
+              />
 
               {initialActionsRelayState.data.needsSelfRelay && (
                 <Button

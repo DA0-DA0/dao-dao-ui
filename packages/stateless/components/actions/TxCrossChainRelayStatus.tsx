@@ -10,10 +10,15 @@ import { Tooltip } from '../tooltip'
 
 export type TxCrossChainRelayStatusProps = {
   state: TxRelayState
+  /**
+   * Whether or not all data is loaded and self relay can occur.
+   */
+  canSelfRelay: boolean
 }
 
 export const TxCrossChainRelayStatus = ({
   state: { hasCrossChainMessages, needsSelfRelay, states, openSelfRelay },
+  canSelfRelay,
 }: TxCrossChainRelayStatusProps) => {
   const { t } = useTranslation()
 
@@ -35,7 +40,9 @@ export const TxCrossChainRelayStatus = ({
             : t('success.crossChainMessagesRelayed')
       }
       iconAtTop
-      onClick={hasPending && needsSelfRelay ? openSelfRelay : undefined}
+      onClick={
+        hasPending && needsSelfRelay && canSelfRelay ? openSelfRelay : undefined
+      }
       size="xs"
       style={
         hasErrorOrTimedOut || (hasPending && needsSelfRelay)

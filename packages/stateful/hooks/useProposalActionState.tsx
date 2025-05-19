@@ -262,6 +262,14 @@ export const useProposalActionState = ({
     statusKey === ProposalStatusEnum.Executed &&
     relayState.data.hasCrossChainMessages
 
+  // If executed and has polytone messages that need relaying...
+  const showSelfRelay =
+    statusKey === ProposalStatusEnum.Executed &&
+    !relayState.loading &&
+    relayState.data.needsSelfRelay &&
+    !loadingExecutionTxHash.loading &&
+    loadingExecutionTxHash.data
+
   return {
     action:
       statusKey === ProposalStatusEnum.Passed &&
@@ -298,12 +306,7 @@ export const useProposalActionState = ({
               loading: actionLoading,
               doAction: onClose,
             }
-          : // If executed and has polytone messages that need relaying...
-            statusKey === ProposalStatusEnum.Executed &&
-              !relayState.loading &&
-              relayState.data.needsSelfRelay &&
-              !loadingExecutionTxHash.loading &&
-              loadingExecutionTxHash.data
+          : showSelfRelay
             ? {
                 label: t('button.relay'),
                 Icon: Send,
@@ -313,8 +316,20 @@ export const useProposalActionState = ({
               }
             : undefined,
     footer: (showRelayStatus || isWalletConnected) && (
-      <div className={clsx('flex flex-col gap-6', showRelayStatus && '-mt-4')}>
-        {showRelayStatus && <TxCrossChainRelayStatus state={relayState.data} />}
+      <div
+        className={clsx(
+          'flex flex-col gap-6',
+          showRelayStatus && showSelfRelay && '-mt-4'
+        )}
+      >
+        {showRelayStatus && (
+          <TxCrossChainRelayStatus
+            canSelfRelay={
+              !loadingExecutionTxHash.loading && !!loadingExecutionTxHash.data
+            }
+            state={relayState.data}
+          />
+        )}
 
         {isWalletConnected && <ProfileProposalCard />}
       </div>
