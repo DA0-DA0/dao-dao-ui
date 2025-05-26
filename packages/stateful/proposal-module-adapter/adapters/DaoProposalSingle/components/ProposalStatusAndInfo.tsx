@@ -185,6 +185,7 @@ const InnerProposalStatusAndInfo = ({
   })
   const { action, footer } = useProposalActionState({
     description: proposal.description,
+    proposalStartHeight: proposal.start_height,
     statusKey,
     relayState,
     loadingExecutionTxHash,

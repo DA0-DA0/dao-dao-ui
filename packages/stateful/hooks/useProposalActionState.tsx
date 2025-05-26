@@ -43,6 +43,10 @@ export type UseProposalActionStateOptions = {
    * Proposal description, for decoding additional execution metadata.
    */
   description: string
+  /**
+   * Proposal start height, for checking if the wallet can execute.
+   */
+  proposalStartHeight: number
   relayState: UseTxRelayStateReturn
   statusKey: ProposalStatusKey
   loadingExecutionTxHash: LoadingDataWithError<string | null>
@@ -62,6 +66,7 @@ export type UseProposalActionStateReturn = Pick<
  */
 export const useProposalActionState = ({
   description,
+  proposalStartHeight,
   relayState,
   statusKey,
   loadingExecutionTxHash,
@@ -79,7 +84,9 @@ export const useProposalActionState = ({
     address: walletAddress = '',
     getSigningClient,
   } = useWallet()
-  const { isMember = false } = useMembership()
+  const { isMember = false } = useMembership({
+    blockHeight: proposalStartHeight,
+  })
   const plausible = usePlausible<PlausibleEvents>()
 
   const feeGrants = useQueryLoadingDataWithError(

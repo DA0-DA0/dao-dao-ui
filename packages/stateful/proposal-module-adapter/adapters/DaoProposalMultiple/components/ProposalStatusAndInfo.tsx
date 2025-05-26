@@ -162,6 +162,7 @@ const InnerProposalStatusAndInfo = ({
   })
   const { action, footer } = useProposalActionState({
     description: winningChoice?.description || '',
+    proposalStartHeight: proposal.start_height,
     statusKey,
     relayState,
     loadingExecutionTxHash,
