@@ -41,7 +41,7 @@ export const MintNft: ActionComponent = (props) => {
     props.isCreating
       ? undefined
       : // If viewing, get info from token URI.
-        nftQueries.cardInfoFromUri(queryClient, {
+        nftQueries.cardInfoMaybeFromUri(queryClient, {
           collection: collectionAddress,
           tokenId: mintMsg.token_id,
           tokenUri: mintMsg.token_uri,

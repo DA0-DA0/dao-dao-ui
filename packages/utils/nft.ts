@@ -1,16 +1,17 @@
-// If name is only a number, prefix with collection name. Fallback to token ID
-
 import { HugeDecimal } from '@dao-dao/math'
 import {
   GenericToken,
   GraphqlTypes,
   NftCardInfo,
+  NftUriData,
   StargazeNft,
   StargazeNftMediaType,
 } from '@dao-dao/types'
 
 import { STARGAZE_URL_BASE } from './constants'
+import { transformIpfsUrlToHttpsIfNecessary } from './conversion'
 
+// If name is only a number, prefix with collection name. Fallback to token ID
 // if name does not exist.
 export const getNftName = (
   collectionName: string,
@@ -123,3 +124,60 @@ export const nftCardInfoFromStargazeIndexerNft = (
     token.saleType === GraphqlTypes.SaleType.Listed ||
     token.saleType === GraphqlTypes.SaleType.LiveAuction,
 })
+
+/**
+ * Parse NFT metadata from an object.
+ *
+ * Tries to parse [EIP-721] metadata out of an NFT's metadata JSON.
+ *
+ * [EIP-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+ */
+export const parseNftMetadata = (data: Record<string, string>): NftUriData => {
+  if (typeof data !== 'object' || !data) {
+    return {}
+  }
+
+  let name
+  let description
+  let imageUrl
+  let externalLink
+
+  if (typeof data.name === 'string' && !!data.name.trim()) {
+    name = data.name
+  }
+
+  if (typeof data.description === 'string' && !!data.description.trim()) {
+    description = data.description
+  }
+
+  if (typeof data.image === 'string' && !!data.image) {
+    imageUrl = transformIpfsUrlToHttpsIfNecessary(data.image)
+  }
+
+  if (typeof data.external_url === 'string' && !!data.external_url.trim()) {
+    const externalUrl = transformIpfsUrlToHttpsIfNecessary(data.external_url)
+    const externalUrlDomain = new URL(externalUrl).hostname
+    externalLink = {
+      href: externalUrl,
+      name: NFT_METADATA_HOSTNAME_MAP[externalUrlDomain] ?? externalUrlDomain,
+    }
+  }
+
+  return {
+    // Include all metadata.
+    ...data,
+
+    // Override specifics.
+    name,
+    description,
+    imageUrl,
+    externalLink,
+  }
+}
+
+// Maps domain -> human readable name. If a domain is in this set, NFTs
+// associated with it will have their external links displayed using the human
+// readable name provided here.
+const NFT_METADATA_HOSTNAME_MAP: Record<string, string | undefined> = {
+  'stargaze.zone': 'Stargaze',
+}

@@ -5,6 +5,7 @@ import {
   STARGAZE_URL_BASE,
   getNftKey,
   nftCardInfoFromStargazeIndexerNft,
+  parseNftMetadata,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -197,7 +198,7 @@ export const fetchNftCardInfo = async (
   )
 
   return await queryClient.fetchQuery(
-    nftQueries.cardInfoFromUri(queryClient, {
+    nftQueries.cardInfoMaybeFromUri(queryClient, {
       chainId,
       collection,
       tokenId,
@@ -207,9 +208,9 @@ export const fetchNftCardInfo = async (
 }
 
 /**
- * Fetch NFT card info given its token URI.
+ * Fetch NFT card info, maybe with its token URI.
  */
-export const fetchNftCardInfoFromUri = async (
+export const fetchNftCardInfoMaybeFromUri = async (
   queryClient: QueryClient,
   {
     chainId,
@@ -230,12 +231,30 @@ export const fetchNftCardInfoFromUri = async (
     })
   )
 
-  const metadata =
+  let metadata =
     (tokenUri &&
       (await queryClient
         .fetchQuery(nftQueries.metadataFromUri({ tokenUri }))
         .catch(() => undefined))) ||
     undefined
+
+  // If metadata not loaded from token URI (or token URI not set), try to load
+  // from extension.
+  if (!metadata) {
+    const { extension } = await queryClient.fetchQuery(
+      cw721BaseQueries.nftInfo({
+        chainId,
+        contractAddress: collection,
+        args: {
+          tokenId,
+        },
+      })
+    )
+    if (extension && typeof extension === 'object') {
+      metadata = parseNftMetadata(extension as any)
+    }
+  }
+
   const { name = '', description, imageUrl, externalLink } = metadata || {}
 
   const info: NftCardInfo = {
@@ -297,51 +316,8 @@ export const fetchNftMetadataFromUri = async ({
     }
   }
 
-  const data = await response.json()
-
-  let name
-  let description
-  let imageUrl
-  let externalLink
-
-  if (typeof data.name === 'string' && !!data.name.trim()) {
-    name = data.name
-  }
-
-  if (typeof data.description === 'string' && !!data.description.trim()) {
-    description = data.description
-  }
-
-  if (typeof data.image === 'string' && !!data.image) {
-    imageUrl = transformIpfsUrlToHttpsIfNecessary(data.image)
-  }
-
-  if (typeof data.external_url === 'string' && !!data.external_url.trim()) {
-    const externalUrl = transformIpfsUrlToHttpsIfNecessary(data.external_url)
-    const externalUrlDomain = new URL(externalUrl).hostname
-    externalLink = {
-      href: externalUrl,
-      name: HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-    }
-  }
-
-  return {
-    // Include all metadata.
-    ...data,
-
-    // Override specifics.
-    name,
-    description,
-    imageUrl,
-    externalLink,
-  }
-}
-
-// Maps domain -> human readable name. If a domain is in this set, NFTs
-// associated with it will have their external links displayed using the human
-// readable name provided here.
-const HostnameMap: Record<string, string | undefined> = {
-  'stargaze.zone': 'Stargaze',
+  const metadata = await response.json()
+  return parseNftMetadata(metadata)
 }
 
 export const nftQueries = {
@@ -369,15 +345,15 @@ export const nftQueries = {
       queryFn: () => fetchNftCardInfo(queryClient, options),
     }),
   /**
-   * Fetch NFT card info given its token URI.
+   * Fetch NFT card info, maybe with a token URI.
    */
-  cardInfoFromUri: (
+  cardInfoMaybeFromUri: (
     queryClient: QueryClient,
-    options: Parameters<typeof fetchNftCardInfoFromUri>[1]
+    options: Parameters<typeof fetchNftCardInfoMaybeFromUri>[1]
   ) =>
     queryOptions({
-      queryKey: ['nft', 'cardInfoFromUri', options],
-      queryFn: () => fetchNftCardInfoFromUri(queryClient, options),
+      queryKey: ['nft', 'cardInfoMaybeFromUri', options],
+      queryFn: () => fetchNftCardInfoMaybeFromUri(queryClient, options),
     }),
   /**
    * Fetch NFT metadata from a token URI.

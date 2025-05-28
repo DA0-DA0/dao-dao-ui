@@ -69,10 +69,10 @@ export interface NativeStargazeCollectionInfo {
 }
 
 export type NftUriData = {
-  name: string | undefined
-  description: string | undefined
-  imageUrl: string | undefined
-  externalLink: { href: string; name: string } | undefined
+  name?: string | undefined
+  description?: string | undefined
+  imageUrl?: string | undefined
+  externalLink?: { href: string; name: string } | undefined
   [key: string]: any
 }
 
