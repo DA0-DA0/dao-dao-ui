@@ -236,7 +236,6 @@ export const SdaNavigation = ({
               circular
               className="hidden lg:flex"
               onClick={() => setCompact(!compact)}
-              size={compact ? 'default' : 'xl'}
               variant="secondary"
             />
           </div>

@@ -300,7 +300,7 @@ export const DappNavigation = ({
                 compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
               }
               circular
-              className="hidden shrink-0 lg:flex"
+              className="hidden lg:flex"
               onClick={() => setCompact(!compact)}
               variant="secondary"
             />
