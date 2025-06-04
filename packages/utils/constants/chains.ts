@@ -887,7 +887,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#00eed1',
         factoryContractAddress:
-          'sthor14haqsatfqxh3jgzn6u7ggnece4vhv0nt8a8ml4rg29mln9hdjfdqaqlt88',
+          'sthor1g7fy4u7ukqk22k3xd00xp0qn2dazn6r8xpxfts4c2ng0ncr3swvs42q5kp',
         explorerUrlTemplates: {
           tx: 'https://stagenet.thorchain.net/tx/REPLACE',
           wallet: 'https://stagenet.thorchain.net/address/REPLACE',
