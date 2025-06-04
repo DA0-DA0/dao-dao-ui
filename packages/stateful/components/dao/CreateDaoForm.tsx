@@ -47,6 +47,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
+  ChainId,
   ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
@@ -665,6 +666,23 @@ export const InnerCreateDaoForm = ({
     } else {
       if (supportsInstantiate2 && !newDao.predictedDaoAddress) {
         throw new Error('Predicted DAO address not found')
+      }
+
+      // Instantiate with no admin for Thorchain Stagenet since admins can't be
+      // changed yet.
+      if (chainId === ChainId.ThorchainStagenet) {
+        return await instantiateSmartContract(
+          getSigningClient,
+          walletAddress,
+          daoDaoCoreCodeId,
+          contractLabel,
+          instantiateMsg,
+          instantiateInfo.funds,
+          null,
+          undefined,
+          undefined,
+          supportsInstantiate2 ? toUtf8(uuid) : undefined
+        )
       }
 
       const { events } = await (supportsInstantiate2
