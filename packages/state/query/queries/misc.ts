@@ -22,27 +22,27 @@ export const fetchHomePageStats = async (
   const [tvl, all, month, week] = await Promise.all([
     // Get all or chain-specific stats and TVL.
     !chainId || chainIsIndexed(chainId)
-      ? retry(5, () =>
+      ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<number>({
               query: chainId ? 'daodao-chain-tvl' : 'daodao-all-tvl',
               parameters: chainId ? { chainId } : undefined,
             })
           )
-        ).catch(() => 0)
+        ).catch(() => null)
       : null,
     !chainId || chainIsIndexed(chainId)
-      ? retry(5, () =>
+      ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
               query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
               parameters: chainId ? { chainId } : undefined,
             })
           )
-        )
+        ).catch(() => null)
       : null,
     !chainId || chainIsIndexed(chainId)
-      ? retry(5, () =>
+      ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
               query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
@@ -52,10 +52,10 @@ export const fetchHomePageStats = async (
               },
             })
           )
-        )
+        ).catch(() => null)
       : null,
     !chainId || chainIsIndexed(chainId)
-      ? retry(5, () =>
+      ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
               query: chainId ? 'daodao-chain-stats' : 'daodao-all-stats',
@@ -65,7 +65,7 @@ export const fetchHomePageStats = async (
               },
             })
           )
-        )
+        ).catch(() => null)
       : null,
   ])
 

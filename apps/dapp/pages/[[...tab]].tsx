@@ -72,7 +72,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
     ),
 
     // Pre-fetch featured DAOs.
-    retry(5, () => queryClient.fetchQuery(daoQueries.listFeatured())).then(
+    retry(3, () => queryClient.fetchQuery(daoQueries.listFeatured())).then(
       (featured) =>
         Promise.all(
           featured?.map((dao) =>
