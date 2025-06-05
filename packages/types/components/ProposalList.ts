@@ -86,6 +86,10 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    * Optionally hide the title.
    */
   hideTitle?: boolean
+  /**
+   * Optionally hide proposal IDs. These may be spam proposals.
+   */
+  hideProposalIds?: string[]
 }
 
 export type StatefulProposalListProps = Pick<

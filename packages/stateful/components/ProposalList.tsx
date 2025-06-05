@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
-import { daoQueries } from '@dao-dao/state/query'
+import { daoQueries, neutronGovSpamDbQueries } from '@dao-dao/state/query'
 import {
   daoVetoableDaosSelector,
   refreshProposalsIdAtom,
@@ -17,13 +17,18 @@ import {
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   CommonProposalListInfo,
   ProposalStatus,
   ProposalStatusEnum,
   StatefulProposalLineProps,
   StatefulProposalListProps,
 } from '@dao-dao/types'
-import { chainIsIndexed, webSocketChannelNameForDao } from '@dao-dao/utils'
+import {
+  chainIsIndexed,
+  mustGetSupportedChainConfig,
+  webSocketChannelNameForDao,
+} from '@dao-dao/utils'
 
 import {
   useMembership,
@@ -371,6 +376,22 @@ export const ProposalList = ({
       : undefined
   )
 
+  const neutronGovSpamDbContractAddress =
+    dao.chainId === ChainId.NeutronMainnet &&
+    (mustGetSupportedChainConfig(dao.chainId).other?.govSpamDb as
+      | string
+      | undefined)
+  const spamProposalIds = useQueryLoadingDataWithError(
+    neutronGovSpamDbContractAddress
+      ? neutronGovSpamDbQueries.list({
+          chainId: dao.chainId,
+          contractAddress: neutronGovSpamDbContractAddress,
+        })
+      : undefined,
+    // Convert A-1 to A1.
+    (data) => data.map((id) => id.replace('-', ''))
+  )
+
   return (
     <StatelessProposalList
       {...props}
@@ -390,6 +411,11 @@ export const ProposalList = ({
       error={
         showingSearchResults && searchedProposals.errored
           ? searchedProposals.error
+          : undefined
+      }
+      hideProposalIds={
+        !spamProposalIds.loading && !spamProposalIds.errored
+          ? spamProposalIds.data
           : undefined
       }
       isMember={isMember}

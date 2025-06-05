@@ -275,6 +275,10 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
      */
     rebalancer: string
   }
+  /**
+   * Chain-specific custom config.
+   */
+  other?: Record<string, unknown>
 }
 
 export type SupportedChain = SupportedChainConfig & {

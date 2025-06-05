@@ -566,6 +566,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
           rebalancer:
             'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
         },
+        other: {
+          govSpamDb:
+            'neutron1zgqhpaynwlfsgvlugjhv2wahdkfpfsvfl7x0n70syl680vx8ca0qzq6u9w',
+        },
       },
       {
         chainId: ChainId.StargazeMainnet,

@@ -32,6 +32,7 @@ export const ProposalList = <T extends { proposalId: string }>({
   showingSearchResults,
   className,
   hideTitle,
+  hideProposalIds,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
 
@@ -74,9 +75,12 @@ export const ProposalList = <T extends { proposalId: string }>({
         <div className="flex flex-col gap-4 sm:gap-6">
           {openProposals.length > 0 && (
             <div className="space-y-1">
-              {openProposals.map((props) => (
-                <ProposalLine {...props} key={props.proposalId} />
-              ))}
+              {openProposals.map(
+                (props) =>
+                  !hideProposalIds?.includes(props.proposalId) && (
+                    <ProposalLine {...props} key={props.proposalId} />
+                  )
+              )}
             </div>
           )}
 
@@ -117,9 +121,12 @@ export const ProposalList = <T extends { proposalId: string }>({
                           : undefined
                       }
                     >
-                      {proposals.map((props) => (
-                        <ProposalLine {...props} key={props.proposalId} />
-                      ))}
+                      {proposals.map(
+                        (props) =>
+                          !hideProposalIds?.includes(props.proposalId) && (
+                            <ProposalLine {...props} key={props.proposalId} />
+                          )
+                      )}
                     </Collapsible>
                   )
               )}
