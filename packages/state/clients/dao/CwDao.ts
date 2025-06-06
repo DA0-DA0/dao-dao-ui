@@ -168,13 +168,10 @@ export class CwDao extends DaoBase {
         this.proposalModules.map((proposalModule) =>
           proposalModule.initialized
             ? Promise.resolve()
-            : (async () => {
-                const timer = p.start(
-                  `proposal_module_init_${proposalModule.prefix}`
-                )
-                await proposalModule.init()
-                timer.stop()
-              })()
+            : p.time(
+                `proposal_module_init_${proposalModule.prefix}`,
+                proposalModule.init
+              )
         )
       )
     )
