@@ -161,7 +161,7 @@ export const fetchAccountList = async (
     Promise.allSettled(
       icaChains.map((destChainId) =>
         p.time(
-          'remote_ica_address',
+          `remote_ica_address_${destChainId}`,
           queryClient.fetchQuery(
             accountQueries.remoteIcaAddress(queryClient, {
               srcChainId: mainAccount.chainId,
@@ -194,7 +194,7 @@ export const fetchAccountList = async (
           .filter(({ type }) => type !== AccountType.Valence)
           .map(({ chainId, address }) =>
             p.time(
-              'valence_account_' + address,
+              `valence_account_${address}`,
               queryClient.fetchQuery(
                 accountQueries.valenceAccounts(queryClient, {
                   address,
