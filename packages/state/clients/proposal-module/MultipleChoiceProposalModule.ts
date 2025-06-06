@@ -268,42 +268,44 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
     this._contractName = info?.contract || ''
 
-    // Load pre-propose module.
-    if (isFeatureSupportedByVersion(Feature.PrePropose, this._version)) {
-      const creationPolicy = await this.queryClient
-        .fetchQuery(
-          daoProposalMultipleQueries.proposalCreationPolicy(this.queryClient, {
-            chainId: this.chainId,
-            contractAddress: this.address,
-          })
-        )
-        .catch(() => null)
+    await Promise.all([
+      // Load pre-propose module.
+      isFeatureSupportedByVersion(Feature.PrePropose, this._version)
+        ? this.queryClient
+            .fetchQuery(
+              daoProposalMultipleQueries.proposalCreationPolicy(
+                this.queryClient,
+                {
+                  chainId: this.chainId,
+                  contractAddress: this.address,
+                }
+              )
+            )
+            .catch(() => null)
+            .then(async (creationPolicy) => {
+              const preProposeAddress =
+                creationPolicy &&
+                ('Module' in creationPolicy && creationPolicy.Module.addr
+                  ? creationPolicy.Module.addr
+                  : creationPolicy &&
+                      'module' in creationPolicy &&
+                      creationPolicy.module.addr
+                    ? creationPolicy.module.addr
+                    : null)
 
-      const preProposeAddress =
-        creationPolicy &&
-        ('Module' in creationPolicy && creationPolicy.Module.addr
-          ? creationPolicy.Module.addr
-          : creationPolicy &&
-              'module' in creationPolicy &&
-              creationPolicy.module.addr
-            ? creationPolicy.module.addr
-            : null)
-
-      if (preProposeAddress) {
-        this._prePropose = await this.queryClient.fetchQuery(
-          proposalQueries.preProposeModule(this.queryClient, {
-            chainId: this.chainId,
-            address: preProposeAddress,
-          })
-        )
-      }
-    }
-
-    // Load veto config.
-    if (isFeatureSupportedByVersion(Feature.Veto, this._version)) {
-      this._veto =
-        (
-          await this.queryClient
+              if (preProposeAddress) {
+                this._prePropose = await this.queryClient.fetchQuery(
+                  proposalQueries.preProposeModule(this.queryClient, {
+                    chainId: this.chainId,
+                    address: preProposeAddress,
+                  })
+                )
+              }
+            })
+        : undefined,
+      // Load veto config.
+      isFeatureSupportedByVersion(Feature.Veto, this._version)
+        ? this.queryClient
             .fetchQuery(
               daoProposalMultipleQueries.config(this.queryClient, {
                 chainId: this.chainId,
@@ -311,8 +313,11 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
               })
             )
             .catch(() => null)
-        )?.veto ?? null
-    }
+            .then((config) => {
+              this._veto = config?.veto ?? null
+            })
+        : undefined,
+    ])
 
     this._initialized = true
   }

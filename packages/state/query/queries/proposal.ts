@@ -48,12 +48,25 @@ export const fetchPreProposeModule = async (
     address: string
   }
 ): Promise<PreProposeModule> => {
-  const { info: contractInfo } = await queryClient.fetchQuery(
-    contractQueries.info(queryClient, {
-      chainId,
-      address: address,
-    })
-  )
+  const [{ info: contractInfo }, moduleConfig] = await Promise.all([
+    queryClient.fetchQuery(
+      contractQueries.info(queryClient, {
+        chainId,
+        address: address,
+      })
+    ),
+    // All pre-propose modules share the same config.
+    queryClient
+      .fetchQuery(
+        daoPreProposeSingleQueries.config(queryClient, {
+          chainId,
+          contractAddress: address,
+        })
+      )
+      // If failed to query config, fail gracefully since a DAO may use any
+      // custom pre-propose module.
+      .catch(() => undefined),
+  ])
   const contractVersion = parseContractVersion(contractInfo.version)
 
   let typedConfig: PreProposeModuleTypedConfig = {
@@ -66,18 +79,6 @@ export const fetchPreProposeModule = async (
       ? PreProposeModuleType.Normal
       : PreProposeModuleType.Other,
   }
-
-  // All pre-propose modules share the same config.
-  const moduleConfig = await queryClient
-    .fetchQuery(
-      daoPreProposeSingleQueries.config(queryClient, {
-        chainId,
-        contractAddress: address,
-      })
-    )
-    // If failed to query config, fail gracefully since a DAO may use any custom
-    // pre-propose module.
-    .catch(() => undefined)
 
   switch (contractInfo.contract) {
     case ContractName.PreProposeApprovalSingle:

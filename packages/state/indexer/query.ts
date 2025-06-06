@@ -5,6 +5,8 @@ import {
 } from '@dao-dao/types'
 import { CommonError, INDEXER_URL, chainIsIndexed } from '@dao-dao/utils'
 
+import { querySnapper } from './snapper'
+
 export type QueryIndexerOptions = WithChainId<
   {
     formula: string
@@ -19,6 +21,11 @@ export type QueryIndexerOptions = WithChainId<
       endUnixMs?: number
       stepMs?: number
     }
+    /**
+     * TTL in seconds to cache the query for. If set, will use Snapper to cache
+     * the indexer query.
+     */
+    ttl?: number
   } & (
     | {
         type: `${IndexerFormulaType.Generic}`
@@ -39,6 +46,7 @@ export const queryIndexer = async <T = any>({
   block,
   times,
   chainId,
+  ttl,
 }: QueryIndexerOptions): Promise<T | undefined> => {
   if (!chainIsIndexed(chainId)) {
     throw new Error(CommonError.NoIndexerForChain)
@@ -71,6 +79,21 @@ export const queryIndexer = async <T = any>({
       }),
     }),
   })
+
+  // If TTL is set, use Snapper to cache the query.
+  if (ttl) {
+    return await querySnapper({
+      query: 'daodao-indexer',
+      parameters: {
+        type,
+        formula,
+        chainId,
+        address,
+        args: params.toString() || undefined,
+        ttl,
+      },
+    })
+  }
 
   const path = `/${chainId}/${type}/${address}/${formula}?${params.toString()}`
   const response = await fetch(INDEXER_URL + path, {

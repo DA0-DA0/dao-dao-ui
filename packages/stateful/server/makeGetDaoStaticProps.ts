@@ -25,6 +25,7 @@ import {
   ProposalV1Beta1,
 } from '@dao-dao/types'
 import {
+  ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_DAO_CONTRACT_NAMES,
@@ -76,13 +77,6 @@ type GetDaoStaticPropsMaker = (
   options: GetDaoStaticPropsMakerOptions
 ) => GetStaticProps<DaoPageWrapperProps>
 
-export class LegacyDaoError extends Error {
-  constructor() {
-    super()
-    this.name = 'LegacyDaoError'
-  }
-}
-
 // Computes DaoPageWrapperProps for the DAO with optional alterations.
 export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
   ({ appMode, coreAddress: _coreAddress, getProps }) =>
@@ -107,55 +101,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     const getForChainId = async (
       chainId: string
     ): Promise<GetStaticPropsResult<DaoPageWrapperProps>> => {
-      // If address is polytone proxy, redirect to DAO on native chain.
-      if (!configuredGovChain) {
-        try {
-          const isPolytoneProxy = await queryClient.fetchQuery(
-            contractQueries.isPolytoneProxy(queryClient, {
-              chainId,
-              address: coreAddress,
-            })
-          )
-          if (isPolytoneProxy) {
-            const { remoteAddress } = await queryClient.fetchQuery(
-              polytoneQueries.reverseLookupProxy(queryClient, {
-                chainId,
-                address: coreAddress,
-              })
-            )
-
-            return {
-              redirect: {
-                destination: getDaoPath(appMode, remoteAddress),
-                permanent: true,
-              },
-            }
-          }
-        } catch {
-          // If failed, ignore.
-        }
-      }
-
       // Add to Sentry error tags if error occurs.
       try {
-        // Check for legacy contract and contract existence.
-        const contractInfo = !configuredGovChain
-          ? (
-              await queryClient.fetchQuery(
-                contractQueries.info(queryClient, {
-                  chainId,
-                  address: coreAddress,
-                })
-              )
-            )?.info
-          : undefined
-        if (
-          contractInfo &&
-          LEGACY_DAO_CONTRACT_NAMES.includes(contractInfo.contract)
-        ) {
-          throw new LegacyDaoError()
-        }
-
         const dao = getDao({
           queryClient,
           chainId,
@@ -232,30 +179,11 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           }
         }
 
-        // Redirect legacy DAOs (legacy multisigs redirected in next.config.js
-        // redirects list).
-        if (
-          error instanceof LegacyDaoError ||
-          (error instanceof Error &&
-            error.message.includes(
-              'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `dump_state`'
-            ))
-        ) {
-          return {
-            redirect: {
-              destination:
-                LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
-              permanent: false,
-            },
-          }
-        }
-
         if (
           isErrorWithSubstring(error, [
             'contract: not found',
             'no such contract',
             '404 contract not found',
-            'Error parsing into type',
             'decoding bech32 failed',
             'dumpState reason: Unexpected token',
           ])
@@ -271,6 +199,61 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
             revalidate: 1,
+          }
+        }
+
+        // Check for contract existence, legacy contract, and polytone proxy.
+        const contractInfo = !configuredGovChain
+          ? (
+              await queryClient
+                .fetchQuery(
+                  contractQueries.info(queryClient, {
+                    chainId,
+                    address: coreAddress,
+                  })
+                )
+                .catch(() => undefined)
+            )?.info
+          : undefined
+        if (contractInfo) {
+          if (LEGACY_DAO_CONTRACT_NAMES.includes(contractInfo.contract)) {
+            return {
+              redirect: {
+                destination:
+                  LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
+                permanent: false,
+              },
+            }
+          } else if (
+            contractInfo.contract.includes(ContractName.PolytoneProxy)
+          ) {
+            // If address is polytone proxy, redirect to DAO on native chain.
+            const { remoteAddress } = await queryClient.fetchQuery(
+              polytoneQueries.reverseLookupProxy(queryClient, {
+                chainId,
+                address: coreAddress,
+              })
+            )
+
+            return {
+              redirect: {
+                destination: getDaoPath(appMode, remoteAddress),
+                permanent: true,
+              },
+            }
+          } else if (isErrorWithSubstring(error, 'Error parsing into type')) {
+            // Excluding `info` will render DAONotFound.
+            return {
+              props: {
+                ...i18nProps,
+                title: 'Not a DAO contract',
+                description: '',
+                reactQueryDehydratedState: dehydrateSerializable(queryClient),
+              },
+              // Regenerate the page at most once per second. Serves cached copy
+              // and refreshes in background.
+              revalidate: 1,
+            }
           }
         }
 

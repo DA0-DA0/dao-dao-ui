@@ -103,7 +103,7 @@ export const processMessage: MessageProcessor = async ({
       // Get remote ICA on destination chain.
       const remoteIcaAddress = sender
         ? await queryClient.fetchQuery(
-            accountQueries.remoteIcaAddress({
+            accountQueries.remoteIcaAddress(queryClient, {
               srcChainId: chainId,
               address: sender,
               destChainId: decodedIca.chainId,

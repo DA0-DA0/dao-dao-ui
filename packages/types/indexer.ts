@@ -15,6 +15,7 @@ export enum IndexerFormulaType {
 export interface IndexerDumpState
   extends Omit<DumpStateResponse, 'proposal_modules'> {
   proposal_modules: ProposalModuleWithInfo[]
+  contractAdmin?: string
   votingModuleInfo: ContractVersionInfo
   createdAt: string // UTC string
   adminInfo?: {

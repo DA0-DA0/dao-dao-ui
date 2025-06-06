@@ -21,12 +21,13 @@ import { PubKey as Secp256k1PubKey } from '@dao-dao/types/protobuf/codegen/cosmo
 import {
   ContractName,
   ICA_CHAINS_TX_PREFIX,
+  PerformanceContext,
   cosmosProtoRpcClientRouter,
   getChainForChainId,
-  getConfiguredChainConfig,
   getIbcTransferInfoBetweenChains,
   getSupportedChainConfig,
   ibcProtoRpcClientRouter,
+  isConfiguredChainName,
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
@@ -64,20 +65,26 @@ export const fetchAccountList = async (
     includeIcaChains?: string[]
   }
 ): Promise<Account[]> => {
-  const chainConfig = getConfiguredChainConfig(chainId)
-  if (chainConfig && chainConfig.name === address) {
+  const p = new PerformanceContext(`account_list_${chainId}_${address}`)
+
+  if (isConfiguredChainName(chainId, address)) {
     address = await queryClient.fetchQuery(
       chainQueries.moduleAddress({
         chainId,
-        name: chainConfig.name,
+        name: address,
       })
     )
   }
 
-  const [isDao, isPolytoneProxy, isValenceAccount] = await Promise.all([
-    queryClient.fetchQuery(
-      contractQueries.isDao(queryClient, { chainId, address })
-    ),
+  const isDao = await queryClient.fetchQuery(
+    contractQueries.isDao(queryClient, {
+      chainId,
+      address,
+    })
+  )
+
+  // isDao will cache the contract info, so these two will be immediate.
+  const [isPolytoneProxy, isValenceAccount] = await Promise.all([
     queryClient.fetchQuery(
       contractQueries.isPolytoneProxy(queryClient, { chainId, address })
     ),
@@ -102,21 +109,27 @@ export const fetchAccountList = async (
 
   const [polytoneProxies, registeredIcas] = await Promise.all([
     mainAccount.type !== AccountType.Polytone
-      ? queryClient.fetchQuery(
-          polytoneQueries.proxies(queryClient, { chainId, address })
+      ? p.time(
+          'polytone_proxies',
+          queryClient.fetchQuery(
+            polytoneQueries.proxies(queryClient, { chainId, address })
+          )
         )
       : ({} as PolytoneProxies),
     // If this is a DAO, get its registered ICAs (which is a chain the DAO has
     // indicated it has an ICA on by storing an item in its KV).
     isDao
-      ? queryClient.fetchQuery(
-          daoDaoCoreQueries.listAllItems(queryClient, {
-            chainId,
-            contractAddress: address,
-            args: {
-              prefix: ICA_CHAINS_TX_PREFIX,
-            },
-          })
+      ? p.time(
+          'registered_icas',
+          queryClient.fetchQuery(
+            daoDaoCoreQueries.listAllItems(queryClient, {
+              chainId,
+              contractAddress: address,
+              args: {
+                prefix: ICA_CHAINS_TX_PREFIX,
+              },
+            })
+          )
         )
       : ([] as ListItemsResponse),
   ])
@@ -143,14 +156,20 @@ export const fetchAccountList = async (
         ]
       : []
 
-  const icas = await Promise.allSettled(
-    icaChains.map((destChainId) =>
-      queryClient.fetchQuery(
-        accountQueries.remoteIcaAddress({
-          srcChainId: mainAccount.chainId,
-          address: mainAccount.address,
-          destChainId,
-        })
+  const icas = await p.time(
+    'remote_ica_addresses',
+    Promise.allSettled(
+      icaChains.map((destChainId) =>
+        p.time(
+          'remote_ica_address',
+          queryClient.fetchQuery(
+            accountQueries.remoteIcaAddress(queryClient, {
+              srcChainId: mainAccount.chainId,
+              address: mainAccount.address,
+              destChainId,
+            })
+          )
+        )
       )
     )
   )
@@ -168,22 +187,30 @@ export const fetchAccountList = async (
 
   // Get valence accounts controlled by all non-valence accounts.
   const valenceAccounts = (
-    await Promise.allSettled(
-      allAccounts
-        .filter(({ type }) => type !== AccountType.Valence)
-        .map(({ chainId, address }) =>
-          queryClient.fetchQuery(
-            accountQueries.valenceAccounts(queryClient, {
-              address,
-              chainId,
-            })
+    await p.time(
+      'valence_accounts',
+      Promise.allSettled(
+        allAccounts
+          .filter(({ type }) => type !== AccountType.Valence)
+          .map(({ chainId, address }) =>
+            p.time(
+              'valence_account_' + address,
+              queryClient.fetchQuery(
+                accountQueries.valenceAccounts(queryClient, {
+                  address,
+                  chainId,
+                })
+              )
+            )
           )
-        )
+      )
     )
   ).flatMap((p) => (p.status === 'fulfilled' ? p.value : []))
 
   // Add valence accounts.
   allAccounts.push(...valenceAccounts)
+
+  p.log()
 
   return allAccounts
 }
@@ -192,15 +219,39 @@ export const fetchAccountList = async (
  * Fetch ICA address on host (`destChainId`) controlled by `address` on
  * controller (`srcChainId`).
  */
-export const fetchRemoteIcaAddress = async ({
-  srcChainId,
-  address,
-  destChainId,
-}: {
-  srcChainId: string
-  address: string
-  destChainId: string
-}): Promise<string | null> => {
+export const fetchRemoteIcaAddress = async (
+  queryClient: QueryClient,
+  {
+    srcChainId,
+    address,
+    destChainId,
+  }: {
+    srcChainId: string
+    address: string
+    destChainId: string
+  }
+): Promise<string | null> => {
+  // Attempt to load from Snapper.
+  try {
+    const cached = await queryClient.fetchQuery(
+      indexerQueries.snapper({
+        query: 'ica-remote-address',
+        parameters: {
+          srcChainId,
+          address,
+          destChainId,
+        },
+      })
+    )
+
+    if (cached) {
+      return cached
+    }
+  } catch (err) {
+    console.error('Failed to load ICA address from Snapper:', err)
+    // If Snapper fails, continue to attempt to load from IBC.
+  }
+
   const {
     sourceChain: { connection_id },
   } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
@@ -534,6 +585,7 @@ export const fetchValenceAccounts = async (
       chainId,
       address,
       formula: 'valence/accounts',
+      ttl: 300,
     })
   )
   if (!addresses || !Array.isArray(addresses)) {
@@ -602,10 +654,13 @@ export const accountQueries = {
    * Fetch ICA address on host (`destChainId`) controlled by `address` on
    * controller (`srcChainId`).
    */
-  remoteIcaAddress: (options: Parameters<typeof fetchRemoteIcaAddress>[0]) =>
+  remoteIcaAddress: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchRemoteIcaAddress>[1]
+  ) =>
     queryOptions({
       queryKey: ['account', 'remoteIcaAddress', options],
-      queryFn: () => fetchRemoteIcaAddress(options),
+      queryFn: () => fetchRemoteIcaAddress(queryClient, options),
     }),
   /**
    * Fetch the details of a cryptographic multisig account.

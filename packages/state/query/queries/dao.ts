@@ -25,6 +25,7 @@ import {
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   DAO_CORE_CONTRACT_NAMES,
+  PerformanceContext,
   getCosmWasmClientForChainId,
   getDaoInfoForChainId,
   getFallbackImage,
@@ -79,116 +80,163 @@ export const fetchDaoInfo = async (
     }
   }
 
-  // Get DAO info from contract.
-
-  const [state, contractAdmin] = await Promise.all([
-    queryClient.fetchQuery(
-      daoDaoCoreQueries.dumpState(queryClient, {
-        chainId,
-        contractAddress: coreAddress,
-      })
-    ),
-    queryClient.fetchQuery(
-      contractQueries.admin({
-        chainId,
-        address: coreAddress,
-      })
-    ),
-  ])
-
-  const coreVersion = parseContractVersion(state.version.version)
+  const p = new PerformanceContext(`dao_info_${chainId}_${coreAddress}`)
 
   const [
-    parentDao,
-    { info: votingModuleInfo },
-    created,
+    [
+      state,
+      contractAdmin,
+      parentDao,
+      { info: votingModuleInfo },
+      created,
+      polytoneProxies,
+      isActive,
+      activeThreshold,
+    ],
     proposalModules,
     _items,
-    polytoneProxies,
     accounts,
-    isActive,
-    activeThreshold,
-  ] = await Promise.all([
-    state.admin && state.admin !== coreAddress
-      ? queryClient
-          .fetchQuery(
-            daoQueries.parentInfo(queryClient, {
+  ] = await p.time(
+    'main_promise',
+    Promise.all([
+      p
+        .time(
+          'dump_state',
+          queryClient.fetchQuery(
+            daoDaoCoreQueries.dumpState(queryClient, {
               chainId,
-              parentAddress: state.admin,
-              subDaoAddress: coreAddress,
+              contractAddress: coreAddress,
             })
           )
-          .catch(() => null)
-      : null,
-    // Check if indexer returned this already.
-    'votingModuleInfo' in state
-      ? ({ info: state.votingModuleInfo } as InfoResponse)
-      : queryClient.fetchQuery(
-          contractQueries.info(queryClient, {
-            chainId,
-            address: state.voting_module,
-          })
+        )
+        .then((state) =>
+          Promise.all([
+            state,
+            'contractAdmin' in state
+              ? state.contractAdmin || null
+              : p.time(
+                  'contract_admin',
+                  queryClient.fetchQuery(
+                    contractQueries.admin({
+                      chainId,
+                      address: coreAddress,
+                    })
+                  )
+                ),
+            state.admin && state.admin !== coreAddress
+              ? p.time(
+                  'parent_info',
+                  queryClient
+                    .fetchQuery(
+                      daoQueries.parentInfo(queryClient, {
+                        chainId,
+                        parentAddress: state.admin,
+                        subDaoAddress: coreAddress,
+                      })
+                    )
+                    .catch(() => null)
+                )
+              : null,
+            // Check if indexer returned this already.
+            'votingModuleInfo' in state
+              ? ({ info: state.votingModuleInfo } as InfoResponse)
+              : p.time(
+                  'voting_module_info',
+                  queryClient.fetchQuery(
+                    contractQueries.info(queryClient, {
+                      chainId,
+                      address: state.voting_module,
+                    })
+                  )
+                ),
+            // Check if indexer returned this already.
+            'createdAt' in state && state.createdAt
+              ? Date.parse(state.createdAt)
+              : p.time(
+                  'created_at',
+                  queryClient
+                    .fetchQuery(
+                      contractQueries.instantiationTime(queryClient, {
+                        chainId,
+                        address: coreAddress,
+                      })
+                    )
+                    .catch(() => null)
+                ),
+            // Check if indexer returned this already.
+            'polytoneProxies' in state && state.polytoneProxies
+              ? polytoneNoteProxyMapToChainIdMap(chainId, state.polytoneProxies)
+              : p.time(
+                  'polytone_proxies',
+                  queryClient.fetchQuery(
+                    polytoneQueries.proxies(queryClient, {
+                      chainId,
+                      address: coreAddress,
+                    })
+                  )
+                ),
+
+            // Some voting modules don't support the active threshold queries,
+            // so if the queries fail, assume active and no threshold.
+            p.time(
+              'is_active',
+              queryClient
+                .fetchQuery(
+                  votingModuleQueries.isActive({
+                    chainId,
+                    address: state.voting_module,
+                  })
+                )
+                // If isActive query fails, just assume it is.
+                .catch(() => true)
+            ),
+            p.time(
+              'active_threshold',
+              queryClient
+                .fetchQuery(
+                  votingModuleQueries.activeThresold(queryClient, {
+                    chainId,
+                    address: state.voting_module,
+                  })
+                )
+                .then(({ active_threshold }) => active_threshold || null)
+                .catch(() => null)
+            ),
+          ])
         ),
-    // Check if indexer returned this already.
-    'createdAt' in state && state.createdAt
-      ? Date.parse(state.createdAt)
-      : queryClient
-          .fetchQuery(
-            contractQueries.instantiationTime(queryClient, {
-              chainId,
-              address: coreAddress,
-            })
-          )
-          .catch(() => null),
-    queryClient.fetchQuery(
-      daoQueries.proposalModules(queryClient, {
-        chainId,
-        coreAddress,
-      })
-    ),
-    queryClient.fetchQuery(
-      daoDaoCoreQueries.listAllItems(queryClient, {
-        chainId,
-        contractAddress: coreAddress,
-      })
-    ),
-    // Check if indexer returned this already.
-    'polytoneProxies' in state && state.polytoneProxies
-      ? polytoneNoteProxyMapToChainIdMap(chainId, state.polytoneProxies)
-      : queryClient.fetchQuery(
-          polytoneQueries.proxies(queryClient, {
+      p.time(
+        'proposal_modules',
+        queryClient.fetchQuery(
+          daoQueries.proposalModules(queryClient, {
+            chainId,
+            coreAddress,
+          })
+        )
+      ),
+      p.time(
+        'items',
+        queryClient.fetchQuery(
+          daoDaoCoreQueries.listAllItems(queryClient, {
+            chainId,
+            contractAddress: coreAddress,
+          })
+        )
+      ),
+      p.time(
+        'accounts',
+        queryClient.fetchQuery(
+          accountQueries.list(queryClient, {
             chainId,
             address: coreAddress,
           })
-        ),
-    queryClient.fetchQuery(
-      accountQueries.list(queryClient, {
-        chainId,
-        address: coreAddress,
-      })
-    ),
+        )
+      ),
+    ])
+  )
 
-    // Some voting modules don't support the active threshold queries, so if the
-    // queries fail, assume active and no threshold.
-    queryClient
-      .fetchQuery(
-        votingModuleQueries.isActive({
-          chainId,
-          address: state.voting_module,
-        })
-      )
-      // If isActive query fails, just assume it is.
-      .catch(() => true),
-    queryClient
-      .fetchQuery(
-        votingModuleQueries.activeThresold(queryClient, {
-          chainId,
-          address: state.voting_module,
-        })
-      )
-      .then(({ active_threshold }) => active_threshold || null)
-      .catch(() => null),
-  ])
+  const coreVersion = parseContractVersion(state.version.version)
+
+  p.log()
 
   // Convert items list into map.
   const items = Object.fromEntries(_items)
@@ -725,6 +773,7 @@ export const fetchProposalModules = async (
         chainId,
         contractAddress: coreAddress,
         formula: 'daoCore/activeProposalModules',
+        ttl: 1,
       })
     )
   } catch (err) {

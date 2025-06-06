@@ -557,6 +557,7 @@ export const daoDaoCoreQueries = {
             chainId,
             contractAddress,
             formula: 'daoCore/listItems',
+            ttl: 1,
           })
         )
         if (indexerItems) {
@@ -634,6 +635,7 @@ export const daoDaoCoreQueries = {
             contractAddress,
             formula: 'daoCore/proposalModules',
             args,
+            ttl: 1,
           })
         )
       } catch (error) {
@@ -674,6 +676,7 @@ export const daoDaoCoreQueries = {
             contractAddress,
             formula: 'daoCore/activeProposalModules',
             args,
+            ttl: 1,
           })
         )
       } catch (error) {

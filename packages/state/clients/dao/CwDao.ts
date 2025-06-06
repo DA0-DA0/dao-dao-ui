@@ -20,6 +20,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
+  PerformanceContext,
   encodeJsonToBase64,
   getChainForChainId,
   getFundsFromDaoInstantiateMsg,
@@ -141,24 +142,44 @@ export class CwDao extends DaoBase {
       return
     }
 
+    const p = new PerformanceContext(
+      `dao_init_${this.options.chainId}_${this.options.coreAddress}`
+    )
+
     // Ensure info is loaded.
     if (!this._info) {
       this.setInfo(
-        await this.queryClient.fetchQuery(
-          daoQueries.info(this.queryClient, {
-            chainId: this.options.chainId,
-            coreAddress: this.options.coreAddress,
-          })
+        await p.time(
+          'info',
+          this.queryClient.fetchQuery(
+            daoQueries.info(this.queryClient, {
+              chainId: this.options.chainId,
+              coreAddress: this.options.coreAddress,
+            })
+          )
         )
       )
     }
 
     // Ensure proposal modules are initialized.
-    await Promise.all(
-      this.proposalModules.map((p) =>
-        p.initialized ? Promise.resolve() : p.init()
+    await p.time(
+      'proposal_modules_init',
+      Promise.all(
+        this.proposalModules.map((proposalModule) =>
+          proposalModule.initialized
+            ? Promise.resolve()
+            : (async () => {
+                const timer = p.start(
+                  `proposal_module_init_${proposalModule.prefix}`
+                )
+                await proposalModule.init()
+                timer.stop()
+              })()
+        )
       )
     )
+
+    p.log()
   }
 
   protected setInfo(info: DaoInfo | undefined) {

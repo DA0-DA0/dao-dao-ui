@@ -47,6 +47,7 @@ export const fetchContractInfo = async (
           chainId,
           contractAddress: address,
           formula: 'info',
+          ttl: 60,
         })
       ),
     }
