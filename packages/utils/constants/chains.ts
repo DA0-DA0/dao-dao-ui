@@ -977,12 +977,12 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://osmosis-testnet-api.polkachu.com',
   },
   [ChainId.StargazeMainnet]: {
-    rpc: 'https://rpc.stargaze-apis.com',
-    rest: 'https://rest.stargaze-apis.com',
+    rpc: 'https://stargaze-rpc.polkachu.com',
+    rest: 'https://stargaze-api.polkachu.com',
   },
   [ChainId.StargazeTestnet]: {
-    rpc: 'https://rpc.elgafar-1.stargaze-apis.com',
-    rest: 'https://rest.elgafar-1.stargaze-apis.com',
+    rpc: 'https://stargaze-testnet-rpc.polkachu.com',
+    rest: 'https://stargaze-testnet-api.polkachu.com',
   },
   [ChainId.NeutronMainnet]: {
     rpc: 'https://rpc-lb.neutron.org',
