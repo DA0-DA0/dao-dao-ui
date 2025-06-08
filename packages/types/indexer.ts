@@ -39,8 +39,10 @@ export type IndexerUpBlock = {
 }
 
 export type IndexerUpStatus = {
+  chainId: string
   chainBlock: IndexerUpBlock
-  indexerBlock: IndexerUpBlock
+  nodeBlock: IndexerUpBlock
+  exportedBlock: IndexerUpBlock
   caughtUp: boolean
 }
 
