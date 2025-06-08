@@ -25,6 +25,7 @@ import {
   StatefulProposalListProps,
 } from '@dao-dao/types'
 import {
+  NEUTRON_GOVERNANCE_DAO,
   chainIsIndexed,
   mustGetSupportedChainConfig,
   webSocketChannelNameForDao,
@@ -378,6 +379,7 @@ export const ProposalList = ({
 
   const neutronGovSpamDbContractAddress =
     dao.chainId === ChainId.NeutronMainnet &&
+    dao.coreAddress === NEUTRON_GOVERNANCE_DAO &&
     (mustGetSupportedChainConfig(dao.chainId).other?.govSpamDb as
       | string
       | undefined)
