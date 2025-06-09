@@ -49,14 +49,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
         ),
         // Add some other common chains.
         ...(MAINNET
-          ? [
-              'akashnet-2',
-              'secret-4',
-              'regen-1',
-              'injective-1',
-              'celestia',
-              'archway-1',
-            ]
+          ? ['akashnet-2', 'secret-4', 'regen-1', 'injective-1']
           : []),
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
