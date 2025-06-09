@@ -24,6 +24,7 @@ import {
   getSupportedChains,
   isSecretNetwork,
   maybeGetChainForChainId,
+  retry,
 } from '@dao-dao/utils'
 
 import { useQueryLoadingData } from './query'
@@ -315,10 +316,12 @@ export const useWallet = ({
           }
         }
 
-        return await SigningCosmWasmClient.connectWithSigner(
-          getRpcForChainId(chain.chainId),
-          signer,
-          makeGetSignerOptions(queryClient)(chain.chainName)
+        return await retry(5, async (attempt) =>
+          SigningCosmWasmClient.connectWithSigner(
+            getRpcForChainId(chain.chainId, attempt - 1),
+            signer,
+            makeGetSignerOptions(queryClient)(chain.chainName)
+          )
         )
       }
 

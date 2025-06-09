@@ -1,6 +1,6 @@
-import { IndexedTx, instantiate2Address } from '@cosmjs/cosmwasm-stargate'
+import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
-import { Block } from '@cosmjs/stargate'
+import { BlockHeader } from '@cosmjs/stargate'
 import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
 
 import { InfoResponse } from '@dao-dao/types'
@@ -156,11 +156,13 @@ export const fetchContractInstantiationEvent = async ({
   chainId: string
   address: string
 }): Promise<{
-  event: IndexedTx
+  height: number
+  hash: string
+  code: number
   /**
    * Null if the block fails to load.
    */
-  block: Block | null
+  blockHeader: BlockHeader | null
 }> => {
   const client = await getCosmWasmClientForChainId(chainId)
   const events = await client.searchTx([
@@ -174,11 +176,16 @@ export const fetchContractInstantiationEvent = async ({
   }
 
   const event = events[0]
-  const block = await client.getBlock(event.height).catch(() => null)
+  const blockHeader = await client
+    .getBlock(event.height)
+    .then((block) => block.header)
+    .catch(() => null)
 
   return {
-    event,
-    block,
+    height: event.height,
+    hash: event.hash,
+    code: event.code,
+    blockHeader,
   }
 }
 
@@ -211,18 +218,18 @@ export const fetchContractInstantiationTime = async (
   } catch {}
 
   // If indexer fails, fallback to querying chain.
-  const { block } = await queryClient.fetchQuery(
+  const { blockHeader } = await queryClient.fetchQuery(
     contractQueries.instantiationEvent({
       chainId,
       address,
     })
   )
 
-  if (!block) {
+  if (!blockHeader) {
     throw new Error('Failed to load block for contract instantiation.')
   }
 
-  return new Date(block.header.time).getTime()
+  return new Date(blockHeader.time).getTime()
 }
 
 /**

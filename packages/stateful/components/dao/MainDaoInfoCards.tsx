@@ -90,9 +90,9 @@ const InnerMainDaoInfoCards = () => {
       executedAt:
         instantiationEvent.loading ||
         instantiationEvent.errored ||
-        !instantiationEvent.data.block
+        !instantiationEvent.data.blockHeader
           ? undefined
-          : new Date(instantiationEvent.data.block.header.time),
+          : new Date(instantiationEvent.data.blockHeader.time),
     },
     loadingTxHash:
       instantiationEvent.loading || instantiationEvent.errored
@@ -103,7 +103,7 @@ const InnerMainDaoInfoCards = () => {
             updating: instantiationEvent.updating,
             data: instantiationEvent.errored
               ? null
-              : instantiationEvent.data.event.hash,
+              : instantiationEvent.data.hash,
           },
     openSelfRelayExecute: setSelfRelayExecuteProps,
   })
