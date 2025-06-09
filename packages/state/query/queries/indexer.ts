@@ -28,7 +28,7 @@ export type FetchIndexerQueryOptions = QueryIndexerOptions & {
    */
   noFallback?: boolean
   /**
-   * If true, throw indexer behind error on server. Defaults to true.
+   * If true, throw indexer behind error on server. Defaults to false.
    */
   throwOnServer?: boolean
 }
@@ -46,7 +46,7 @@ export class IndexerBehindError extends Error {
  */
 export const fetchIndexerQuery = async <T = any>(
   queryClient: QueryClient,
-  { noFallback, throwOnServer = true, ...options }: FetchIndexerQueryOptions
+  { noFallback, throwOnServer = false, ...options }: FetchIndexerQueryOptions
 ): Promise<T> => {
   // If the indexer is behind and either there's a fallback or we're on the
   // server, return null to make the caller use the fallback. Throw error if no
