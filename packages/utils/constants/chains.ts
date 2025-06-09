@@ -390,6 +390,198 @@ assets.push({
   ],
 })
 
+// DAODISEO testnet
+// https://github.com/daodiseomoney/chain-registry/blob/master/testnets/daodiseotestnet/chain.json
+const daodiseoTestnetChain = convertChainRegistryChainToAnyChain({
+  chain_name: 'odiseo',
+  chain_type: 'cosmos',
+  chain_id: ChainId.DaodiseoTestnet,
+  pretty_name: 'DAODISEO Testnet',
+  status: 'live',
+  network_type: 'testnet',
+  website: 'https://daodiseo.money',
+  bech32_prefix: 'odiseo',
+  key_algos: ['secp256k1'],
+  slip44: 118,
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'uodis',
+        fixed_min_gas_price: 0.025,
+        low_gas_price: 0.01,
+        average_gas_price: 0.025,
+        high_gas_price: 0.04,
+      },
+    ],
+  },
+  staking: {
+    staking_tokens: [
+      {
+        denom: 'uodis',
+      },
+    ],
+  },
+  apis: {
+    rpc: [
+      {
+        address: 'https://testnet-rpc.daodiseo.chaintools.tech',
+        provider: 'DAODISEO',
+      },
+      {
+        address: 'https://rpc-testnet-daodiseo.nodeist.net:443',
+        provider: 'Nodeist',
+      },
+      {
+        address: 'https://daodiseo-testnet-rpc.stakerhouse.com',
+        provider: 'StakerHouse',
+      },
+      {
+        address: 'https://odiseo-testnet-rpc.bonynode.online',
+        provider: 'BonyNode',
+      },
+      {
+        address: 'https://odiseo_testnet_rpc.chain.whenmoonwhenlambo.money',
+        provider: 'WHEN MOON 🌕 WHEN LAMBO 🔥',
+      },
+      {
+        address: 'https://odiseo-testnet.rpc.stakevillage.net:443',
+        provider: 'Stake Village',
+      },
+      {
+        address: 'https://rpc-daodiseo.dnsarz.xyz',
+        provider: 'dnsarz',
+      },
+      {
+        address: 'https://rpc.odiseo-testnet.liora.fun:443',
+        provider: 'Monika',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://testnet-api.daodiseo.chaintools.tech',
+        provider: 'DAODISEO',
+      },
+      {
+        address: 'https://daodiseo-testnet-rest.stakerhouse.com',
+        provider: 'StakerHouse',
+      },
+      {
+        address: 'https://odiseo-testnet-api.bonynode.online',
+        provider: 'BonyNode',
+      },
+      {
+        address: 'https://odiseo_testnet_api.chain.whenmoonwhenlambo.money',
+        provider: 'WHEN MOON 🌕 WHEN LAMBO 🔥',
+      },
+      {
+        address: 'https://odiseo-testnet.api.stakevillage.net',
+        provider: 'Stake Village',
+      },
+      {
+        address: 'https://api-daodiseo.dnsarz.xyz',
+        provider: 'dnsarz',
+      },
+      {
+        address: 'https://api.odiseo-testnet.liora.fun',
+        provider: 'Monika',
+      },
+    ],
+    grpc: [
+      {
+        address: 'daodiseo-testnet-grpc.stakerhouse.com:443',
+        provider: 'StakerHouse',
+      },
+      {
+        address: 'odiseo-testnet.grpc.stakevillage.net:443',
+        provider: 'Stake Village',
+      },
+      {
+        address: 'https://grpc.odiseo-testnet.liora.fun:443',
+        provider: 'Monika',
+      },
+    ],
+  },
+  explorers: [
+    {
+      kind: 'ping.pub',
+      url: 'https://testnet.explorer.chaintools.tech/odiseo',
+      tx_page: 'https://testnet.explorer.chaintools.tech/odiseo/txs/${txHash}',
+      account_page:
+        'https://testnet.explorer.chaintools.tech/odiseo/account/${accountAddress}',
+    },
+    {
+      kind: 'cosmotracker',
+      url: 'https://testnet.cosmotracker.com/daodiseo',
+      tx_page: 'https://testnet.cosmotracker.com/daodiseo/tx/${txHash}',
+      account_page:
+        'https://testnet.cosmotracker.com/daodiseo/account/${accountAddress}',
+    },
+    {
+      kind: 'bony-explorer',
+      url: 'https://explorer.bonynode.online/odiseo/staking',
+      tx_page: 'https://explorer.bonynode.online/odiseo/tx/${txHash}',
+      account_page:
+        'https://explorer.bonynode.online/odiseo/account/${accountAddress}',
+    },
+    {
+      kind: 'moonlambo',
+      url: 'https://explorer.whenmoonwhenlambo.money/odiseo-testnet',
+      tx_page:
+        'https://explorer.whenmoonwhenlambo.money/odiseo-testnet/txs/${txHash}',
+      account_page:
+        'https://explorer.whenmoonwhenlambo.money/odiseo-testnet/account/${accountAddress}',
+    },
+    {
+      kind: 'Stake Village',
+      url: 'https://exp.stakevillage.net/odiseo-testnet',
+      tx_page: 'https://exp.stakevillage.net/odiseo-testnet/txs/${txHash}',
+      account_page:
+        'https://exp.stakevillage.net/odiseo-testnet/account/${accountAddress}',
+    },
+    {
+      kind: 'dnsarz',
+      url: 'https://ping.dnsarz.xyz/daodiseo-testnet',
+      tx_page: 'https://ping.dnsarz.xyz/daodiseo-testnet/txs/${txHash}',
+      account_page:
+        'https://ping.dnsarz.xyz/daodiseo-testnet/account/${accountAddress}',
+    },
+    {
+      kind: 'custom',
+      url: 'https://explorer.YOURVALIDATOR.net/odiseo',
+      tx_page: 'https://explorer.YOURVALIDATOR.net/odiseo/txs/${txHash}',
+      account_page:
+        'https://explorer.YOURVALIDATOR.net/odiseo/account/${accountAddress}',
+    },
+  ],
+  logo_URIs: {
+    png: 'https://daodiseo.money/wp-content/uploads/2025/05/DAO_O_logo_256x256.png',
+  },
+})
+chains.push(daodiseoTestnetChain)
+assets.push({
+  chain_name: daodiseoTestnetChain.chainName,
+  assets: [
+    {
+      type_asset: 'sdk.coin',
+      description: 'The native token of DAODISEO',
+      denom_units: [
+        {
+          denom: 'uodis',
+          exponent: 0,
+        },
+        {
+          denom: 'ODIS',
+          exponent: 6,
+        },
+      ],
+      base: 'uodis',
+      display: 'ODIS',
+      symbol: 'ODIS',
+      name: 'DAODISEO Native Token',
+    },
+  ],
+})
+
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
   'thorchain',
@@ -898,6 +1090,24 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V270,
       },
+      {
+        chainId: ChainId.DaodiseoTestnet,
+        name: 'daodiseo',
+        mainnet: false,
+        accentColor: '#a454ac',
+        factoryContractAddress:
+          'odiseo1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysjs33cp',
+        explorerUrlTemplates: {
+          tx: 'https://testnet.explorer.chaintools.tech/odiseo/tx/REPLACE',
+          gov: 'https://testnet.explorer.chaintools.tech/odiseo/gov',
+          govProp:
+            'https://testnet.explorer.chaintools.tech/odiseo/gov/REPLACE',
+          wallet:
+            'https://testnet.explorer.chaintools.tech/odiseo/address/REPLACE',
+        },
+        latestVersion: ContractVersion.V270,
+        noIndexer: true,
+      },
     ]
 
 const convertConfiguredChainToSupportedChain = (
@@ -1067,6 +1277,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.IntergazeMainnet]: {
     rpc: 'https://rpc.intergaze-apis.com',
     rest: 'https://rest.intergaze-apis.com',
+  },
+  [ChainId.DaodiseoTestnet]: {
+    rpc: 'https://testnet-rpc.daodiseo.chaintools.tech',
+    rest: 'https://testnet-api.daodiseo.chaintools.tech',
   },
 }
 

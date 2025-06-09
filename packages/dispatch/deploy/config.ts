@@ -50,4 +50,7 @@ export const chainIdToDeploymentArgs: Record<string, Record<string, any>> = {
   [ChainId.BitsongTestnet]: {
     mnemonic: 'bitsong_testnet',
   },
+  [ChainId.DaodiseoTestnet]: {
+    mnemonic: 'daodiseo_testnet',
+  },
 }

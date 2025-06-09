@@ -647,6 +647,27 @@
       "DaoVotingTokenStaked": 3797
     }
   },
+  "ithaca-1": {
+    "2.7.0": {
+      "Cw1Whitelist": 1,
+      "Cw4Group": 2,
+      "CwAdminFactory": 3,
+      "CwPayrollFactory": 4,
+      "CwTokenSwap": 5,
+      "CwVesting": 18,
+      "DaoDaoCore": 6,
+      "DaoPreProposeApprovalMultiple": 8,
+      "DaoPreProposeApprovalSingle": 9,
+      "DaoPreProposeApprover": 10,
+      "DaoPreProposeMultiple": 11,
+      "DaoPreProposeSingle": 12,
+      "DaoProposalMultiple": 13,
+      "DaoProposalSingle": 14,
+      "DaoRewardsDistributor": 15,
+      "DaoVoteDelegation": 16,
+      "DaoVotingCw4": 17
+    }
+  },
   "juno-1": {
     "2.1.0": {
       "Cw20Base": 1993,
