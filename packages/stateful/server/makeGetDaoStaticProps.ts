@@ -183,7 +183,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           isErrorWithSubstring(error, [
             'contract: not found',
             'no such contract',
-            '404 contract not found',
+            'contract not found',
             'decoding bech32 failed',
             'dumpState reason: Unexpected token',
           ])
