@@ -111,7 +111,7 @@ export const fetchDaoRewardDistributions = async (
   // If indexer query fails, fallback to contract query.
   if (!states) {
     states = []
-    const limit = 15
+    const limit = 10
     while (true) {
       const page = (
         await queryClient.fetchQuery(
