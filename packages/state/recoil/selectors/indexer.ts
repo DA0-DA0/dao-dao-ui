@@ -20,7 +20,6 @@ import {
   QueryIndexerOptions,
   QuerySnapperOptions,
   SearchDaoProposalsOptions,
-  loadMeilisearchClient,
   queryIndexer,
   queryIndexerUpStatus,
   querySnapper,
@@ -337,11 +336,5 @@ export const indexerWebSocketSelector = selector({
       disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
     }),
   // Client must be internally mutable.
-  dangerouslyAllowMutability: true,
-})
-
-export const indexerMeilisearchClientSelector = selector({
-  key: 'indexerMeilisearchClient',
-  get: () => loadMeilisearchClient(),
   dangerouslyAllowMutability: true,
 })
