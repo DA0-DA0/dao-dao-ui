@@ -1,0 +1,18 @@
+syntax = "proto3";
+package pryzm.treasury.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/treasury/v1/action.proto";
+import "pryzm/treasury/v1/flow_trade.proto";
+import "pryzm/treasury/v1/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/treasury/types/v1";
+
+// GenesisState defines the treasury module's genesis state.
+message GenesisState {
+  Action action = 1 [(gogoproto.nullable) = false];
+  repeated FlowTrade flow_trade_list = 2 [(gogoproto.nullable) = false];
+  Params params = 3 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

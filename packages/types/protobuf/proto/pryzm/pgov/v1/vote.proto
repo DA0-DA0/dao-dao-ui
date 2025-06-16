@@ -1,0 +1,15 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "cosmos/gov/v1/gov.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// Vote stores the information for a user's vote for a proposal
+message Vote {
+  string asset = 1;
+  uint64 proposal = 2;
+  string voter = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.gov.v1.WeightedVoteOption options = 4;
+}

@@ -8,16 +8,16 @@ import * as _167 from "./ccv/provider/v1/query";
 import * as _168 from "./ccv/provider/v1/tx";
 import * as _169 from "./ccv/v1/shared_consumer";
 import * as _170 from "./ccv/v1/wire";
-import * as _533 from "./ccv/consumer/v1/tx.amino";
-import * as _534 from "./ccv/provider/v1/tx.amino";
-import * as _535 from "./ccv/consumer/v1/tx.registry";
-import * as _536 from "./ccv/provider/v1/tx.registry";
-import * as _537 from "./ccv/consumer/v1/query.rpc.Query";
-import * as _538 from "./ccv/provider/v1/query.rpc.Query";
-import * as _539 from "./ccv/consumer/v1/tx.rpc.msg";
-import * as _540 from "./ccv/provider/v1/tx.rpc.msg";
-import * as _736 from "./rpc.query";
-import * as _737 from "./rpc.tx";
+import * as _621 from "./ccv/consumer/v1/tx.amino";
+import * as _622 from "./ccv/provider/v1/tx.amino";
+import * as _623 from "./ccv/consumer/v1/tx.registry";
+import * as _624 from "./ccv/provider/v1/tx.registry";
+import * as _625 from "./ccv/consumer/v1/query.rpc.Query";
+import * as _626 from "./ccv/provider/v1/query.rpc.Query";
+import * as _627 from "./ccv/consumer/v1/tx.rpc.msg";
+import * as _628 from "./ccv/provider/v1/tx.rpc.msg";
+import * as _863 from "./rpc.query";
+import * as _864 from "./rpc.tx";
 export namespace interchain_security {
   export namespace ccv {
     export namespace consumer {
@@ -26,10 +26,10 @@ export namespace interchain_security {
         ..._162,
         ..._163,
         ..._164,
-        ..._533,
-        ..._535,
-        ..._537,
-        ..._539
+        ..._621,
+        ..._623,
+        ..._625,
+        ..._627
       };
     }
     export namespace provider {
@@ -38,10 +38,10 @@ export namespace interchain_security {
         ..._166,
         ..._167,
         ..._168,
-        ..._534,
-        ..._536,
-        ..._538,
-        ..._540
+        ..._622,
+        ..._624,
+        ..._626,
+        ..._628
       };
     }
     export const v1 = {
@@ -50,7 +50,7 @@ export namespace interchain_security {
     };
   }
   export const ClientFactory = {
-    ..._736,
-    ..._737
+    ..._863,
+    ..._864
   };
 }

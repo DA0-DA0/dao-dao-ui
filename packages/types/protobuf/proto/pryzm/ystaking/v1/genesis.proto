@@ -1,0 +1,17 @@
+syntax = "proto3";
+package pryzm.ystaking.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/ystaking/v1/asset_pool_state.proto";
+import "pryzm/ystaking/v1/user_stake_state.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/ystaking/types/v1";
+
+// GenesisState defines the ystaking module's genesis state.
+message GenesisState {
+  repeated AssetPoolState asset_pool_state_list = 1 [(gogoproto.nullable) = false];
+  repeated AssetMaturityPoolState maturity_pool_state_list = 2 [(gogoproto.nullable) = false];
+  repeated UserStakeState user_stake_state_list = 3 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

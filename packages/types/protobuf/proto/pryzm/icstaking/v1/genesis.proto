@@ -1,0 +1,54 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "pryzm/icstaking/v1/host_chain.proto";
+import "pryzm/icstaking/v1/loopback.proto";
+import "pryzm/icstaking/v1/lsm.proto";
+import "pryzm/icstaking/v1/multisig.proto";
+import "pryzm/icstaking/v1/params.proto";
+import "pryzm/icstaking/v1/reply.proto";
+import "pryzm/icstaking/v1/sweep.proto";
+import "pryzm/icstaking/v1/undelegation.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// GenesisState defines the icstaking module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  reserved 2; // this field used to be port_id which was unused
+  repeated HostChain host_chain_list = 3 [(gogoproto.nullable) = false];
+  repeated HostChainState host_chain_state_list = 4 [(gogoproto.nullable) = false];
+  repeated Undelegation undelegation_list = 5 [(gogoproto.nullable) = false];
+  repeated ChannelUndelegation channel_undelegation_list = 6 [(gogoproto.nullable) = false];
+  repeated ReplyData reply_data_list = 7 [(gogoproto.nullable) = false];
+  repeated RedeemableLsm redeemable_lsm_list = 8 [(gogoproto.nullable) = false];
+  repeated FailedLsmTransfer failed_lsm_transfer_list = 9 [(gogoproto.nullable) = false];
+  repeated MultiSigConnection multi_sig_connection_list = 10 [(gogoproto.nullable) = false];
+  repeated MultiSigPacket multi_sig_packet_list = 11 [(gogoproto.nullable) = false];
+  repeated LoopBackPacket loop_back_packet_list = 12 [(gogoproto.nullable) = false];
+  uint64 loop_back_packet_last_id = 13;
+  repeated HostChainEpochTime last_delegation_time_list = 14 [(gogoproto.nullable) = false];
+  repeated HostChainEpochTime last_redelegation_time_list = 15 [(gogoproto.nullable) = false];
+  repeated HostChainEpochTime last_lsm_redeem_time_list = 16 [(gogoproto.nullable) = false];
+  repeated HostChainEpochTime last_undelegation_time_list = 17 [(gogoproto.nullable) = false];
+  repeated HostChainUndelegationEpoch undelegation_epoch_list = 18 [(gogoproto.nullable) = false];
+  repeated DelegateTransferSession delegate_transfer_session_list = 19 [(gogoproto.nullable) = false];
+  repeated SweepTransfer sweep_transfer_list = 20 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
+
+message HostChainEpochTime {
+  string host_chain_id = 1;
+  google.protobuf.Timestamp epoch_time = 2 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+
+message HostChainUndelegationEpoch {
+  string host_chain_id = 1;
+  uint64 undelegation_epoch = 2;
+}

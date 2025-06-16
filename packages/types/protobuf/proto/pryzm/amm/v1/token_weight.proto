@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message TokenWeight {
+  string denom = 1;
+  string normalized_weight = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

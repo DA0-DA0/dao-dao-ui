@@ -1,0 +1,12 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message ExecutableOrderCount {
+  uint64 pool_id = 1;
+  string token_in = 2;
+  string token_out = 3;
+  bool whitelisted_route = 4;
+  uint64 count = 5;
+}

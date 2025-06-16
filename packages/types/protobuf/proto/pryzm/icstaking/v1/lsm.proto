@@ -1,0 +1,55 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+message RedeemableLsm {
+  // the host chain identifier
+  string host_chain = 1;
+
+  // the denomination of the LSM tokens
+  string lsm_denom = 2;
+
+  // the amount of tokens in the delegation ICA waiting to be redeemed
+  string lsm_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the value of the LSM tokens in terms of the base asset, based on the amount of cAssets minted for the user
+  string lsm_value = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// this is used to store the transfer messages with failed execution on the host chain
+message FailedLsmTransfer {
+  // the host chain identifier
+  string host_chain = 1;
+
+  // the transfer channel being used
+  string channel = 2;
+
+  // the denomination of the LSM tokens
+  string denom = 3;
+
+  // the amount of tokens to be transferred
+  string lsm_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the value of the lsm_amount in terms of the base asset, based on the amount of cAssets minted for the user
+  string lsm_value = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}

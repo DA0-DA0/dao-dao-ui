@@ -1,0 +1,216 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+import "pryzm/icstaking/v1/params.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// The types of available connection protocols
+enum ConnectionType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  ConnectionType_ICA = 0; // interchain account connection using ibc-go ICS-27
+  ConnectionType_MULTI_SIG = 1; // connecting to the host chain using a trusted multi-sig account
+  ConnectionType_LOOP_BACK = 2; // connection to the Pryzm itself
+}
+
+// The properties of the target chain for staking
+message HostChain {
+  // A unique user-provided identifier. Is used in the cToken denom
+  string id = 1;
+
+  // connection type. connection type and connection id are unique together
+  ConnectionType connection_type = 2;
+
+  // the identifier for connection. connection id and connection type are unique together
+  string connection_id = 3;
+
+  // the base denom of the token to be staked on the target chain
+  string base_denom = 4;
+
+  // list of supported transfer channels for transferring the base_denom tokens between the host chain and Pryzm
+  repeated TransferChannel transfer_channels = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "TransferChannels"
+  ];
+
+  // Parameters for staking/unstaking on the host chain
+  StakingParams params = 6 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // list of whitelisted validators to which Pryzm sends the staked funds.
+  repeated Validator validators = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "Validators"
+  ];
+
+  // If true, Pryzm will allow users to stake using the LSM shares minted on the host chain.
+  bool allow_lsm_shares = 8;
+}
+
+// Types of transfer channels
+enum TransferChannelType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  TransferChannelType_IBC = 0; // IBC transfer
+  TransferChannelType_LOOP_BACK = 1; // transfer to Pryzm itself
+}
+
+// Properties of a transfer channel
+message TransferChannel {
+  // the type of the channel
+  TransferChannelType type = 1;
+
+  // the id of the channel. in the case of IBC channel type, this is the channel name.
+  string id = 2;
+
+  // Optional. This is the name of the token on the receiving chain.
+  // This is useful when a bridge is being used and the underlying asset is wrapped on the bridge, like axlWETH.
+  string wrapped_denom = 3;
+
+  // Optional. This is the name of the target chain.
+  // This is useful when a bridge is being used and the host chain is different with the receiving chain.
+  string destination_chain = 4;
+}
+
+message Validator {
+  // validator's address on the host chain
+  string address = 1;
+
+  // The weight of delegation to the validator. Total weight of all validators per host chain must be equal to 1.
+  string weight = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // whether users can stake the lsm shares minted from this validator
+  bool allow_lsm_shares = 3;
+}
+
+// A subset of state on the host chain needed by Pryzm
+message HostChainState {
+  // The id of the chain
+  string host_chain_id = 1;
+
+  // Information about the interchain accounts
+  HostAccounts host_accounts = 2 [(gogoproto.nullable) = false];
+
+  // list of validators and their state containing the delegation amount
+  repeated ValidatorState validator_states = 3 [(gogoproto.nullable) = false];
+
+  // The amount of assets that are in the delegation account and ready to be delegated
+  string amount_to_be_delegated = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // The amount of undelegated assets that are currently in the delegation account waiting to be collected
+  string undelegated_amount_to_collect = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // The current exchange rate of cToken to the host chain staking token
+  string exchange_rate = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // The current state of interchain operations state machine
+  State state = 7;
+
+  // The last host chain's block height in which PRYZM's state is changed to IDLE
+  // setting state to IDLE happens when an ack/timeout received for an interchain operation,
+  // so this is the height of the last received ack from host chain
+  ibc.core.client.v1.Height last_idle_state_host_height = 8 [(gogoproto.nullable) = false];
+
+  // The amount of LSM tokens that are in queue to be transferred and redeemed on the host chain
+  string locked_lsm_value = 9 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // The amount of fee taken from rewards that is collected and waiting to be transferred from host chain to treasury
+  string collected_fee = 10 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// The interchain accounts
+message HostAccounts {
+  HostAccount delegation = 1 [(gogoproto.nullable) = false];
+  HostAccount reward = 2 [(gogoproto.nullable) = false];
+  HostAccount sweep = 3 [(gogoproto.nullable) = false];
+
+  // This is the state of setting the reward account as the account which receives the staking rewards on host chain.
+  // On cosmos based chains, the reward account is registered using MsgSetWithdrawAddress in distribution module.
+  AccountState reward_account_claiming_state = 4;
+}
+
+message HostAccount {
+  string address = 1;
+  string balance = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  AccountState state = 3;
+}
+
+enum AccountState {
+  NOT_REGISTERED = 0;
+  REGISTERING = 1;
+  REGISTERED = 2;
+}
+
+message ValidatorState {
+  // the address of the validator
+  string validator_address = 1;
+
+  // the amount of tokens delegated to the validator by PRYZM
+  string delegated_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // total tokens delegated to the validator by all delegators
+  // this is used to calculate the value of the validator's lsm share
+  string total_tokens = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // total shares issued to the validator's delegators
+  // this is used to calculate the value of the validator's lsm share
+  string total_shares = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+enum State {
+  INITIALIZING = 0;
+  IDLE = 1;
+  TRANSFERRING = 2;
+  DELEGATING = 3;
+  UNDELEGATING = 4;
+  REDELEGATING = 5;
+  COMPOUNDING = 6;
+  COLLECTING = 7;
+  SWEEPING = 8;
+  LSM_REDEEMING = 9;
+}

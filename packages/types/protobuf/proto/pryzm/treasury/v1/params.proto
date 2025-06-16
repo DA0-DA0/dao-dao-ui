@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pryzm.treasury.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/treasury/types/v1";
+
+// Params defines the parameters for the module.
+message Params {
+  string gas_fee_take_ratio = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

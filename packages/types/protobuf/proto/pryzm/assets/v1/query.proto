@@ -1,0 +1,91 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "pryzm/assets/v1/maturity_level.proto";
+import "pryzm/assets/v1/params.proto";
+import "pryzm/assets/v1/refractable_asset.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/assets/v1/params";
+  }
+  // Queries a RefractableAsset by index.
+  rpc RefractableAsset(QueryGetRefractableAssetRequest) returns (QueryGetRefractableAssetResponse) {
+    option (google.api.http).get = "/pryzm/assets/v1/refractable_asset/{asset_id}";
+  }
+
+  // Queries a list of RefractableAsset items.
+  rpc RefractableAssetAll(QueryAllRefractableAssetRequest) returns (QueryAllRefractableAssetResponse) {
+    option (google.api.http).get = "/pryzm/assets/v1/refractable_asset";
+  }
+
+  // Queries a MaturityLevel by index.
+  rpc MaturityLevel(QueryGetMaturityLevelRequest) returns (QueryGetMaturityLevelResponse) {
+    option (google.api.http).get = "/pryzm/assets/v1/maturity_level/{asset_id}/{symbol}";
+  }
+
+  // Queries a list of MaturityLevel items.
+  rpc MaturityLevelAll(QueryAllMaturityLevelRequest) returns (QueryAllMaturityLevelResponse) {
+    option (google.api.http).get = "/pryzm/assets/v1/maturity_level/{active}";
+  }
+
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetRefractableAssetRequest {
+  string asset_id = 1;
+}
+
+message QueryGetRefractableAssetResponse {
+  RefractableAsset asset = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllRefractableAssetRequest {
+  string enabled = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllRefractableAssetResponse {
+  repeated RefractableAsset assets = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetMaturityLevelRequest {
+  string asset_id = 1;
+  string symbol = 2;
+}
+
+message QueryGetMaturityLevelResponse {
+  MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMaturityLevelRequest {
+  bool active = 1;
+  string asset_id = 2;
+  string asset_enabled = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4 [(gogoproto.nullable) = true];
+}
+
+message QueryAllMaturityLevelResponse {
+  repeated MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+// this line is used by starport scaffolding # 3

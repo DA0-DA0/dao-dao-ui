@@ -1,0 +1,67 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message PairMatchProposal {
+  uint64 pool_id = 1 [(amino.dont_omitempty) = true];
+  bool whitelisted_route = 2 [(amino.dont_omitempty) = true];
+  string token_in = 3;
+  string token_out = 4;
+  repeated uint64 buy_orders = 5 [(amino.dont_omitempty) = true];
+  repeated uint64 sell_orders = 6 [(amino.dont_omitempty) = true];
+}
+
+message MatchedOrderSummary {
+  // Note that if virtual=true, order_id is set to zero and should be ignored,
+  // otherwise we still might have order_id=0 referring to an actual order
+  uint64 order_id = 1;
+  string match_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string output_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  bool virtual = 5;
+}
+
+message MatchedPairSummary {
+  uint64 pool_id = 1;
+  string token_in = 2;
+  string token_out = 3;
+  bool whitelisted_route = 4;
+
+  string buy_price = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string sell_price = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  repeated MatchedOrderSummary buy_orders = 7 [(gogoproto.nullable) = false];
+  repeated MatchedOrderSummary sell_orders = 8 [(gogoproto.nullable) = false];
+
+  string buy_match_amount = 9 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string sell_match_amount = 10 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}

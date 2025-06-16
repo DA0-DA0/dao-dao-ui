@@ -1,0 +1,354 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "pryzm/icstaking/v1/host_chain.proto";
+import "pryzm/icstaking/v1/lsm.proto";
+import "pryzm/icstaking/v1/multisig.proto";
+import "pryzm/icstaking/v1/params.proto";
+import "pryzm/icstaking/v1/reply.proto";
+import "pryzm/icstaking/v1/sweep.proto";
+import "pryzm/icstaking/v1/undelegation.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/params";
+  }
+  // Queries a HostChain by index.
+  rpc HostChain(QueryGetHostChainRequest) returns (QueryGetHostChainResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/host_chain/{host_chain_id}";
+  }
+
+  // Queries a list of HostChain items.
+  rpc HostChainAll(QueryAllHostChainRequest) returns (QueryAllHostChainResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/host_chain";
+  }
+
+  // Queries a HostChainState by index.
+  rpc HostChainState(QueryGetHostChainStateRequest) returns (QueryGetHostChainStateResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/host_chain_state/{host_chain_id}";
+  }
+
+  // Queries a list of HostChainState items.
+  rpc HostChainStateAll(QueryAllHostChainStateRequest) returns (QueryAllHostChainStateResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/host_chain_state";
+  }
+
+  // Queries a Undelegation by index.
+  rpc Undelegation(QueryGetUndelegationRequest) returns (QueryGetUndelegationResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/undelegation/{host_chain}/{epoch}";
+  }
+
+  // Queries a list of Undelegation items.
+  rpc UndelegationAll(QueryAllUndelegationRequest) returns (QueryAllUndelegationResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/undelegation";
+  }
+
+  // Queries a list of incomplete undelegations sorted by completion time.
+  rpc IncompleteUndelegationAll(QueryIncompleteUndelegationRequest) returns (QueryIncompleteUndelegationResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/undelegation/{host_chain}";
+  }
+
+  // Queries a ChannelUndelegation by index.
+  rpc ChannelUndelegation(QueryGetChannelUndelegationRequest) returns (QueryGetChannelUndelegationResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/channel_undelegation/{host_chain}/{epoch}/{transfer_channel}";
+  }
+
+  // Queries a list of ChannelUndelegation items.
+  rpc ChannelUndelegationAll(QueryAllChannelUndelegationRequest) returns (QueryAllChannelUndelegationResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/channel_undelegation";
+  }
+
+  // Queries the balance of the delegation queue.
+  rpc DelegationQueueBalance(QueryDelegationQueueBalanceRequest) returns (QueryDelegationQueueBalanceResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/delegation_queue_balance/{host_chain}/{transfer_channel}";
+  }
+
+  // Queries the information about last delegation and undelegation times
+  rpc EpochInfo(QueryEpochInfoRequest) returns (QueryEpochInfoResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/epoch_info/{host_chain}";
+  }
+
+  // Queries the list of reply data
+  rpc ReplyDataAll(QueryAllReplyDataRequest) returns (QueryAllReplyDataResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/reply_data";
+  }
+
+  // Queries a list of FailedLsmTransfer items.
+  rpc RedeemableLsmAll(QueryAllRedeemableLsmRequest) returns (QueryAllRedeemableLsmResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/redeemable_lsm";
+  }
+
+  // Queries a list of FailedLsmTransfer items.
+  rpc FailedLsmTransferAll(QueryAllFailedLsmTransferRequest) returns (QueryAllFailedLsmTransferResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/failed_lsm_transfer";
+  }
+
+  // Queries a MultiSigConnection by index.
+  rpc MultiSigConnection(QueryGetMultiSigConnectionRequest) returns (QueryGetMultiSigConnectionResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/multi_sig_connection/{id}";
+  }
+
+  // Queries a list of MultiSigConnection items.
+  rpc MultiSigConnectionAll(QueryAllMultiSigConnectionRequest) returns (QueryAllMultiSigConnectionResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/multi_sig_connection";
+  }
+
+  // Queries a MultiSigPacket by index.
+  rpc MultiSigPacket(QueryGetMultiSigPacketRequest) returns (QueryGetMultiSigPacketResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/multi_sig_packet/{connection_id}/{sequence}";
+  }
+
+  // Queries a list of MultiSigPacket items.
+  rpc MultiSigPacketAll(QueryAllMultiSigPacketRequest) returns (QueryAllMultiSigPacketResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/multi_sig_packet";
+  }
+
+  // Queries the list of sweep transfer
+  rpc SweepTransferAll(QueryAllSweepTransferRequest) returns (QueryAllSweepTransferResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/sweep_transfer";
+  }
+
+  // Simulates the stake message
+  rpc SimulateStake(QuerySimulateStakeRequest) returns (QuerySimulateStakeResponse) {
+    option (google.api.http).get = "/pryzm/icstaking/v1/simulate_stake";
+  }
+
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetHostChainRequest {
+  string host_chain_id = 1;
+}
+
+message QueryGetHostChainResponse {
+  HostChain host_chain = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllHostChainRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllHostChainResponse {
+  repeated HostChain host_chain = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetHostChainStateRequest {
+  string host_chain_id = 1;
+}
+
+message QueryGetHostChainStateResponse {
+  HostChainState host_chain_state = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllHostChainStateRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllHostChainStateResponse {
+  repeated HostChainState host_chain_state = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetUndelegationRequest {
+  string host_chain = 1;
+  uint64 epoch = 2;
+}
+
+message QueryGetUndelegationResponse {
+  Undelegation undelegation = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllUndelegationRequest {
+  string host_chain = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllUndelegationResponse {
+  repeated Undelegation undelegation = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryIncompleteUndelegationRequest {
+  string host_chain = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryIncompleteUndelegationResponse {
+  repeated Undelegation undelegation = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetChannelUndelegationRequest {
+  string host_chain = 1;
+  uint64 epoch = 2;
+  string transfer_channel = 3;
+}
+
+message QueryGetChannelUndelegationResponse {
+  ChannelUndelegation channel_undelegation = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllChannelUndelegationRequest {
+  string host_chain = 1;
+  uint64 epoch = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3 [(gogoproto.nullable) = true];
+}
+
+message QueryAllChannelUndelegationResponse {
+  repeated ChannelUndelegation channel_undelegation = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryDelegationQueueBalanceRequest {
+  string host_chain = 1;
+  string transfer_channel = 2;
+}
+
+message QueryDelegationQueueBalanceResponse {
+  cosmos.base.v1beta1.Coin balance = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryEpochInfoRequest {
+  string host_chain = 1;
+}
+
+message QueryEpochInfoResponse {
+  google.protobuf.Timestamp last_delegation_time = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp last_redelegation_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp last_lsm_redeem_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp last_undelegation_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  uint64 current_undelegation_epoch = 5;
+}
+
+message QueryAllReplyDataRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllReplyDataResponse {
+  repeated ReplyData reply_data = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetMultiSigConnectionRequest {
+  string id = 1;
+}
+
+message QueryGetMultiSigConnectionResponse {
+  MultiSigConnection multi_sig_connection = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMultiSigConnectionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllMultiSigConnectionResponse {
+  repeated MultiSigConnection multi_sig_connection = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetMultiSigPacketRequest {
+  string connection_id = 1;
+  uint64 sequence = 2;
+}
+
+message QueryGetMultiSigPacketResponse {
+  MultiSigPacket multi_sig_packet = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMultiSigPacketRequest {
+  string connection_id = 1 [(gogoproto.nullable) = true];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllMultiSigPacketResponse {
+  repeated MultiSigPacket multi_sig_packet = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllFailedLsmTransferRequest {
+  string host_chain = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllFailedLsmTransferResponse {
+  repeated FailedLsmTransfer failed_lsm_transfer = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllRedeemableLsmRequest {
+  string host_chain = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllRedeemableLsmResponse {
+  repeated RedeemableLsm redeemable_lsm = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllSweepTransferRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllSweepTransferResponse {
+  repeated SweepTransfer sweep_transfer = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QuerySimulateStakeRequest {
+  string host_chain = 1;
+  string transfer_channel = 2;
+  // amount_in is the amount of tokens to stake. if this field is set, amount_out must be nil
+  string amount_in = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  // amount_out is the amount of cAsset tokens to receive. if this field is set, amount_in must be nil
+  string amount_out = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}
+
+message QuerySimulateStakeResponse {
+  // the amount of tokens being staked
+  cosmos.base.v1beta1.Coin amount_in = 1;
+  // the amount of cAssets tokens being received
+  cosmos.base.v1beta1.Coin amount_out = 2;
+  // the amount of fee deducted from the amount_in before stake
+  cosmos.base.v1beta1.Coin fee_amount = 3 [(gogoproto.nullable) = false];
+}
+
+// this line is used by starport scaffolding # 3

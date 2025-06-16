@@ -1,0 +1,18 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// OraclePayload defines the structure of oracle vote payload
+message OraclePayload {
+  ibc.core.client.v1.Height block_height = 1 [(gogoproto.nullable) = false];
+  string exchange_rate = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

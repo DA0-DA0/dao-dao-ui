@@ -1,0 +1,20 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/pgov/v1/params.proto";
+import "pryzm/pgov/v1/proposal.proto";
+import "pryzm/pgov/v1/staked_p_asset.proto";
+import "pryzm/pgov/v1/vote.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// GenesisState defines the pgov module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated StakedPAsset staked_p_asset_list = 2 [(gogoproto.nullable) = false];
+  repeated Proposal proposal_list = 3 [(gogoproto.nullable) = false];
+  repeated Vote vote_list = 4 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

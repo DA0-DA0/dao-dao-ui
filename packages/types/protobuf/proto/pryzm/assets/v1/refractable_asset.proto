@@ -1,0 +1,74 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// The properties of a supported asset
+message RefractableAsset {
+  // A unique user-provided identifier. Is used in the p/y token denom
+  string id = 1;
+
+  // The denomination of the token on Pryzm. This may be an icstaking cToken or an IBC transferred token denom for external assets.
+  string token_denom = 2;
+
+  // The id for the host chain on which the asset is staked. This is empty if the asset is external.
+  string host_chain_id = 3 [(amino.dont_omitempty) = true];
+
+  // Disabled assets cannot be refracted, but can still be redeemed.
+  bool disabled = 4 [(amino.dont_omitempty) = true];
+
+  MaturityParams maturity_params = 5 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // The amount of fee for each operation on the asset.
+  FeeRatios fee_ratios = 6 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// The parameters based on which new maturities are introduced
+message MaturityParams {
+  // The number of maturities per year: can be 0, 1, 2, 4, 12
+  // note: levels_per_year should be zero, if and only if years is 0 (which means no automatic maturity creation)
+  int32 levels_per_year = 1 [(amino.dont_omitempty) = true];
+
+  // The number of years in advance that maturities are made available for
+  // note: years should be zero, if and only if levels_per_year is 0 (which means no automatic maturity creation)
+  int32 years = 2 [(amino.dont_omitempty) = true];
+}
+
+// Fee ratio per each operation
+message FeeRatios {
+  string yield = 1 [
+    (gogoproto.nullable) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+  string refractor_refract = 2 [
+    (gogoproto.nullable) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+  string refractor_merge = 3 [
+    (gogoproto.nullable) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+  string refractor_redeem = 4 [
+    (gogoproto.nullable) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+  string y_staking_claim_reward = 5 [
+    (gogoproto.nullable) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+}

@@ -1,0 +1,21 @@
+syntax = "proto3";
+package pryzm.incentives.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/incentives/types/v1";
+
+message Unbonding {
+  uint64 id = 1;
+  google.protobuf.Timestamp completion_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string address = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string treasury_address = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
+  bool auto_claim = 6;
+}

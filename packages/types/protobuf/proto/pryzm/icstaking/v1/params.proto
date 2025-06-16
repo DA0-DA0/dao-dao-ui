@@ -1,0 +1,121 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// Params defines the parameters for the module.
+message Params {
+  // the default staking parameters. properties of HostChain.staking_params are overridden to this default params if provided
+  StakingParams staking_params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // the list of admin addresses, able to register a new host chain or update an existing host chain
+  repeated string admins = 2 [(amino.dont_omitempty) = true];
+}
+
+// StakingParams defines the parameters related to staking on each host chain
+message StakingParams {
+  // the amount of operation fees
+  FeeRatios fee_ratios = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // the interval in which PRYZM sends delegation messages to the host chain
+  google.protobuf.Duration delegation_interval = 2 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+
+  // the interval in which PRYZM sends undelegation messages to the host chain
+  // host chain's (UnbondingTime / MaxEntries) must be considered as the max value when setting this field
+  google.protobuf.Duration undelegation_interval = 3 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+
+  // the time-out value being set on ibc transfer messages
+  google.protobuf.Duration ibc_transfer_timeout = 4 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+  // the time-out value being set on ica messages
+  google.protobuf.Duration ica_timeout = 5 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+
+  RebalanceParams rebalance_params = 6 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // the interval in which PRYZM sends LSM redeem messages to the host chain
+  google.protobuf.Duration lsm_redeem_interval = 7 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+}
+
+// FeeRatios defines the fee ratio operations supported by icstaking
+message FeeRatios {
+  // the ratio of fee reduced from yield of staking on the host chain
+  string yield = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+
+  // the ratio of fee reduced from the amount of assets being staked on PRYZM
+  string staking = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+
+  // the ratio of fee reduced from the amount of assets being unstaked from PRYZM
+  string unstaking = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+
+  // the ratio of fee reduced from the amount of assets being instantly unstaked from PRYZM
+  string instant_unstaking = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+}
+
+// RebalanceParams contains the parameters for re-balancing a host chain's validator delegation weights
+message RebalanceParams {
+  // the maximum number of redelegation messages sent to the host chain in each rebalance operation
+  int32 max_msgs = 1 [(amino.dont_omitempty) = true];
+
+  // the minimum divergence a validator delegation weight must have with the expected weight to start rebalance operation
+  string rebalance_threshold = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+
+  // the minimum amount of assets for each redelegation message sent to a host chain
+  string min_rebalance_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+
+  // the minimum interval between two rebalance operations
+  google.protobuf.Duration min_rebalance_interval = 4 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = true
+  ];
+}

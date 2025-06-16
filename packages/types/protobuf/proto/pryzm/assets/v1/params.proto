@@ -1,0 +1,18 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/assets/v1/refractable_asset.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// Params defines the parameters for the module.
+message Params {
+  FeeRatios default_fee_ratios = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // the list of admin addresses, able to register new assets or disable an existing asset
+  repeated string admins = 2 [(amino.dont_omitempty) = true];
+}

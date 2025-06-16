@@ -1,0 +1,120 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/gov/v1/gov.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+import "pryzm/pgov/v1/params.proto";
+import "pryzm/pgov/v1/proposal.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc StakePAssets(MsgStakePAssets) returns (MsgStakePAssetsResponse);
+  rpc UnstakePAssets(MsgUnstakePAssets) returns (MsgUnstakePAssetsResponse);
+  rpc SubmitVote(MsgSubmitVote) returns (MsgSubmitVoteResponse);
+  rpc SubmitProposal(MsgSubmitProposal) returns (MsgSubmitProposalResponse);
+  rpc RetryVoteTransmit(MsgRetryVoteTransmit) returns (MsgRetryVoteTransmitResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/pgov/v1/UpdateParams";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgStakePAssets {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/pgov/v1/StakePAssets";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgStakePAssetsResponse {
+  string total_staked_p_assets = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgUnstakePAssets {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/pgov/v1/UnstakePAssets";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUnstakePAssetsResponse {
+  string total_staked_p_assets = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgSubmitVote {
+  option (cosmos.msg.v1.signer) = "voter";
+  option (amino.name) = "pryzm/pgov/v1/SubmitVote";
+
+  string voter = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+  uint64 proposal = 3 [(amino.dont_omitempty) = true];
+  repeated cosmos.gov.v1.WeightedVoteOption options = 4 [(amino.dont_omitempty) = true];
+}
+
+message MsgSubmitVoteResponse {}
+
+message MsgSubmitProposal {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/pgov/v1/SubmitProposal";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+  bytes proposal = 3 [(amino.dont_omitempty) = true];
+  ibc.core.client.v1.Height height = 4 [(gogoproto.nullable) = false];
+  bytes proof = 5;
+}
+
+message MsgSubmitProposalResponse {
+  Proposal proposal = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgRetryVoteTransmit {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/pgov/v1/RetryVoteTransmit";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+  uint64 proposal = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgRetryVoteTransmitResponse {}
+
+// this line is used by starport scaffolding # proto/tx/message

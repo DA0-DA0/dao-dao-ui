@@ -1,0 +1,10 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message WeightUpdateTiming {
+  uint64 pool_id = 1;
+  int64 start_unix_millis = 2;
+  int64 end_unix_millis = 3;
+}

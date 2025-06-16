@@ -1,0 +1,185 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/pool.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message OrderParameters {
+  string step_matching_fee_ratio = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string step_swap_fee_ratio = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string matching_protocol_fee_ratio = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string matching_solver_fee_ratio = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  int32 max_orders_per_block = 5 [(amino.dont_omitempty) = true];
+  int32 max_schedule_per_block = 6 [(amino.dont_omitempty) = true];
+  string max_exec_order_trade_ratio = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string max_order_step_ratio = 8 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string min_order_step_ratio = 9 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  int64 min_order_step_millis_interval = 10;
+
+  int64 max_order_step_millis_interval = 11;
+  int32 max_pairs_per_block = 12;
+  int32 max_orders_per_pair = 13;
+}
+
+message YammParameters {
+  string lambda = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // duration (milliseconds) for virtual balance when adding new pAssets to yamm pools
+  int64 maturity_introduction_interval_millis = 2 [(amino.dont_omitempty) = true];
+  int64 maturity_expiration_interval_millis = 3 [(amino.dont_omitempty) = true];
+
+  string introduction_virtual_balance_scaler = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string expiration_virtual_balance_scaler = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string buy_y_given_in_loan_fee_ratio = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string sell_y_given_out_fee_ratio = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string max_alpha = 8 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // this will be set to newly created yamm pools
+  // if not empty, only these addresses can initialize the pools
+  repeated string default_initialization_allow_list = 9 [(amino.dont_omitempty) = true];
+
+  string avg_monthly_yield_rate = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string yield_fee_scaler = 11 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // this will be set to newly created yamm pools
+  repeated string default_admins = 12 [(amino.dont_omitempty) = true];
+  // this will be set to newly created yamm pools
+  repeated string default_pause_allow_list = 13 [(amino.dont_omitempty) = true];
+  // this will be set to newly created yamm pools
+  int64 default_pause_window_duration_millis = 14 [(amino.dont_omitempty) = true];
+  // this will be set to newly created yamm pools
+  int64 default_pause_buffer_duration_millis = 15 [(amino.dont_omitempty) = true];
+}
+
+message GeneralPoolParameters {
+  bool allow_public_pool_creation = 1 [(amino.dont_omitempty) = true];
+  string default_swap_fee_ratio = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string swap_protocol_fee_ratio = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string join_exit_protocol_fee_ratio = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AuthorizationParameters {
+  repeated string admin_list = 1 [(amino.dont_omitempty) = true];
+  // can pause the vault and also set pools to paused_by_gov mode which
+  // is a special mode where only the gov can unpause and does not have a window
+  // these cannot unpause anything
+  repeated string pause_allow_list = 2 [(amino.dont_omitempty) = true];
+}
+
+message GasParameters {
+  // gas for swapping in a pool
+  uint64 vault_swap = 1;
+  // gas for initializing a pool
+  uint64 vault_initialize_pool = 2;
+  // gas for join pool
+  uint64 vault_join = 3;
+  // gas for exit pool
+  uint64 vault_exit = 4;
+  // gas for recovery exit
+  uint64 vault_recovery_exit = 5;
+  // gas for each step of batch swap
+  uint64 vault_batch_swap_step = 6;
+  // gas for creating a new weighted pool
+  uint64 create_weighted_pool = 7;
+  // gas for submitting a new order
+  uint64 submit_order = 8;
+  // gas for each order in match proposal
+  uint64 proposal_match_order = 9;
+}
+
+message WeightedPoolParameters {
+  // This is applied only if the pool is initialized, for drained pools weights can be updated instantly.
+  int64 min_weight_update_duration_millis = 1 [(amino.dont_omitempty) = true];
+}
+
+// Params defines the parameters for the module.
+message Params {
+  GeneralPoolParameters general_pool_parameters = 1 [(gogoproto.nullable) = false];
+  YammParameters yamm_parameters = 2 [(gogoproto.nullable) = false];
+  OrderParameters order_parameters = 3 [(gogoproto.nullable) = false];
+  AuthorizationParameters authorization_parameters = 4 [(gogoproto.nullable) = false];
+  GasParameters gas_parameters = 5 [(gogoproto.nullable) = false];
+  WeightedPoolParameters weighted_pool_parameters = 6 [(gogoproto.nullable) = false];
+}

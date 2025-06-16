@@ -1,0 +1,844 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/operations.proto";
+import "pryzm/amm/v1/oracle_price_pair.proto";
+import "pryzm/amm/v1/order.proto";
+import "pryzm/amm/v1/pair_match_proposal.proto";
+import "pryzm/amm/v1/params.proto";
+import "pryzm/amm/v1/pool.proto";
+import "pryzm/amm/v1/token_circuit_breaker_settings.proto";
+import "pryzm/amm/v1/token_weight.proto";
+import "pryzm/amm/v1/whitelisted_route.proto";
+import "pryzm/amm/v1/yamm_configuration.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc SingleSwap(MsgSingleSwap) returns (MsgSingleSwapResponse);
+  rpc JoinAllTokensExactLpt(MsgJoinAllTokensExactLpt) returns (MsgJoinAllTokensExactLptResponse);
+  rpc JoinTokenExactLpt(MsgJoinTokenExactLpt) returns (MsgJoinTokenExactLptResponse);
+  rpc JoinExactTokens(MsgJoinExactTokens) returns (MsgJoinExactTokensResponse);
+  rpc ZeroImpactJoinYamm(MsgZeroImpactJoinYamm) returns (MsgZeroImpactJoinYammResponse);
+  rpc ExitExactTokens(MsgExitExactTokens) returns (MsgExitExactTokensResponse);
+  rpc ExitTokenExactLpt(MsgExitTokenExactLpt) returns (MsgExitTokenExactLptResponse);
+  rpc ExitAllTokensExactLpt(MsgExitAllTokensExactLpt) returns (MsgExitAllTokensExactLptResponse);
+  rpc CreateWeightedPool(MsgCreateWeightedPool) returns (MsgCreateWeightedPoolResponse);
+  rpc UpdateSwapFee(MsgUpdateSwapFee) returns (MsgUpdateSwapFeeResponse);
+  rpc InitializePool(MsgInitializePool) returns (MsgInitializePoolResponse);
+  rpc UpdateWeights(MsgUpdateWeights) returns (MsgUpdateWeightsResponse);
+  rpc BatchSwap(MsgBatchSwap) returns (MsgBatchSwapResponse);
+  rpc SetYammConfiguration(MsgSetYammConfiguration) returns (MsgSetYammConfigurationResponse);
+  rpc WhitelistRoute(MsgWhitelistRoute) returns (MsgWhitelistRouteResponse);
+  rpc SetWhitelistedRouteEnabled(MsgSetWhitelistedRouteEnabled) returns (MsgSetWhitelistedRouteEnabledResponse);
+  rpc SubmitOrder(MsgSubmitOrder) returns (MsgSubmitOrderResponse);
+  rpc CancelOrder(MsgCancelOrder) returns (MsgCancelOrderResponse);
+  rpc ProposeMatch(MsgProposeMatch) returns (MsgProposeMatchResponse);
+  rpc SetCircuitBreakers(MsgSetCircuitBreakers) returns (MsgSetCircuitBreakersResponse);
+  rpc SetRecoveryMode(MsgSetRecoveryMode) returns (MsgSetRecoveryModeResponse);
+  rpc RecoveryExit(MsgRecoveryExit) returns (MsgRecoveryExitResponse);
+  rpc SetPauseMode(MsgSetPauseMode) returns (MsgSetPauseModeResponse);
+  rpc SetVaultPauseMode(MsgSetVaultPauseMode) returns (MsgSetVaultPauseModeResponse);
+  rpc CreateOraclePricePair(MsgCreateOraclePricePair) returns (MsgCreateOraclePricePairResponse);
+  rpc UpdateOraclePricePair(MsgUpdateOraclePricePair) returns (MsgUpdateOraclePricePairResponse);
+  rpc DeleteOraclePricePair(MsgDeleteOraclePricePair) returns (MsgDeleteOraclePricePairResponse);
+  rpc SetSwapProtocolFee(MsgSetSwapProtocolFee) returns (MsgSetSwapProtocolFeeResponse);
+  rpc SetJoinExitProtocolFee(MsgSetJoinExitProtocolFee) returns (MsgSetJoinExitProtocolFeeResponse);
+  rpc IntroduceYammLpToWeightedPool(MsgIntroduceYammLpToWeightedPool) returns (MsgIntroduceYammLpToWeightedPoolResponse);
+  rpc IntroduceAssetBaseTokenToWeightedPool(MsgIntroduceAssetBaseTokenToWeightedPool) returns (MsgIntroduceAssetBaseTokenToWeightedPoolResponse);
+  rpc CancelPendingTokenIntroduction(MsgCancelPendingTokenIntroduction) returns (MsgCancelPendingTokenIntroductionResponse);
+  rpc RemoveTokenFromWeightedPool(MsgRemoveTokenFromWeightedPool) returns (MsgRemoveTokenFromWeightedPoolResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc AddMaturityToYamm(MsgAddMaturityToYamm) returns (MsgAddMaturityToYammResponse);
+  rpc SetInitializationAllowList(MsgSetInitializationAllowList) returns (MsgSetInitializationAllowListResponse);
+  rpc SetPoolAdmins(MsgSetPoolAdmins) returns (MsgSetPoolAdminsResponse);
+  rpc SetPoolJoinBlocked(MsgSetPoolJoinBlocked) returns (MsgSetPoolJoinBlockedResponse);
+  rpc SetPauseAllowList(MsgSetPauseAllowList) returns (MsgSetPauseAllowListResponse);
+  rpc SetPauseWindow(MsgSetPauseWindow) returns (MsgSetPauseWindowResponse);
+  rpc SetOrderPairDisabled(MsgSetOrderPairDisabled) returns (MsgSetOrderPairDisabledResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgSingleSwap {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SingleSwap";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  Swap swap = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  string max_amount_in = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+  string min_amount_out = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgSingleSwapResponse {
+  cosmos.base.v1beta1.Coin amount_out = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount_in = 2 [(gogoproto.nullable) = false];
+  // protocol fee does not contain the y_trade fee and refractor fee
+  // which is paid in case of a yAsset trade
+  cosmos.base.v1beta1.Coin protocol_fee = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin swap_fee = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgJoinAllTokensExactLpt {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/JoinAllTokensExactLpt";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string lpt_out = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  // is not casted to coins, to allow for zero limits
+  repeated cosmos.base.v1beta1.Coin max_amounts_in = 4 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgJoinAllTokensExactLptResponse {
+  cosmos.base.v1beta1.Coin lpt_out = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_in = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin protocol_fee = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgJoinTokenExactLpt {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/JoinTokenExactLpt";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string lpt_out = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string token_in = 4;
+  string max_amount_in = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgJoinTokenExactLptResponse {
+  cosmos.base.v1beta1.Coin lpt_out = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount_in = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin protocol_fee = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin swap_fee = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgJoinExactTokens {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/JoinExactTokens";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated cosmos.base.v1beta1.Coin amounts_in = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string min_lpt_out = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgJoinExactTokensResponse {
+  cosmos.base.v1beta1.Coin lpt_out = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_in = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin protocol_fee = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin swap_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgZeroImpactJoinYamm {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/ZeroImpactJoinYamm";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin c_amount_in = 2 [(gogoproto.nullable) = false];
+  string min_lpt_out = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgZeroImpactJoinYammResponse {
+  cosmos.base.v1beta1.Coin lpt_out = 1 [(gogoproto.nullable) = false];
+
+  repeated cosmos.base.v1beta1.Coin y_out = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  cosmos.base.v1beta1.Coin refract_fee = 3 [(gogoproto.nullable) = false];
+
+  repeated cosmos.base.v1beta1.Coin join_protocol_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  repeated cosmos.base.v1beta1.Coin swap_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgExitExactTokens {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/ExitExactTokens";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated cosmos.base.v1beta1.Coin amounts_out = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string max_lpt_in = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgExitExactTokensResponse {
+  cosmos.base.v1beta1.Coin lpt_in = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_out = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  cosmos.base.v1beta1.Coin protocol_fee = 3 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin swap_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgExitTokenExactLpt {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/ExitTokenExactLpt";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string lpt_in = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string token_out = 4;
+  string min_amount_out = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgExitTokenExactLptResponse {
+  cosmos.base.v1beta1.Coin lpt_in = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount_out = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin protocol_fee = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin swap_fee = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgExitAllTokensExactLpt {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/ExitAllTokensExactLpt";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string lpt_in = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin min_amounts_out = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgExitAllTokensExactLptResponse {
+  cosmos.base.v1beta1.Coin lpt_in = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_out = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  cosmos.base.v1beta1.Coin protocol_fee = 3 [(gogoproto.nullable) = false];
+}
+
+message CreateWeightedPoolToken {
+  string denom = 1;
+  string normalized_weight = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgCreateWeightedPool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/CreateWeightedPool";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string name = 2;
+  // if update params is nil, this is the actual swap fee, o.w. you need to apply gradual update between this start and the end in params.
+  string start_swap_fee_ratio = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  int64 pause_window_duration_millis = 4 [(amino.dont_omitempty) = true];
+  int64 pause_buffer_duration_millis = 5 [(amino.dont_omitempty) = true];
+  repeated CreateWeightedPoolToken tokens = 6 [(gogoproto.nullable) = false];
+  // if not empty, only these addresses can initialize the pool
+  repeated string initialization_allow_list = 12 [(amino.dont_omitempty) = true];
+  // if the creator is admin, they can create pools owned by governance
+  // NOTE: when public pool creation is not allowed, admin must set this to true
+  // NOTE: governance can leave this to false, as it already is the creator of the msg
+  bool force_gov_owner = 13;
+  repeated string admins = 14 [(amino.dont_omitempty) = true];
+  repeated string pause_allow_list = 15 [(amino.dont_omitempty) = true];
+  SwapFeeUpdateParams swap_fee_update_params = 16 [(gogoproto.nullable) = true];
+  bool join_blocked = 17;
+}
+
+message MsgCreateWeightedPoolResponse {
+  uint64 pool_id = 1;
+}
+
+message MsgUpdateSwapFee {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/UpdateSwapFee";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  // if update params is nil, this is the actual swap fee, o.w. you need to apply gradual update between this start and the end in params.
+  string start_swap_fee_ratio = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  SwapFeeUpdateParams gradual_update_params = 4 [(gogoproto.nullable) = true];
+}
+
+message MsgUpdateSwapFeeResponse {}
+
+message MsgInitializePool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/InitializePool";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated cosmos.base.v1beta1.Coin amounts_in = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // this is only supported for weighted pools
+  repeated cosmos.base.v1beta1.Coin permanent_virtual_balances = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgInitializePoolResponse {
+  cosmos.base.v1beta1.Coin lpt_out = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_in = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin protocol_fee = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgUpdateWeights {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/UpdateWeights";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated TokenWeight token_weights = 3 [(gogoproto.nullable) = false];
+  int64 start_time_unix_millis = 4 [(amino.dont_omitempty) = true];
+  int64 end_time_unix_millis = 5 [(amino.dont_omitempty) = true];
+}
+
+message MsgUpdateWeightsResponse {}
+
+message MsgBatchSwap {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/BatchSwap";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  SwapType swap_type = 2 [(amino.dont_omitempty) = true];
+  repeated SwapStep steps = 3 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin min_amounts_out = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.dont_omitempty) = true
+  ];
+  // is not casted to coins, to allow for zero limits
+  repeated cosmos.base.v1beta1.Coin max_amounts_in = 5 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgBatchSwapResponse {
+  repeated cosmos.base.v1beta1.Coin amounts_in = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin amounts_out = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // protocol fee does not contain the y_trade fee and refractor fee
+  // which is paid in case of a yAsset trade
+  repeated cosmos.base.v1beta1.Coin swap_protocol_fee = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin join_exit_protocol_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin swap_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgSetYammConfiguration {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetYammConfiguration";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  YammConfiguration configuration = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgSetYammConfigurationResponse {}
+
+message MsgWhitelistRoute {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/WhitelistRoute";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  WhitelistedRoute whitelisted_route = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgWhitelistRouteResponse {}
+
+message MsgSetWhitelistedRouteEnabled {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetWhitelistedRouteEnabled";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string token_in = 2;
+  string token_out = 3;
+  bool enabled = 4 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetWhitelistedRouteEnabledResponse {}
+
+message MsgSubmitOrder {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SubmitOrder";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string token_in = 3;
+  string token_out = 4;
+  bool whitelisted_route = 5 [(amino.dont_omitempty) = true];
+  bool allow_matching = 6 [(amino.dont_omitempty) = true];
+  string amount_per_step = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string total_amount = 8 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  int64 millis_interval = 9 [(amino.dont_omitempty) = true];
+  string max_step_spot_price = 10 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string max_matching_spot_price = 11 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgSubmitOrderResponse {
+  Order order = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgCancelOrder {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/CancelOrder";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2 [(amino.dont_omitempty) = true];
+}
+
+message MsgCancelOrderResponse {
+  cosmos.base.v1beta1.Coin withdrawn_deposit = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgProposeMatch {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/ProposeMatch";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated PairMatchProposal pairs = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgProposeMatchResponse {
+  repeated cosmos.base.v1beta1.Coin proposer_reward = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated MatchedPairSummary matched_pairs = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgSetCircuitBreakers {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetCircuitBreakers";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated TokenCircuitBreakerSettings token_circuit_breakers = 3 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgSetCircuitBreakersResponse {}
+
+message MsgSetRecoveryMode {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetRecoveryMode";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  bool recovery_mode = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetRecoveryModeResponse {}
+
+message MsgSetPoolJoinBlocked {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetPoolJoinBlocked";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  bool join_blocked = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetPoolJoinBlockedResponse {}
+
+message MsgRecoveryExit {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/RecoveryExit";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string lpt_in = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin min_amounts_out = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgRecoveryExitResponse {
+  cosmos.base.v1beta1.Coin lpt_in = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin amounts_out = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgSetPauseMode {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetPauseMode";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  bool pause_mode = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetPauseModeResponse {}
+
+message MsgSetVaultPauseMode {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetVaultPauseMode";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  bool pause_mode = 2 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetVaultPauseModeResponse {}
+
+message MsgCreateOraclePricePair {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/CreateOraclePricePair";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  OraclePricePair oracle_price_pair = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+message MsgCreateOraclePricePairResponse {}
+
+message MsgUpdateOraclePricePair {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/UpdateOraclePricePair";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  OraclePricePair oracle_price_pair = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+message MsgUpdateOraclePricePairResponse {}
+
+message MsgDeleteOraclePricePair {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/DeleteOraclePricePair";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+}
+message MsgDeleteOraclePricePairResponse {}
+
+message MsgSetSwapProtocolFee {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetSwapProtocolFee";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  // if protocol fee parameters are nil, then the values are read from treasury module parameters
+  string swap_protocol_fee = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgSetSwapProtocolFeeResponse {}
+
+message MsgSetJoinExitProtocolFee {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetJoinExitProtocolFee";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  // if protocol fee parameters are nil, then the values are read from treasury module parameters
+  string join_exit_protocol_fee = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+}
+
+message MsgSetJoinExitProtocolFeeResponse {}
+
+message MsgIntroduceYammLpToWeightedPool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/IntroYammLpToWeighted";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 weighted_pool_id = 2 [(amino.dont_omitempty) = true];
+  uint64 yamm_pool_id = 3 [(amino.dont_omitempty) = true];
+  string token_normalized_weight = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  int64 virtual_balance_interval_millis = 5 [(amino.dont_omitempty) = true];
+}
+
+message MsgIntroduceYammLpToWeightedPoolResponse {}
+
+message MsgIntroduceAssetBaseTokenToWeightedPool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/IntroBaseTokenToWeighted";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 weighted_pool_id = 2 [(amino.dont_omitempty) = true];
+  string token_denom = 3;
+  string asset_id = 4;
+  string token_normalized_weight = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  int64 virtual_balance_interval_millis = 6 [(amino.dont_omitempty) = true];
+}
+
+message MsgIntroduceAssetBaseTokenToWeightedPoolResponse {}
+
+message MsgCancelPendingTokenIntroduction {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/CancelPendingTokenIntro";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+  uint64 target_pool_id = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgCancelPendingTokenIntroductionResponse {}
+
+message MsgRemoveTokenFromWeightedPool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/RemoveTokenFromWeighted";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  string token_denom = 3;
+  int64 virtual_balance_interval_millis = 4 [(amino.dont_omitempty) = true];
+}
+
+message MsgRemoveTokenFromWeightedPoolResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/UpdateParams";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  GeneralPoolParameters general_pool_parameters = 2 [(gogoproto.nullable) = true];
+  YammParameters yamm_parameters = 3 [(gogoproto.nullable) = true];
+  OrderParameters order_parameters = 4 [(gogoproto.nullable) = true];
+  AuthorizationParameters authorization_parameters = 5 [(gogoproto.nullable) = true];
+  GasParameters gas_parameters = 6 [(gogoproto.nullable) = true];
+  WeightedPoolParameters weighted_pool_parameters = 7 [(gogoproto.nullable) = true];
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgAddMaturityToYamm {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/AddMaturityToYamm";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string assetId = 2;
+  string maturitySymbol = 3;
+}
+
+message MsgAddMaturityToYammResponse {}
+
+message MsgSetInitializationAllowList {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetInitializationAllowList";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated string initialization_allow_list = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetInitializationAllowListResponse {}
+
+message MsgSetPoolAdmins {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetPoolAdmins";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated string admins = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetPoolAdminsResponse {}
+
+message MsgSetPauseAllowList {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v1/SetPauseAllowList";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  repeated string pause_allow_list = 3 [(amino.dont_omitempty) = true];
+}
+
+message MsgSetPauseAllowListResponse {}
+
+message MsgSetPauseWindow {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetPauseWindow";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 pool_id = 2 [(amino.dont_omitempty) = true];
+  PoolPauseWindow pause_window = 3 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgSetPauseWindowResponse {}
+
+message MsgSetOrderPairDisabled {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/amm/v1/SetOrderPairDisabled";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  DisabledOrderPair pair = 2 [(gogoproto.nullable) = false];
+  bool disabled = 3;
+}
+
+message MsgSetOrderPairDisabledResponse {}
+// this line is used by starport scaffolding # proto/tx/message

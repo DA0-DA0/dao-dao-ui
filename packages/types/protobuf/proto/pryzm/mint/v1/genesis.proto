@@ -1,0 +1,19 @@
+syntax = "proto3";
+package pryzm.mint.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/mint/v1/minter.proto";
+import "pryzm/mint/v1/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/mint/types/v1";
+
+// GenesisState defines the mint module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+
+  // minter is an abstraction for holding current rewards information.
+  Minter minter = 2 [(gogoproto.nullable) = false];
+
+  // this line is used by starport scaffolding # genesis/proto/state
+}

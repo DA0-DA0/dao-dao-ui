@@ -1,0 +1,98 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// Information about an undelegation in a specific epoch
+message Undelegation {
+  // host chain id
+  string host_chain = 1;
+
+  // the undelegation epoch id
+  uint64 epoch = 2;
+
+  // the exchange rate of cToken:Token at the end of undelegation epoch
+  string exchange_rate = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // whether the undelegation request is sent and has started on host chain
+  bool started = 4;
+
+  // whether the undelegation un-bonding period is passed and undelegated assets are available
+  bool completed = 5;
+
+  // the time in which the undelegation will be completed and the assets are transferred to delegation account
+  google.protobuf.Timestamp completion_time = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// ChannelUndelegation contains information about an undelegation epoch for a specific transfer channel
+message ChannelUndelegation {
+  // host chain id
+  string host_chain = 1;
+
+  // the undelegation epoch id
+  uint64 epoch = 2;
+
+  // the transfer channel on which the undelegated assets must be received
+  string transfer_channel = 3;
+
+  // the total amount of cTokens requested to be undelegated
+  string total_c_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the total amount of cTokens for which the undelegation message has been sent
+  string undelegated_c_amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the amount of assets already undelegated
+  string received_amount = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the amount of assets waiting to be received
+  string pending_amount = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the cAsset equivalent of assets waiting to be received
+  string pending_c_amount = 8 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // whether the ibc transfer messages for sweeping assets to PRYZM are sent successfully
+  bool swept = 9;
+
+  // whether all the undelegation are completely received
+  // if received is true, pending_amount must be zero
+  bool received = 10;
+
+  // the amount of uAssets redeemed by users.
+  // a channel undelegation record is deleted when this amount is equal the total_c_amount
+  string claimed_u_amount = 11 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}

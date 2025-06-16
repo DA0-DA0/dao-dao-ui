@@ -1,0 +1,33 @@
+syntax = "proto3";
+package pryzm.amm.v2;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v2";
+
+message ProposalOrder {
+  uint64 id = 1; // should be set to zero for virtual orders
+  string max_amount_in = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ]; // this must be provided if and only if virtual=true
+  string max_price = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ]; // this must be provided if and only if virtual=true
+  bool virtual = 4;
+}
+
+message PairMatchProposal {
+  uint64 pool_id = 1;
+  bool whitelisted_route = 2;
+  string token_in = 3;
+  string token_out = 4;
+  repeated ProposalOrder buy_orders = 5 [(gogoproto.nullable) = false];
+  repeated ProposalOrder sell_orders = 6 [(gogoproto.nullable) = false];
+}

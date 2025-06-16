@@ -1,0 +1,29 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/weight_update_timing.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message WeightedPoolProperties {
+  uint64 pool_id = 1;
+  WeightUpdateTiming weight_update_timing = 2 [(gogoproto.nullable) = false];
+  repeated WeightedToken token_list = 3 [(gogoproto.nullable) = false];
+}
+
+message WeightedToken {
+  uint64 pool_id = 1;
+  string denom = 2;
+  string normalized_start_weight = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string normalized_end_weight = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

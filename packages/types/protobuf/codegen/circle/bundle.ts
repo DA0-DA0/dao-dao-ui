@@ -14,12 +14,12 @@ import * as _24 from "./cctp/v1/sending_and_receiving_messages_paused";
 import * as _25 from "./cctp/v1/signature_threshold";
 import * as _26 from "./cctp/v1/token_pair";
 import * as _27 from "./cctp/v1/tx";
-import * as _438 from "./cctp/v1/tx.amino";
-import * as _439 from "./cctp/v1/tx.registry";
-import * as _440 from "./cctp/v1/query.rpc.Query";
-import * as _441 from "./cctp/v1/tx.rpc.msg";
-import * as _722 from "./rpc.query";
-import * as _723 from "./rpc.tx";
+import * as _526 from "./cctp/v1/tx.amino";
+import * as _527 from "./cctp/v1/tx.registry";
+import * as _528 from "./cctp/v1/query.rpc.Query";
+import * as _529 from "./cctp/v1/tx.rpc.msg";
+import * as _849 from "./rpc.query";
+import * as _850 from "./rpc.tx";
 export namespace circle {
   export namespace cctp {
     export const v1 = {
@@ -39,14 +39,14 @@ export namespace circle {
       ..._25,
       ..._26,
       ..._27,
-      ..._438,
-      ..._439,
-      ..._440,
-      ..._441
+      ..._526,
+      ..._527,
+      ..._528,
+      ..._529
     };
   }
   export const ClientFactory = {
-    ..._722,
-    ..._723
+    ..._849,
+    ..._850
   };
 }

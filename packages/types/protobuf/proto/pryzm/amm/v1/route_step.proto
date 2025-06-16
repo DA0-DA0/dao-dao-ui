@@ -1,0 +1,12 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message RouteStep {
+  uint64 pool_id = 1 [(amino.dont_omitempty) = true];
+  string token_in = 2;
+  string token_out = 3;
+}

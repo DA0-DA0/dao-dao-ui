@@ -1,0 +1,46 @@
+syntax = "proto3";
+package pryzm.amm.v2;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/pair_match_proposal.proto";
+import "pryzm/amm/v2/pair_match_proposal.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v2";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+  rpc ProposeMatch(MsgProposeMatch) returns (MsgProposeMatchResponse);
+}
+
+message MsgProposeMatch {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/amm/v2/ProposeMatch";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated PairMatchProposal pairs = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // this includes the output amount of virtual orders as well as the proposer reward
+  // if the limits are not met, the transaction will fail
+  repeated cosmos.base.v1beta1.Coin min_amounts_out = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // is not casted to coins, to allow for zero limits
+  repeated cosmos.base.v1beta1.Coin max_amounts_in = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgProposeMatchResponse {
+  repeated cosmos.base.v1beta1.Coin proposer_reward = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated pryzm.amm.v1.MatchedPairSummary matched_pairs = 2 [(gogoproto.nullable) = false];
+}

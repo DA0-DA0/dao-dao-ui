@@ -1,0 +1,40 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message Pair {
+  string base = 1;
+  string quote = 2;
+  string pool_id = 3; //refers to the data source pool (e.g. osmosis gamm pool)
+  string data_source = 4;
+}
+
+// TwapAlgorithm enumerates the valid algorithms for twap_algorithm.
+enum TwapAlgorithm {
+  option (gogoproto.goproto_enum_prefix) = false;
+  TWAP_ALGORITHM_ARITHMETIC = 0 [(gogoproto.enumvalue_customname) = "ArithmeticTwapAlgorithm"];
+  TWAP_ALGORITHM_GEOMETRIC = 1 [(gogoproto.enumvalue_customname) = "GeometricTwapAlgorithm"];
+}
+
+message OraclePricePair {
+  string asset_id = 1;
+  // this is the token denom which should exist in the target weighted pool in pryzm chain
+  // the reason for adding this property and not using the pairs, is that the token denom in various chains might be different
+  // for example usdc token might have contract or ibc denom on different chains with different channel and ids
+  string quote_token = 2;
+  uint64 twap_duration_millis = 3 [(amino.dont_omitempty) = true];
+  TwapAlgorithm twap_algorithm = 4 [(amino.dont_omitempty) = true];
+  bool disabled = 5 [(amino.dont_omitempty) = true];
+  repeated Pair pairs = 6 [
+    (gogoproto.castrepeated) = "Pairs",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // this is the denom of the base token on this chain
+  // should be ibc denom for most cases
+  string base_denom = 7;
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+import "pryzm/amm/v1/oracle_price_pair.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message OraclePayloadDataSourceBlockHeight {
+  string data_source = 1;
+  ibc.core.client.v1.Height block_height = 2 [(gogoproto.nullable) = false];
+}
+
+// OraclePayload defines the structure of oracle vote payload
+message OraclePayload {
+  repeated OraclePayloadDataSourceBlockHeight data_source_block_heights = 1 [(gogoproto.nullable) = false];
+  string price = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  repeated Pair pairs = 3 [
+    (gogoproto.castrepeated) = "Pairs",
+    (gogoproto.nullable) = false
+  ];
+  string quote_token = 4;
+}

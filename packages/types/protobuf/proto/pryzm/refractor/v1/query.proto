@@ -1,0 +1,86 @@
+syntax = "proto3";
+package pryzm.refractor.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "pryzm/refractor/v1/asset_state.proto";
+import "pryzm/refractor/v1/params.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/refractor/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  rpc AssetState(QueryGetAssetStateRequest) returns (QueryGetAssetStateResponse) {
+    option (google.api.http).get = "/pryzm/refractor/v1/asset_state/{asset_id}";
+  }
+
+  rpc CPExchangeRate(QueryGetCPExchangeRateRequest) returns (QueryGetCPExchangeRateResponse) {
+    option (google.api.http).get = "/pryzm/refractor/v1/c_p_exchange_rate/{asset_id}";
+  }
+
+  rpc SimulateRefract(QuerySimulateRefractRequest) returns (QuerySimulateRefractResponse) {
+    option (google.api.http).get = "/pryzm/refractor/v1/simulate_refract";
+  }
+
+  rpc SimulateRedeem(QuerySimulateRedeemRequest) returns (QuerySimulateRedeemResponse) {
+    option (google.api.http).get = "/pryzm/refractor/v1/simulate_redeem";
+  }
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/refractor/v1/params";
+  }
+  // this line is used by starport scaffolding # 2
+}
+
+message QueryGetAssetStateRequest {
+  string asset_id = 1;
+}
+
+message QueryGetAssetStateResponse {
+  AssetState asset_state = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetCPExchangeRateRequest {
+  string asset_id = 1;
+}
+
+message QueryGetCPExchangeRateResponse {
+  string exchange_rate = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QuerySimulateRefractRequest {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  string maturity = 2;
+}
+
+message QuerySimulateRefractResponse {
+  cosmos.base.v1beta1.Coin p_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin y_amount = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message QuerySimulateRedeemRequest {
+  cosmos.base.v1beta1.Coin p_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin y_amount = 2;
+}
+
+message QuerySimulateRedeemResponse {
+  cosmos.base.v1beta1.Coin c_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// this line is used by starport scaffolding # 3

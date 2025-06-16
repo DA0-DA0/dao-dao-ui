@@ -1,0 +1,42 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "cosmos/gov/v1/gov.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// Proposal stores information about a replicated proposal
+message Proposal {
+  // the id of proposal on the host chain
+  uint64 proposal_id = 1;
+
+  // the asset ID
+  string asset = 2;
+
+  // the time when the proposal has been started
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = true
+  ];
+
+  // the time of proposal ending on PRYZM, this time is sooner than the real end time of proposal on the host chain
+  google.protobuf.Timestamp end_time = 4 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+
+  // the final aggregation of votes on PRYZM, which is submitted to the host chain
+  repeated cosmos.gov.v1.WeightedVoteOption final_vote = 5 [(gogoproto.nullable) = false];
+
+  // the state of the proposal
+  ProposalStatus status = 6;
+}
+
+enum ProposalStatus {
+  ACTIVE = 0;
+  SUBMITTING = 1;
+  SUBMITTED = 2;
+  FAILED = 3;
+}

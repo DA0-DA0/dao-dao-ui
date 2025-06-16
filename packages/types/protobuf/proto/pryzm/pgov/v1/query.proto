@@ -1,0 +1,165 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/gov/v1/gov.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "pryzm/pgov/v1/params.proto";
+import "pryzm/pgov/v1/proposal.proto";
+import "pryzm/pgov/v1/staked_p_asset.proto";
+import "pryzm/pgov/v1/vote.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/params";
+  }
+
+  // Queries a StakedPAsset by index.
+  rpc StakedPAsset(QueryGetStakedPAssetRequest) returns (QueryGetStakedPAssetResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/staked_p_asset/{account}/{p_asset}";
+  }
+
+  // Queries a list of StakedPAsset items.
+  rpc StakedPAssetAll(QueryAllStakedPAssetRequest) returns (QueryAllStakedPAssetResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/staked_p_asset";
+  }
+
+  rpc TotalStakedPAsset(QueryGetTotalStakedPAssetRequest) returns (QueryGetTotalStakedPAssetResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/total_staked_p_asset/{account}/{asset}";
+  }
+
+  rpc TotalStakedPAssetAll(QueryAllTotalStakedPAssetRequest) returns (QueryAllTotalStakedPAssetResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/total_staked_p_asset";
+  }
+
+  // Queries a Vote by index.
+  rpc Vote(QueryGetVoteRequest) returns (QueryGetVoteResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/vote/{asset}/{proposal}/{voter}";
+  }
+
+  // Queries a list of Vote items.
+  rpc VoteAll(QueryAllVoteRequest) returns (QueryAllVoteResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/vote/{asset}/{proposal}";
+  }
+
+  // Queries a Proposal by index.
+  rpc Proposal(QueryGetProposalRequest) returns (QueryGetProposalResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/proposal/{asset}/{proposal_id}";
+  }
+
+  // Queries a list of Proposal items.
+  rpc ProposalAll(QueryAllProposalRequest) returns (QueryAllProposalResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/proposal";
+  }
+
+  // Queries a list of Proposal items.
+  rpc TallyResult(QueryTallyResultRequest) returns (QueryTallyResultResponse) {
+    option (google.api.http).get = "/pryzm/pgov/v1/tally_result/{asset}/{proposal}";
+  }
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetStakedPAssetRequest {
+  string account = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string p_asset = 2;
+}
+
+message QueryGetStakedPAssetResponse {
+  StakedPAsset staked_p_asset = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllStakedPAssetRequest {
+  string account = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllStakedPAssetResponse {
+  repeated StakedPAsset staked_p_asset = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllTotalStakedPAssetRequest {
+  string account = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllTotalStakedPAssetResponse {
+  repeated TotalStakedPAsset total_staked_p_asset = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetTotalStakedPAssetRequest {
+  string account = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+}
+
+message QueryGetTotalStakedPAssetResponse {
+  TotalStakedPAsset total_staked_p_asset = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetVoteRequest {
+  string asset = 1;
+  uint64 proposal = 2;
+  string voter = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryGetVoteResponse {
+  Vote vote = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllVoteRequest {
+  string asset = 1;
+  uint64 proposal = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3 [(gogoproto.nullable) = true];
+}
+
+message QueryAllVoteResponse {
+  repeated Vote vote = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryGetProposalRequest {
+  string asset = 1;
+  uint64 proposal_id = 2;
+}
+
+message QueryGetProposalResponse {
+  Proposal proposal = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllProposalRequest {
+  string asset = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryAllProposalResponse {
+  repeated Proposal proposal = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+message QueryTallyResultRequest {
+  string asset = 1;
+  uint64 proposal = 2;
+}
+
+message QueryTallyResultResponse {
+  repeated cosmos.gov.v1.WeightedVoteOption options = 1 [(gogoproto.nullable) = false];
+}
+
+// this line is used by starport scaffolding # 3

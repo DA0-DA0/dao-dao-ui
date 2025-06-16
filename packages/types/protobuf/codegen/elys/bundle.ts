@@ -5,12 +5,12 @@ import * as _108 from "./stablestake/pool";
 import * as _109 from "./stablestake/query";
 import * as _110 from "./stablestake/tx";
 import * as _111 from "./stablestake/types";
-import * as _497 from "./stablestake/tx.amino";
-import * as _498 from "./stablestake/tx.registry";
-import * as _499 from "./stablestake/query.rpc.Query";
-import * as _500 from "./stablestake/tx.rpc.msg";
-import * as _728 from "./rpc.query";
-import * as _729 from "./rpc.tx";
+import * as _585 from "./stablestake/tx.amino";
+import * as _586 from "./stablestake/tx.registry";
+import * as _587 from "./stablestake/query.rpc.Query";
+import * as _588 from "./stablestake/tx.rpc.msg";
+import * as _855 from "./rpc.query";
+import * as _856 from "./rpc.tx";
 export namespace elys {
   export const stablestake = {
     ..._105,
@@ -20,13 +20,13 @@ export namespace elys {
     ..._109,
     ..._110,
     ..._111,
-    ..._497,
-    ..._498,
-    ..._499,
-    ..._500
+    ..._585,
+    ..._586,
+    ..._587,
+    ..._588
   };
   export const ClientFactory = {
-    ..._728,
-    ..._729
+    ..._855,
+    ..._856
   };
 }

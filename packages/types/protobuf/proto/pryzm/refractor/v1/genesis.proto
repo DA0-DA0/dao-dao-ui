@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pryzm.refractor.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/refractor/v1/asset_state.proto";
+import "pryzm/refractor/v1/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/refractor/types/v1";
+
+// GenesisState defines the refractor module's genesis state.
+message GenesisState {
+  repeated AssetState asset_state_list = 1 [(gogoproto.nullable) = false];
+  Params params = 2 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

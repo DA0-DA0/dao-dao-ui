@@ -1,0 +1,71 @@
+syntax = "proto3";
+package pryzm.treasury.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "pryzm/treasury/v1/action.proto";
+import "pryzm/treasury/v1/flow_trade.proto";
+import "pryzm/treasury/v1/params.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/treasury/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/treasury/v1/params";
+  }
+
+  // Queries a Action by index.
+  rpc Action(QueryGetActionRequest) returns (QueryGetActionResponse) {
+    option (google.api.http).get = "/pryzm/treasury/v1/action";
+  }
+
+  // Queries a FlowTrade by index.
+  rpc FlowTrade(QueryGetFlowTradeRequest) returns (QueryGetFlowTradeResponse) {
+    option (google.api.http).get = "/pryzm/treasury/v1/flow_trade/{flow_id}";
+  }
+
+  // Queries a list of FlowTrade items.
+  rpc FlowTradeAll(QueryAllFlowTradeRequest) returns (QueryAllFlowTradeResponse) {
+    option (google.api.http).get = "/pryzm/treasury/v1/flow_trade";
+  }
+
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetActionRequest {}
+
+message QueryGetActionResponse {
+  Action action = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetFlowTradeRequest {
+  uint64 flow_id = 1;
+}
+
+message QueryGetFlowTradeResponse {
+  FlowTrade flow_trade = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllFlowTradeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllFlowTradeResponse {
+  repeated FlowTrade flow_trade = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = true];
+}
+
+// this line is used by starport scaffolding # 3

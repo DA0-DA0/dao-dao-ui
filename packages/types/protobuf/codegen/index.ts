@@ -38,6 +38,8 @@ export * from "./OmniFlix/bundle";
 export * from "./OmniFlix/client";
 export * from "./osmosis/bundle";
 export * from "./osmosis/client";
+export * from "./pryzm/bundle";
+export * from "./pryzm/client";
 export * from "./pstake/bundle";
 export * from "./pstake/client";
 export * from "./publicawesome/bundle";

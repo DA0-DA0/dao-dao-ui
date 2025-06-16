@@ -1,0 +1,104 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "pryzm/assets/v1/maturity_level.proto";
+import "pryzm/assets/v1/params.proto";
+import "pryzm/assets/v1/refractable_asset.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc RegisterAsset(MsgRegisterAsset) returns (MsgRegisterAssetResponse);
+  rpc DisableAsset(MsgDisableAsset) returns (MsgDisableAssetResponse);
+  rpc UpdateMaturityParams(MsgUpdateMaturityParams) returns (MsgUpdateMaturityParamsResponse);
+  rpc UpdateFeeRatios(MsgUpdateFeeRatios) returns (MsgUpdateFeeRatiosResponse);
+  rpc IntroduceMaturityLevel(MsgIntroduceMaturityLevel) returns (MsgIntroduceMaturityLevelResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgRegisterAsset {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/assets/v1/RegisterAsset";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  RefractableAsset asset = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgRegisterAssetResponse {}
+
+message MsgDisableAsset {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/assets/v1/DisableAsset";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+}
+
+message MsgDisableAssetResponse {}
+
+message MsgUpdateMaturityParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/assets/v1/UpdateMaturityParams";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+  MaturityParams params = 3 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUpdateMaturityParamsResponse {}
+
+message MsgUpdateFeeRatios {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/assets/v1/UpdateFeeRatios";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+  FeeRatios fee_ratios = 3 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUpdateFeeRatiosResponse {}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/assets/v1/UpdateParams";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgIntroduceMaturityLevel {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/assets/v1/IntroduceMaturityLevel";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+  string symbol = 3;
+}
+
+message MsgIntroduceMaturityLevelResponse {
+  MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+}
+// this line is used by starport scaffolding # proto/tx/message

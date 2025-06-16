@@ -1,0 +1,21 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// Params defines the parameters for the module.
+message Params {
+  // (Host chain proposal end time) - (Pryzm proposal end time)
+  google.protobuf.Duration voting_result_submission_window = 1 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // used to be voting_result_submission_timeout (the ICA vote message timeout)
+  reserved 2;
+}

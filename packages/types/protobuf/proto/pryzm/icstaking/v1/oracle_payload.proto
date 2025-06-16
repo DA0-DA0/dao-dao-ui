@@ -1,0 +1,45 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+import "pryzm/icstaking/v1/host_chain.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// OraclePayload defines the structure of oracle vote payload
+message OraclePayload {
+  // Oracle is reporting the data based on the host chain’s time which may have a time difference with Pryzm.
+  // In order to be accurate, we use a reference of host chain’s latest block in which Pryzm's state has changed to idle,
+  // and oracle feeders' reported block height is checked to be after that specific block
+  ibc.core.client.v1.Height block_height = 1 [(gogoproto.nullable) = false];
+
+  // list of validators and their state containing the delegation amount
+  repeated ValidatorState validator_states = 3 [(gogoproto.nullable) = false];
+
+  // balance of delegation interchain account
+  string delegation_account_balance = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // balance of reward interchain account
+  string reward_account_balance = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // balance of sweep interchain account
+  string sweep_account_balance = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the largest undelegation epoch number for which the undelegation is completed and is ready to be swept to PRYZM
+  // reporting this with zero means that none of incomplete undelegations are completed.
+  uint64 last_completed_undelegation_epoch = 7;
+}

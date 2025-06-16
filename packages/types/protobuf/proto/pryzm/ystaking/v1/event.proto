@@ -1,0 +1,67 @@
+syntax = "proto3";
+package pryzm.ystaking.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/ystaking/v1/asset_pool_state.proto";
+import "pryzm/ystaking/v1/user_stake_state.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/ystaking/types/v1";
+
+message EventYStakingBond {
+  string account_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message EventYStakingUnbond {
+  string account_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin accrued_reward = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 4 [(gogoproto.nullable) = false];
+}
+
+message EventYStakingExitPool {
+  string account_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin accrued_reward = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message EventYStakingClaimReward {
+  string account_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin accrued_reward = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message EventDeactivateYStakingMaturityPool {
+  cosmos.base.v1beta1.Coin burnt_bonded_amount = 1 [(gogoproto.nullable) = false];
+  string asset_id = 2;
+  string maturity_symbol = 3;
+}
+
+message EventSetUserStakeState {
+  UserStakeState user_stake_state = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetAssetPoolState {
+  AssetPoolState asset_pool_state = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetAssetMaturityPoolState {
+  AssetMaturityPoolState asset_maturity_pool_state = 1 [(gogoproto.nullable) = false];
+}
+
+message EventDeleteUserStakeState {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset_id = 2;
+  string maturity_symbol = 3;
+}
+
+message EventDeleteAssetPoolState {
+  string asset_id = 1;
+}
+
+message EventDeleteAssetMaturityPoolState {
+  string asset_id = 1;
+  string maturity_symbol = 2;
+}

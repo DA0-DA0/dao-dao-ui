@@ -1,0 +1,17 @@
+syntax = "proto3";
+package pryzm.treasury.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "pryzm/treasury/v1/action.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/treasury/types/v1";
+
+message FlowTrade {
+  google.protobuf.Timestamp end_time = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  uint64 flow_id = 2;
+  ActionType action_type = 3;
+}

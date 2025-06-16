@@ -1,0 +1,33 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "ibc/core/client/v1/client.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+message LoopBackPacket {
+  // the identifier of the packet, also used to make sure that the messages are executed with proper ordering
+  uint64 id = 1;
+
+  oneof data {
+    LoopBackTransfer transfer = 2;
+    LoopBackMsgs msgs = 3;
+  }
+}
+
+message LoopBackMsgs {
+  // messages that must be executed on the host chain
+  repeated google.protobuf.Any messages = 1;
+}
+
+message LoopBackTransfer {
+  // messages that must be executed on the host chain
+  string from = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string to = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  string memo = 4;
+}

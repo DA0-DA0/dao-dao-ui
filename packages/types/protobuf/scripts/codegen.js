@@ -132,6 +132,16 @@ telescope({
           'slinky.marketmap.v1',
           'slinky.oracle.v1',
           'elys.stablestake',
+          'pryzm.amm.v1',
+          'pryzm.amm.v2',
+          'pryzm.assets.v1',
+          'pryzm.icstaking.v1',
+          'pryzm.incentives.v1',
+          'pryzm.mint.v1',
+          'pryzm.pgov.v1',
+          'pryzm.refractor.v1',
+          'pryzm.treasury.v1',
+          'pryzm.ystaking.v1',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/assets/v1/maturity_level.proto";
+import "pryzm/assets/v1/params.proto";
+import "pryzm/assets/v1/refractable_asset.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+// GenesisState defines the assets module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated RefractableAsset assets = 2 [(gogoproto.nullable) = false];
+  repeated MaturityLevel maturity_level_list = 4 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

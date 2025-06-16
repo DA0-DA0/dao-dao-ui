@@ -1,0 +1,42 @@
+syntax = "proto3";
+package pryzm.mint.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+// this line is used by starport scaffolding # 1
+import "pryzm/mint/v1/minter.proto";
+import "pryzm/mint/v1/params.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/mint/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/pryzm/mint/v1/params";
+  }
+  // Queries a list of Minter items.
+  rpc Minter(QueryMinterRequest) returns (QueryMinterResponse) {
+    option (google.api.http).get = "/pryzm/mint/v1/minter";
+  }
+
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryMinterRequest {}
+
+message QueryMinterResponse {
+  Minter minter = 1 [(gogoproto.nullable) = false];
+}
+
+// this line is used by starport scaffolding # 3

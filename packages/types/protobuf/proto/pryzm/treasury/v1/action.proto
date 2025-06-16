@@ -1,0 +1,85 @@
+syntax = "proto3";
+package pryzm.treasury.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/treasury/types/v1";
+
+// FeeType enumerates the valid types for feeType.
+enum ActionType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  ACTION_TYPE_HOLD = 0 [(gogoproto.enumvalue_customname) = "HoldActionType"];
+  ACTION_TYPE_BURN = 1 [(gogoproto.enumvalue_customname) = "BurnActionType"];
+  ACTION_TYPE_DISTRIBUTE_TO_STAKERS = 2 [(gogoproto.enumvalue_customname) = "DistributeToStakersActionType"];
+  ACTION_TYPE_DISTRIBUTE_TO_COMMUNITY_POOL = 3 [(gogoproto.enumvalue_customname) = "DistributeToCommunityPoolActionType"];
+}
+
+message ActionFlowTradeSettings {
+  // given the occurrence of an action, this is used to compute the start of the flow
+  // NOTE: the flowtrade library has a parameter for minimum start delay
+  google.protobuf.Duration start_delay = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (amino.dont_omitempty) = true
+  ];
+
+  // given the start of the flow, this is used to compute the end of the flow
+  google.protobuf.Duration duration = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (amino.dont_omitempty) = true
+  ];
+
+  // the interval in which the distribution index is updated and hence tokens are swapped
+  // if dist_interval is 0, the flow is updated every time in or out tokens are increased or decreased
+  // if dist_interval is equal to the duration of flow, it means that all of the tokens are swapped once after the flow ends
+  google.protobuf.Duration dist_interval = 3 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // the minimum price for the token-out in terms of token-in.
+  // in each swap interval, if the calculated price is less than this limit, the swap doesn't happen in that turn
+  string limit_price = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // the duration of the exit window before swap interval, in which users can only exit the flow and joining is not permitted
+  // this duration is used to protect joiners from buying the token-out with a higher price when someone joins with a huge amount of token-in
+  google.protobuf.Duration exit_window_duration = 5 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message Action {
+  ActionType action_type = 1 [(amino.dont_omitempty) = true];
+  google.protobuf.Timestamp occurrence = 2 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = true
+  ];
+  // if expiration is not set, then the action will never expire and is executed forever unless gov decides to set another action.
+  google.protobuf.Timestamp expiration = 3 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  // if period is nil, then the action is only executed at the first occurrence and then replaced with a HOLD/NOOP action.
+  google.protobuf.Duration period = 4 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdduration) = true
+  ];
+
+  // this is nil if the action is of type HOLD
+  ActionFlowTradeSettings flow_trade_settings = 5 [(gogoproto.nullable) = true];
+
+  // denoms in this list will not be affected by the action
+  repeated string excluded_denoms = 6 [(amino.dont_omitempty) = true];
+}

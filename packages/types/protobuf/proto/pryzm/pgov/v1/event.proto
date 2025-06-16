@@ -1,0 +1,80 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/pgov/v1/params.proto";
+import "pryzm/pgov/v1/proposal.proto";
+import "pryzm/pgov/v1/vote.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+message EventSetParams {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetProposal {
+  Proposal proposal = 1 [(gogoproto.nullable) = false];
+}
+
+message EventPAssetStake {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string total_staked_p_asset = 4 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventPAssetUnstake {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string asset = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string total_staked_p_asset = 4 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventVoteSubmit {
+  Vote vote = 1;
+}
+
+message EventProposalEnd {
+  Proposal proposal = 1;
+}
+
+message EventVoteTransmit {
+  uint64 proposal_id = 1;
+  string asset = 2;
+}
+
+message EventVoteTransmitFailure {
+  uint64 proposal_id = 1;
+  string asset = 2;
+  string error = 3;
+}
+
+message EventVoteAckSuccess {
+  uint64 proposal_id = 1;
+  string asset = 2;
+}
+
+message EventVoteAckFailure {
+  uint64 proposal_id = 1;
+  string asset = 2;
+  string error = 3;
+}
+
+message EventVoteTimeout {
+  uint64 proposal_id = 1;
+  string asset = 2;
+}

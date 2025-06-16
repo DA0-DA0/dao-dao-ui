@@ -1,0 +1,88 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/pool_token.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+enum SwapType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  SWAP_TYPE_GIVEN_IN = 0 [(gogoproto.enumvalue_customname) = "SWAP_GIVEN_IN"];
+  SWAP_TYPE_GIVEN_OUT = 1 [(gogoproto.enumvalue_customname) = "SWAP_GIVEN_OUT"];
+}
+
+enum JoinType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  JOIN_TYPE_GIVEN_TOKENS_IN = 0 [(gogoproto.enumvalue_customname) = "JOIN_GIVEN_EXACT_TOKENS_IN"];
+  JOIN_TYPE_TOKEN_GIVEN_LPT_OUT = 1 [(gogoproto.enumvalue_customname) = "JOIN_TOKEN_GIVEN_LPT_OUT"];
+  JOIN_TYPE_ALL_TOKENS_GIVEN_LPT_OUT = 2 [(gogoproto.enumvalue_customname) = "JOIN_ALL_TOKENS_GIVEN_LPT_OUT"];
+  JOIN_TYPE_INITIALIZE_POOL = 3 [(gogoproto.enumvalue_customname) = "JOIN_INITIALIZE_POOL"];
+}
+
+enum ExitType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  EXIT_TYPE_GIVEN_TOKENS_IN = 0 [(gogoproto.enumvalue_customname) = "EXIT_GIVEN_EXACT_TOKENS_OUT"];
+  EXIT_TYPE_TOKEN_GIVEN_LPT_OUT = 1 [(gogoproto.enumvalue_customname) = "EXIT_TOKEN_GIVEN_LPT_IN"];
+  EXIT_TYPE_ALL_TOKENS_GIVEN_LPT_OUT = 2 [(gogoproto.enumvalue_customname) = "EXIT_ALL_TOKENS_GIVEN_LPT_IN"];
+  EXIT_TYPE_ALL_TOKENS_RECOVERY_MODE = 3 [(gogoproto.enumvalue_customname) = "EXIT_ALL_TOKENS_RECOVERY_MODE"];
+}
+
+message Swap {
+  uint64 pool_id = 1 [(amino.dont_omitempty) = true];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  SwapType swap_type = 3 [(amino.dont_omitempty) = true];
+  string token_in = 4;
+  string token_out = 5;
+}
+
+message SwapStep {
+  uint64 pool_id = 1 [(amino.dont_omitempty) = true];
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = true
+  ];
+  string token_in = 4;
+  string token_out = 5;
+}
+
+message SwapSummary {
+  TokenAmount token_in = 1 [(gogoproto.nullable) = false];
+  TokenAmount token_out = 2 [(gogoproto.nullable) = false];
+  SwapType swap_type = 3;
+  cosmos.base.v1beta1.Coin protocol_fee = 4 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin swap_fee = 5 [(gogoproto.nullable) = false];
+}
+
+message JoinSummary {
+  TokenAmount lp_token = 1 [(gogoproto.nullable) = false];
+  repeated TokenAmount tokens_in = 2 [(gogoproto.nullable) = false];
+  JoinType join_type = 3;
+  repeated cosmos.base.v1beta1.Coin protocol_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin swap_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message ExitSummary {
+  TokenAmount lp_token = 1 [(gogoproto.nullable) = false];
+  repeated TokenAmount tokens_out = 2 [(gogoproto.nullable) = false];
+  ExitType exit_type = 3;
+  cosmos.base.v1beta1.Coin protocol_fee = 4 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin swap_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}

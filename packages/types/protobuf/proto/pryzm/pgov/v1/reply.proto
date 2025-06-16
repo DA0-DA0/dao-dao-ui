@@ -1,0 +1,13 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// the reply data used in the VoteBridge
+message VoteReplyData {
+  // the id of proposal on the host chain
+  uint64 proposal_id = 1;
+
+  // the asset ID
+  string asset = 2;
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package pryzm.mint.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/mint/v1/minter.proto";
+import "pryzm/mint/v1/params.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/mint/types/v1";
+
+message EventMint {
+  Minter minter = 1 [(gogoproto.nullable) = false];
+  string bonded_ratio = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string total_minted = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  DistributionProportions distributed_amounts = 4 [(gogoproto.nullable) = false];
+  int64 epoch_number = 5;
+}
+
+message EventSetParams {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

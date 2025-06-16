@@ -1,0 +1,114 @@
+syntax = "proto3";
+package pryzm.mint.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/mint/types/v1";
+
+message DistributionProportions {
+  // defines the proportion of the minted mint_denom that is to be
+  // allocated as staking rewards.
+  string staking = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated as pool incentives.
+  string pool_incentives = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated to operations and development account address.
+  string operations_and_development = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated to the dapp developers.
+  string dapp = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated to the oracle feeders.
+  string oracle = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated to the treasury fee pool.
+  string treasury = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // defines the proportion of the minted mint_denom that is
+  // to be allocated to the community pool.
+  string community = 7 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// Params defines the parameters for the module.
+message Params {
+  // type of coin to mint
+  string mint_denom = 1;
+
+  // maximum annual change in inflation rate
+  string inflation_rate_change = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // maximum inflation rate
+  string inflation_max = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // minimum inflation rate
+  string inflation_min = 4 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // goal of percent bonded upryzms
+  string goal_bonded = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  // mint epoch identifier e.g. (day, week).
+  string epoch_identifier = 6;
+
+  // start epoch to distribute minting rewards
+  int64 minting_rewards_distribution_start_epoch = 7 [(amino.dont_omitempty) = true];
+
+  // defines the distribution proportions of the minted
+  // denom, i.e, which stakeholders will receive the minted
+  // denoms and how much.
+  DistributionProportions distribution_proportions = 8 [(gogoproto.nullable) = false];
+
+  // epoch provisions from the first epoch.
+  string genesis_epoch_provisions = 9 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string operations_and_development_account_address = 10 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}

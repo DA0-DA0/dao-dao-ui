@@ -1,54 +1,54 @@
-import * as _395 from "./marketmap/v1/genesis";
-import * as _396 from "./marketmap/v1/market";
-import * as _397 from "./marketmap/v1/params";
-import * as _398 from "./marketmap/v1/query";
-import * as _399 from "./marketmap/v1/tx";
-import * as _400 from "./oracle/v1/genesis";
-import * as _401 from "./oracle/v1/query";
-import * as _402 from "./oracle/v1/tx";
-import * as _403 from "./types/v1/currency_pair";
-import * as _705 from "./marketmap/v1/tx.amino";
-import * as _706 from "./oracle/v1/tx.amino";
-import * as _707 from "./marketmap/v1/tx.registry";
-import * as _708 from "./oracle/v1/tx.registry";
-import * as _709 from "./marketmap/v1/query.rpc.Query";
-import * as _710 from "./oracle/v1/query.rpc.Query";
-import * as _711 from "./marketmap/v1/tx.rpc.msg";
-import * as _712 from "./oracle/v1/tx.rpc.msg";
-import * as _756 from "./rpc.query";
-import * as _757 from "./rpc.tx";
+import * as _483 from "./marketmap/v1/genesis";
+import * as _484 from "./marketmap/v1/market";
+import * as _485 from "./marketmap/v1/params";
+import * as _486 from "./marketmap/v1/query";
+import * as _487 from "./marketmap/v1/tx";
+import * as _488 from "./oracle/v1/genesis";
+import * as _489 from "./oracle/v1/query";
+import * as _490 from "./oracle/v1/tx";
+import * as _491 from "./types/v1/currency_pair";
+import * as _832 from "./marketmap/v1/tx.amino";
+import * as _833 from "./oracle/v1/tx.amino";
+import * as _834 from "./marketmap/v1/tx.registry";
+import * as _835 from "./oracle/v1/tx.registry";
+import * as _836 from "./marketmap/v1/query.rpc.Query";
+import * as _837 from "./oracle/v1/query.rpc.Query";
+import * as _838 from "./marketmap/v1/tx.rpc.msg";
+import * as _839 from "./oracle/v1/tx.rpc.msg";
+import * as _885 from "./rpc.query";
+import * as _886 from "./rpc.tx";
 export namespace slinky {
   export namespace marketmap {
     export const v1 = {
-      ..._395,
-      ..._396,
-      ..._397,
-      ..._398,
-      ..._399,
-      ..._705,
-      ..._707,
-      ..._709,
-      ..._711
+      ..._483,
+      ..._484,
+      ..._485,
+      ..._486,
+      ..._487,
+      ..._832,
+      ..._834,
+      ..._836,
+      ..._838
     };
   }
   export namespace oracle {
     export const v1 = {
-      ..._400,
-      ..._401,
-      ..._402,
-      ..._706,
-      ..._708,
-      ..._710,
-      ..._712
+      ..._488,
+      ..._489,
+      ..._490,
+      ..._833,
+      ..._835,
+      ..._837,
+      ..._839
     };
   }
   export namespace types {
     export const v1 = {
-      ..._403
+      ..._491
     };
   }
   export const ClientFactory = {
-    ..._756,
-    ..._757
+    ..._885,
+    ..._886
   };
 }

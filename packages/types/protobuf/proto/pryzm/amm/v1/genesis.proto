@@ -1,0 +1,57 @@
+syntax = "proto3";
+package pryzm.amm.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/amm/v1/oracle_price_pair.proto";
+import "pryzm/amm/v1/order.proto";
+import "pryzm/amm/v1/params.proto";
+import "pryzm/amm/v1/pending_token_introduction.proto";
+import "pryzm/amm/v1/pool.proto";
+import "pryzm/amm/v1/pool_token.proto";
+import "pryzm/amm/v1/schedule_order.proto";
+import "pryzm/amm/v1/virtual_balance_pool_token.proto";
+import "pryzm/amm/v1/weighted_token.proto";
+import "pryzm/amm/v1/whitelisted_route.proto";
+import "pryzm/amm/v1/yamm_configuration.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/amm/types/v1";
+
+message GenesisPoolData {
+  Pool pool = 1 [(gogoproto.nullable) = false];
+  string total_lp_token_supply = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated PoolToken pool_token_list = 3 [(gogoproto.nullable) = false];
+}
+
+message YammPoolAssetId {
+  uint64 pool_id = 1;
+  string asset_id = 2;
+}
+
+// GenesisState defines the amm module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated GenesisPoolData pool_list = 2 [(gogoproto.nullable) = false];
+  repeated WeightedPoolProperties weighted_pool_properties_list = 3 [(gogoproto.nullable) = false];
+  repeated YammPoolAssetId yamm_pool_asset_id_list = 4 [(gogoproto.nullable) = false];
+  repeated TemporalVirtualBalancePoolToken introducing_pool_token_list = 5 [(gogoproto.nullable) = false];
+  repeated TemporalVirtualBalancePoolToken expiring_pool_token_list = 6 [(gogoproto.nullable) = false];
+  repeated YammConfiguration yamm_configuration_list = 7 [(gogoproto.nullable) = false];
+  repeated WhitelistedRoute whitelisted_route_list = 8 [(gogoproto.nullable) = false];
+  repeated Order order_list = 9 [(gogoproto.nullable) = false];
+  uint64 order_count = 10;
+  repeated uint64 executable_order_list = 11;
+  repeated ScheduleOrder schedule_order_list = 12 [(gogoproto.nullable) = false];
+  bool vault_paused = 13;
+  repeated OraclePricePair oracle_price_pair_list = 14 [(gogoproto.nullable) = false];
+  repeated PendingTokenIntroduction pending_token_introduction_list = 15 [(gogoproto.nullable) = false];
+  repeated DisabledOrderPair disabled_order_pair_list = 16 [(gogoproto.nullable) = false];
+  bytes next_executable_order_key = 17;
+  repeated PermanentVirtualBalancePoolToken permanent_virtual_balance_pool_token_list = 18 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

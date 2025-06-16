@@ -1,0 +1,75 @@
+syntax = "proto3";
+package pryzm.ystaking.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/ystaking/types/v1";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc Bond(MsgBond) returns (MsgBondResponse);
+  rpc Unbond(MsgUnbond) returns (MsgUnbondResponse);
+  rpc ClaimReward(MsgClaimReward) returns (MsgClaimRewardResponse);
+  rpc ExitPool(MsgExitPool) returns (MsgExitPoolResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgBond {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/ystaking/v1/Bond";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgBondResponse {
+  cosmos.base.v1beta1.Coin total_bonded_amount = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgUnbond {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/ystaking/v1/Unbond";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgUnbondResponse {
+  cosmos.base.v1beta1.Coin remainder_bonded_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin accrued_reward = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgClaimReward {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/ystaking/v1/ClaimReward";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+}
+
+message MsgClaimRewardResponse {
+  cosmos.base.v1beta1.Coin accrued_reward = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgExitPool {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/ystaking/v1/ExitPool";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+}
+
+message MsgExitPoolResponse {
+  cosmos.base.v1beta1.Coin accrued_reward = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false];
+}
+
+// this line is used by starport scaffolding # proto/tx/message

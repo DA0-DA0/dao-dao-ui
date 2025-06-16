@@ -47,6 +47,8 @@ import {
   omniFlixProtoRegistry,
   osmosisAminoConverters,
   osmosisProtoRegistry,
+  pryzmAminoConverters,
+  pryzmProtoRegistry,
   pstakeAminoConverters,
   pstakeProtoRegistry,
   regenAminoConverters,
@@ -711,6 +713,7 @@ export const getProtobufTypes = (): ReadonlyArray<[string, GeneratedType]> => [
   ...switcheoProtoRegistry,
   ...slinkyProtoRegistry,
   ...elysProtoRegistry,
+  ...pryzmProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
@@ -759,6 +762,7 @@ export const getAminoTypes = () =>
     ...switcheoAminoConverters,
     ...slinkyAminoConverters,
     ...elysAminoConverters,
+    ...pryzmAminoConverters,
     // gaia.metaprotocols
     [ExtensionData.typeUrl]: {
       // the Amino type is the same as the protobuf type URL, deviating from

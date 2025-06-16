@@ -1,0 +1,38 @@
+syntax = "proto3";
+package pryzm.pgov.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/pgov/types/v1";
+
+// StakedPAsset stores the amount of pAssets staked for an account
+message StakedPAsset {
+  // the address of owner
+  string account = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // pAsset denom
+  string p_asset = 2;
+
+  // staked amount
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message TotalStakedPAsset {
+  // the address of owner
+  string account = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // asset denom
+  string asset = 2;
+
+  // staked amount
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+}

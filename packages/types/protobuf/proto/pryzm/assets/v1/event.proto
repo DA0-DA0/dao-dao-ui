@@ -1,0 +1,29 @@
+syntax = "proto3";
+package pryzm.assets.v1;
+
+import "gogoproto/gogo.proto";
+import "pryzm/assets/v1/maturity_level.proto";
+import "pryzm/assets/v1/params.proto";
+import "pryzm/assets/v1/refractable_asset.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/assets/types/v1";
+
+message EventSetParams {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message EventAddMaturityLevel {
+  MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+}
+
+message EventDeactivateMaturityLevel {
+  MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetRefractableAsset {
+  RefractableAsset refractable_asset = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetMaturityLevel {
+  MaturityLevel maturity_level = 1 [(gogoproto.nullable) = false];
+}

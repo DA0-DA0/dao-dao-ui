@@ -1,0 +1,79 @@
+syntax = "proto3";
+package pryzm.refractor.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/refractor/v1/params.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/refractor/types/v1";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc Refract(MsgRefract) returns (MsgRefractResponse);
+  rpc Redeem(MsgRedeem) returns (MsgRedeemResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc DepositCAsset(MsgDepositCAsset) returns (MsgDepositCAssetResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgRefract {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/refractor/v1/Refract";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  string maturity = 3;
+}
+
+message MsgRefractResponse {
+  cosmos.base.v1beta1.Coin p_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin y_amount = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgRedeem {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/refractor/v1/Redeem";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.v1beta1.Coin p_amount = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin y_amount = 3;
+}
+
+message MsgRedeemResponse {
+  cosmos.base.v1beta1.Coin c_amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "pryzm/refractor/v1/UpdateParams";
+
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgDepositCAsset {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "pryzm/refractor/v1/DepositCAsset";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin c_amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgDepositCAssetResponse {}
+
+// this line is used by starport scaffolding # proto/tx/message

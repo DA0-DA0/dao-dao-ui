@@ -1,0 +1,185 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "pryzm/icstaking/v1/host_chain.proto";
+import "pryzm/icstaking/v1/lsm.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// the stored data for handling the reply of a sent ibc packet
+message ReplyData {
+  // the identifier of the bridge
+  string bridge_id = 1;
+
+  // this was the identifier of the sent packet and the key for ReplyData, but from icstaking v3 this field is converted to key string
+  PacketId packet_id = 2 [
+    (gogoproto.nullable) = false,
+    deprecated = true
+  ];
+
+  string host_chain_id = 3;
+
+  // serialized data shared when handling the packet result
+  bytes data = 4;
+
+  // the identifier of the reply data
+  string key = 5;
+}
+
+// the id for a sent ibc packet
+message PacketId {
+  option (gogoproto.goproto_stringer) = false;
+  option deprecated = true;
+
+  string port_id = 1;
+  string channel_id = 2;
+  uint64 sequence = 3;
+}
+
+// The reply data for DelegateTransferBridge
+message DelegateTransferReplyData {
+  // the identifier of the transfer session
+  string transfer_session = 1;
+  // the amount being transferred
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+// A session of token transfer to a host chain from multiple channels, used in DelegateTransferBridge
+message DelegateTransferSession {
+  // a generated id for the session
+  string id = 1;
+  // a list of packet states, determining whether the packet is finalized (either succeeded or failed)
+  repeated TransferPacketState packet_states = 2 [(gogoproto.nullable) = false];
+}
+
+// The state of a delegation transfer
+message TransferPacketState {
+  // packet identifier
+  string packet_key = 1;
+  // whether the transfer is finalized (either succeeded or failed)
+  bool finalized = 2;
+}
+
+// The reply data for DelegateBridge
+message DelegateReplyData {
+  // a list of delegations to different validators
+  repeated DelegationEntry delegations = 1 [(gogoproto.nullable) = false];
+}
+
+// Contains info about delegating an amount of assets to a validator
+message DelegationEntry {
+  string validator = 1;
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// The reply data for UndelegateBridge
+message UndelegateReplyData {
+  string total_c_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated UndelegationEntry undelegations = 2 [(gogoproto.nullable) = false];
+  repeated uint64 epochs = 3;
+}
+
+// Contains info about undelegating an amount of assets from a validator
+message UndelegationEntry {
+  string validator = 1;
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// The reply data for RedelegateBridge
+message RedelegateReplyData {
+  repeated RedelegationEntry redelegations = 1 [(gogoproto.nullable) = false];
+}
+
+// Contains info about redelegating an amount of assets from a validator to another validator
+message RedelegationEntry {
+  string src_validator = 1;
+  string dst_validator = 2;
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// The reply data used in CompoundBridge
+message CompoundData {
+  string fee_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string compound_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message CollectUndelegatedReplyData {
+  string undelegated_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// The reply data used in SweepBridge
+message SweepData {
+  // a list containing info about the sweep operation through different channel channel
+  repeated ChannelSweep channel_sweeps = 1 [(gogoproto.nullable) = false];
+  ChannelSweep fee_sweep = 2 [(gogoproto.nullable) = false];
+}
+
+// Contains info about the sweep operation through a channel
+message ChannelSweep {
+  string channel = 1;
+  // a list of epochs that the sweep is related to
+  repeated uint64 epochs = 2;
+  // the amount being swept from the host chain
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  // the timeout timestamp set on the ibc transfer
+  uint64 timeout = 4;
+}
+
+// Contains info about a single LSM share transfer
+message LsmTransferData {
+  // which channel is being used to transfer
+  string channel = 1;
+
+  // the actual denom of the lsm token
+  string denom = 2;
+
+  // the amount being transferred
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  // the value of the lsm amount in the terms of host chain's bond token
+  string value = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message LsmReplyData {
+  repeated RedeemableLsm redeemable_lsm_list = 1 [(gogoproto.nullable) = false];
+}

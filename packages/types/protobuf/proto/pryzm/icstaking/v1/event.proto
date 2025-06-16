@@ -1,0 +1,120 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+import "pryzm/icstaking/v1/host_chain.proto";
+import "pryzm/icstaking/v1/multisig.proto";
+import "pryzm/icstaking/v1/params.proto";
+import "pryzm/icstaking/v1/undelegation.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+message EventSetHostChain {
+  HostChain host_chain = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetHostChainState {
+  HostChainState host_chain_state = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetParams {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetUndelegation {
+  Undelegation undelegation = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetChannelUndelegation {
+  ChannelUndelegation channel_undelegation = 1 [(gogoproto.nullable) = false];
+}
+
+message EventStake {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string host_chain = 2;
+  string transfer_channel = 3;
+  string amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin fee = 5 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin c_amount = 6 [(gogoproto.nullable) = false];
+}
+
+message EventStakeLsmShares {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string host_chain = 2;
+  string transfer_channel = 3;
+  string lsm_denom = 4;
+  string amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin fee = 6 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin c_amount = 7 [(gogoproto.nullable) = false];
+}
+
+message EventUnstake {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string host_chain = 2;
+  string transfer_channel = 3;
+  string c_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin u_amount = 5 [(gogoproto.nullable) = false];
+}
+
+message EventRedeemUnstaked {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string host_chain = 2;
+  string transfer_channel = 3;
+  uint64 epoch = 4;
+  string u_amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin amount = 6 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 7 [(gogoproto.nullable) = false];
+}
+
+message EventInstantUnstake {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string host_chain = 2;
+  string transfer_channel = 3;
+  string min_c_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string max_c_amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin amount = 6 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin fee = 7 [(gogoproto.nullable) = false];
+}
+
+message EventSetMultiSigConnection {
+  MultiSigConnection connection = 1 [(gogoproto.nullable) = false];
+}
+
+message EventSetMultiSigPacket {
+  MultiSigPacket packet = 1 [(gogoproto.nullable) = false];
+}
+
+message EventAcknowledgeMultiSigPacket {
+  string connection_id = 1;
+  uint64 sequence = 2;
+  Acknowledgement ack = 3 [(gogoproto.nullable) = false];
+  ibc.core.client.v1.Height height = 4 [(gogoproto.nullable) = false];
+  string tx_hash = 5;
+}

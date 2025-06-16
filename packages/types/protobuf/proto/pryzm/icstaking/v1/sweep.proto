@@ -1,0 +1,32 @@
+syntax = "proto3";
+package pryzm.icstaking.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/pryzm-finance/pryzm-core/x/icstaking/types/v1";
+
+// Information about an ongoing sweep ibc transfer waiting to be completed
+message SweepTransfer {
+  // the timeout timestamp set on the ibc transfer
+  uint64 timeout = 1;
+
+  // host chain id
+  string host_chain = 2;
+
+  // the channel of the transfer
+  string channel = 3;
+
+  // whether the transfer is meant to bring back Pryzm protocol fees, in which case the epochs field is empty
+  bool fee = 4;
+
+  // list of the epochs that the sweep transfer is related to
+  repeated uint64 epochs = 5;
+
+  // the amount of tokens being transferred
+  string amount = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
