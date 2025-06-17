@@ -1108,21 +1108,22 @@ const BASE_SUPPORTED_CHAINS: Omit<
         latestVersion: ContractVersion.V270,
         noIndexer: true,
       },
-      // {
-      //   chainId: ChainId.KopiMainnet,
-      //   name: 'kopi',
-      //   mainnet: true,
-      //   accentColor: '#b4e07c',
-      //   factoryContractAddress: '',
-      //   explorerUrlTemplates: {
-      //     tx: 'https://explorer.kopi.money/luwak-1/tx/REPLACE',
-      //     gov: 'https://explorer.kopi.money/luwak-1/gov',
-      //     govProp: 'https://explorer.kopi.money/luwak-1/gov/REPLACE',
-      //     wallet: 'https://explorer.kopi.money/luwak-1/account/REPLACE',
-      //   },
-      //   latestVersion: ContractVersion.V270,
-      //   noIndexer: true,
-      // },
+      {
+        chainId: ChainId.KopiMainnet,
+        name: 'kopi',
+        mainnet: true,
+        accentColor: '#b4e07c',
+        factoryContractAddress:
+          'kopi1gyh4td7v96mucr4eaksd2msg0jv0mcn9a5yj85vx5l7hty3tu9psxraxed',
+        explorerUrlTemplates: {
+          tx: 'https://explorer.kopi.money/luwak-1/tx/REPLACE',
+          gov: 'https://explorer.kopi.money/luwak-1/gov',
+          govProp: 'https://explorer.kopi.money/luwak-1/gov/REPLACE',
+          wallet: 'https://explorer.kopi.money/luwak-1/account/REPLACE',
+        },
+        latestVersion: ContractVersion.V270,
+        noIndexer: true,
+      },
     ]
 
 const convertConfiguredChainToSupportedChain = (

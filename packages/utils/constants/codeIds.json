@@ -865,6 +865,27 @@
       "DaoVotingTokenStaked": 431
     }
   },
+  "luwak-1": {
+    "2.7.0": {
+      "Cw1Whitelist": 11,
+      "Cw4Group": 12,
+      "CwAdminFactory": 13,
+      "CwPayrollFactory": 14,
+      "CwTokenSwap": 15,
+      "CwVesting": 27,
+      "DaoDaoCore": 16,
+      "DaoPreProposeApprovalMultiple": 17,
+      "DaoPreProposeApprovalSingle": 18,
+      "DaoPreProposeApprover": 19,
+      "DaoPreProposeMultiple": 20,
+      "DaoPreProposeSingle": 21,
+      "DaoProposalMultiple": 22,
+      "DaoProposalSingle": 23,
+      "DaoRewardsDistributor": 24,
+      "DaoVoteDelegation": 25,
+      "DaoVotingCw4": 26
+    }
+  },
   "migaloo-1": {
     "2.4.0": {
       "Cw1Whitelist": 304,
