@@ -17,8 +17,12 @@ import {
   ProposalListResponse as ReverseProposalsV2Response,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
-import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
-import { contractVersionSelector } from '../contract'
+import { contractQueries } from '../../../query'
+import {
+  queryClientAtom,
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+} from '../../atoms'
 import { queryContractIndexerSelector } from '../indexer'
 import {
   configSelector as configV1Selector,
@@ -56,12 +60,14 @@ export const getVoteSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? getVoteV1Selector
@@ -87,12 +93,14 @@ export const listVotesSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? listVotesV1Selector
@@ -177,9 +185,14 @@ export const listPaginatedVotesSelector: (
   get:
     ({ proposalId, page, pageSize, ...queryClientParams }) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector(queryClientParams)
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
+          chainId: queryClientParams.chainId,
+          address: queryClientParams.contractAddress,
+        })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? listVotesV1Selector
@@ -230,12 +243,14 @@ export const proposalSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? proposalV1Selector
@@ -253,12 +268,14 @@ export const configSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? configV1Selector
@@ -273,12 +290,14 @@ export const proposalCountSelector = selectorFamily<number, QueryClientParams>({
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? proposalCountV1Selector
@@ -303,12 +322,14 @@ export const reverseProposalsSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      const proposalModuleVersion = get(
-        contractVersionSelector({
-          contractAddress: params.contractAddress,
+      const queryClient = get(queryClientAtom)
+      const proposalModuleVersion = await queryClient.fetchQuery(
+        contractQueries.version(queryClient, {
           chainId: params.chainId,
+          address: params.contractAddress,
         })
       )
+
       const selector =
         proposalModuleVersion === ContractVersion.V1
           ? reverseProposalsV1Selector

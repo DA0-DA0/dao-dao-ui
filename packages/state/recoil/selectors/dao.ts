@@ -20,9 +20,9 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
-import { daoQueries } from '../../query'
+import { contractQueries, daoDaoCoreQueries, daoQueries } from '../../query'
 import { queryClientAtom } from '../atoms'
-import { contractInfoSelector, contractVersionSelector } from './contract'
+import { contractInfoSelector } from './contract'
 import { DaoDaoCoreSelectors } from './contracts'
 
 export const lazyDaoCardPropsSelector = selectorFamily<
@@ -136,22 +136,22 @@ export const daoDropdownInfoSelector: (
       }
 
       // DAOs.
-
-      const [version, config] = get(
-        waitForAll([
-          contractVersionSelector({
-            chainId,
-            contractAddress: coreAddress,
-          }),
-          DaoDaoCoreSelectors.configSelector({
-            chainId,
-            contractAddress: coreAddress,
-            params: [],
-          }),
-        ])
-      )
-
       const queryClient = get(queryClientAtom)
+      const [version, config] = await Promise.all([
+        queryClient.fetchQuery(
+          contractQueries.version(queryClient, {
+            chainId,
+            address: coreAddress,
+          })
+        ),
+        queryClient.fetchQuery(
+          daoDaoCoreQueries.config(queryClient, {
+            chainId,
+            contractAddress: coreAddress,
+          })
+        ),
+      ])
+
       const subDaos = isFeatureSupportedByVersion(Feature.SubDaos, version)
         ? await queryClient.fetchQuery(
             daoQueries.listAllSubDaos(queryClient, {

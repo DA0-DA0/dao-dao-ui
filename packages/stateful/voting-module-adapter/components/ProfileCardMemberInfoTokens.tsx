@@ -6,6 +6,7 @@ import { HugeDecimal } from '@dao-dao/math'
 import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
+  Duration,
   GenericToken,
   LoadingData,
   UnstakingTask,
@@ -13,8 +14,8 @@ import {
 } from '@dao-dao/types'
 import {
   formatPercentOf100,
+  humanReadableDuration,
   humanReadableList,
-  secondsToWdhms,
 } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps
@@ -23,7 +24,7 @@ export interface ProfileCardMemberInfoTokensProps
   claimingLoading: boolean
   stakingLoading: boolean
   unstakingTasks: UnstakingTask[]
-  unstakingDurationSeconds: number | undefined
+  unstakingDuration: Duration | undefined
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
@@ -43,7 +44,7 @@ export const ProfileCardMemberInfoTokens = ({
   claimingLoading,
   stakingLoading,
   unstakingTasks,
-  unstakingDurationSeconds,
+  unstakingDuration,
   onClaim,
   onStake,
   refreshUnstakingTasks,
@@ -327,9 +328,7 @@ export const ProfileCardMemberInfoTokens = ({
           refresh={refreshUnstakingTasks}
           tasks={unstakingTasks}
           unstakingDuration={
-            unstakingDurationSeconds
-              ? secondsToWdhms(unstakingDurationSeconds)
-              : undefined
+            unstakingDuration && humanReadableDuration(t, unstakingDuration)
           }
           visible={showUnstakingTokens}
         />

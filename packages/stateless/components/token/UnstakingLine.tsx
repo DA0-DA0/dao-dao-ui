@@ -1,9 +1,14 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
-import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
+import {
+  formatDate,
+  formatDateTimeTz,
+  humanReadableExpiration,
+} from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Tooltip } from '../tooltip'
@@ -20,18 +25,22 @@ export interface UnstakingLineProps {
 const sharedClassNames = 'bg-background-secondary rounded-md'
 
 export const UnstakingLine = ({
-  task: { status, amount, token, date },
+  task: { status, amount, token, expiration },
   dateReplacement,
 }: UnstakingLineProps) => {
+  const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: true })
 
-  const dateDisplay = date ? (
-    status === UnstakingTaskStatus.Unstaking ? (
+  const date =
+    'at_time' in expiration
+      ? new Date(Number(expiration.at_time) / 1e6)
+      : undefined
+  const dateDisplay =
+    date && status === UnstakingTaskStatus.Unstaking ? (
       <TimeAgo date={date} formatter={timeAgoFormatter} />
     ) : (
-      formatDate(date)
+      humanReadableExpiration(t, formatDate, expiration)
     )
-  ) : undefined
 
   return (
     <>

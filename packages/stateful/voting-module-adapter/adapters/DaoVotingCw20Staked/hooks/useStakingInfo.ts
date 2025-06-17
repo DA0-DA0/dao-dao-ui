@@ -5,15 +5,16 @@ import { constSelector, useSetRecoilState } from 'recoil'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20StakeSelectors,
-  blockHeightSelector,
+  chainQueries,
   cw20StakeQueries,
   daoVotingCw20StakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading, useDao } from '@dao-dao/stateless'
+import { useCachedLoading, useDao } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
@@ -53,17 +54,17 @@ export const useStakingInfo = ({
   /// Optional
 
   // Claims
-  const blockHeightLoadable = useCachedLoadable(
+  const blockHeightLoading = useQueryLoadingDataWithError(
     fetchClaims
-      ? blockHeightSelector({
+      ? chainQueries.block({
           chainId: dao.chainId,
         })
       : undefined
   )
   const blockHeight =
-    blockHeightLoadable.state === 'hasValue'
-      ? blockHeightLoadable.contents
-      : undefined
+    blockHeightLoading.loading || blockHeightLoading.errored
+      ? undefined
+      : blockHeightLoading.data.header.height
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = useCallback(
@@ -128,10 +129,6 @@ export const useStakingInfo = ({
     refreshTotals,
     /// Optional
     // Claims
-    blockHeight:
-      blockHeightLoadable.state === 'hasValue'
-        ? blockHeightLoadable.contents
-        : 0,
     refreshClaims: fetchClaims ? refreshClaims : undefined,
     claims,
     claimsPending,

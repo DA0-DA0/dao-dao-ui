@@ -37,15 +37,12 @@ import {
   MAINNET,
   SecretCosmWasmClient,
   cosmosProtoRpcClientRouter,
-  cosmosSdkVersionIs46OrHigher,
-  cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
   cosmwasmProtoRpcClientRouter,
   getAllRpcResponse,
   getCosmWasmClientForChainId,
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
-  isNonexistentQueryError,
   neutronProtoRpcClientRouter,
   nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
@@ -56,7 +53,6 @@ import {
 import { chainQueries } from '../../query'
 import { queryClientAtom } from '../atoms'
 import {
-  refreshBlockHeightAtom,
   refreshGovProposalsAtom,
   refreshIbcDataAtom,
   refreshOpenProposalsAtom,
@@ -139,105 +135,6 @@ export const neutronRpcClientSelector = selector({
       MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
     ),
   dangerouslyAllowMutability: true,
-})
-
-export const blockHeightSelector = selectorFamily<number, WithChainId<{}>>({
-  key: 'blockHeight',
-  get:
-    ({ chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      get(refreshBlockHeightAtom)
-      return await client.getHeight()
-    },
-})
-
-export const blockHeightTimestampSelector = selectorFamily<
-  Date,
-  WithChainId<{ blockHeight: number }>
->({
-  key: 'blockHeightTimestamp',
-  get:
-    ({ blockHeight, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      const block = await client.getBlock(blockHeight)
-      return new Date(Date.parse(block.header.time))
-    },
-})
-
-export const blockHeightTimestampSafeSelector = selectorFamily<
-  Date | undefined,
-  WithChainId<{ blockHeight: number }>
->({
-  key: 'blockHeightTimestamp',
-  get:
-    ({ blockHeight, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      try {
-        const block = await client.getBlock(blockHeight)
-        return new Date(Date.parse(block.header.time))
-      } catch (error) {
-        console.error(error)
-      }
-    },
-})
-
-export const cosmosSdkVersionSelector = selectorFamily<string, WithChainId<{}>>(
-  {
-    key: 'cosmosSdkVersion',
-    get:
-      ({ chainId }) =>
-      async ({ get }) => {
-        const client = get(cosmosRpcClientForChainSelector(chainId))
-        const { applicationVersion } =
-          await client.base.tendermint.v1beta1.getNodeInfo()
-        // Remove `v` prefix.
-        return applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
-      },
-  }
-)
-
-/**
- * A chain supports the v1 gov module if it uses Cosmos SDK v0.46 or higher.
- */
-export const chainSupportsV1GovModuleSelector = selectorFamily<
-  boolean,
-  WithChainId<{
-    // Whether or not v0.47 or higher is required. V1 gov is supported by
-    // v0.46+, but some other things, like unified gov params, are supported
-    // only on v0.47+.
-    require47?: boolean
-  }>
->({
-  key: 'chainSupportsV1GovModule',
-  get:
-    ({ require47, ...params }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(params.chainId))
-      const version = get(cosmosSdkVersionSelector(params))
-
-      if (
-        !(
-          require47
-            ? cosmosSdkVersionIs47OrHigher
-            : cosmosSdkVersionIs46OrHigher
-        )(version)
-      ) {
-        return false
-      }
-
-      // Double-check by testing a v1 gov route.
-      try {
-        await client.gov.v1.params({
-          paramsType: 'voting',
-        })
-        return true
-      } catch {
-        return false
-      }
-    },
 })
 
 export const justNativeBalancesSelector = selectorFamily<
@@ -394,27 +291,6 @@ export const nativeSupplySelector = selectorFamily<
           })
         )
       )
-    },
-})
-
-export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
-  key: 'blocksPerYear',
-  get:
-    ({ chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      try {
-        return Number(
-          (await client.mint.v1beta1.params()).params?.blocksPerYear ?? -1
-        )
-      } catch (err) {
-        if (isNonexistentQueryError(err)) {
-          return -1
-        }
-
-        // Rethrow other errors.
-        throw err
-      }
     },
 })
 

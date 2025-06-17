@@ -139,7 +139,7 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => {}}
         stakingLoading={stakingLoading}
-        unstakingDurationSeconds={undefined}
+        unstakingDuration={undefined}
         unstakingTasks={[]}
         {...props}
       />

@@ -1,10 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { refreshIndexerUpStatusAtom } from '@dao-dao/state'
+import { indexerQueries, refreshIndexerUpStatusAtom } from '@dao-dao/state'
 import { Status as StatelessStatus } from '@dao-dao/stateless'
 import {
   SITE_URL,
@@ -18,16 +19,25 @@ import { PageHeaderContent } from '../PageHeaderContent'
 export const StatusPage = () => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
+  const queryClient = useQueryClient()
 
   // Refresh every 3 seconds.
   const setRefreshIndexerStatus = useSetRecoilState(refreshIndexerUpStatusAtom)
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshIndexerStatus((id) => id + 1)
+
+      queryClient.refetchQueries({
+        queryKey: indexerQueries
+          .isCaughtUp({ chainId: '' })
+          // Remove the final parameter in the key (options) so we match the
+          // query key for all chains.
+          .queryKey.slice(0, -1),
+      })
     }, 3 * 1000)
 
     return () => clearInterval(interval)
-  }, [setRefreshIndexerStatus])
+  }, [queryClient, setRefreshIndexerStatus])
 
   return (
     <>

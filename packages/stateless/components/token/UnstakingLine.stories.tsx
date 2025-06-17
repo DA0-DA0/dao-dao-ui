@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { HugeDecimal } from '@dao-dao/math'
+import { dateToExpiration } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { token } from './TokenCard.stories'
@@ -29,22 +30,24 @@ export const makeProps = (
     status,
     // Random number between 0 and 1000, with up to 6 decimals.
     amount: HugeDecimal.from(Math.floor(Math.random() * (1000 * 1e6) + 1e6)),
-    date: new Date(
-      Date.now() +
-        Math.random() *
-          // Random date in past 7 days.
-          (status === UnstakingTaskStatus.ReadyToClaim
-            ? -7
-            : // Random date in past 3 months.
-              status === UnstakingTaskStatus.Claimed
-              ? -3 * 30
-              : // Random date in next 14 days.
-                14) *
-          // 1 day in milliseconds
-          24 *
-          60 *
-          60 *
-          1000
+    expiration: dateToExpiration(
+      new Date(
+        Date.now() +
+          Math.random() *
+            // Random date in past 7 days.
+            (status === UnstakingTaskStatus.ReadyToClaim
+              ? -7
+              : // Random date in past 3 months.
+                status === UnstakingTaskStatus.Claimed
+                ? -3 * 30
+                : // Random date in next 14 days.
+                  14) *
+            // 1 day in milliseconds
+            24 *
+            60 *
+            60 *
+            1000
+      )
     ),
   },
 })

@@ -1,4 +1,3 @@
-import uniq from 'lodash.uniq'
 import {
   constSelector,
   selectorFamily,
@@ -9,8 +8,6 @@ import {
 
 import {
   DaoDaoCoreSelectors,
-  blockHeightSelector,
-  blocksPerYearSelector,
   govProposalVoteSelector,
   govProposalsSelector,
   openProposalsSelector,
@@ -23,7 +20,6 @@ import {
 } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
-  convertExpirationToDate,
   getDaoProposalPath,
   isConfiguredChainName,
   serializeDaoSource,
@@ -186,47 +182,6 @@ export const feedOpenProposalsSelector = selectorFamily<
           {} as Record<string, boolean | undefined>
         )
 
-      // Map chain ID to blocks per year and block height since we may need them
-      // in the proposal line props.
-      const uniqueChainIds = uniq(
-        followedDaosWithOpenProposalsSelector.map(({ chainId }) => chainId)
-      )
-      const chainInfoMap: Record<
-        string,
-        | {
-            blocksPerYear: number
-            blockHeight: number
-          }
-        | undefined
-      > = Object.fromEntries(
-        get(
-          waitForNone(
-            uniqueChainIds.map((chainId) =>
-              waitForAll([
-                blocksPerYearSelector({
-                  chainId,
-                }),
-                blockHeightSelector({
-                  chainId,
-                }),
-              ])
-            )
-          )
-        ).flatMap((loadable, index) =>
-          loadable.state === 'hasValue'
-            ? [
-                [
-                  uniqueChainIds[index],
-                  {
-                    blocksPerYear: loadable.contents[0],
-                    blockHeight: loadable.contents[1],
-                  },
-                ],
-              ]
-            : []
-        )
-      )
-
       return [
         // Add followed chain governance DAOs.
         ...followedChainGovWithOpenProposalsSelector.map(
@@ -279,7 +234,6 @@ export const feedOpenProposalsSelector = selectorFamily<
             index
           ): FeedSourceDaoWithItems<OpenProposalsProposalLineProps> | [] => {
             const proposalModulesWithOpenProposals = openDaoProposals[index]
-            const chainInfo = chainInfoMap[chainId]
 
             return {
               chainId,
@@ -323,15 +277,11 @@ export const feedOpenProposalsSelector = selectorFamily<
                             })}:${start_height}`
                           ],
                         order:
-                          // `chainInfo` is only needed if expiration is in
-                          // blocks.
-                          chainInfo || !('at_height' in expiration)
-                            ? convertExpirationToDate(
-                                chainInfo?.blocksPerYear || 0,
-                                expiration,
-                                chainInfo?.blockHeight || 0
-                              )?.getTime()
-                            : undefined,
+                          'at_time' in expiration
+                            ? Number(expiration.at_time)
+                            : 'at_height' in expiration
+                              ? Number(expiration.at_height)
+                              : undefined,
                       })
                     ) ?? []
               ),

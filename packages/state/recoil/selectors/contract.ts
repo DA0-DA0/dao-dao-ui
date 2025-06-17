@@ -1,115 +1,17 @@
-import { Contract } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
-import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
+import { InfoResponse, WithChainId } from '@dao-dao/types'
 import {
-  ContractName,
   DAO_CORE_CONTRACT_NAMES,
   getChainForChainId,
   isInvalidContractError,
   isSecretNetwork,
   isValidBech32Address,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
-import {
-  blockHeightTimestampSafeSelector,
-  cosmWasmClientForChainSelector,
-} from './chain'
+import { cosmWasmClientForChainSelector } from './chain'
 import { queryContractIndexerSelector } from './indexer'
-
-export const contractInstantiateTimeSelector = selectorFamily<
-  Date | undefined,
-  WithChainId<{ address: string }>
->({
-  key: 'contractInstantiateTime',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const instantiatedAt = get(
-        queryContractIndexerSelector({
-          contractAddress: address,
-          chainId,
-          formula: 'instantiatedAt',
-          // This never changes, so query even if the indexer is behind.
-          noFallback: true,
-        })
-      )
-      // Null when indexer fails.
-      if (instantiatedAt) {
-        return new Date(instantiatedAt)
-      }
-
-      // If indexer fails, fallback to querying chain.
-
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      const events = await client.searchTx([
-        { key: 'instantiate._contract_address', value: address },
-      ])
-
-      if (events.length === 0) {
-        return
-      }
-
-      return get(
-        blockHeightTimestampSafeSelector({
-          blockHeight: events[0].height,
-          chainId,
-        })
-      )
-    },
-})
-
-export const contractDetailsSelector = selectorFamily<
-  Contract,
-  WithChainId<{ contractAddress: string }>
->({
-  key: 'contractDetails',
-  get:
-    ({ contractAddress, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      return await client.getContract(contractAddress)
-    },
-})
-
-export const contractAdminSelector = selectorFamily<
-  string | undefined,
-  WithChainId<{ contractAddress: string }>
->({
-  key: 'contractAdmin',
-  get:
-    (params) =>
-    ({ get }) =>
-      get(contractDetailsSelector(params))?.admin,
-})
-
-export const contractVersionSelector = selectorFamily<
-  ContractVersion,
-  WithChainId<{ contractAddress: string }>
->({
-  key: 'contractVersion',
-  get:
-    ({ contractAddress, chainId }) =>
-    async ({ get }) => {
-      const { info } = get(
-        contractInfoSelector({
-          contractAddress,
-          chainId,
-        })
-      )
-
-      const version = parseContractVersion(info.version)
-      if (!version) {
-        throw new Error(
-          `Failed parsing contract (${contractAddress}, chain: ${chainId}) version "${info.version}".`
-        )
-      }
-
-      return version
-    },
-})
 
 export const contractInfoSelector = selectorFamily<
   InfoResponse,
@@ -216,40 +118,6 @@ export const isDaoSelector = selectorFamily<
           contractAddress: address,
           chainId,
           names: DAO_CORE_CONTRACT_NAMES,
-        })
-      ),
-})
-
-export const isPolytoneProxySelector = selectorFamily<
-  boolean,
-  WithChainId<{ address: string }>
->({
-  key: 'isPolytoneProxy',
-  get:
-    ({ address, chainId }) =>
-    ({ get }) =>
-      get(
-        isContractSelector({
-          contractAddress: address,
-          chainId,
-          name: ContractName.PolytoneProxy,
-        })
-      ),
-})
-
-export const isValenceAccountSelector = selectorFamily<
-  boolean,
-  WithChainId<{ address: string }>
->({
-  key: 'isValenceAccount',
-  get:
-    ({ address, chainId }) =>
-    ({ get }) =>
-      get(
-        isContractSelector({
-          contractAddress: address,
-          chainId,
-          name: 'valence-account',
         })
       ),
 })

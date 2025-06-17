@@ -1,22 +1,16 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
   CommonNftSelectors,
-  DaoVotingCw721StakedSelectors,
-  blockHeightSelector,
-  contractVersionSelector,
+  chainQueries,
   daoVotingCw721StakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useCachedLoadingWithError,
-  useDao,
-} from '@dao-dao/stateless'
+import { useCachedLoadingWithError, useDao } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
 import { claimAvailable, getNftKey } from '@dao-dao/utils'
 
@@ -37,20 +31,14 @@ export const useStakingInfo = ({
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()
 
-  const [stakingContractVersion, { unstaking_duration: unstakingDuration }] =
-    useRecoilValue(
-      waitForAll([
-        contractVersionSelector({
-          chainId: dao.chainId,
-          contractAddress: dao.votingModule.address,
-        }),
-        DaoVotingCw721StakedSelectors.configSelector({
-          chainId: dao.chainId,
-          contractAddress: dao.votingModule.address,
-          params: [],
-        }),
-      ])
-    )
+  const {
+    data: { unstaking_duration: unstakingDuration },
+  } = useSuspenseQuery(
+    daoVotingCw721StakedQueries.config(queryClient, {
+      chainId: dao.chainId,
+      contractAddress: dao.votingModule.address,
+    })
+  )
 
   const setRefreshTotalBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(undefined)
@@ -68,15 +56,17 @@ export const useStakingInfo = ({
   /// Optional
 
   // Claims
-  const blockHeightLoadable = useCachedLoadable(
+  const blockHeightLoading = useQueryLoadingDataWithError(
     fetchClaims
-      ? blockHeightSelector({
+      ? chainQueries.block({
           chainId: dao.chainId,
         })
       : undefined
   )
   const blockHeight =
-    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+    blockHeightLoading.loading || blockHeightLoading.errored
+      ? undefined
+      : blockHeightLoading.data.header.height
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = useCallback(
@@ -156,16 +146,12 @@ export const useStakingInfo = ({
   )
 
   return {
-    stakingContractVersion,
+    stakingContractVersion: dao.votingModule.version,
     stakingContractAddress: dao.votingModule.address,
     unstakingDuration: unstakingDuration ?? undefined,
     refreshTotals,
     /// Optional
     // Claims
-    blockHeight:
-      blockHeightLoadable.state === 'hasValue'
-        ? blockHeightLoadable.contents
-        : 0,
     refreshClaims: fetchClaims ? refreshClaims : undefined,
     claims: nftClaims,
     claimsPending,

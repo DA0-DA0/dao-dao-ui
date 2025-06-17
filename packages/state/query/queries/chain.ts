@@ -212,7 +212,8 @@ export const fetchBlock = async ({
 }
 
 /**
- * Fetch the timestamp for a given block height.
+ * Fetch the timestamp for a block, optionally a specific height, or the latest
+ * block.
  */
 export const fetchBlockTimestamp = async (
   queryClient: QueryClient,
@@ -221,7 +222,7 @@ export const fetchBlockTimestamp = async (
     height,
   }: {
     chainId: string
-    height: number
+    height?: number
   }
 ): Promise<number> => {
   const block = await queryClient.fetchQuery(
@@ -1451,7 +1452,17 @@ export const chainQueries = {
       queryFn: () => fetchBlock(options),
     }),
   /**
-   * Fetch the timestamp for a given block height.
+   * Fetch a block, optionally a specific height, or the latest block. Returns
+   * undefined if the block is not found.
+   */
+  blockSafe: (options: Parameters<typeof fetchBlock>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'blockSafe', options],
+      queryFn: () => fetchBlock(options).catch(() => undefined),
+    }),
+  /**
+   * Fetch the timestamp for a block, optionally a specific height, or the
+   * latest block.
    */
   blockTimestamp: (
     queryClient: QueryClient,
@@ -1460,6 +1471,19 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'blockTimestamp', options],
       queryFn: () => fetchBlockTimestamp(queryClient, options),
+    }),
+  /**
+   * Fetch the timestamp for a block, optionally a specific height, or the
+   * latest block. Returns undefined if the block is not found.
+   */
+  blockTimestampSafe: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchBlockTimestamp>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'blockTimestampSafe', options],
+      queryFn: () =>
+        fetchBlockTimestamp(queryClient, options).catch(() => undefined),
     }),
   /**
    * Fetch the balance for a given address and denom.

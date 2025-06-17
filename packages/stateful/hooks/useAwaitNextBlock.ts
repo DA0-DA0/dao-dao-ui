@@ -1,7 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
 
-import { refreshBlockHeightAtom } from '@dao-dao/state'
+import { chainQueries } from '@dao-dao/state/query'
 import { useChain } from '@dao-dao/stateless'
 import {
   getCosmWasmClientForChainId,
@@ -14,8 +14,7 @@ import {
  */
 export const useAwaitNextBlock = () => {
   const { chainId } = useChain()
-
-  const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
+  const queryClient = useQueryClient()
 
   const doAfterNextBlock = useCallback(async () => {
     const client = await getCosmWasmClientForChainId(chainId)
@@ -25,9 +24,10 @@ export const useAwaitNextBlock = () => {
       blockHeight: (await client.getHeight()) + 1,
     })
 
-    // Refresh global block height.
-    setRefreshBlockHeight((id) => id + 1)
-  }, [chainId, setRefreshBlockHeight])
+    await queryClient.refetchQueries({
+      queryKey: chainQueries.block({ chainId }).queryKey,
+    })
+  }, [chainId, queryClient])
 
   return doAfterNextBlock
 }

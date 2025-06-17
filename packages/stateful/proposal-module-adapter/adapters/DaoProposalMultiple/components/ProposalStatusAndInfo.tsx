@@ -33,13 +33,16 @@ import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
+  LoadingData,
   PreProposeModuleType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import {
+  formatDateTime,
   formatDateTimeTz,
   formatPercentOf100,
   getProposalStatusKey,
+  humanReadableExpiration,
   processError,
 } from '@dao-dao/utils'
 
@@ -78,29 +81,25 @@ export const ProposalStatusAndInfo = (
     <SuspenseLoader
       fallback={<ProposalStatusAndInfoLoader {...props} />}
       forceFallback={
-        loadingProposal.loading ||
-        loadingMultipleChoiceVotesInfo.loading ||
-        loadingDepositInfo.loading
+        loadingProposal.loading || loadingMultipleChoiceVotesInfo.loading
       }
     >
-      {!loadingProposal.loading &&
-        !loadingMultipleChoiceVotesInfo.loading &&
-        !loadingDepositInfo.loading && (
-          <InnerProposalStatusAndInfo
-            {...props}
-            depositInfo={loadingDepositInfo.data}
-            proposal={loadingProposal.data}
-            votesInfo={loadingMultipleChoiceVotesInfo.data}
-          />
-        )}
+      {!loadingProposal.loading && !loadingMultipleChoiceVotesInfo.loading && (
+        <InnerProposalStatusAndInfo
+          {...props}
+          loadingDepositInfo={loadingDepositInfo}
+          proposal={loadingProposal.data}
+          votesInfo={loadingMultipleChoiceVotesInfo.data}
+        />
+      )}
     </SuspenseLoader>
   )
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
+  proposal: { timestampInfo, votingOpen, vetoTimelock, ...proposal },
   votesInfo: { winningChoice, quorumReached, turnoutPercent, isTie },
-  depositInfo,
+  loadingDepositInfo,
   onExecuteSuccess,
   onCloseSuccess,
   onVetoSuccess,
@@ -110,7 +109,7 @@ const InnerProposalStatusAndInfo = ({
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
   votesInfo: VotesInfo
-  depositInfo: CheckedDepositInfo | undefined
+  loadingDepositInfo: LoadingData<CheckedDepositInfo | undefined>
 }) => {
   const { t } = useTranslation()
   const {
@@ -187,7 +186,7 @@ const InnerProposalStatusAndInfo = ({
       statusKey === ProposalStatusEnum.Open
         ? timestampInfo.expirationDate
         : statusKey === 'veto_timelock'
-          ? vetoTimelockExpiration
+          ? vetoTimelock?.date
           : undefined,
   })
 
@@ -280,26 +279,43 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(vetoTimelockExpiration
+    ...(vetoTimelock &&
+    (vetoTimelock.date || 'at_height' in vetoTimelock.expiration)
       ? ([
           {
             Icon: HourglassTopRounded,
-            label: t('title.vetoTimeLeft'),
-            Value: (props) => (
-              <Tooltip title={formatDateTimeTz(vetoTimelockExpiration)}>
+            label: vetoTimelock.date
+              ? t('title.vetoTimeLeft')
+              : 'at_height' in vetoTimelock.expiration
+                ? t('title.vetoEndBlock')
+                : undefined,
+            Value: (props) =>
+              vetoTimelock.date ? (
+                <Tooltip title={formatDateTimeTz(vetoTimelock.date)}>
+                  <p {...props}>
+                    <TimeAgo
+                      date={vetoTimelock.date}
+                      formatter={timeAgoFormatter}
+                    />
+                  </p>
+                </Tooltip>
+              ) : (
                 <p {...props}>
-                  <TimeAgo
-                    date={vetoTimelockExpiration}
-                    formatter={timeAgoFormatter}
-                  />
+                  {humanReadableExpiration(
+                    t,
+                    formatDateTime,
+                    vetoTimelock.expiration
+                  )}
                 </p>
-              </Tooltip>
-            ),
+              ),
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(statusKey === ProposalStatusEnum.Executed ||
-    statusKey === ProposalStatusEnum.ExecutionFailed
+    ...((statusKey === ProposalStatusEnum.Executed ||
+      statusKey === ProposalStatusEnum.ExecutionFailed) &&
+    (loadingExecutionTxHash.loading ||
+      loadingExecutionTxHash.errored ||
+      loadingExecutionTxHash.data)
       ? ([
           {
             Icon: Tag,
@@ -421,7 +437,8 @@ const InnerProposalStatusAndInfo = ({
     // closed and will refund.
     if (
       statusKey === ProposalStatusEnum.Rejected &&
-      depositInfo?.refund_policy === DepositRefundPolicy.Always
+      !loadingDepositInfo.loading &&
+      loadingDepositInfo.data?.refund_policy === DepositRefundPolicy.Always
     ) {
       status += ' ' + t('info.proposalDepositWillBeRefunded')
     }

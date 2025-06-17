@@ -23,7 +23,6 @@ export interface UseStakingInfoResponse {
   refreshTotals: () => void
   /// Optional
   // Claims
-  blockHeight?: number
   refreshClaims?: () => void
   claims?: NftClaim[]
   claimsPending?: NftClaim[]

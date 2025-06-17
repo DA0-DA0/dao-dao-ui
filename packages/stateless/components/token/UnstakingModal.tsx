@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { UnstakingTask } from '@dao-dao/types'
+import { expirationToDate } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { Modal, ModalProps } from '../modals/Modal'
@@ -17,6 +18,26 @@ export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   tasks: UnstakingTask[]
   onClaim?: () => void
   refresh?: () => void
+}
+
+const sortTasks = (a: UnstakingTask, b: UnstakingTask) => {
+  const aValue =
+    'at_time' in a.expiration
+      ? Number(a.expiration.at_time)
+      : 'at_height' in a.expiration
+        ? a.expiration.at_height
+        : 'never' in a.expiration
+          ? Infinity
+          : 0
+  const bValue =
+    'at_time' in b.expiration
+      ? Number(b.expiration.at_time)
+      : 'at_height' in b.expiration
+        ? b.expiration.at_height
+        : 'never' in b.expiration
+          ? Infinity
+          : 0
+  return aValue - bValue
 }
 
 export const UnstakingModal = ({
@@ -46,11 +67,7 @@ export const UnstakingModal = ({
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.ReadyToClaim)
-        .sort(
-          (a, b) =>
-            // Place undefined last.
-            (a.date?.getTime() ?? Infinity) - (b.date?.getTime() ?? Infinity)
-        )
+        .sort(sortTasks)
         .reduce((combinedTasks, task) => {
           const existingTask = combinedTasks.find(
             ({ token }) => token.symbol === task.token.symbol
@@ -73,33 +90,34 @@ export const UnstakingModal = ({
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.Unstaking)
-        .sort(
-          (a, b) =>
-            // Place undefined last.
-            (a.date?.getTime() ?? Infinity) - (b.date?.getTime() ?? Infinity)
-        ),
+        .sort(sortTasks),
     [tasks]
   )
   const claimed = useMemo(
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.Claimed)
-        .sort(
-          (a, b) =>
-            // Place undefined last.
-            (b.date?.getTime() ?? -Infinity) - (a.date?.getTime() ?? -Infinity)
-        ),
+        .sort(sortTasks),
     [tasks]
   )
 
   // Refresh when the soonest task completes if refresh provided.
   useEffect(() => {
-    if (!refresh || unstaking.length === 0 || !unstaking[0].date) {
+    if (!refresh) {
+      return
+    }
+
+    // If there are no unstaking tasks with a time, don't refresh.
+    const firstUnstakingTaskWithTime = unstaking.find(
+      (t) => 'at_time' in t.expiration
+    )?.expiration
+    if (!firstUnstakingTaskWithTime) {
       return
     }
 
     // Unstaking is sorted so that the first one is next to finish.
-    const msUntilNextTaskCompletion = unstaking[0].date.getTime() - Date.now()
+    const msUntilNextTaskCompletion =
+      expirationToDate(firstUnstakingTaskWithTime).getTime() - Date.now()
 
     // `setTimeout` uses 32-bit integers, so we need to check if the number is
     // too large. Why JavaScript...

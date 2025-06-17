@@ -396,39 +396,6 @@ export const transformLoadingDataWithError = <T, U>(
         data: transform(loadingDataWithError.data),
       }
 
-export const convertExpirationToDate = (
-  blocksPerYear: number,
-  expiration: Expiration,
-  // For converting height to rough date.
-  currentBlockHeight: number
-): Date | undefined =>
-  'at_height' in expiration && currentBlockHeight > 0 && blocksPerYear > 0
-    ? new Date(
-        Date.now() +
-          convertBlocksToSeconds(
-            blocksPerYear,
-            expiration.at_height - currentBlockHeight
-          ) *
-            1000
-      )
-    : 'at_time' in expiration
-      ? // Timestamp is in nanoseconds, convert to microseconds.
-        new Date(Number(expiration.at_time) / 1e6)
-      : undefined
-
-export const convertBlocksToSeconds = (blocksPerYear: number, blocks: number) =>
-  Math.round((blocks / blocksPerYear) * 365 * 24 * 60 * 60)
-
-export const convertSecondsToBlocks = (
-  blocksPerYear: number,
-  seconds: number
-) => Math.round((seconds * blocksPerYear) / (365 * 24 * 60 * 60))
-
-export const durationToSeconds = (blocksPerYear: number, duration: Duration) =>
-  'height' in duration
-    ? convertBlocksToSeconds(blocksPerYear, duration.height)
-    : duration.time
-
 // Convert IPFS protocol URL to HTTPS protocol URL using IPFS gateway.
 export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
   ipfsUrl.startsWith('ipfs://')

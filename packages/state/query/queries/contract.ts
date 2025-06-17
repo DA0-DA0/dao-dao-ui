@@ -21,6 +21,7 @@ import {
   isSecretNetwork,
   isValidBech32Address,
   objectMatchesStructure,
+  parseContractVersion,
   secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
@@ -409,6 +410,20 @@ export const contractQueries = {
     queryOptions({
       queryKey: ['contract', 'info', options],
       queryFn: () => fetchContractInfo(queryClient, options),
+    }),
+  /**
+   * Fetch contract version.
+   */
+  version: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchContractInfo>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['contract', 'version', options],
+      queryFn: () =>
+        fetchContractInfo(queryClient, options).then(({ info: { version } }) =>
+          parseContractVersion(version)
+        ),
     }),
   /**
    * Check if a contract is a specific contract by name.

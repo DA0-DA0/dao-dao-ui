@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
@@ -11,6 +12,11 @@ import {
   BaseProposalLineProps,
   PreProposeModuleType,
 } from '@dao-dao/types'
+import {
+  formatDateTime,
+  formatDateTimeTz,
+  humanReadableExpiration,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useMembership } from '../../../../hooks'
@@ -40,6 +46,7 @@ const InnerProposalLine = ({
 }: BaseProposalLineProps & {
   proposal: ProposalWithMetadata
 }) => {
+  const { t } = useTranslation()
   const {
     proposalModule: { prefix: proposalPrefix, prePropose },
     proposalNumber,
@@ -64,15 +71,26 @@ const InnerProposalLine = ({
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       timestampDisplay={
-        proposal.vetoTimelockExpiration
+        proposal.vetoTimelock
           ? {
               // Not used.
               label: '',
-              content: (
+              tooltip: proposal.vetoTimelock.date
+                ? formatDateTimeTz(proposal.vetoTimelock.date)
+                : 'at_height' in proposal.vetoTimelock.expiration
+                  ? t('info.vetoTimelockEndBlockTooltip')
+                  : undefined,
+              content: proposal.vetoTimelock.date ? (
                 <TimeAgo
-                  date={proposal.vetoTimelockExpiration}
+                  date={proposal.vetoTimelock.date}
                   formatter={timeAgoFormatter}
                 />
+              ) : (
+                humanReadableExpiration(
+                  t,
+                  formatDateTime,
+                  proposal.vetoTimelock.expiration
+                )
               ),
             }
           : proposal.timestampInfo.display

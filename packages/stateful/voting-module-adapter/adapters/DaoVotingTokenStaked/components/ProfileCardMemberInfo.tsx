@@ -5,23 +5,15 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  stakingLoadingAtom,
-} from '@dao-dao/state'
-import { useCachedLoadable, useDao } from '@dao-dao/stateless'
+import { stakingLoadingAtom } from '@dao-dao/state'
+import { useDao } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   PlausibleEvents,
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import {
-  convertExpirationToDate,
-  durationToSeconds,
-  processError,
-} from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import {
   DaoVotingTokenStakedHooks,
@@ -137,41 +129,18 @@ export const ProfileCardMemberInfo = ({
     governanceToken.symbol,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(
-    blockHeightSelector({
-      chainId: votingModule.chainId,
-    })
-  )
-  const blocksPerYear = useRecoilValue(
-    blocksPerYearSelector({
-      chainId: votingModule.chainId,
-    })
-  )
-
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.Unstaking,
       amount: HugeDecimal.from(amount),
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      expiration: release_at,
     })),
     ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: HugeDecimal.from(amount),
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      expiration: release_at,
     })),
   ]
 
@@ -217,11 +186,7 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
-        unstakingDurationSeconds={
-          (unstakingDuration &&
-            durationToSeconds(blocksPerYear, unstakingDuration)) ||
-          undefined
-        }
+        unstakingDuration={unstakingDuration}
         unstakingTasks={unstakingTasks}
         {...props}
       />

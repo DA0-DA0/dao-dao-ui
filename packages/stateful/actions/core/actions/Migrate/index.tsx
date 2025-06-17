@@ -1,9 +1,8 @@
 import JSON5 from 'json5'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValueLoadable } from 'recoil'
 
-import { contractAdminSelector } from '@dao-dao/state'
+import { contractQueries } from '@dao-dao/state'
 import {
   ActionBase,
   ChainProvider,
@@ -34,6 +33,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { MigrateContractComponent as StatelessMigrateContractComponent } from './Component'
 
 type MigrateData = {
@@ -50,10 +50,10 @@ const Component: ActionComponent = (props) => {
 
   const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(
-    contractAdminSelector({
+  const admin = useQueryLoadingDataWithError(
+    contractQueries.admin({
       chainId,
-      contractAddress: contract,
+      address: contract,
     })
   )
 
@@ -71,7 +71,8 @@ const Component: ActionComponent = (props) => {
         <StatelessMigrateContractComponent
           {...props}
           options={{
-            contractAdmin: admin.valueMaybe(),
+            contractAdmin:
+              (!admin.loading && !admin.errored && admin.data) || undefined,
             onContractChange: (contract: string) => setContract(contract),
           }}
         />

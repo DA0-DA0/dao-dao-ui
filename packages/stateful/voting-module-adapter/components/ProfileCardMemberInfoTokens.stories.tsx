@@ -54,7 +54,7 @@ export const makeProps = (
       },
     ],
   },
-  unstakingDurationSeconds: 28 * 24 * 3600,
+  unstakingDuration: { time: 28 * 24 * 3600 },
   unstakingTasks: unstakingTasks ?? [
     makeUnstakingLineProps(UnstakingTaskStatus.ReadyToClaim, 'REAL').task,
     makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'REAL').task,

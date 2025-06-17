@@ -33,19 +33,6 @@ export const refreshProposalsIdAtom = atom<number>({
   default: 0,
 })
 
-// Change this to refresh the token USDC price for a denom, or use an empty
-// string to refresh all prices at once.
-export const refreshTokenUsdcPriceAtom = atomFamily<number, string>({
-  key: 'refreshTokenUsdcPrice',
-  default: 0,
-})
-
-// Change this to refresh the current block height.
-export const refreshBlockHeightAtom = atom<number>({
-  key: 'refreshBlockHeight',
-  default: 0,
-})
-
 // Change this to refresh the list of stargaze NFTs for a wallet.
 export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
   key: 'refreshWalletStargazeNfts',

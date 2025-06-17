@@ -1,16 +1,12 @@
-import {
-  RecoilValueReadOnly,
-  constSelector,
-  selectorFamily,
-  waitForAll,
-} from 'recoil'
+import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import {
   CwProposalSingleV1Selectors,
   DaoPreProposeApprovalSingleSelectors,
   DaoPreProposeSingleSelectors,
   DaoProposalSingleCommonSelectors,
-  blockHeightTimestampSafeSelector,
+  chainQueries,
+  queryClientAtom,
 } from '@dao-dao/state'
 import {
   CheckedDepositInfo,
@@ -98,18 +94,21 @@ export const reverseProposalInfosSelector: (
         })
       ).proposals
 
-      const timestamps = get(
-        waitForAll(
-          proposalResponses.map(({ proposal: { start_height }, ...response }) =>
-            // Indexer returns createdAt, so check its existence and fetch from
-            // chain if not present.
-            typeof response.createdAt === 'string'
-              ? constSelector(new Date(response.createdAt))
-              : blockHeightTimestampSafeSelector({
-                  blockHeight: start_height,
-                  chainId,
-                })
-          )
+      const queryClient = get(queryClientAtom)
+      const timestamps = await Promise.all(
+        proposalResponses.map(({ proposal: { start_height }, ...response }) =>
+          // Indexer returns createdAt, so check its existence and fetch from
+          // chain if not present.
+          typeof response.createdAt === 'string'
+            ? new Date(response.createdAt)
+            : queryClient
+                .fetchQuery(
+                  chainQueries.blockTimestampSafe(queryClient, {
+                    chainId,
+                    height: start_height,
+                  })
+                )
+                .then((time) => (time ? new Date(time) : undefined))
         )
       )
 

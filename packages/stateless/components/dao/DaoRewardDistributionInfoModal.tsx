@@ -6,8 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import { StatelessDaoRewardDistributionInfoModalProps } from '@dao-dao/types'
 import {
-  formatExpiration,
+  formatDateTimeTz,
   getHumanReadableRewardDistributionLabel,
+  humanReadableExpiration,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -174,7 +175,12 @@ export const DaoRewardDistributionInfoModal = ({
               <InputLabel name={t('title.dateStarted')} />
               {distribution ? (
                 <p className="primary-text">
-                  {formatExpiration(t, distribution.active_epoch.started_at)}
+                  {humanReadableExpiration(
+                    t,
+                    formatDateTimeTz,
+                    distribution.active_epoch.started_at,
+                    t('info.na')
+                  )}
                 </p>
               ) : (
                 <p>...</p>

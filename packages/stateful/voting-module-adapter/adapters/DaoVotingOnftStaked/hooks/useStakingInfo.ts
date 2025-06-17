@@ -4,17 +4,17 @@ import { useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  blockHeightSelector,
+  chainQueries,
   contractQueries,
   daoVotingOnftStakedQueries,
   daoVotingOnftStakedQueryKeys,
   omniflixQueries,
   refreshDaoVotingPowerAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDao } from '@dao-dao/stateless'
+import { useDao } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
 import { NftClaimsResponse } from '@dao-dao/types/contracts/DaoVotingOnftStaked'
-import { claimAvailable, getNftKey, parseContractVersion } from '@dao-dao/utils'
+import { claimAvailable, getNftKey } from '@dao-dao/utils'
 
 import {
   useQueryLoadingData,
@@ -39,7 +39,7 @@ export const useStakingInfo = ({
 
   const [stakingContractVersion, unstakingDuration] = useSuspenseQueries({
     queries: [
-      contractQueries.info(queryClient, {
+      contractQueries.version(queryClient, {
         chainId: votingModule.chainId,
         address: votingModule.address,
       }),
@@ -49,14 +49,11 @@ export const useStakingInfo = ({
       }),
     ],
     combine: ([
+      { data: version },
       {
-        data: { info },
+        data: { unstaking_duration },
       },
-      { data: config },
-    ]) => [
-      parseContractVersion(info.version),
-      config.unstaking_duration || undefined,
-    ],
+    ]) => [version, unstaking_duration || undefined],
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
@@ -153,15 +150,17 @@ export const useStakingInfo = ({
   /// Optional
 
   // Claims
-  const blockHeightLoadable = useCachedLoadable(
+  const blockHeightLoading = useQueryLoadingDataWithError(
     fetchClaims
-      ? blockHeightSelector({
+      ? chainQueries.block({
           chainId: votingModule.chainId,
         })
       : undefined
   )
   const blockHeight =
-    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+    blockHeightLoading.loading || blockHeightLoading.errored
+      ? undefined
+      : blockHeightLoading.data.header.height
 
   const refreshClaims = useCallback(() => {
     // Invalidate indexer query first.
@@ -270,10 +269,6 @@ export const useStakingInfo = ({
     refreshTotals,
     /// Optional
     // Claims
-    blockHeight:
-      blockHeightLoadable.state === 'hasValue'
-        ? blockHeightLoadable.contents
-        : 0,
     refreshClaims: fetchClaims ? refreshClaims : undefined,
     claims: nftClaims,
     claimsPending,

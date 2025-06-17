@@ -8,9 +8,10 @@
 
 import { TFunction } from 'react-i18next'
 
-import { Expiration } from '@dao-dao/types'
+import { Duration, Expiration } from '@dao-dao/types'
 
-import { convertExpirationToDate } from './conversion'
+import { expirationToDate } from './expiration'
+import { secondsToWdhms } from './time'
 
 // 23.4952 --> 23.5%
 export const formatPercentOf100 = (
@@ -99,23 +100,25 @@ export const toFixedDown = (value: number, digits: number) => {
   return matches ? parseFloat(matches[1]) : value
 }
 
-/**
- * Format an expiration as human readable.
- */
-export const formatExpiration = (t: TFunction, expiration: Expiration) =>
-  'never' in expiration
-    ? t('info.na')
+export const humanReadableDuration = (t: TFunction, duration: Duration) =>
+  'time' in duration
+    ? secondsToWdhms(duration.time)
+    : t('info.numBlocks', {
+        count: duration.height,
+      })
+
+export const humanReadableExpiration = (
+  t: TFunction,
+  dateFormatter: (date: Date) => string,
+  expiration: Expiration,
+  neverString = t('title.never')
+) =>
+  'at_time' in expiration
+    ? dateFormatter(expirationToDate(expiration))
     : 'at_height' in expiration
-      ? t('info.blockHeightValue', {
+      ? t('title.blockHeightValue', {
           height: expiration.at_height.toLocaleString(),
         })
-      : formatDateTimeTz(
-          // always returns date when 'at_time' is used
-          convertExpirationToDate(
-            // Unused
-            0,
-            expiration,
-            // Unused
-            0
-          )!
-        )
+      : 'never' in expiration
+        ? neverString
+        : t('info.unknown')

@@ -22,9 +22,10 @@ import {
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
+import { chainQueries } from '../../query'
+import { queryClientAtom } from '../atoms'
 import { accountsSelector } from './account'
 import {
-  blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
@@ -65,14 +66,17 @@ export const treasuryTransactionsSelector = selectorFamily<
         ].join('AND')
       )
 
-      const txDates = get(
-        waitForAll(
-          txs.map(({ height }) =>
-            blockHeightTimestampSafeSelector({
-              blockHeight: height,
-              chainId,
-            })
-          )
+      const queryClient = get(queryClientAtom)
+      const txDates = await Promise.all(
+        txs.map(({ height }) =>
+          queryClient
+            .fetchQuery(
+              chainQueries.blockTimestampSafe(queryClient, {
+                chainId,
+                height,
+              })
+            )
+            .then((time) => (time ? new Date(time) : undefined))
         )
       )
 

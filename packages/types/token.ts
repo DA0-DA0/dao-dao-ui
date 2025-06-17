@@ -10,6 +10,7 @@ import {
   ButtonPopupSectionButton,
   StatefulEntityDisplayProps,
 } from './components'
+import { Expiration } from './contracts'
 import { TokenInfoResponse } from './contracts/Cw20Base'
 import { LoadingData, LoadingDataWithError } from './misc'
 
@@ -133,9 +134,11 @@ export type UnstakingTask = {
   token: GenericToken
   status: UnstakingTaskStatus
   amount: HugeDecimal
-  // If unstaking or ready to claim, date it will be/was unstaked.
-  // If claimed, date it was claimed.
-  date?: Date
+  /**
+   * The expiration of the unstaking task. If unstaking or ready to claim, this
+   * is when it will be/was unstaked. If claimed, this is when it was claimed.
+   */
+  expiration: Expiration
 }
 
 export type TokenStake = {

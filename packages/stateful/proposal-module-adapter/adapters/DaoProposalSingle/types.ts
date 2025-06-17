@@ -1,5 +1,6 @@
 import {
   DepositInfoSelector,
+  Expiration,
   IProposalModuleBase,
   NeutronTimelockOverrule,
   PercentOrMajorityValue,
@@ -99,9 +100,12 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   // pre-propose-approval proposal in another DAO, this is the created proposal
   // ID.
   approvedProposalId?: string
-  // If this proposal is in its veto timelock period, this is the date that the
-  // timelock period expires.
-  vetoTimelockExpiration?: Date
+  // If this proposal is in its veto timelock period, this is when the timelock
+  // period ends.
+  vetoTimelock?: {
+    expiration: Expiration
+    date?: Date
+  }
   // If this is a proposal in a Neutron fork SubDAO with timelock, this is the
   // overrule proposal and its DAO created once executed and thus timelocked.
   neutronTimelockOverrule?: NeutronTimelockOverrule

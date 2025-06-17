@@ -5,12 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  stakingLoadingAtom,
-} from '@dao-dao/state'
-import { useCachedLoadable, useDao, useUpdatingRef } from '@dao-dao/stateless'
+import { stakingLoadingAtom } from '@dao-dao/state'
+import { useDao, useUpdatingRef } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   Feature,
@@ -19,8 +15,6 @@ import {
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 import {
-  convertExpirationToDate,
-  durationToSeconds,
   executeSmartContracts,
   isFeatureSupportedByVersion,
   processError,
@@ -180,41 +174,18 @@ export const ProfileCardMemberInfo = ({
     collectionInfo.symbol,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(
-    blockHeightSelector({
-      chainId,
-    })
-  )
-  const blocksPerYear = useRecoilValue(
-    blocksPerYearSelector({
-      chainId,
-    })
-  )
-
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
       amount: HugeDecimal.one,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      expiration: release_at,
     })),
     ...(claimsAvailable ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: HugeDecimal.one,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      expiration: release_at,
     })),
   ]
 
@@ -260,11 +231,7 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
-        unstakingDurationSeconds={
-          (unstakingDuration &&
-            durationToSeconds(blocksPerYear, unstakingDuration)) ||
-          undefined
-        }
+        unstakingDuration={unstakingDuration}
         unstakingTasks={unstakingTasks}
         {...props}
       />

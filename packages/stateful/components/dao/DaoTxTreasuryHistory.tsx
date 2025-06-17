@@ -1,5 +1,5 @@
 import { ArrowOutwardRounded, East, West } from '@mui/icons-material'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -7,9 +7,6 @@ import { useRecoilCallback, useRecoilValue } from 'recoil'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   TransformedTreasuryTransaction,
-  blockHeightSelector,
-  blockHeightTimestampSafeSelector,
-  blockHeightTimestampSelector,
   chainQueries,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
@@ -64,20 +61,21 @@ export const InnerDaoTxTreasuryHistory = ({
     nativeToken,
   } = useChainContext()
   const { coreAddress } = useDao()
+  const queryClient = useQueryClient()
 
   // Initialization.
-  const latestBlockHeight = useRecoilValue(
-    blockHeightSelector({
+  const latestBlockHeight = useSuspenseQuery(
+    chainQueries.block({
       chainId,
     })
-  )
+  ).data.header.height
   const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
-  const initialLowestHeightLoadedTimestamp = useRecoilValue(
-    blockHeightTimestampSafeSelector({
+  const initialLowestHeightLoadedTimestamp = useSuspenseQuery(
+    chainQueries.blockTimestampSafe(queryClient, {
       chainId,
-      blockHeight: initialMinHeight,
+      height: initialMinHeight,
     })
-  )
+  ).data
   const initialTransactions = useRecoilValue(
     transformedTreasuryTransactionsSelector({
       chainId,
@@ -91,7 +89,10 @@ export const InnerDaoTxTreasuryHistory = ({
   const [loading, setLoading] = useState(false)
   const [lowestHeightLoaded, setLowestHeightLoaded] = useState(initialMinHeight)
   const [lowestHeightLoadedTimestamp, setLowestHeightLoadedTimestamp] =
-    useState(initialLowestHeightLoadedTimestamp)
+    useState(
+      initialLowestHeightLoadedTimestamp &&
+        new Date(initialLowestHeightLoadedTimestamp)
+    )
   const [transactions, setTransactions] = useState(initialTransactions)
   const [canLoadMore, setCanLoadMore] = useState(true)
 
@@ -116,15 +117,18 @@ export const InnerDaoTxTreasuryHistory = ({
               })
             )
 
-            const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
-              blockHeightTimestampSelector({
+            const newLowestHeightLoadedTimestamp = await queryClient.fetchQuery(
+              chainQueries.blockTimestamp(queryClient, {
                 chainId,
-                blockHeight: minHeight,
+                height: minHeight,
               })
             )
 
             setLowestHeightLoaded(minHeight)
-            setLowestHeightLoadedTimestamp(newLowestHeightLoadedTimestamp)
+            setLowestHeightLoadedTimestamp(
+              newLowestHeightLoadedTimestamp &&
+                new Date(newLowestHeightLoadedTimestamp)
+            )
 
             // If no transactions found, try to load more.
             if (!newTransactions.length) {

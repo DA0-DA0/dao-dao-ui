@@ -11,7 +11,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { Feature, SingleChoiceNewProposalData } from '@dao-dao/types'
 import {
   checkProposalSubmissionPolicy,
-  expirationExpired,
+  isExpired,
   processError,
 } from '@dao-dao/utils'
 
@@ -248,7 +248,7 @@ export const makeUsePublishProposal =
 
           const remainingAllowanceNeeded = requiredProposalDeposit.minus(
             // If allowance expired, none.
-            expirationExpired(
+            isExpired(
               cw20DepositTokenAllowanceResponse.expires,
               (await (await getSigningClient()).getBlock()).header.height
             )

@@ -5,24 +5,15 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  Cw20StakeSelectors,
-  blockHeightSelector,
-  blocksPerYearSelector,
-  stakingLoadingAtom,
-} from '@dao-dao/state'
-import { useCachedLoadable, useDao } from '@dao-dao/stateless'
+import { Cw20StakeSelectors, stakingLoadingAtom } from '@dao-dao/state'
+import { useDao } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   PlausibleEvents,
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import {
-  convertExpirationToDate,
-  durationToSeconds,
-  processError,
-} from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import {
   Cw20StakeHooks,
@@ -178,47 +169,18 @@ export const ProfileCardMemberInfo = ({
     doClaim,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(
-    blockHeightSelector({
-      chainId,
-    })
-  )
-  const blocksPerYearLoadable = useCachedLoadable(
-    blocksPerYearSelector({
-      chainId,
-    })
-  )
-
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.Unstaking,
       amount: HugeDecimal.from(amount),
-      date:
-        blocksPerYearLoadable.state === 'hasValue'
-          ? convertExpirationToDate(
-              blocksPerYearLoadable.contents,
-              release_at,
-              blockHeightLoadable.state === 'hasValue'
-                ? blockHeightLoadable.contents
-                : 0
-            )
-          : undefined,
+      expiration: release_at,
     })),
     ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       token: governanceToken,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: HugeDecimal.from(amount),
-      date:
-        blocksPerYearLoadable.state === 'hasValue'
-          ? convertExpirationToDate(
-              blocksPerYearLoadable.contents,
-              release_at,
-              blockHeightLoadable.state === 'hasValue'
-                ? blockHeightLoadable.contents
-                : 0
-            )
-          : undefined,
+      expiration: release_at,
     })),
   ]
 
@@ -264,15 +226,7 @@ export const ProfileCardMemberInfo = ({
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
-        unstakingDurationSeconds={
-          (blocksPerYearLoadable.state === 'hasValue' &&
-            unstakingDuration &&
-            durationToSeconds(
-              blocksPerYearLoadable.contents,
-              unstakingDuration
-            )) ||
-          undefined
-        }
+        unstakingDuration={unstakingDuration}
         unstakingTasks={unstakingTasks}
         {...props}
       />

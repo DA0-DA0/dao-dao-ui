@@ -1,6 +1,7 @@
 import {
   ContractVersion,
   DepositInfoSelector,
+  Expiration,
   IProposalModuleBase,
   MultipleChoiceNewProposalData,
   ProcessedTQ,
@@ -93,9 +94,12 @@ export type ProposalWithMetadata = MultipleChoiceProposal & {
   // If this proposal was approved by a pre-propose-approver in another DAO,
   // this is the approver proposal ID.
   approverProposalId?: string
-  // If this proposal is in its veto timelock period, this is the date that the
-  // timelock period expires.
-  vetoTimelockExpiration?: Date
+  // If this proposal is in its veto timelock period, this is when the timelock
+  // period ends.
+  vetoTimelock?: {
+    expiration: Expiration
+    date?: Date
+  }
 }
 
 export type MultipleChoiceOptionData = {

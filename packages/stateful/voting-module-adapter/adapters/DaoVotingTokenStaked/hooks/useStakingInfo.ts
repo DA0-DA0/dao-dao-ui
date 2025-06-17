@@ -6,19 +6,16 @@ import { HugeDecimal } from '@dao-dao/math'
 import {
   DaoVotingNativeStakedSelectors,
   DaoVotingTokenStakedSelectors,
-  blockHeightSelector,
+  chainQueries,
   daoVotingTokenStakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { TokenStakedVotingModule } from '@dao-dao/state/clients'
-import {
-  useCachedLoadable,
-  useCachedLoading,
-  useVotingModule,
-} from '@dao-dao/stateless'
+import { useCachedLoading, useVotingModule } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
@@ -50,17 +47,17 @@ export const useStakingInfo = ({
   /// Optional
 
   // Claims
-  const blockHeightLoadable = useCachedLoadable(
+  const blockHeightLoading = useQueryLoadingDataWithError(
     fetchClaims
-      ? blockHeightSelector({
+      ? chainQueries.block({
           chainId: votingModule.chainId,
         })
       : undefined
   )
   const blockHeight =
-    blockHeightLoadable.state === 'hasValue'
-      ? blockHeightLoadable.contents
-      : undefined
+    blockHeightLoading.loading || blockHeightLoading.errored
+      ? undefined
+      : blockHeightLoading.data.header.height
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = () => _setClaimsId((id) => id + 1)
@@ -128,7 +125,6 @@ export const useStakingInfo = ({
     refreshTotals,
     /// Optional
     // Claims
-    blockHeight,
     refreshClaims: fetchClaims ? refreshClaims : undefined,
     claims,
     claimsPending,

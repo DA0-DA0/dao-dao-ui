@@ -4,6 +4,10 @@ export type FeedSourceItem<Props extends unknown = any> = {
   props: Props
   // If pending, the item will count towards the pending count.
   pending: boolean
+  /**
+   * If present, the item will be sorted by this value in ascending order.
+   * Smaller values will appear first.
+   */
   order?: number
 }
 

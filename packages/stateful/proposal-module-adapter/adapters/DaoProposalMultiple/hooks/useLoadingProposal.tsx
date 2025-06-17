@@ -2,26 +2,19 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  proposalQueries,
-} from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useTranslatedTimeDeltaFormatter,
-} from '@dao-dao/stateless'
+import { chainQueries, proposalQueries } from '@dao-dao/state'
+import { useTranslatedTimeDeltaFormatter } from '@dao-dao/stateless'
 import {
   LoadingData,
   PreProposeModuleType,
-  ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
 import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
-  convertExpirationToDate,
+  expirationToDate,
   formatDate,
   formatDateTimeTz,
+  isExpired,
 } from '@dao-dao/utils'
 
 import {
@@ -54,16 +47,16 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
-  const blocksPerYearLoadable = useCachedLoadable(
-    blocksPerYearSelector({
+  const blockHeightLoading = useQueryLoadingDataWithError(
+    chainQueries.block({
       chainId,
-    })
+    }),
+    (block) => block.header.height
   )
-  const blockHeightLoadable = useCachedLoadable(
-    blockHeightSelector({
-      chainId,
-    })
-  )
+  const currentBlockHeight =
+    !blockHeightLoading.loading && !blockHeightLoading.errored
+      ? blockHeightLoading.data
+      : undefined
 
   //! If this proposal was approved by another proposal via the
   //! pre-propose-approver setup.
@@ -90,8 +83,6 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   if (
     loadingProposalResponse.loading ||
     !loadingProposalResponse.data ||
-    blocksPerYearLoadable.state !== 'hasValue' ||
-    blockHeightLoadable.state !== 'hasValue' ||
     approverProposalId.loading
   ) {
     return { loading: true }
@@ -101,29 +92,20 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const { proposal, completedAt, executedAt, closedAt } =
     loadingProposalResponse.data
 
-  const expirationDate = convertExpirationToDate(
-    blocksPerYearLoadable.contents,
-    proposal.expiration,
-    blockHeightLoadable.contents
-  )
+  const proposalExpired = isExpired(proposal.expiration, currentBlockHeight)
+  const expirationDate =
+    'at_time' in proposal.expiration
+      ? expirationToDate(proposal.expiration)
+      : undefined
 
   const vetoTimelockExpiration =
     typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
-      ? convertExpirationToDate(
-          blocksPerYearLoadable.contents,
-          proposal.status.veto_timelock.expiration,
-          blockHeightLoadable.contents
-        )
+      ? proposal.status.veto_timelock.expiration
       : undefined
 
   // Votes can be cast up to the expiration date, even if the decision has
   // finalized due to sufficient votes cast.
-  const votingOpen =
-    // `expirationDate` will be undefined if expiration is set to never, which
-    // the contract does not allow, so this is just a typecheck.
-    expirationDate
-      ? expirationDate.getTime() > Date.now()
-      : proposal.status === ProposalStatusEnum.Open
+  const votingOpen = !proposalExpired
 
   const completionDate =
     typeof completedAt === 'string' && new Date(completedAt)
@@ -131,7 +113,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const closeDate = typeof closedAt === 'string' && new Date(closedAt)
 
   const dateDisplay: ProposalTimestampInfo['display'] | undefined = votingOpen
-    ? expirationDate && expirationDate.getTime() > Date.now()
+    ? expirationDate
       ? {
           label: vetoTimelockExpiration
             ? t('title.votingTimeLeft')
@@ -141,8 +123,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
             <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
           ),
         }
-      : 'at_height' in proposal.expiration &&
-          proposal.expiration.at_height > blockHeightLoadable.contents
+      : 'at_height' in proposal.expiration
         ? {
             label: t('title.votingEndBlock'),
             tooltip: t('info.votingEndBlockTooltip'),
@@ -207,7 +188,13 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       approverProposalId: approverProposalId.errored
         ? undefined
         : approverProposalId.data || undefined,
-      vetoTimelockExpiration,
+      vetoTimelock: vetoTimelockExpiration && {
+        expiration: vetoTimelockExpiration,
+        date:
+          'at_time' in vetoTimelockExpiration
+            ? expirationToDate(vetoTimelockExpiration)
+            : undefined,
+      },
     },
   }
 }

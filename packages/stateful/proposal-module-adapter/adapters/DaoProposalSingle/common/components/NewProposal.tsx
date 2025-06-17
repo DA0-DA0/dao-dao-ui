@@ -5,9 +5,8 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValueLoadable } from 'recoil'
 
-import { DaoDaoCoreSelectors, blocksPerYearSelector } from '@dao-dao/state'
+import { DaoDaoCoreSelectors } from '@dao-dao/state'
 import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
@@ -26,10 +25,10 @@ import {
 } from '@dao-dao/types'
 import { Config } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
-  convertExpirationToDate,
   dateToWdhms,
   descriptionWithPotentialProposalMetadata,
   encodeActions,
+  humanReadableExpiration,
   processError,
 } from '@dao-dao/utils'
 
@@ -59,8 +58,7 @@ export const NewProposal = ({
     coreAddress,
     info: { isActive, activeThreshold },
   } = useDao()
-  const { address, isWalletConnecting, isWalletConnected, getStargateClient } =
-    useWallet()
+  const { address, isWalletConnecting, isWalletConnected } = useWallet()
   const queryClient = useQueryClient()
 
   const { watch } = useFormContext<SingleChoiceNewProposalForm>()
@@ -84,12 +82,6 @@ export const NewProposal = ({
 
   const processTQ = useProcessTQ()
 
-  const blocksPerYearLoadable = useRecoilValueLoadable(
-    blocksPerYearSelector({
-      chainId: proposalModule.chainId,
-    })
-  )
-
   const {
     simulateProposal,
     publishProposal,
@@ -105,12 +97,6 @@ export const NewProposal = ({
         toast.error(t('error.logInToContinue'))
         return
       }
-
-      if (blocksPerYearLoadable.state !== 'hasValue') {
-        toast.error(t('error.loadingData'))
-        return
-      }
-      const blocksPerYear = blocksPerYearLoadable.contents
 
       try {
         const {
@@ -148,11 +134,7 @@ export const NewProposal = ({
         })()
         const expirationDate =
           proposalInfo?.expiration &&
-          convertExpirationToDate(
-            blocksPerYear,
-            proposalInfo.expiration,
-            (await (await getStargateClient()).getBlock()).header.height
-          )
+          humanReadableExpiration(t, dateToWdhms, proposalInfo.expiration)
 
         const config: Config = await queryClient.fetchQuery(
           proposalModule.getConfigQuery()
@@ -183,7 +165,7 @@ export const NewProposal = ({
                     ? [
                         {
                           Icon: Timelapse,
-                          label: dateToWdhms(expirationDate),
+                          label: expirationDate,
                         },
                       ]
                     : []),
@@ -215,8 +197,6 @@ export const NewProposal = ({
       isWalletConnected,
       publishProposal,
       proposalModule,
-      blocksPerYearLoadable,
-      getStargateClient,
       processTQ,
       onCreateSuccess,
       t,

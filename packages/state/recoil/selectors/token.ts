@@ -18,6 +18,7 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
+  dateToExpiration,
   getChainForChainId,
   getChainForChainName,
   getIbcTransferInfoFromChannel,
@@ -590,7 +591,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
             token,
             status: UnstakingTaskStatus.Unstaking,
             amount: HugeDecimal.from(balance.amount),
-            date: finishesAt,
+            expiration: dateToExpiration(finishesAt),
           })
         )
 

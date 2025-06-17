@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { contractAdminSelector } from '@dao-dao/state'
+import { contractQueries } from '@dao-dao/state'
 import {
   ActionBase,
   ChainProvider,
@@ -29,6 +28,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from './Component'
 
 export type UpdateAdminData = {
@@ -46,13 +46,13 @@ const Component: ActionComponent = (props) => {
 
   const contract = watch((props.fieldNamePrefix + 'contract') as 'contract')
 
-  const admin = useRecoilValueLoadable(
+  const admin = useQueryLoadingDataWithError(
     contract && isValidBech32Address(contract, bech32Prefix)
-      ? contractAdminSelector({
-          contractAddress: contract,
+      ? contractQueries.admin({
           chainId,
+          address: contract,
         })
-      : constSelector(undefined)
+      : undefined
   )
 
   return (
@@ -70,7 +70,7 @@ const Component: ActionComponent = (props) => {
           {...props}
           options={{
             contractAdmin:
-              admin.state === 'hasValue' ? admin.contents : undefined,
+              (!admin.loading && !admin.errored && admin.data) || undefined,
           }}
         />
       </ChainProvider>
