@@ -1299,8 +1299,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://testnet-api.daodiseo.chaintools.tech',
   },
   [ChainId.KopiMainnet]: {
-    rpc: 'https://kopi-rpc.polkachu.com',
-    rest: 'https://kopi-api.polkachu.com',
+    rpc: 'https://rpc.kopi.money',
+    rest: 'https://rest.kopi.money',
   },
 }
 
