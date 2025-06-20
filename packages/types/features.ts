@@ -41,6 +41,8 @@ export enum ContractVersion {
   V260 = '2.6.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.7.0
   V270 = '2.7.0',
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.7.1
+  V271 = '2.7.1',
 }
 
 /**

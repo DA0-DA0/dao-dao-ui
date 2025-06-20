@@ -1083,12 +1083,12 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#00eed1',
         factoryContractAddress:
-          'sthor1g7fy4u7ukqk22k3xd00xp0qn2dazn6r8xpxfts4c2ng0ncr3swvs42q5kp',
+          'sthor122ht2h5ca482vlyqt22ecs6yw5n8f3rx6mwj9wu3jym99ct9xl2qj4cgrz',
         explorerUrlTemplates: {
           tx: 'https://runescan.io/tx/REPLACE?network=stagenet',
           wallet: 'https://runescan.io/address/REPLACE?network=stagenet',
         },
-        latestVersion: ContractVersion.V270,
+        latestVersion: ContractVersion.V271,
       },
       {
         chainId: ChainId.DaodiseoTestnet,
