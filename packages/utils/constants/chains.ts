@@ -1085,8 +1085,8 @@ const BASE_SUPPORTED_CHAINS: Omit<
         factoryContractAddress:
           'sthor1g7fy4u7ukqk22k3xd00xp0qn2dazn6r8xpxfts4c2ng0ncr3swvs42q5kp',
         explorerUrlTemplates: {
-          tx: 'https://stagenet.thorchain.net/tx/REPLACE',
-          wallet: 'https://stagenet.thorchain.net/address/REPLACE',
+          tx: 'https://runescan.io/tx/REPLACE?network=stagenet',
+          wallet: 'https://runescan.io/address/REPLACE?network=stagenet',
         },
         latestVersion: ContractVersion.V270,
       },
