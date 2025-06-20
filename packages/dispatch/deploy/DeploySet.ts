@@ -121,8 +121,8 @@ export const deploySets: DeploySet[] = [
 
   // the external contracts to deploy on all chains once
   new DeploySet('external', 'once', [
-    new DeploySetContract('cw1_whitelist'),
-    new DeploySetContract('cw4_group'),
+    new DeploySetContract('cw1_whitelist-v1.1.2', 'cw1_whitelist'),
+    new DeploySetContract('cw4_group-v1.1.2', 'cw4_group'),
   ]),
 
   // the core DAO contracts to deploy on all chains every time
@@ -177,21 +177,26 @@ export const deploySets: DeploySet[] = [
   ),
 
   // cw20 contract to deploy once
-  new DeploySet('cw20 base', 'once', [new DeploySetContract('cw20_base')], {
-    chainIds: [
-      ChainId.JunoMainnet,
-      ChainId.JunoTestnet,
+  new DeploySet(
+    'cw20 base',
+    'once',
+    [new DeploySetContract('cw20_base-v1.1.2', 'cw20_base')],
+    {
+      chainIds: [
+        ChainId.JunoMainnet,
+        ChainId.JunoTestnet,
 
-      'layer',
+        'layer',
 
-      ChainId.OraichainMainnet,
+        ChainId.OraichainMainnet,
 
-      ChainId.TerraMainnet,
-      ChainId.TerraClassicMainnet,
+        ChainId.TerraMainnet,
+        ChainId.TerraClassicMainnet,
 
-      ChainId.BabylonTestnet,
-    ],
-  }),
+        ChainId.BabylonTestnet,
+      ],
+    }
+  ),
 
   // cw20 contracts to deploy every time
   new DeploySet(
@@ -219,31 +224,36 @@ export const deploySets: DeploySet[] = [
   ),
 
   // cw721 contract to deploy once
-  new DeploySet('cw721 base', 'once', [new DeploySetContract('cw721_base')], {
-    chainIds: [
-      ChainId.JunoMainnet,
-      ChainId.JunoTestnet,
+  new DeploySet(
+    'cw721 base',
+    'once',
+    [new DeploySetContract('cw721_base-v0.18.0', 'cw721_base')],
+    {
+      chainIds: [
+        ChainId.JunoMainnet,
+        ChainId.JunoTestnet,
 
-      ChainId.ThorchainStagenet,
+        ChainId.ThorchainStagenet,
 
-      'layer',
+        'layer',
 
-      ChainId.MigalooMainnet,
-      ChainId.MigalooTestnet,
+        ChainId.MigalooMainnet,
+        ChainId.MigalooTestnet,
 
-      ChainId.NeutronMainnet,
-      ChainId.NeutronTestnet,
-      ChainId.StarshipTestChain,
+        ChainId.NeutronMainnet,
+        ChainId.NeutronTestnet,
+        ChainId.StarshipTestChain,
 
-      ChainId.OraichainMainnet,
+        ChainId.OraichainMainnet,
 
-      ChainId.OsmosisMainnet,
-      ChainId.OsmosisTestnet,
+        ChainId.OsmosisMainnet,
+        ChainId.OsmosisTestnet,
 
-      ChainId.TerraMainnet,
-      ChainId.TerraClassicMainnet,
-    ],
-  }),
+        ChainId.TerraMainnet,
+        ChainId.TerraClassicMainnet,
+      ],
+    }
+  ),
 
   // cw721 contracts to deploy every time
   new DeploySet(
