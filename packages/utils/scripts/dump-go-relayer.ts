@@ -27,6 +27,7 @@ const dumpAll = async (chainIds: string[]) => {
     throw new Error('no chains')
   }
 
+  console.log('paths:')
   for (const srcChain of chains) {
     try {
       await dumpChain(srcChain.chainId)

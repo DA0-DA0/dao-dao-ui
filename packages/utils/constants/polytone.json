@@ -93,6 +93,15 @@
       "remoteChannel": "channel-336",
       "remoteConnection": "connection-298",
       "voice": "stars19nlxjdrdqaphvnckuhl50jjdtwe6pflcr7rgjfhcs66nwlfr0ees0dwpqp"
+    },
+    "phoenix-1": {
+      "listener": "terra1y8draf5dv4k0d3c6s76fczah0kxs3m54aytzryrn3a3yzncxfrwqt7mvnx",
+      "localChannel": "channel-114",
+      "localConnection": "connection-160",
+      "note": "terra1fj6s40hth94en4533duuyx7twzjs455vp0kaxh9cmqnlgutxp0vqu3scxe",
+      "remoteChannel": "channel-618",
+      "remoteConnection": "connection-441",
+      "voice": "terra1rcmxu873j9j59ugdcmedls726yzwncht2ynh5mx2wz9w8cakfl2s2cdtwn"
     }
   },
   "cosmoshub-4": {
