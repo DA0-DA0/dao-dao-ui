@@ -3,6 +3,7 @@ import path from 'path'
 
 import { IbcClient, Link, Logger } from '@confio/relayer'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { stringToPath as stringToHdPath } from '@cosmjs/crypto'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import chalk from 'chalk'
 import { Command } from 'commander'
@@ -144,11 +145,17 @@ const main = async () => {
 
   const srcSigner = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: srcChain.bech32Prefix,
+    hdPaths: srcChain.chainRegistry?.slip44
+      ? [stringToHdPath(`m/44'/${srcChain.chainRegistry.slip44}'/0'/0/0`)]
+      : undefined,
   })
   const srcSender = (await srcSigner.getAccounts())[0].address
 
   const destSigner = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: destChain.bech32Prefix,
+    hdPaths: destChain.chainRegistry?.slip44
+      ? [stringToHdPath(`m/44'/${destChain.chainRegistry.slip44}'/0'/0/0`)]
+      : undefined,
   })
   const destSender = (await destSigner.getAccounts())[0].address
 
