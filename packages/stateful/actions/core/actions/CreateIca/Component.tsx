@@ -28,7 +28,7 @@ export type CreateIcaData = {
 }
 
 export type CreateIcaOptions = {
-  createdAddressLoading: LoadingDataWithError<string | undefined>
+  createdAddressLoading: LoadingDataWithError<string | null>
   icaHostSupported: LoadingDataWithError<boolean>
 }
 

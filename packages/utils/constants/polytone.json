@@ -85,15 +85,6 @@
       "remoteConnection": "connection-1215",
       "voice": "osmo1sgyvze8v2jr600pjxll6leg3lpuz2grte0aceelzz0q3r7kv4dtsrgd9y8"
     },
-    "stargaze-1": {
-      "listener": "terra1306eg6lp30zdet9dkp0td4a2lw6wfp88ufuwppccp2eu7uva8thqv7h5qt",
-      "localChannel": "channel-100",
-      "localConnection": "connection-152",
-      "note": "terra1wnvlwpdgug7sp3gan9cgdplfe9368apunh09dakurgjmvxwhn9gqk3t70u",
-      "remoteChannel": "channel-336",
-      "remoteConnection": "connection-298",
-      "voice": "stars19nlxjdrdqaphvnckuhl50jjdtwe6pflcr7rgjfhcs66nwlfr0ees0dwpqp"
-    },
     "phoenix-1": {
       "listener": "terra1y8draf5dv4k0d3c6s76fczah0kxs3m54aytzryrn3a3yzncxfrwqt7mvnx",
       "localChannel": "channel-114",
@@ -102,6 +93,15 @@
       "remoteChannel": "channel-618",
       "remoteConnection": "connection-441",
       "voice": "terra1rcmxu873j9j59ugdcmedls726yzwncht2ynh5mx2wz9w8cakfl2s2cdtwn"
+    },
+    "stargaze-1": {
+      "listener": "terra1306eg6lp30zdet9dkp0td4a2lw6wfp88ufuwppccp2eu7uva8thqv7h5qt",
+      "localChannel": "channel-100",
+      "localConnection": "connection-152",
+      "note": "terra1wnvlwpdgug7sp3gan9cgdplfe9368apunh09dakurgjmvxwhn9gqk3t70u",
+      "remoteChannel": "channel-336",
+      "remoteConnection": "connection-298",
+      "voice": "stars19nlxjdrdqaphvnckuhl50jjdtwe6pflcr7rgjfhcs66nwlfr0ees0dwpqp"
     }
   },
   "cosmoshub-4": {

@@ -1,18 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { chainQueries } from '@dao-dao/state/query'
 import {
-  chainSupportsIcaHostSelector,
-  icaRemoteAddressSelector,
-} from '@dao-dao/state/recoil'
-import {
-  ActionBase,
-  ChainEmoji,
-  useActionOptions,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+  accountQueries,
+  chainQueries,
+  indexerQueries,
+} from '@dao-dao/state/query'
+import { ActionBase, ChainEmoji, useActionOptions } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -24,7 +20,10 @@ import {
 } from '@dao-dao/types'
 import { MsgRegisterInterchainAccount } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
-import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
+import {
+  IdentifiedChannel,
+  Order,
+} from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   ICA_CHAINS_TX_PREFIX,
   getChainForChainName,
@@ -34,6 +33,7 @@ import {
   isDecodedStargateMsg,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { ManageStorageItemsAction } from '../ManageStorageItems'
 import { CreateIcaComponent, CreateIcaData } from './Component'
 
@@ -43,19 +43,20 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId: srcChainId },
   } = useActionOptions()
+  const queryClient = useQueryClient()
 
   const { watch, setError, clearErrors } = useFormContext<CreateIcaData>()
   const destChainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
-  const createdAddressLoading = useCachedLoadingWithError(
-    icaRemoteAddressSelector({
+  const createdAddressLoading = useQueryLoadingDataWithError(
+    accountQueries.remoteIcaAddress(queryClient, {
       address,
       srcChainId,
       destChainId,
     })
   )
-  const icaHostSupported = useCachedLoadingWithError(
-    chainSupportsIcaHostSelector({
+  const icaHostSupported = useQueryLoadingDataWithError(
+    chainQueries.supportsIcaHost({
       chainId: destChainId,
     })
   )
@@ -165,6 +166,40 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
       this.options.chain.chainId,
       chainId
     )
+
+    // Get existing ICA address.
+    const existingIcaAddress = await this.options.queryClient.fetchQuery(
+      accountQueries.remoteIcaAddress(this.options.queryClient, {
+        address: this.options.address,
+        srcChainId: this.options.chain.chainId,
+        destChainId: chainId,
+      })
+    )
+
+    // If exists, find the channel for the existing ICA to identify its
+    // ordering. You can't reopen an old channel for an existing ICA with a
+    // different ordering, so we must use the same ordering.
+    if (existingIcaAddress) {
+      const existingIcaChannel = await this.options.queryClient
+        .fetchQuery(
+          indexerQueries.snapper<IdentifiedChannel>({
+            query: 'ica-channel',
+            parameters: {
+              address: this.options.address,
+              srcChainId: this.options.chain.chainId,
+              destChainId: chainId,
+            },
+          })
+        )
+        .catch(() => null)
+
+      // If found, use the ordering from the existing channel. Otherwise just
+      // hope it works! The chain and simulation will error if the ordering is
+      // different.
+      if (existingIcaChannel) {
+        ordering = existingIcaChannel.ordering
+      }
+    }
 
     return [
       makeStargateMessage({

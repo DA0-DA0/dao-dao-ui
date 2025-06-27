@@ -28,6 +28,7 @@ import {
   getSupportedChainConfig,
   ibcProtoRpcClientRouter,
   isConfiguredChainName,
+  isErrorWithSubstring,
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
@@ -270,9 +271,10 @@ export const fetchRemoteIcaAddress = async (
   } catch (err) {
     // On lookup failure, return undefined.
     if (
-      err instanceof Error &&
-      err.message.includes('failed to retrieve account address') &&
-      err.message.includes('key not found')
+      isErrorWithSubstring(err, [
+        'failed to retrieve account address',
+        'key not found',
+      ])
     ) {
       return null
     }

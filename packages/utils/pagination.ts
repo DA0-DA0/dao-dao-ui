@@ -13,7 +13,12 @@ export const getAllRpcResponse = async <
   params: P,
   key: K,
   reverse = false,
-  useInterfaces = false
+  useInterfaces = false,
+  /**
+   * Optionally stop if the results up to the current iteration match this
+   * condition.
+   */
+  stopWhen?: (results: V) => boolean
 ): Promise<V> => {
   let pagination: Partial<PageRequest> | undefined
   const data = [] as any[]
@@ -53,6 +58,11 @@ export const getAllRpcResponse = async <
       data.push(...results)
     } else {
       data.push(results)
+    }
+
+    // Stop if condition met.
+    if (stopWhen && stopWhen(data as V)) {
+      break
     }
   } while (pagination !== undefined)
 

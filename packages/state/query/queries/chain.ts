@@ -19,6 +19,7 @@ import {
 } from '@dao-dao/types'
 import { ModuleAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/bank'
+import { MsgSend } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/tx'
 import { DecCoin } from '@dao-dao/types/protobuf/codegen/cosmos/base/v1beta1/coin'
 import {
   BasicAllowance,
@@ -30,6 +31,7 @@ import {
   Vote,
   WeightedVoteOption,
 } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgTransfer } from '@dao-dao/types/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import {
   bitsongProtoRpcClientRouter,
   cosmosProtoRpcClientRouter,
@@ -685,6 +687,39 @@ export const fetchSupportsIcaController = async ({
       await client.applications.interchain_accounts.controller.v1.params()
 
     return !!controllerEnabled
+  } catch (err) {
+    if (isNonexistentQueryError(err)) {
+      return false
+    }
+
+    // Rethrow other errors.
+    throw err
+  }
+}
+
+/**
+ * Fetch whether or not a chain supports the ICA host module and allows spends
+ * and IBC transfers.
+ */
+export const fetchSupportsIcaHost = async ({
+  chainId,
+}: {
+  chainId: string
+}): Promise<boolean> => {
+  const client = await ibcProtoRpcClientRouter.connect(chainId)
+
+  try {
+    const { params: { hostEnabled, allowMessages } = {} } =
+      await client.applications.interchain_accounts.host.v1.params()
+
+    return (
+      !!hostEnabled &&
+      // Wildcard allows all messages.
+      (!!allowMessages?.includes('*') ||
+        // If no wildcard, ensure both bank and IBC sends are enabled.
+        (!!allowMessages?.includes(MsgSend.typeUrl) &&
+          !!allowMessages?.includes(MsgTransfer.typeUrl)))
+    )
   } catch (err) {
     if (isNonexistentQueryError(err)) {
       return false
@@ -1604,6 +1639,15 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'supportsIcaController', options],
       queryFn: () => fetchSupportsIcaController(options),
+    }),
+  /**
+   * Fetch whether or not a chain supports the ICA host module and allows spends
+   * and IBC transfers.
+   */
+  supportsIcaHost: (options: Parameters<typeof fetchSupportsIcaHost>[0]) =>
+    queryOptions({
+      queryKey: ['chain', 'supportsIcaHost', options],
+      queryFn: () => fetchSupportsIcaHost(options),
     }),
   /**
    * Fetch governance module params.

@@ -1,9 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { chainQueries } from '@dao-dao/state/query'
-import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
+import { accountQueries, chainQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
   ActionMatcher,
@@ -15,7 +15,6 @@ import {
   RocketShipEmoji,
   StatusCard,
   useActionOptions,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   AccountType,
@@ -34,6 +33,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
 import { WalletActionsProvider } from '../../../providers/wallet'
 import { fetchActionsWithOptions } from '../../../utils'
@@ -59,14 +59,15 @@ const Component: ActionComponent = (props) => {
     context,
     chain: { chainId: srcChainId },
   } = useActionOptions()
+  const queryClient = useQueryClient()
 
   const { watch, setError, clearErrors, setValue } =
     useFormContext<IcaExecuteData>()
   const destChainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
-  const icaRemoteAddressLoading = useCachedLoadingWithError(
+  const icaRemoteAddressLoading = useQueryLoadingDataWithError(
     destChainId
-      ? icaRemoteAddressSelector({
+      ? accountQueries.remoteIcaAddress(queryClient, {
           address,
           srcChainId,
           destChainId,
