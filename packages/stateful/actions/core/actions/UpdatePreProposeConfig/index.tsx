@@ -56,9 +56,12 @@ const getUpdatePreProposeConfigActions = async (
   )
 
   // If all error, combine all errors into a single error.
-  if (results.every((r) => r.status === 'rejected')) {
+  const errors = results.flatMap((r) =>
+    r.status === 'rejected' ? [r.reason] : []
+  )
+  if (errors.length === results.length) {
     throw new Error(
-      `Failed to load update pre-propose config actions for all proposal modules:\n${results.map((r, index) => `- ${dao.proposalModules[index].prefix}: ${r.reason}`).join('\n')}`
+      `Failed to load update pre-propose config actions for all proposal modules:\n${errors.map((err, index) => `- ${dao.proposalModules[index].prefix}: ${err instanceof Error ? err.message : err}`).join('\n')}`
     )
   }
 
