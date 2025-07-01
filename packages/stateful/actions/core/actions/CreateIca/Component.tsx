@@ -112,6 +112,19 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
               <>
                 <InputErrorMessage className="-mt-2" error={errors?.chainId} />
 
+                {/* Show warning if ICA already exists. */}
+                {!createdAddressLoading.loading &&
+                  !createdAddressLoading.errored &&
+                  !!createdAddressLoading.data && (
+                    <InputErrorMessage
+                      className="-mt-2"
+                      error={t('error.icaAlreadyExists', {
+                        chain: getDisplayNameForChainId(destinationChainId),
+                      })}
+                      warning
+                    />
+                  )}
+
                 {!icaHostSupported.errored && icaHostSupported.data && (
                   <>
                     <div className="flex flex-row items-center gap-3">
