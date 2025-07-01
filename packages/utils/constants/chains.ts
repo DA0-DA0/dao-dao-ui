@@ -1096,7 +1096,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         accentColor: '#a454ac',
         factoryContractAddress:
-          'odiseo1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysjs33cp',
+          'odiseo124x902fdvdcaawkr7njtjtccx94jq5vq4vtw6mhshxlrjqqxezqqgzgzrq',
         explorerUrlTemplates: {
           tx: 'https://testnet.explorer.chaintools.tech/odiseo/tx/REPLACE',
           gov: 'https://testnet.explorer.chaintools.tech/odiseo/gov',
@@ -1105,7 +1105,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
           wallet:
             'https://testnet.explorer.chaintools.tech/odiseo/account/REPLACE',
         },
-        latestVersion: ContractVersion.V270,
+        latestVersion: ContractVersion.V271,
         noIndexer: true,
       },
       {

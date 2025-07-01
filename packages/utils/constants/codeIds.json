@@ -666,6 +666,29 @@
       "DaoRewardsDistributor": 15,
       "DaoVoteDelegation": 16,
       "DaoVotingCw4": 17
+    },
+    "2.7.1": {
+      "Cw1Whitelist": 1,
+      "Cw4Group": 2,
+      "Cw721Base": 19,
+      "CwAdminFactory": 20,
+      "CwPayrollFactory": 21,
+      "CwTokenSwap": 22,
+      "CwTokenfactoryIssuer": 37,
+      "CwVesting": 35,
+      "DaoDaoCore": 23,
+      "DaoPreProposeApprovalMultiple": 24,
+      "DaoPreProposeApprovalSingle": 25,
+      "DaoPreProposeApprover": 26,
+      "DaoPreProposeMultiple": 27,
+      "DaoPreProposeSingle": 28,
+      "DaoProposalMultiple": 29,
+      "DaoProposalSingle": 30,
+      "DaoRewardsDistributor": 31,
+      "DaoVoteDelegation": 33,
+      "DaoVotingCw4": 34,
+      "DaoVotingCw721Staked": 36,
+      "DaoVotingTokenStaked": 38
     }
   },
   "juno-1": {

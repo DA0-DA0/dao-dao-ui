@@ -251,6 +251,8 @@ export const deploySets: DeploySet[] = [
 
         ChainId.TerraMainnet,
         ChainId.TerraClassicMainnet,
+
+        ChainId.DaodiseoTestnet,
       ],
     }
   ),
@@ -289,6 +291,8 @@ export const deploySets: DeploySet[] = [
 
         ChainId.TerraMainnet,
         ChainId.TerraClassicMainnet,
+
+        ChainId.DaodiseoTestnet,
       ],
     }
   ),
@@ -327,6 +331,8 @@ export const deploySets: DeploySet[] = [
         ChainId.StargazeTestnet,
 
         ChainId.TerraMainnet,
+
+        ChainId.DaodiseoTestnet,
       ],
     }
   ),
@@ -405,6 +411,8 @@ export const deploySets: DeploySet[] = [
         ChainId.TerraMainnet,
 
         ChainId.BabylonTestnet,
+
+        ChainId.DaodiseoTestnet,
       ],
     }
   ),

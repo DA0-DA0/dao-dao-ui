@@ -45,8 +45,12 @@ export const CreateNftCollection: ActionComponent = (props) => {
       return
     }
     const minter = getChainAddressForActionOptions(options, chainId)
-    if (!codeIds.Cw721Base || !minter) {
+    if (!minter) {
       toast.error(t('error.invalidChain'))
+      return
+    }
+    if (!codeIds.Cw721Base) {
+      toast.error(t('error.missingNftCodeId'))
       return
     }
 
