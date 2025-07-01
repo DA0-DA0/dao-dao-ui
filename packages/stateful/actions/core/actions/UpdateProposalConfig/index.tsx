@@ -32,30 +32,40 @@ const getUpdateProposalConfigActions = async (
 
   const { dao } = options.context
 
-  return (
-    (
-      await Promise.all(
-        dao.proposalModules.flatMap(
-          (proposalModule): Promise<ProposalModuleWithAction> | [] => {
-            const action = matchAndLoadCommon(
-              dao,
-              proposalModule.address
-            ).fields.updateConfigActionMaker(options)
+  // Allow any to fail as long as one succeeds.
+  const results = await Promise.allSettled(
+    dao.proposalModules.flatMap(
+      (proposalModule): Promise<ProposalModuleWithAction> | [] => {
+        const action = matchAndLoadCommon(
+          dao,
+          proposalModule.address
+        ).fields.updateConfigActionMaker(options)
 
-            if (!action) {
-              return []
-            }
+        if (!action) {
+          return []
+        }
 
-            return Promise.resolve(
-              action.ready ? undefined : action.init()
-            ).then(() => ({
-              proposalModule,
-              action,
-            }))
-          }
+        return Promise.resolve(action.ready ? undefined : action.init()).then(
+          () => ({
+            proposalModule,
+            action,
+          })
         )
-      )
+      }
     )
+  )
+
+  // If all error, combine all errors into a single error.
+  if (results.every((r) => r.status === 'rejected')) {
+    throw new Error(
+      `Failed to load update proposal config actions for all proposal modules:\n${results.map((r, index) => `- ${dao.proposalModules[index].prefix}: ${r.reason}`).join('\n')}`
+    )
+  }
+
+  // If any succeeds, return all successful results.
+  return (
+    results
+      .flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
       // Sort proposal modules by prefix.
       .sort((a, b) =>
         a.proposalModule.prefix.localeCompare(b.proposalModule.prefix)
