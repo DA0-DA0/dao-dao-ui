@@ -81,7 +81,10 @@ export const instantiateContract = async ({
         CHAIN_GAS_MULTIPLIER
       )
     } catch (err) {
-      log(chalk.red, 'instantiate failed')
+      log(
+        chalk.red,
+        `instantiate failed (${err instanceof Error ? err.message : err})`
+      )
       throw err
     }
 
@@ -204,7 +207,7 @@ export const uploadContract = async ({
           // succeed.
           throw bail('No authz permission granted')
         } else {
-          log(chalk.red, 'failed')
+          log(chalk.red, `failed (${err instanceof Error ? err.message : err})`)
           throw err
         }
       }
@@ -232,7 +235,7 @@ export const uploadContract = async ({
       }
 
       if (tx.code) {
-        log(chalk.red, 'TX failed')
+        log(chalk.red, `TX failed (${tx.code})`)
         throw new Error(`Upload failed for ${id} in TX ${transactionHash}`)
       }
 
