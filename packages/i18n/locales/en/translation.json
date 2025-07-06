@@ -1907,6 +1907,7 @@
     "enableRetroactiveCompensation": "Enable Retroactive Compensation",
     "enableVestingPayments": "Enable Vesting Payments",
     "end": "End",
+    "endBlock": "End block",
     "errored": "Errored",
     "estUsdValue": "Est. USD value",
     "established": "Established",

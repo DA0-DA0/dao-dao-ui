@@ -2,10 +2,12 @@ import { ArrowForwardIos, Check } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { StatelessDaoRewardDistributionInfoModalProps } from '@dao-dao/types'
 import {
+  expirationToDate,
   formatDateTimeTz,
   getHumanReadableRewardDistributionLabel,
   humanReadableExpiration,
@@ -13,6 +15,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../buttons'
 import { InputErrorMessage, InputLabel, NumericInput } from '../inputs'
 import { Modal } from '../modals'
@@ -62,6 +65,12 @@ export const DaoRewardDistributionInfoModal = ({
     amount,
     distribution?.token.decimals ?? 0
   )
+
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+  const linearDistributionIsBlockBased =
+    !!distribution &&
+    'linear' in distribution.active_epoch.emission_rate &&
+    'at_height' in distribution.active_epoch.ends_at
 
   return (
     <Modal
@@ -171,22 +180,6 @@ export const DaoRewardDistributionInfoModal = ({
       {distribution &&
         ('linear' in distribution.active_epoch.emission_rate ? (
           <>
-            <div className="flex flex-col gap-1">
-              <InputLabel name={t('title.dateStarted')} />
-              {distribution ? (
-                <p className="primary-text">
-                  {humanReadableExpiration(
-                    t,
-                    formatDateTimeTz,
-                    distribution.active_epoch.started_at,
-                    t('info.na')
-                  )}
-                </p>
-              ) : (
-                <p>...</p>
-              )}
-            </div>
-
             {!remaining.errored && (
               <div className="flex flex-col gap-1">
                 <InputLabel
@@ -205,6 +198,62 @@ export const DaoRewardDistributionInfoModal = ({
                 />
               </div>
             )}
+
+            <div className="flex flex-col gap-1">
+              <InputLabel
+                name={
+                  linearDistributionIsBlockBased
+                    ? t('title.endBlock')
+                    : t('title.timeRemaining')
+                }
+              />
+              {distribution ? (
+                <Tooltip
+                  title={
+                    !linearDistributionIsBlockBased
+                      ? formatDateTimeTz(
+                          expirationToDate(distribution.active_epoch.ends_at)
+                        )
+                      : undefined
+                  }
+                >
+                  <p className="primary-text">
+                    {linearDistributionIsBlockBased ? (
+                      t('title.blockHeightValue', {
+                        height:
+                          'at_height' in distribution.active_epoch.ends_at &&
+                          distribution.active_epoch.ends_at.at_height.toLocaleString(),
+                      })
+                    ) : (
+                      <TimeAgo
+                        date={expirationToDate(
+                          distribution.active_epoch.ends_at
+                        )}
+                        formatter={timeAgoFormatter}
+                      />
+                    )}
+                  </p>
+                </Tooltip>
+              ) : (
+                <p>...</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <InputLabel name={t('title.dateStarted')} />
+              {distribution ? (
+                <p className="primary-text">
+                  {humanReadableExpiration(
+                    t,
+                    formatDateTimeTz,
+                    distribution.active_epoch.started_at,
+                    t('info.na')
+                  )}
+                </p>
+              ) : (
+                <p>...</p>
+              )}
+            </div>
           </>
         ) : (
           <div className="flex flex-col gap-1">
