@@ -48,10 +48,19 @@ export const ProfileProposalCard = () => {
 
   const depositInfoSelectors = useMemo(
     () =>
-      dao.proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(dao, proposalModule.address).selectors.depositInfo
-      ),
+      dao.proposalModules.flatMap((proposalModule) => {
+        try {
+          return matchAndLoadCommon(dao, proposalModule.address).selectors
+            .depositInfo
+        } catch (error) {
+          console.error(
+            `Failed to load deposit info selector for proposal module ${proposalModule.address}`,
+            proposalModule,
+            error
+          )
+          return []
+        }
+      }),
     [dao]
   )
   const proposalModuleDepositInfosLoadable = useCachedLoadable(

@@ -82,10 +82,22 @@ export const ProposalList = ({
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
     () =>
-      dao.proposalModules.map((proposalModule) => ({
-        selectors: matchAndLoadCommon(dao, proposalModule.address).selectors,
-        proposalModule,
-      })),
+      dao.proposalModules.flatMap((proposalModule) => {
+        try {
+          return {
+            selectors: matchAndLoadCommon(dao, proposalModule.address)
+              .selectors,
+            proposalModule,
+          }
+        } catch (error) {
+          console.error(
+            `Failed to load common selectors for proposal module ${proposalModule.address}`,
+            proposalModule,
+            error
+          )
+          return []
+        }
+      }),
     [dao]
   )
 
