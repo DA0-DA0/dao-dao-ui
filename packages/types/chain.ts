@@ -105,6 +105,8 @@ export enum ChainId {
   IntergazeMainnet = 'intergaze-1',
   DaodiseoTestnet = 'ithaca-1',
   KopiMainnet = 'luwak-1',
+  RegenMainnet = 'regen-1',
+  RegenTestnet = 'regen-temp',
 
   // Local testing chain powered by Starship.
   StarshipTestChain = 'starship-chain',

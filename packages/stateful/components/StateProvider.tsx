@@ -3,7 +3,6 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ReactNode, useEffect, useMemo } from 'react'
 import { MutableSnapshot, RecoilRoot, useSetRecoilState } from 'recoil'
 
@@ -53,7 +52,7 @@ export const StateProvider = ({
         <InnerStateProvider>{children}</InnerStateProvider>
       </RecoilRoot>
 
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   )
 }

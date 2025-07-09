@@ -582,6 +582,34 @@ assets.push({
   ],
 })
 
+// Regen Testnet
+const regenTestnetChain = convertChainRegistryChainToAnyChain({
+  ...chains.find((c) => c.chainId === ChainId.RegenMainnet)!.chainRegistry!,
+  chain_id: ChainId.RegenTestnet,
+  chain_name: 'regentestnet',
+  status: 'live',
+  network_type: 'testnet',
+  pretty_name: 'Regen Testnet',
+  apis: {
+    rpc: [
+      {
+        address: 'https://rpc.regen-temp.vitwit.com',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://api.regen-temp.vitwit.com',
+      },
+    ],
+  },
+})
+chains.push(regenTestnetChain)
+assets.push({
+  chain_name: regenTestnetChain.chainName,
+  // Copy assets from Regen mainnet.
+  assets: assets.find((a) => a.chain_name === 'regen')?.assets ?? [],
+})
+
 const chainsToRemove = [
   // Remove thorchain, althea, and andromeda1 since they spam the console.
   'thorchain',
@@ -1122,6 +1150,24 @@ const BASE_SUPPORTED_CHAINS: Omit<
           wallet: 'https://explorer.kopi.money/luwak-1/account/REPLACE',
         },
         latestVersion: ContractVersion.V270,
+        noIndexer: true,
+      },
+      {
+        chainId: ChainId.RegenTestnet,
+        name: 'regen',
+        mainnet: false,
+        accentColor: '#000000',
+        factoryContractAddress:
+          'regen1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysp76v39',
+        explorerUrlTemplates: {
+          tx: 'https://explorer.regen-temp.vitwit.com/regen-temp/tx/REPLACE',
+          gov: 'https://explorer.regen-temp.vitwit.com/regen-temp/gov',
+          govProp:
+            'https://explorer.regen-temp.vitwit.com/regen-temp/gov/REPLACE',
+          wallet:
+            'https://explorer.regen-temp.vitwit.com/regen-temp/account/REPLACE',
+        },
+        latestVersion: ContractVersion.V280Beta,
         noIndexer: true,
       },
     ]

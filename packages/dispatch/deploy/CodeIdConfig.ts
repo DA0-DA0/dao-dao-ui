@@ -76,11 +76,18 @@ export class CodeIdConfig {
      */
     codeId: number
   }) {
-    await Promise.all([
+    // Let all finish before checking for errors.
+    await Promise.allSettled([
       this.setCodeIdUiConfig(options),
       !!this.indexerAnsibleGroupVarsPath &&
         this.setCodeIdIndexerConfig(options),
-    ])
+    ]).then((results) => {
+      // Throw the first error.
+      const rejected = results.find((result) => result.status === 'rejected')
+      if (rejected) {
+        throw rejected.reason
+      }
+    })
   }
 
   /**
