@@ -830,10 +830,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
         factoryContractAddress:
           'terra1hm8w8474vq46fj4na9cjaud2ruzddhc0xttu87tg8s667ncsnhtq3l04mj',
         explorerUrlTemplates: {
-          tx: 'https://finder.terra.money/mainnet/tx/REPLACE',
-          gov: 'https://mintscan.io/terra/proposals',
-          govProp: 'https://mintscan.io/terra/proposals/REPLACE',
-          wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
+          tx: 'https://chainsco.pe/terra2/tx/REPLACE',
+          gov: 'https://chainsco.pe/terra2/governance',
+          govProp: 'https://chainsco.pe/terra2/governance/proposal/REPLACE',
+          wallet: 'https://chainsco.pe/terra2/address/REPLACE',
         },
         tokenDaoType: 'both',
         latestVersion: ContractVersion.V270,
