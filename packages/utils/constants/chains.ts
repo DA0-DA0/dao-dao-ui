@@ -931,6 +931,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.CosmosHubProviderTestnet,
         name: 'cosmosprovider',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#5064fb',
         factoryContractAddress:
           'cosmos1kp83xmg04ramd3n82p5chnekzem4yxmeawrgx4uv4ldszqtcedgqvqrwn0',
@@ -952,6 +953,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.JunoTestnet,
         name: 'juno',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#f74a49',
         factoryContractAddress:
           'juno10kkn698hpzm07kj0klhj3hrkxjsmngj9598esypm5kh9hfpealpq9vjvcw',
@@ -967,6 +969,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OsmosisTestnet,
         name: 'osmosis',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#5604e8',
         factoryContractAddress:
           'osmo1em9rp0zucf9dm7luqf06n20ke9dj9q0yyyd26k5w348sm8rq7h4qwrx8uw',
@@ -982,6 +985,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.StargazeTestnet,
         name: 'stargaze',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#8ac3cc',
         factoryContractAddress:
           'stars1ezkctzcnrvnwy94d6vjp2zkg68z272qndw688crzhh9nn4ud0q6sw8z03f',
@@ -997,6 +1001,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.MigalooTestnet,
         name: 'migaloo',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#3ccd64',
         factoryContractAddress:
           'migaloo1x393zjpv0ve7wk2w3d40gwjxeww7n8c0unxtdf87u366dlvazryq239pxu',
@@ -1013,6 +1018,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   chainId: ChainId.KujiraTestnet,
       //   name: 'kujira',
       //   mainnet: false,
+      //   noIndexer: true,
       //   accentColor: '#e53935',
       //   factoryContractAddress:
       //     'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
@@ -1030,6 +1036,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.NeutronTestnet,
         name: 'neutron',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#000000',
         factoryContractAddress:
           'neutron1caflev8smuslum9uque5z2qhma8xxxmap5dafeynekl37s966k8sq034r4',
@@ -1045,6 +1052,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   chainId: ChainId.BitsongTestnet,
       //   name: 'bitsong',
       //   mainnet: false,
+      //   noIndexer: true,
       //   accentColor: '#c53381',
       //   factoryContractAddress:
       //     'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
@@ -1056,6 +1064,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OmniflixHubTestnet,
         name: 'omniflixhub',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#d71d6a',
         factoryContractAddress:
           'omniflix1dlz906ww79sq49yykjvvlkf9fu0tv4u94gywfd7ldrtyjd8873hqufdvuc',
@@ -1071,9 +1080,9 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.SecretTestnet,
         name: 'secret',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#000000',
         factoryContractAddress: 'secret15rtkhedsr9gx2z4vq2p7zqk25z4kssju5ae0yy',
-        noIndexer: true,
         noInstantiate2Create: true,
         explorerUrlTemplates: {
           tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
@@ -1109,6 +1118,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.ThorchainStagenet,
         name: 'thorchain',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#00eed1',
         factoryContractAddress:
           'sthor122ht2h5ca482vlyqt22ecs6yw5n8f3rx6mwj9wu3jym99ct9xl2qj4cgrz',
@@ -1122,6 +1132,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.DaodiseoTestnet,
         name: 'daodiseo',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#a454ac',
         factoryContractAddress:
           'odiseo124x902fdvdcaawkr7njtjtccx94jq5vq4vtw6mhshxlrjqqxezqqgzgzrq',
@@ -1134,7 +1145,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
             'https://testnet.explorer.chaintools.tech/odiseo/account/REPLACE',
         },
         latestVersion: ContractVersion.V271,
-        noIndexer: true,
       },
       {
         chainId: ChainId.KopiMainnet,
@@ -1156,6 +1166,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.RegenTestnet,
         name: 'regen',
         mainnet: false,
+        noIndexer: true,
         accentColor: '#000000',
         factoryContractAddress:
           'regen1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysp76v39',
@@ -1168,7 +1179,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
             'https://explorer.regen-temp.vitwit.com/regen-temp/account/REPLACE',
         },
         latestVersion: ContractVersion.V280Beta,
-        noIndexer: true,
       },
     ]
 
@@ -1579,9 +1589,9 @@ export const _addSupportedChain = ({
     chainId: anyChain.chainId,
     name: anyChain.chainName,
     mainnet: false,
+    noIndexer: true,
     accentColor: '',
     factoryContractAddress,
-    noIndexer: true,
     explorerUrlTemplates: {
       tx: `${baseExplorerUrl}/tx/REPLACE`,
       gov: `${baseExplorerUrl}/gov`,
