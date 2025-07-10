@@ -1,30 +1,30 @@
-import * as _231 from "./onft/v1beta1/genesis";
-import * as _232 from "./onft/v1beta1/onft";
-import * as _233 from "./onft/v1beta1/params";
-import * as _234 from "./onft/v1beta1/query";
-import * as _235 from "./onft/v1beta1/tx";
-import * as _670 from "./onft/v1beta1/tx.amino";
-import * as _671 from "./onft/v1beta1/tx.registry";
-import * as _672 from "./onft/v1beta1/query.rpc.Query";
-import * as _673 from "./onft/v1beta1/tx.rpc.msg";
-import * as _871 from "./rpc.query";
-import * as _872 from "./rpc.tx";
+import * as _242 from "./onft/v1beta1/genesis";
+import * as _243 from "./onft/v1beta1/onft";
+import * as _244 from "./onft/v1beta1/params";
+import * as _245 from "./onft/v1beta1/query";
+import * as _246 from "./onft/v1beta1/tx";
+import * as _685 from "./onft/v1beta1/tx.amino";
+import * as _686 from "./onft/v1beta1/tx.registry";
+import * as _687 from "./onft/v1beta1/query.rpc.Query";
+import * as _688 from "./onft/v1beta1/tx.rpc.msg";
+import * as _886 from "./rpc.query";
+import * as _887 from "./rpc.tx";
 export namespace OmniFlix {
   export namespace onft {
     export const v1beta1 = {
-      ..._231,
-      ..._232,
-      ..._233,
-      ..._234,
-      ..._235,
-      ..._670,
-      ..._671,
-      ..._672,
-      ..._673
+      ..._242,
+      ..._243,
+      ..._244,
+      ..._245,
+      ..._246,
+      ..._685,
+      ..._686,
+      ..._687,
+      ..._688
     };
   }
   export const ClientFactory = {
-    ..._871,
-    ..._872
+    ..._886,
+    ..._887
   };
 }

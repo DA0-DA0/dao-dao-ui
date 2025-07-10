@@ -132,6 +132,7 @@ telescope({
           'slinky.marketmap.v1',
           'slinky.oracle.v1',
           'elys.stablestake',
+          'elys.amm',
           'pryzm.amm.v1',
           'pryzm.amm.v2',
           'pryzm.assets.v1',

@@ -1,22 +1,22 @@
-import * as _121 from "./api/annotations";
-import * as _122 from "./api/http";
-import * as _123 from "./protobuf/any";
-import * as _124 from "./protobuf/descriptor";
-import * as _125 from "./protobuf/duration";
-import * as _126 from "./protobuf/empty";
-import * as _127 from "./protobuf/timestamp";
-import * as _128 from "./protobuf/wrappers";
+import * as _132 from "./api/annotations";
+import * as _133 from "./api/http";
+import * as _134 from "./protobuf/any";
+import * as _135 from "./protobuf/descriptor";
+import * as _136 from "./protobuf/duration";
+import * as _137 from "./protobuf/empty";
+import * as _138 from "./protobuf/timestamp";
+import * as _139 from "./protobuf/wrappers";
 export namespace google {
   export const api = {
-    ..._121,
-    ..._122
+    ..._132,
+    ..._133
   };
   export const protobuf = {
-    ..._123,
-    ..._124,
-    ..._125,
-    ..._126,
-    ..._127,
-    ..._128
+    ..._134,
+    ..._135,
+    ..._136,
+    ..._137,
+    ..._138,
+    ..._139
   };
 }

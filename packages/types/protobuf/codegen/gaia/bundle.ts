@@ -1,30 +1,30 @@
-import * as _116 from "./globalfee/v1beta1/genesis";
-import * as _117 from "./globalfee/v1beta1/query";
-import * as _118 from "./globalfee/v1beta1/tx";
-import * as _119 from "./metaprotocols/extensions";
-import * as _593 from "./globalfee/v1beta1/tx.amino";
-import * as _594 from "./globalfee/v1beta1/tx.registry";
-import * as _595 from "./globalfee/v1beta1/query.rpc.Query";
-import * as _596 from "./globalfee/v1beta1/tx.rpc.msg";
-import * as _859 from "./rpc.query";
-import * as _860 from "./rpc.tx";
+import * as _127 from "./globalfee/v1beta1/genesis";
+import * as _128 from "./globalfee/v1beta1/query";
+import * as _129 from "./globalfee/v1beta1/tx";
+import * as _130 from "./metaprotocols/extensions";
+import * as _608 from "./globalfee/v1beta1/tx.amino";
+import * as _609 from "./globalfee/v1beta1/tx.registry";
+import * as _610 from "./globalfee/v1beta1/query.rpc.Query";
+import * as _611 from "./globalfee/v1beta1/tx.rpc.msg";
+import * as _874 from "./rpc.query";
+import * as _875 from "./rpc.tx";
 export namespace gaia {
   export namespace globalfee {
     export const v1beta1 = {
-      ..._116,
-      ..._117,
-      ..._118,
-      ..._593,
-      ..._594,
-      ..._595,
-      ..._596
+      ..._127,
+      ..._128,
+      ..._129,
+      ..._608,
+      ..._609,
+      ..._610,
+      ..._611
     };
   }
   export const metaprotocols = {
-    ..._119
+    ..._130
   };
   export const ClientFactory = {
-    ..._859,
-    ..._860
+    ..._874,
+    ..._875
   };
 }

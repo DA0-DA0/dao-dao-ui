@@ -1,28 +1,28 @@
-import * as _171 from "./feeshare/v1/feeshare";
-import * as _172 from "./feeshare/v1/genesis";
-import * as _173 from "./feeshare/v1/query";
-import * as _174 from "./feeshare/v1/tx";
-import * as _629 from "./feeshare/v1/tx.amino";
-import * as _630 from "./feeshare/v1/tx.registry";
-import * as _631 from "./feeshare/v1/query.rpc.Query";
-import * as _632 from "./feeshare/v1/tx.rpc.msg";
-import * as _865 from "./rpc.query";
-import * as _866 from "./rpc.tx";
+import * as _182 from "./feeshare/v1/feeshare";
+import * as _183 from "./feeshare/v1/genesis";
+import * as _184 from "./feeshare/v1/query";
+import * as _185 from "./feeshare/v1/tx";
+import * as _644 from "./feeshare/v1/tx.amino";
+import * as _645 from "./feeshare/v1/tx.registry";
+import * as _646 from "./feeshare/v1/query.rpc.Query";
+import * as _647 from "./feeshare/v1/tx.rpc.msg";
+import * as _880 from "./rpc.query";
+import * as _881 from "./rpc.tx";
 export namespace juno {
   export namespace feeshare {
     export const v1 = {
-      ..._171,
-      ..._172,
-      ..._173,
-      ..._174,
-      ..._629,
-      ..._630,
-      ..._631,
-      ..._632
+      ..._182,
+      ..._183,
+      ..._184,
+      ..._185,
+      ..._644,
+      ..._645,
+      ..._646,
+      ..._647
     };
   }
   export const ClientFactory = {
-    ..._865,
-    ..._866
+    ..._880,
+    ..._881
   };
 }
