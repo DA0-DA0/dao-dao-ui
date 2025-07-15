@@ -267,6 +267,9 @@ export const deploySets: DeploySet[] = [
     [new DeploySetContract('dao_voting_cw721_staked')],
     {
       chainIds: [
+        ChainId.CosmosHubMainnet,
+        ChainId.CosmosHubProviderTestnet,
+
         ChainId.BitsongMainnet,
         ChainId.BitsongTestnet,
 

@@ -390,6 +390,27 @@
       "DaoVoteDelegation": 141,
       "DaoVotingCw4": 142,
       "DaoVotingTokenStaked": 144
+    },
+    "2.7.1": {
+      "Cw1Whitelist": 2,
+      "Cw4Group": 3,
+      "CwAdminFactory": 176,
+      "CwPayrollFactory": 177,
+      "CwTokenSwap": 178,
+      "CwVesting": 190,
+      "DaoDaoCore": 179,
+      "DaoPreProposeApprovalMultiple": 180,
+      "DaoPreProposeApprovalSingle": 181,
+      "DaoPreProposeApprover": 182,
+      "DaoPreProposeMultiple": 183,
+      "DaoPreProposeSingle": 184,
+      "DaoProposalMultiple": 185,
+      "DaoProposalSingle": 186,
+      "DaoRewardsDistributor": 187,
+      "DaoVoteDelegation": 188,
+      "DaoVotingCw4": 189,
+      "DaoVotingCw721Staked": 191,
+      "DaoVotingTokenStaked": 192
     }
   },
   "elgafar-1": {

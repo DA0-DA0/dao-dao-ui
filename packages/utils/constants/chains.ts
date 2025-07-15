@@ -706,7 +706,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: true,
         accentColor: '#5064fb',
         factoryContractAddress:
-          'cosmos1az0ae4wsthlcg8yar3ydhsc6xw6h9uvzdvvgf737qu02nq8ekcxq6v7ymq',
+          'cosmos19jjaejvhfyqzjlgc6l2xa7w3gwwtvx4qvgad2gkw5dynxx2lmpxq9s5g3y',
         explorerUrlTemplates: {
           tx: 'https://mintscan.io/cosmos/tx/REPLACE',
           gov: 'https://mintscan.io/cosmos/proposals',
@@ -715,11 +715,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         // Disable token creation.
         noTokenFactory: true,
-        daoCreatorDisabled: {
-          // No NFTs on the Hub.
-          [NftBasedCreatorId]: 'unsupported',
-        },
-        latestVersion: ContractVersion.V270,
+        latestVersion: ContractVersion.V271,
       },
       {
         chainId: ChainId.JunoMainnet,
