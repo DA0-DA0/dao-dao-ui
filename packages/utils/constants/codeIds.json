@@ -1703,6 +1703,27 @@
       "DaoVoteDelegation": 83,
       "DaoVotingCw4": 84,
       "DaoVotingTokenStaked": 86
+    },
+    "2.7.1": {
+      "Cw1Whitelist": 19,
+      "Cw4Group": 20,
+      "CwAdminFactory": 87,
+      "CwPayrollFactory": 88,
+      "CwTokenSwap": 89,
+      "CwVesting": 101,
+      "DaoDaoCore": 90,
+      "DaoPreProposeApprovalMultiple": 91,
+      "DaoPreProposeApprovalSingle": 92,
+      "DaoPreProposeApprover": 93,
+      "DaoPreProposeMultiple": 94,
+      "DaoPreProposeSingle": 95,
+      "DaoProposalMultiple": 96,
+      "DaoProposalSingle": 97,
+      "DaoRewardsDistributor": 98,
+      "DaoVoteDelegation": 99,
+      "DaoVotingCw4": 100,
+      "DaoVotingCw721Staked": 102,
+      "DaoVotingTokenStaked": 103
     }
   },
   "pulsar-3": {

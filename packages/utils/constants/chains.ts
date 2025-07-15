@@ -930,7 +930,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         noIndexer: true,
         accentColor: '#5064fb',
         factoryContractAddress:
-          'cosmos1kp83xmg04ramd3n82p5chnekzem4yxmeawrgx4uv4ldszqtcedgqvqrwn0',
+          'cosmos1re4sge3zf9fr8g0j0q4lf6ks2gedq50qgp8jvhac7agavjvlhrdqqp5wqr',
         explorerUrlTemplates: {
           tx: 'https://explorer.polypore.xyz/provider/tx/REPLACE',
           gov: 'https://explorer.polypore.xyz/provider/gov',
@@ -939,11 +939,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         // Disable token creation.
         noTokenFactory: true,
-        daoCreatorDisabled: {
-          // No NFTs on the Hub.
-          [NftBasedCreatorId]: 'unsupported',
-        },
-        latestVersion: ContractVersion.V270,
+        latestVersion: ContractVersion.V271,
       },
       {
         chainId: ChainId.JunoTestnet,
