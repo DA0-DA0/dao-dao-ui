@@ -148,6 +148,10 @@ export type CrossChainPacketInfoStateRelayed = {
   status: CrossChainPacketInfoStatus.Relayed
   packet: CrossChainPacketInfo
   /**
+   * The relayed transaction hashes, if found.
+   */
+  txHashes?: string[]
+  /**
    * Execution events per message within the cross-chain packet.
    */
   msgResponses: {

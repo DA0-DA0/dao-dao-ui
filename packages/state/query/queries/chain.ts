@@ -1448,6 +1448,40 @@ export const fetchFeeGrantsByGrantee = async ({
   )
 }
 
+/**
+ * Fetch the relayed transaction hash for a cross-chain packet.
+ */
+export const fetchRelayedCrossChainPacketTxHash = async ({
+  srcPort,
+  srcChannel,
+  dstChainId,
+  dstPort,
+  dstChannel,
+  packetSequence,
+}: {
+  srcPort: string
+  srcChannel: string
+  dstChainId: string
+  dstPort: string
+  dstChannel: string
+  packetSequence: string
+}): Promise<string | null> => {
+  const client = await getCosmWasmClientForChainId(dstChainId)
+  const events = await client.searchTx([
+    { key: 'write_acknowledgement.packet_src_port', value: srcPort },
+    { key: 'write_acknowledgement.packet_src_channel', value: srcChannel },
+    { key: 'write_acknowledgement.packet_dst_port', value: dstPort },
+    { key: 'write_acknowledgement.packet_dst_channel', value: dstChannel },
+    { key: 'write_acknowledgement.packet_sequence', value: packetSequence },
+  ])
+
+  if (events.length > 1) {
+    console.error('More than one packet acknowledgement', events)
+  }
+
+  return events?.[0]?.hash ?? null
+}
+
 export const chainQueries = {
   /**
    * Fetch the module address associated with the specified name.
@@ -1775,5 +1809,15 @@ export const chainQueries = {
     queryOptions({
       queryKey: ['chain', 'feeGrantsByGrantee', options],
       queryFn: () => fetchFeeGrantsByGrantee(options),
+    }),
+  /**
+   * Fetch the relayed transaction hash for a cross-chain packet.
+   */
+  relayedCrossChainPacketTxHash: (
+    options: Parameters<typeof fetchRelayedCrossChainPacketTxHash>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['chain', 'relayedCrossChainPacketTxHash', options],
+      queryFn: () => fetchRelayedCrossChainPacketTxHash(options),
     }),
 }
