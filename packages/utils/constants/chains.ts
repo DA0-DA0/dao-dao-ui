@@ -1077,10 +1077,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
         factoryContractAddress: 'secret15rtkhedsr9gx2z4vq2p7zqk25z4kssju5ae0yy',
         noInstantiate2Create: true,
         explorerUrlTemplates: {
-          tx: 'https://testnet.ping.pub/secret/tx/REPLACE',
-          gov: 'https://testnet.ping.pub/secret/gov',
-          govProp: 'https://testnet.ping.pub/secret/gov/REPLACE',
-          wallet: 'https://testnet.ping.pub/secret/account/REPLACE',
+          tx: 'https://secretnodes.com/pulsar/transactions/REPLACE',
+          gov: 'https://secretnodes.com/pulsar/governance',
+          govProp: 'https://secretnodes.com/pulsar/proposals/REPLACE',
+          wallet: 'https://secretnodes.com/pulsar/accounts/REPLACE',
         },
         tokenDaoType: TokenType.Cw20,
         latestVersion: ContractVersion.V242,
@@ -1327,8 +1327,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://api.testnet.omniflix.network',
   },
   [ChainId.SecretTestnet]: {
-    rpc: 'https://rpc.pulsar.scrttestnet.com',
-    rest: 'https://api.pulsar.scrttestnet.com',
+    rpc: 'https://pulsar.rpc.secretnodes.com',
+    rest: 'https://pulsar.lcd.secretnodes.com',
   },
   [ChainId.BabylonTestnet]: {
     rpc: 'https://babylon-testnet-rpc.polkachu.com',
