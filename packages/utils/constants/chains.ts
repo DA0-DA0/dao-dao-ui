@@ -62,6 +62,15 @@ let chains: AnyChain[] = chainRegistryChains.map(
 )
 const assets = [...chainRegistryAssets]
 
+const chainsToRemove = [
+  // Remove thorchain since we're replacing it below.
+  'thorchain',
+  // Remove althea and andromeda1 since they spam the console.
+  'althea',
+  'andromeda1',
+]
+chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
+
 // BitSong Testnet: halted indefinitely
 // const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
 //   ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
@@ -137,7 +146,39 @@ if (junoTestnetChain?.chainRegistry) {
   }
 }
 
-// THORChain/Rujira Stagenet
+// THORChain/Rujira mainnet and stagenet
+const thorchainMainnetChain = convertChainRegistryChainToAnyChain({
+  chain_id: ChainId.ThorchainMainnet,
+  chain_name: 'thorchain',
+  chain_type: 'cosmos',
+  status: 'live',
+  network_type: 'mainnet',
+  pretty_name: 'THORChain',
+  bech32_prefix: 'thor',
+  slip44: 931,
+  apis: {
+    rpc: [
+      {
+        address: 'https://thornode-mainnet-rpc.bryanlabs.net',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://thornode-mainnet-api.bryanlabs.net',
+      },
+    ],
+  },
+  fees: {
+    fee_tokens: [
+      {
+        denom: 'rune',
+        fixed_min_gas_price: 0,
+      },
+    ],
+  },
+})
+chains.push(thorchainMainnetChain)
+
 const thorchainStagenetChain = convertChainRegistryChainToAnyChain({
   chain_id: ChainId.ThorchainStagenet,
   chain_name: 'thorchainstagenet',
@@ -610,14 +651,6 @@ assets.push({
   assets: assets.find((a) => a.chain_name === 'regen')?.assets ?? [],
 })
 
-const chainsToRemove = [
-  // Remove thorchain, althea, and andromeda1 since they spam the console.
-  'thorchain',
-  'althea',
-  'andromeda1',
-]
-chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
-
 // Shrink Cosmos Hub ICS provider testnet name since Keplr thinks it's too long.
 chains.find((c) => c.chainId === ChainId.CosmosHubProviderTestnet)!.prettyName =
   'Cosmos ICS Provider Testnet'
@@ -888,6 +921,20 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V250,
       },
+      // TODO: uncomment once thorchain fixes contract permissions
+      // {
+      //   chainId: ChainId.ThorchainMainnet,
+      //   name: 'thorchain',
+      //   mainnet: true,
+      //   accentColor: '#00eed1',
+      //   factoryContractAddress:
+      //     'thor1d8thneasuuhrflhel59hcvj77rj5vf6vjmz3njsu5n3ss94jjh5s73xqh5',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://runescan.io/tx/REPLACE',
+      //     wallet: 'https://runescan.io/address/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V271,
+      // },
       {
         chainId: ChainId.BitsongMainnet,
         name: 'bitsong',
@@ -1333,6 +1380,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.BabylonTestnet]: {
     rpc: 'https://babylon-testnet-rpc.polkachu.com',
     rest: 'https://babylon-testnet-api.polkachu.com',
+  },
+  [ChainId.ThorchainMainnet]: {
+    rpc: 'https://rpc.ninerealms.com',
+    rest: 'https://thornode.ninerealms.com',
   },
   [ChainId.ThorchainStagenet]: {
     rpc: 'https://stagenet-rpc.ninerealms.com',

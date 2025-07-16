@@ -668,8 +668,9 @@ export const InnerCreateDaoForm = ({
         throw new Error('Predicted DAO address not found')
       }
 
-      // Instantiate with no admin for Thorchain Stagenet since admins can't be
-      // changed yet.
+      // TODO: thorchain stagenet remove 3.8???
+      // Instantiate with no admin for Thorchain since admins can't be changed
+      // yet.
       if (chainId === ChainId.ThorchainStagenet) {
         return await instantiateSmartContract(
           getSigningClient,

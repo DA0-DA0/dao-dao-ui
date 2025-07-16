@@ -101,6 +101,7 @@ export enum ChainId {
   SecretMainnet = 'secret-4',
   SecretTestnet = 'pulsar-3',
   BabylonTestnet = 'bbn-test-5',
+  ThorchainMainnet = 'thorchain-1',
   ThorchainStagenet = 'thorchain-stagenet-2',
   IntergazeMainnet = 'intergaze-1',
   DaodiseoTestnet = 'ithaca-1',
