@@ -1074,7 +1074,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         mainnet: false,
         noIndexer: true,
         accentColor: '#000000',
-        factoryContractAddress: 'secret15rtkhedsr9gx2z4vq2p7zqk25z4kssju5ae0yy',
+        factoryContractAddress: 'secret1us532v7wpky7af5vhk68nj7th976d6lygpalaf',
         noInstantiate2Create: true,
         explorerUrlTemplates: {
           tx: 'https://secretnodes.com/pulsar/transactions/REPLACE',

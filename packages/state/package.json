@@ -31,7 +31,7 @@
     "meilisearch": "^0.30.0",
     "pusher-js": "^7.6.0",
     "recoil": "^0.7.2",
-    "secretjs": "^1.12.5"
+    "secretjs": "^1.15.1"
   },
   "devDependencies": {
     "@chain-registry/types": "0.50.159",
