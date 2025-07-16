@@ -227,23 +227,25 @@ export const useTxRelayState = ({
                 ],
                 queryFn: async () => ({
                   uuid,
-                  hashes: (
-                    await Promise.all(
-                      packets.map(
-                        ({ sourceChannel, destinationChannel, sequence }) =>
-                          queryClient.fetchQuery(
-                            chainQueries.relayedCrossChainPacketTxHash({
-                              srcPort,
-                              srcChannel: sourceChannel,
-                              dstChainId: chainId,
-                              dstPort,
-                              dstChannel: destinationChannel,
-                              packetSequence: sequence.toString(),
-                            })
-                          )
+                  hashes: uniq(
+                    (
+                      await Promise.all(
+                        packets.map(
+                          ({ sourceChannel, destinationChannel, sequence }) =>
+                            queryClient.fetchQuery(
+                              chainQueries.relayedCrossChainPacketTxHash({
+                                srcPort,
+                                srcChannel: sourceChannel,
+                                dstChainId: chainId,
+                                dstPort,
+                                dstChannel: destinationChannel,
+                                packetSequence: sequence.toString(),
+                              })
+                            )
+                        )
                       )
-                    )
-                  ).flatMap((h) => h || []),
+                    ).flatMap((h) => h || [])
+                  ),
                 }),
               }
             }
