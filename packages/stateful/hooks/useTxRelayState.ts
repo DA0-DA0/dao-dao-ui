@@ -28,6 +28,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
+  ChainId,
   CrossChainPacketInfoState,
   CrossChainPacketInfoStatus,
   LoadingData,
@@ -496,6 +497,9 @@ export const useTxRelayState = ({
       ? undefined
       : crossChainPackets.filter(
           (packet) =>
+            // Not Injective, since we don't support signing for it yet.
+            // TODO: support injective signing
+            packet.data.chainId !== ChainId.InjectiveMainnet &&
             // Not yet relayed.
             states.pending.some((p) => p.packet === packet) &&
             // Executed a few minutes ago and still has not been relayed, or the
