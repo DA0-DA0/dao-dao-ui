@@ -1506,6 +1506,7 @@
     "startsAt": "Starts at",
     "startsIn": "Starts in",
     "statusPageDescription": "Check the status of DAO DAO's services.",
+    "subDaoCreationRequiresParentDao": "{{chain}} requires that your SubDAO is created through a proposal in the parent DAO. Click Continue to open the proposal creation page.",
     "subDaoExplanation": "SubDAOs are children DAOs that help manage groups within your DAO.",
     "subDaoNotYetRecognized": "{{child}} has not yet been recognized by {{parent}} as a SubDAO. Be careful interacting with unrecognized SubDAOs as they could be malicious.",
     "subDaoRegistered": "{{child}} is a SubDAO of {{parent}}.",

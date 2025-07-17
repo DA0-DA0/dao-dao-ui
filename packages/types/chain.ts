@@ -103,6 +103,7 @@ export enum ChainId {
   BabylonTestnet = 'bbn-test-5',
   ThorchainMainnet = 'thorchain-1',
   ThorchainStagenet = 'thorchain-stagenet-2',
+  ThorchainMocknet = 'thorchain',
   IntergazeMainnet = 'intergaze-1',
   DaodiseoTestnet = 'ithaca-1',
   KopiMainnet = 'luwak-1',
@@ -240,6 +241,10 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
    * Whether or not to create a DAO through chain governance.
    */
   createViaGovernance?: boolean
+  /**
+   * Whether or not to create a SubDAO through its parent DAO.
+   */
+  createSubDaoViaDao?: boolean
   /**
    * Whether or not this chain supports instantiate2 for creating DAOs with
    * extensions setup.

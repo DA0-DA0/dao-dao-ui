@@ -20,6 +20,7 @@ import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   averageColorSelector,
+  chainQueries,
   contractQueries,
   walletChainIdAtom,
 } from '@dao-dao/state'
@@ -47,7 +48,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionKey,
-  ChainId,
+  ActionKeyAndData,
   ContractVersion,
   CreateDaoContext,
   CreateDaoCustomValidator,
@@ -75,6 +76,7 @@ import {
   decodeJsonFromBase64,
   encodeJsonToBase64,
   findWasmAttributeValue,
+  getDaoProposalSinglePrefill,
   getDisplayNameForChainId,
   getFallbackImage,
   getModuleStorageItemKey,
@@ -85,7 +87,6 @@ import {
   isErrorWithSubstring,
   isFeatureSupportedByVersion,
   isSecretNetwork,
-  makeWasmMessage,
   parseContractVersion,
   processError,
   versionGte,
@@ -103,6 +104,7 @@ import {
   SecretCwAdminFactoryHooks,
   useAwaitNextBlock,
   useGenerateInstantiate2,
+  useQueryLoadingDataWithError,
   useQuerySyncedRecoilState,
   useWallet,
 } from '../../hooks'
@@ -192,6 +194,7 @@ export const InnerCreateDaoForm = ({
       codeIds: { DaoDaoCore: daoDaoCoreCodeId },
       codeHashes,
       createViaGovernance,
+      createSubDaoViaDao,
       noInstantiate2Create,
     },
   } = chainContext
@@ -426,7 +429,8 @@ export const InnerCreateDaoForm = ({
           CreateDaoSubmitValue.Create
   const submitLabel =
     // Override with continue button if necessary.
-    submitValue === CreateDaoSubmitValue.Create && createViaGovernance
+    submitValue === CreateDaoSubmitValue.Create &&
+    (createViaGovernance || (createSubDaoViaDao && parentDao))
       ? t('button.continue')
       : // Override with SubDAO button if necessary.
         submitValue === CreateDaoSubmitValue.Create && makingSubDao
@@ -577,9 +581,29 @@ export const InnerCreateDaoForm = ({
     refreshBalances,
   } = useWallet()
 
+  const govModuleAddress = useQueryLoadingDataWithError(
+    chainQueries.moduleAddress({
+      chainId,
+      name: 'gov',
+    })
+  )
+  const daoCreator =
+    // If creating via chain governance, use the gov module address.
+    (createViaGovernance &&
+      !govModuleAddress.loading &&
+      !govModuleAddress.errored &&
+      govModuleAddress.data) ||
+    // If creating a SubDAO through its parent DAO, use the parent DAO's core
+    // address.
+    (createSubDaoViaDao && parentDao?.coreAddress) ||
+    // If creating a DAO with a custom admin, the wallet instantiates it.
+    (instantiateInfo?.admin && walletAddress) ||
+    // Otherwise, use the factory contract address.
+    factoryContractAddress
+  // Predict DAO address via instantiate2.
   const predictedDaoAddress = useGenerateInstantiate2({
     chainId,
-    creator: factoryContractAddress,
+    creator: daoCreator,
     codeId: daoDaoCoreCodeId,
     salt: uuid,
   })
@@ -613,110 +637,6 @@ export const InnerCreateDaoForm = ({
       contractAddress: factoryContractAddress,
       sender: walletAddress ?? '',
     })
-
-  const doCreateDao = async () => {
-    if (instantiateMsgError) {
-      throw new Error(instantiateMsgError)
-    } else if (!instantiateInfo || !instantiateMsg) {
-      throw new Error(t('error.loadingData'))
-    } else if (!walletAddress) {
-      throw new Error(t('error.logInToContinue'))
-    }
-
-    const isSecret = isSecretNetwork(chainId)
-    const contractLabel = `DAO DAO DAO (${Date.now()})`
-
-    // If admin is set, use it as the contract-level admin as well (for creating
-    // SubDAOs). Otherwise, instantiate with self as admin via factory.
-    if (instantiateInfo.admin) {
-      return await instantiateSmartContract(
-        getSigningClient,
-        walletAddress,
-        daoDaoCoreCodeId,
-        contractLabel,
-        instantiateMsg,
-        instantiateInfo.funds,
-        instantiateInfo.admin,
-        undefined,
-        undefined,
-        supportsInstantiate2 ? toUtf8(uuid) : undefined
-      )
-    } else if (isSecret) {
-      if (!codeHashes?.DaoDaoCore) {
-        throw new Error('Code hash not found for DAO core contract')
-      }
-
-      const { events } = await secretInstantiateWithSelfAdmin(
-        {
-          instantiateMsg: instantiateInfo.msg,
-          codeId: daoDaoCoreCodeId,
-          codeHash: codeHashes.DaoDaoCore,
-          label: contractLabel,
-        },
-        SECRET_GAS.DAO_CREATION,
-        undefined,
-        instantiateInfo.funds
-      )
-      return findWasmAttributeValue(
-        chainId,
-        events,
-        factoryContractAddress,
-        'set contract admin as itself'
-      )!
-    } else {
-      if (supportsInstantiate2 && !newDao.predictedDaoAddress) {
-        throw new Error('Predicted DAO address not found')
-      }
-
-      // TODO: thorchain stagenet remove 3.8???
-      // Instantiate with no admin for Thorchain since admins can't be changed
-      // yet.
-      if (chainId === ChainId.ThorchainStagenet) {
-        return await instantiateSmartContract(
-          getSigningClient,
-          walletAddress,
-          daoDaoCoreCodeId,
-          contractLabel,
-          instantiateMsg,
-          instantiateInfo.funds,
-          null,
-          undefined,
-          undefined,
-          supportsInstantiate2 ? toUtf8(uuid) : undefined
-        )
-      }
-
-      const { events } = await (supportsInstantiate2
-        ? instantiate2WithSelfAdmin(
-            {
-              codeId: daoDaoCoreCodeId,
-              instantiateMsg: instantiateInfo.msg,
-              label: contractLabel,
-              salt: toBase64(toUtf8(uuid)),
-              expect: newDao.predictedDaoAddress,
-            },
-            CHAIN_GAS_MULTIPLIER,
-            undefined,
-            instantiateInfo.funds
-          )
-        : instantiateWithSelfAdmin(
-            {
-              codeId: daoDaoCoreCodeId,
-              instantiateMsg: instantiateInfo.msg,
-              label: contractLabel,
-            },
-            CHAIN_GAS_MULTIPLIER,
-            undefined,
-            instantiateInfo.funds
-          ))
-      return findWasmAttributeValue(
-        chainId,
-        events,
-        factoryContractAddress,
-        'set contract admin as itself'
-      )!
-    }
-  }
 
   const parseSubmitterValueDelta = (value: string): number => {
     switch (value) {
@@ -752,7 +672,10 @@ export const InnerCreateDaoForm = ({
 
     // Create the DAO.
     if (submitterValue === CreateDaoSubmitValue.Create) {
-      if (createViaGovernance) {
+      // If creating DAO via chain governance, or creating a SubDAO through its
+      // parent DAO, we need to go through a governance proposal, which are
+      // formatted the same.
+      if (createViaGovernance || (createSubDaoViaDao && parentDao)) {
         if (instantiateMsgError) {
           toast.error(processError(instantiateMsgError))
           return
@@ -769,82 +692,206 @@ export const InnerCreateDaoForm = ({
           throw new Error('Predicted DAO address not found')
         }
 
-        // Redirect to prefilled chain governance prop page.
-        goToDaoProposal(chainGovName, 'create', {
-          prefill: encodeJsonToBase64({
-            chainId,
-            title: `Create DAO: ${name.trim()}`,
-            description: 'This proposal creates a new DAO.',
-            // If admin is set, use it as the contract-level admin as well (for
-            // creating SubDAOs). Otherwise, instantiate with self as admin via
-            // factory.
-            _actionData: instantiateInfo.admin
-              ? [
-                  {
-                    _id: 'create',
-                    actionKey: ActionKey.Custom,
-                    data: {
-                      message: JSON.stringify(
-                        makeWasmMessage({
-                          wasm: {
+        // If admin is set, use it as the contract-level admin as well (for
+        // creating SubDAOs). Otherwise, instantiate with self as admin via
+        // factory.
+        const createDaoActionData: ActionKeyAndData[] = instantiateInfo.admin
+          ? [
+              {
+                _id: 'create',
+                actionKey: ActionKey.Custom,
+                data: {
+                  message: JSON.stringify(
+                    {
+                      wasm: {
+                        [supportsInstantiate2 ? 'instantiate2' : 'instantiate']:
+                          {
+                            admin: instantiateInfo.admin,
+                            code_id: daoDaoCoreCodeId,
+                            funds: instantiateInfo.funds,
+                            label: contractLabel,
+                            msg: instantiateMsg,
+                            ...(supportsInstantiate2 && {
+                              salt: uuid,
+                            }),
+                          },
+                      },
+                    },
+                    null,
+                    2
+                  ),
+                } as CustomData,
+              },
+            ]
+          : [
+              {
+                _id: 'create',
+                actionKey: ActionKey.Custom,
+                data: {
+                  message: JSON.stringify(
+                    {
+                      wasm: {
+                        execute: {
+                          contract_addr: factoryContractAddress,
+                          funds: instantiateInfo.funds,
+                          msg: {
                             [supportsInstantiate2
-                              ? 'instantiate2'
-                              : 'instantiate']: {
-                              admin: instantiateInfo.admin,
+                              ? 'instantiate2_contract_with_self_admin'
+                              : 'instantiate_contract_with_self_admin']: {
                               code_id: daoDaoCoreCodeId,
-                              funds: instantiateInfo.funds,
+                              instantiate_msg: instantiateInfo.msg,
                               label: contractLabel,
-                              msg: instantiateMsg,
                               ...(supportsInstantiate2 && {
-                                salt: toBase64(toUtf8(uuid)),
+                                salt: uuid,
+                                expect: newDao.predictedDaoAddress,
                               }),
                             },
                           },
-                        }),
-                        null,
-                        2
-                      ),
-                    } as CustomData,
-                  },
-                ]
-              : [
-                  {
-                    _id: 'create',
-                    actionKey: ActionKey.Custom,
-                    data: {
-                      message: JSON.stringify(
-                        makeWasmMessage({
-                          wasm: {
-                            execute: {
-                              contract_addr: factoryContractAddress,
-                              funds: instantiateInfo.funds,
-                              msg: {
-                                [supportsInstantiate2
-                                  ? 'instantiate2_contract_with_self_admin'
-                                  : 'instantiate_contract_with_self_admin']: {
-                                  code_id: daoDaoCoreCodeId,
-                                  instantiate_msg: instantiateInfo.msg,
-                                  label: contractLabel,
-                                  ...(supportsInstantiate2 && {
-                                    salt: toBase64(toUtf8(uuid)),
-                                    expect: newDao.predictedDaoAddress,
-                                  }),
+                        },
+                      },
+                    },
+                    null,
+                    2
+                  ),
+                } as CustomData,
+              },
+            ]
+
+        const daoWord = createViaGovernance ? 'DAO' : 'SubDAO'
+        const title = `Create ${daoWord}: ${name.trim()}`
+        const description = `This proposal creates a new ${daoWord}.`
+
+        // Redirect to prefilled governance proposal page.
+        goToDaoProposal(
+          createViaGovernance
+            ? chainGovName
+            : // should never happen since parentDao is undefined if !createViaGovernance
+              parentDao?.coreAddress || 'ERROR',
+          'create',
+          {
+            prefill: createViaGovernance
+              ? // Chain governance proposal
+                encodeJsonToBase64({
+                  chainId,
+                  title,
+                  description,
+                  _actionData: createDaoActionData,
+                } as Partial<GovernanceProposalActionData>)
+              : // Single-choice DAO proposal
+                getDaoProposalSinglePrefill({
+                  title,
+                  description,
+                  actions: [
+                    ...createDaoActionData,
+                    ...(supportsInstantiate2 && newDao.predictedDaoAddress
+                      ? [
+                          {
+                            actionKey: ActionKey.ManageSubDaos,
+                            data: {
+                              toAdd: [
+                                {
+                                  addr: newDao.predictedDaoAddress,
                                 },
-                              },
+                              ],
+                              toRemove: [],
                             },
                           },
-                        }),
-                        null,
-                        2
-                      ),
-                    } as CustomData,
-                  },
-                ],
-          } as Partial<GovernanceProposalActionData>),
-        })
+                        ]
+                      : []),
+                  ],
+                }),
+          }
+        )
       } else if (isWalletConnected && walletAddress) {
         setCreating(true)
         try {
+          const doCreateDao = async () => {
+            if (instantiateMsgError) {
+              throw new Error(instantiateMsgError)
+            } else if (!instantiateInfo || !instantiateMsg) {
+              throw new Error(t('error.loadingData'))
+            } else if (!walletAddress) {
+              throw new Error(t('error.logInToContinue'))
+            }
+
+            const isSecret = isSecretNetwork(chainId)
+            const contractLabel = `DAO DAO DAO (${Date.now()})`
+
+            // If admin is set, use it as the contract-level admin as well (for
+            // creating SubDAOs). Otherwise, instantiate with self as admin via
+            // factory.
+            if (instantiateInfo.admin) {
+              return await instantiateSmartContract(
+                getSigningClient,
+                walletAddress,
+                daoDaoCoreCodeId,
+                contractLabel,
+                instantiateMsg,
+                instantiateInfo.funds,
+                instantiateInfo.admin,
+                undefined,
+                undefined,
+                supportsInstantiate2 ? toUtf8(uuid) : undefined
+              )
+            } else if (isSecret) {
+              if (!codeHashes?.DaoDaoCore) {
+                throw new Error('Code hash not found for DAO core contract')
+              }
+
+              const { events } = await secretInstantiateWithSelfAdmin(
+                {
+                  instantiateMsg: instantiateInfo.msg,
+                  codeId: daoDaoCoreCodeId,
+                  codeHash: codeHashes.DaoDaoCore,
+                  label: contractLabel,
+                },
+                SECRET_GAS.DAO_CREATION,
+                undefined,
+                instantiateInfo.funds
+              )
+              return findWasmAttributeValue(
+                chainId,
+                events,
+                factoryContractAddress,
+                'set contract admin as itself'
+              )!
+            } else {
+              if (supportsInstantiate2 && !newDao.predictedDaoAddress) {
+                throw new Error('Predicted DAO address not found')
+              }
+
+              const { events } = await (supportsInstantiate2
+                ? instantiate2WithSelfAdmin(
+                    {
+                      codeId: daoDaoCoreCodeId,
+                      instantiateMsg: instantiateInfo.msg,
+                      label: contractLabel,
+                      salt: toBase64(toUtf8(uuid)),
+                      expect: newDao.predictedDaoAddress,
+                    },
+                    CHAIN_GAS_MULTIPLIER,
+                    undefined,
+                    instantiateInfo.funds
+                  )
+                : instantiateWithSelfAdmin(
+                    {
+                      codeId: daoDaoCoreCodeId,
+                      instantiateMsg: instantiateInfo.msg,
+                      label: contractLabel,
+                    },
+                    CHAIN_GAS_MULTIPLIER,
+                    undefined,
+                    instantiateInfo.funds
+                  ))
+              return findWasmAttributeValue(
+                chainId,
+                events,
+                factoryContractAddress,
+                'set contract admin as itself'
+              )!
+            }
+          }
+
           const coreAddress = await toast.promise(doCreateDao(), {
             loading: t('info.creatingDao'),
             success: t('success.daoCreatedPleaseWait'),
@@ -1213,6 +1260,20 @@ export const InnerCreateDaoForm = ({
             />
           </div>
         )}
+
+        {submitValue === CreateDaoSubmitValue.Create &&
+          parentDao &&
+          createSubDaoViaDao && (
+            <div className="flex flex-col items-end mb-8 -mt-4">
+              <StatusCard
+                className="max-w-md"
+                content={t('info.subDaoCreationRequiresParentDao', {
+                  chain: getDisplayNameForChainId(chainId),
+                })}
+                style="warning"
+              />
+            </div>
+          )}
 
         <div
           className="border-border-secondary flex flex-row items-center border-y py-7 gap-8"

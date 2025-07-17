@@ -105,25 +105,34 @@ export class CreateDaoAction extends ActionBase<CreateDaoData> {
     }
 
     // SubDAO creation with parent DAO as admin.
-    return objectMatchesStructure(decodedMessage, {
-      wasm: {
-        instantiate: {
-          code_id: {},
-          funds: {},
-          label: {},
-          msg: {
-            admin: {},
-            automatically_add_cw20s: {},
-            automatically_add_cw721s: {},
-            name: {},
-            description: {},
-            image_url: {},
-            proposal_modules_instantiate_info: {},
-            voting_module_instantiate_info: {},
-          },
-        },
+    const innerBlock = {
+      code_id: {},
+      funds: {},
+      label: {},
+      msg: {
+        admin: {},
+        automatically_add_cw20s: {},
+        automatically_add_cw721s: {},
+        name: {},
+        description: {},
+        image_url: {},
+        proposal_modules_instantiate_info: {},
+        voting_module_instantiate_info: {},
       },
-    })
+    }
+
+    return (
+      objectMatchesStructure(decodedMessage, {
+        wasm: {
+          instantiate: innerBlock,
+        },
+      }) ||
+      objectMatchesStructure(decodedMessage, {
+        wasm: {
+          instantiate2: innerBlock,
+        },
+      })
+    )
   }
 
   decode([{ decodedMessage }]: ProcessedMessage[]): CreateDaoData {
@@ -153,11 +162,16 @@ export class CreateDaoAction extends ActionBase<CreateDaoData> {
     }
 
     // SubDAO creation with parent DAO as admin.
+    const initMsg =
+      'instantiate' in decodedMessage.wasm
+        ? decodedMessage.wasm.instantiate.msg
+        : decodedMessage.wasm.instantiate2.msg
+
     return {
-      admin: decodedMessage.wasm.instantiate.msg.admin,
-      name: decodedMessage.wasm.instantiate.msg.name,
-      description: decodedMessage.wasm.instantiate.msg.description,
-      imageUrl: decodedMessage.wasm.instantiate.msg.image_url,
+      admin: initMsg.admin,
+      name: initMsg.name,
+      description: initMsg.description,
+      imageUrl: initMsg.image_url,
     }
   }
 }

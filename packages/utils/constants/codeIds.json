@@ -1905,6 +1905,31 @@
       "DaoVotingTokenStaked": 32
     }
   },
+  "thorchain": {
+    "2.7.1": {
+      "Cw1Whitelist": 1,
+      "Cw4Group": 2,
+      "Cw721Base": 3,
+      "CwAdminFactory": 4,
+      "CwPayrollFactory": 5,
+      "CwTokenSwap": 6,
+      "CwTokenfactoryIssuer": 20,
+      "CwVesting": 18,
+      "DaoDaoCore": 7,
+      "DaoPreProposeApprovalMultiple": 8,
+      "DaoPreProposeApprovalSingle": 9,
+      "DaoPreProposeApprover": 10,
+      "DaoPreProposeMultiple": 11,
+      "DaoPreProposeSingle": 12,
+      "DaoProposalMultiple": 13,
+      "DaoProposalSingle": 14,
+      "DaoRewardsDistributor": 15,
+      "DaoVoteDelegation": 16,
+      "DaoVotingCw4": 17,
+      "DaoVotingCw721Staked": 19,
+      "DaoVotingTokenStaked": 21
+    }
+  },
   "thorchain-1": {
     "2.7.1": {
       "Cw1Whitelist": 22,

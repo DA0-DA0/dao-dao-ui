@@ -238,6 +238,7 @@ export const deploySets: DeploySet[] = [
 
         ChainId.ThorchainMainnet,
         ChainId.ThorchainStagenet,
+        ChainId.ThorchainMocknet,
 
         'layer',
 
@@ -279,6 +280,7 @@ export const deploySets: DeploySet[] = [
 
         ChainId.ThorchainMainnet,
         ChainId.ThorchainStagenet,
+        ChainId.ThorchainMocknet,
 
         'layer',
 
@@ -356,7 +358,11 @@ export const deploySets: DeploySet[] = [
       ),
     ],
     {
-      chainIds: [ChainId.ThorchainMainnet, ChainId.ThorchainStagenet],
+      chainIds: [
+        ChainId.ThorchainMainnet,
+        ChainId.ThorchainStagenet,
+        ChainId.ThorchainMocknet,
+      ],
     }
   ),
 
@@ -436,7 +442,11 @@ export const deploySets: DeploySet[] = [
       ),
     ],
     {
-      chainIds: [ChainId.ThorchainMainnet, ChainId.ThorchainStagenet],
+      chainIds: [
+        ChainId.ThorchainMainnet,
+        ChainId.ThorchainStagenet,
+        ChainId.ThorchainMocknet,
+      ],
     }
   ),
 
