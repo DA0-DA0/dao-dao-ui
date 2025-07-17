@@ -244,47 +244,6 @@ assets.push({
   ],
 })
 
-const thornodeMocknetChain = convertChainRegistryChainToAnyChain({
-  chain_id: ChainId.ThorchainMocknet,
-  chain_name: 'thornodemocknet',
-  chain_type: 'cosmos',
-  status: 'live',
-  network_type: 'devnet',
-  pretty_name: 'THORChain Mocknet',
-  bech32_prefix: 'tthor',
-  slip44: 931,
-  apis: {
-    rpc: [
-      {
-        address: 'http://localhost:26657',
-      },
-    ],
-    rest: [
-      {
-        address: 'http://localhost:1317',
-      },
-    ],
-    grpc: [
-      {
-        address: 'localhost:9090',
-      },
-    ],
-  },
-  fees: {
-    fee_tokens: [
-      {
-        denom: 'rune',
-        fixed_min_gas_price: 0,
-      },
-    ],
-  },
-})
-chains.push(thornodeMocknetChain)
-assets.push({
-  chain_name: thornodeMocknetChain.chainName,
-  assets: assets.find((a) => a.chain_name === 'thorchain')?.assets ?? [],
-})
-
 // Intergaze (Stargaze + Initia)
 // https://github.com/initia-labs/initia-registry/blob/main/mainnets/intergaze/chain.json
 const intergazeChain = convertChainRegistryChainToAnyChain({
@@ -978,21 +937,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   latestVersion: ContractVersion.V271,
       // },
       {
-        chainId: ChainId.ThorchainMocknet,
-        name: 'thorchainmocknet',
-        mainnet: false,
-        noIndexer: true,
-        createSubDaoViaDao: true,
-        accentColor: '#00eed1',
-        factoryContractAddress:
-          'tthor18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3q9xgjaw',
-        explorerUrlTemplates: {
-          tx: 'https://runescan.io/tx/REPLACE',
-          wallet: 'https://runescan.io/address/REPLACE',
-        },
-        latestVersion: ContractVersion.V271,
-      },
-      {
         chainId: ChainId.BitsongMainnet,
         name: 'bitsong',
         mainnet: true,
@@ -1445,10 +1389,6 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.ThorchainStagenet]: {
     rpc: 'https://stagenet-rpc.ninerealms.com',
     rest: 'https://stagenet-thornode.ninerealms.com',
-  },
-  [ChainId.ThorchainMocknet]: {
-    rpc: 'http://localhost:26657',
-    rest: 'http://localhost:1317',
   },
   [ChainId.IntergazeMainnet]: {
     rpc: 'https://rpc.intergaze-apis.com',
