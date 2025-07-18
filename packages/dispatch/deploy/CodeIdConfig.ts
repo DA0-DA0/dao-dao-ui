@@ -4,7 +4,7 @@ import path from 'path'
 import lockfile from 'proper-lockfile'
 import semverCompare from 'semver/functions/compare'
 
-import { chainIdToIndexerGroupVarsName } from './config'
+import { chainIndexerGroupVarsName } from './config'
 
 type CodeIds = Record<string, Record<string, Record<string, number>>>
 
@@ -178,7 +178,7 @@ export class CodeIdConfig {
       throw new Error('Indexer Ansible group vars path not set')
     }
 
-    const indexerGroupVarsName = chainIdToIndexerGroupVarsName[chainId]
+    const indexerGroupVarsName = chainIndexerGroupVarsName[chainId]
     if (!indexerGroupVarsName) {
       throw new Error(
         `No indexer group vars name found for chain ID ${chainId}`

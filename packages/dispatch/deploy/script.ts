@@ -18,7 +18,7 @@ import { getChainForChainId, getRpcForChainId, retry } from '@dao-dao/utils'
 import { getDispatchConfig } from '../config'
 import { instantiateContract } from '../utils'
 import { CodeIdConfig } from './CodeIdConfig'
-import { chainIdToDeploymentArgs } from './config'
+import { chainDeploymentArgs } from './config'
 import { DeploySet, deploySets } from './DeploySet'
 
 const { log } = console
@@ -102,7 +102,7 @@ let {
 } = program.opts()
 
 // Add deployment arguments if they exist.
-const deploymentArgs = chainIdToDeploymentArgs[chainId]
+const deploymentArgs = chainDeploymentArgs[chainId]
 if (deploymentArgs) {
   if (deploymentArgs.mode !== undefined) {
     mode = deploymentArgs.mode

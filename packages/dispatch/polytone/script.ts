@@ -15,12 +15,16 @@ import {
   makeReactQueryClient,
   skipQueries,
 } from '@dao-dao/state'
+import { MsgUpdateInstantiateConfig } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
+import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
   Order,
   State,
   stateToJSON,
 } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
+  CHAIN_GAS_MULTIPLIER,
+  cosmwasmProtoRpcClientRouter,
   getIbcTransferInfoBetweenChains,
   getNativeTokenForChainId,
   getRpcForChainId,
@@ -448,6 +452,78 @@ const main = async () => {
     logPrefixLength: consolePrefixLength,
     override: _voice,
   })
+
+  // Query existing proxy instantiate config, since the destination chain may
+  // restrict instantiation to specific addresses, and thus we need to update
+  // the proxy code ID instantiation permissions to allow the voice to
+  // instantiate new proxies.
+  const { codeInfo: existingProxyCodeInfo } = await (
+    await cosmwasmProtoRpcClientRouter.connect(destChainId)
+  ).wasm.v1.code({
+    codeId: BigInt(proxyCodeId),
+  })
+  if (!existingProxyCodeInfo) {
+    throw new Error(
+      `Proxy code ID ${proxyCodeId} info not found on destination chain ${destChainId}.`
+    )
+  }
+
+  if (existingProxyCodeInfo.instantiatePermission) {
+    switch (existingProxyCodeInfo.instantiatePermission.permission) {
+      case AccessType.Unspecified:
+        throw new Error(
+          `Proxy code ID ${proxyCodeId} has unspecified instantiate permission.`
+        )
+      case AccessType.Nobody:
+        throw new Error(
+          `Proxy code ID ${proxyCodeId} does not allow anybody to instantiate.`
+        )
+      case AccessType.Everybody:
+        break
+      case AccessType.AnyOfAddresses: {
+        if (
+          existingProxyCodeInfo.instantiatePermission.addresses.includes(voice)
+        ) {
+          log(
+            chalk.green(
+              `\nVoice ${voice} already has permission to instantiate proxy code ID ${proxyCodeId}.`
+            )
+          )
+        } else {
+          log(
+            chalk.yellow(
+              '\nAdding voice to proxy code ID instantiate permissions...'
+            )
+          )
+
+          await destClient.signAndBroadcast(
+            destSender,
+            [
+              {
+                typeUrl: MsgUpdateInstantiateConfig.typeUrl,
+                value: MsgUpdateInstantiateConfig.fromPartial({
+                  sender: destSender,
+                  codeId: BigInt(proxyCodeId),
+                  newInstantiatePermission: {
+                    permission: AccessType.AnyOfAddresses,
+                    addresses: [
+                      ...existingProxyCodeInfo.instantiatePermission.addresses.filter(
+                        (address) => address !== voice
+                      ),
+                      voice,
+                    ],
+                  },
+                }),
+              },
+            ],
+            CHAIN_GAS_MULTIPLIER
+          )
+
+          log(chalk.green('Voice now has permission to instantiate proxy.'))
+        }
+      }
+    }
+  }
 
   // Connect note and voice over IBC.
 
