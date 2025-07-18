@@ -186,6 +186,15 @@
       "remoteConnection": "connection-1",
       "voice": "terra16s3hnkgz3suq45fe084yey7zw62m8en8wgc9fsmhe0gesunsv5jqlvrzjc"
     },
+    "pryzm-1": {
+      "listener": "cosmos1zyfghp5r2za4c23kkllxx39m8pcafx0y05llml37x5pw6n3fdqnst99t7w",
+      "localChannel": "channel-1412",
+      "localConnection": "connection-1038",
+      "note": "cosmos1veywyq9my9823qkcf64rhtgt6wtcm4j84maaqfk3hnhecpt9vn4sdhqd2z",
+      "remoteChannel": "channel-48",
+      "remoteConnection": "connection-0",
+      "voice": "pryzm1qmrykk37a7j67hpaa7yzt08qsvu7hyqk4kqlpaylhe6yhudrzzcsf7dte2"
+    },
     "stargaze-1": {
       "listener": "cosmos1fxkx7wd4q7z5zgm8qh0vaxptx4gp0ppgjm0ke56jr55azpzecpcsc4teug",
       "localChannel": "channel-984",
@@ -500,6 +509,15 @@
       "remoteConnection": "connection-192",
       "voice": "terra1669p39l9gg4ajjwyta5psf5g4aen05d392mzp9efpa06vnaa7j6s3czzd3"
     },
+    "pryzm-1": {
+      "listener": "neutron1x26wk57dmg8letygmqjh09rfantuwqr5a42f0vuq9zsm7pjjdgpqytyrrt",
+      "localChannel": "channel-7160",
+      "localConnection": "connection-72",
+      "note": "neutron1cy8acue70s53ngrpun92qjr0z3w56xum3vgx89jpqzrxw89gvhaqj2pm8l",
+      "remoteChannel": "channel-50",
+      "remoteConnection": "connection-6",
+      "voice": "pryzm14vkcsl3ec30kfncjys5su0r3ur7dgyg8vetrna4vw8punjes8ckq58wv99"
+    },
     "stargaze-1": {
       "listener": "neutron1e06n0haqtmlvpj5u7fwkjdhc73ltxq0c3y5t5acdjscwqdf7uavqt6yxv6",
       "localChannel": "channel-55",
@@ -638,6 +656,15 @@
       "remoteChannel": "channel-320",
       "remoteConnection": "connection-3",
       "voice": "terra1zgjqvzva5yz56yqa3s8dframcp3xkmxnspncsjq5hlg9dup7wk5smkrza7"
+    },
+    "pryzm-1": {
+      "listener": "osmo15un32fwpjj4xpq3r6y89zq52zmex98z2y2qvsc3ww58f5rhm7vzqmym7xj",
+      "localChannel": "channel-105000",
+      "localConnection": "connection-2663",
+      "note": "osmo14stc2dt4lzxrw64azq2xhs25gajp6saexglrf3tvg8tcag9tudesw23ngk",
+      "remoteChannel": "channel-46",
+      "remoteConnection": "connection-2",
+      "voice": "pryzm1fg0yy00qq2x4dzfqkjprnm7nnmjkjv3nnlp5zx8tz7x4jec4gaesxuctwt"
     },
     "stargaze-1": {
       "listener": "osmo1d00cmsk7uym7mtrsrcnhhdza8mpu346klhrpufkzzxkvy9wlegeqw2my6l",

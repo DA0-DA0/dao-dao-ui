@@ -1402,6 +1402,10 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://rpc.kopi.money',
     rest: 'https://rest.kopi.money',
   },
+  [ChainId.PryzmMainnet]: {
+    rpc: 'https://pryzm-rpc.polkachu.com',
+    rest: 'https://pryzm-api.polkachu.com',
+  },
 }
 
 export const GAS_OVERRIDES: Partial<

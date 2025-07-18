@@ -66,7 +66,7 @@ export class PolytoneConfig {
      * The polytone config entry.
      */
     entry: PolytoneConnection
-  }) {
+  }): Promise<PolytoneConnection> {
     // Establish lock.
     const releaseLock = await lockfile.lock(polytoneConfigPath, {
       retries: {
@@ -87,6 +87,8 @@ export class PolytoneConfig {
       this._config[srcChainId][destChainId] = entry
 
       this.save()
+
+      return entry
     } finally {
       // Release lock.
       await releaseLock()

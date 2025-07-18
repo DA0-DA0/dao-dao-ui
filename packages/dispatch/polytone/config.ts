@@ -122,4 +122,10 @@ export const chains: Record<string, ChainConfig> = {
     proxyCodeId: 30,
     voiceCodeId: 31,
   },
+  [ChainId.PryzmMainnet]: {
+    listenerCodeId: 30,
+    noteCodeId: 31,
+    proxyCodeId: 32,
+    voiceCodeId: 33,
+  },
 }

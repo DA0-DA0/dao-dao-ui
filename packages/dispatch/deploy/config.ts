@@ -54,4 +54,7 @@ export const chainIdToDeploymentArgs: Record<string, Record<string, any>> = {
   [ChainId.DaodiseoTestnet]: {
     mnemonic: 'daodiseo_testnet',
   },
+  [ChainId.PryzmMainnet]: {
+    restrictInstantiation: true,
+  },
 }

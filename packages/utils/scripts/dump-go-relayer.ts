@@ -9,11 +9,10 @@ const program = new Command()
 program.description(
   'dump Polytone relayer entries for one or multiple chains. passing no arguments will dump entries for all chains'
 )
-program.option('-a, --chain-a <string>', 'chain A')
-program.option('-b, --chain-b <string>', 'chain B')
-program.option('-m, --many <string>', 'comma-separated list of chains to dump')
+program.option('-s, --src <string>', 'source chain(s)')
+program.option('-d, --dest <string>', 'destination chain(s)')
 program.parse(process.argv)
-const { chainA, chainB, many } = program.opts()
+const { src, dest } = program.opts()
 
 const failed: {
   srcChainId: string
@@ -21,7 +20,7 @@ const failed: {
   error: unknown
 }[] = []
 
-const dumpAll = async (chainIds: string[]) => {
+const dumpAll = async (chainIds: string[], destChainIds?: string[]) => {
   const chains = SUPPORTED_CHAINS.filter((c) => chainIds.includes(c.chainId))
   if (chains.length === 0) {
     throw new Error('no chains')
@@ -30,7 +29,7 @@ const dumpAll = async (chainIds: string[]) => {
   console.log('paths:')
   for (const srcChain of chains) {
     try {
-      await dumpChain(srcChain.chainId)
+      await dumpChain(srcChain.chainId, destChainIds)
     } catch (error) {
       failed.push({
         srcChainId: srcChain.chainId,
@@ -41,14 +40,14 @@ const dumpAll = async (chainIds: string[]) => {
   }
 }
 
-const dumpChain = async (srcChainId: string, chainIdFilter?: string[]) => {
+const dumpChain = async (srcChainId: string, destChainIds?: string[]) => {
   const srcChain = SUPPORTED_CHAINS.find((c) => c.chainId === srcChainId)
   if (!srcChain) {
     throw new Error(`unknown src chain ${srcChainId}`)
   }
 
   const polytoneConnections = Object.entries(srcChain.polytone || {}).filter(
-    ([chainId]) => !chainIdFilter?.length || chainIdFilter.includes(chainId)
+    ([chainId]) => !destChainIds?.length || destChainIds.includes(chainId)
   )
   if (polytoneConnections.length === 0) {
     throw new Error('no polytone connections')
@@ -117,19 +116,15 @@ const dumpChain = async (srcChainId: string, chainIdFilter?: string[]) => {
 const main = async () => {
   console.log()
 
-  if (chainA && chainB) {
-    await dumpChain(chainA, [chainB])
-  } else if (chainA) {
-    await dumpAll(chainA.split(','))
-  } else if (chainB) {
-    await dumpAll(chainB.split(','))
-  } else if (many) {
-    await dumpAll(many.split(','))
-  } else {
-    await dumpAll(
-      SUPPORTED_CHAINS.flatMap((c) => (c.polytone ? c.chainId : []))
-    )
-  }
+  const srcChains: string[] | undefined = src?.split(',')
+  const destChains: string[] | undefined = dest?.split(',')
+
+  await dumpAll(
+    srcChains?.length
+      ? srcChains
+      : SUPPORTED_CHAINS.flatMap((c) => (c.polytone ? c.chainId : [])),
+    destChains
+  )
 
   if (failed.length > 0) {
     console.log('\nFAILED:')

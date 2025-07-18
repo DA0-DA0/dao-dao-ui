@@ -43,15 +43,18 @@ Usage: yarn dump-go-relayer [options]
 dump Polytone relayer entries for one or multiple chains. passing no arguments will dump entries for all chains
 
 Options:
-  -a, --chain-a <string>  chain A
-  -b, --chain-b <string>  chain B
-  -m, --many <string>     comma-separated list of chains to dump
-  -h, --help              display help for command
+  -s, --src <string>   source chain(s)
+  -d, --dest <string>  destination chain(s)
+  -h, --help           display help for command
 ```
 
-To dump the entries between two specific chains, specify both chains (with `-a`
-and `-b`). To dump all entries for one or multiple chains, use either `-a`,
-`-b`, or `-m`. To dump all entries for all chains, pass no arguments.
+- To dump all entries for all chains, pass no arguments.
+- To dump the entries out of a specific chain and into another, specify both
+  chains (with `-s` and `-d`).
+- To dump all entries coming out of a specific chain, specify the source chain
+  with `-s` and no destination chain.
+- To dump all entries going into a specific chain, specify the destination chain
+  with `-d` and no source chain.
 
 ### dump-hermes-relayer
 
