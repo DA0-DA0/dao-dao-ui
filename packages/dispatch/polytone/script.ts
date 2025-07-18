@@ -507,9 +507,7 @@ const main = async () => {
                   newInstantiatePermission: {
                     permission: AccessType.AnyOfAddresses,
                     addresses: [
-                      ...existingProxyCodeInfo.instantiatePermission.addresses.filter(
-                        (address) => address !== voice
-                      ),
+                      ...existingProxyCodeInfo.instantiatePermission.addresses,
                       voice,
                     ],
                   },
