@@ -199,45 +199,48 @@ export const DaoRewardDistributionInfoModal = ({
               </div>
             )}
 
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={
-                  linearDistributionIsBlockBased
-                    ? t('title.endBlock')
-                    : t('title.timeRemaining')
-                }
-              />
-              {distribution ? (
-                <Tooltip
-                  title={
-                    !linearDistributionIsBlockBased
-                      ? formatDateTimeTz(
-                          expirationToDate(distribution.active_epoch.ends_at)
-                        )
-                      : undefined
+            {/* If expires at some point, show the time remaining. */}
+            {!('never' in distribution.active_epoch.ends_at) && (
+              <div className="flex flex-col gap-1">
+                <InputLabel
+                  name={
+                    linearDistributionIsBlockBased
+                      ? t('title.endBlock')
+                      : t('title.timeRemaining')
                   }
-                >
-                  <p className="primary-text">
-                    {linearDistributionIsBlockBased ? (
-                      t('title.blockHeightValue', {
-                        height:
-                          'at_height' in distribution.active_epoch.ends_at &&
-                          distribution.active_epoch.ends_at.at_height.toLocaleString(),
-                      })
-                    ) : (
-                      <TimeAgo
-                        date={expirationToDate(
-                          distribution.active_epoch.ends_at
-                        )}
-                        formatter={timeAgoFormatter}
-                      />
-                    )}
-                  </p>
-                </Tooltip>
-              ) : (
-                <p>...</p>
-              )}
-            </div>
+                />
+                {distribution ? (
+                  <Tooltip
+                    title={
+                      !linearDistributionIsBlockBased
+                        ? formatDateTimeTz(
+                            expirationToDate(distribution.active_epoch.ends_at)
+                          )
+                        : undefined
+                    }
+                  >
+                    <p className="primary-text">
+                      {linearDistributionIsBlockBased ? (
+                        t('title.blockHeightValue', {
+                          height:
+                            'at_height' in distribution.active_epoch.ends_at &&
+                            distribution.active_epoch.ends_at.at_height.toLocaleString(),
+                        })
+                      ) : (
+                        <TimeAgo
+                          date={expirationToDate(
+                            distribution.active_epoch.ends_at
+                          )}
+                          formatter={timeAgoFormatter}
+                        />
+                      )}
+                    </p>
+                  </Tooltip>
+                ) : (
+                  <p>...</p>
+                )}
+              </div>
+            )}
 
             <div className="flex flex-col gap-1">
               <InputLabel name={t('title.dateStarted')} />
