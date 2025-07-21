@@ -76,6 +76,15 @@
       "remoteConnection": "connection-88",
       "voice": "migaloo10snk2jzmgxhzg3348gy8tljlah42wcw0jm3wpjsv6zhfz2cdls8sl573w4"
     },
+    "neutron-1": {
+      "listener": "terra1fwdqf6p0cwt0ygh7zd7pqg43t63d6ju7jyv848yzutsvuppyftkqjjk4pw",
+      "localChannel": "channel-115",
+      "localConnection": "connection-167",
+      "note": "terra14m7g0h45jcna6pan86s0l3znspzkdl6qrqgjajd56yxu2fv0vhqqe0z3uh",
+      "remoteChannel": "channel-7163",
+      "remoteConnection": "connection-129",
+      "voice": "neutron1f27v6mppp0h8gy7un754ged52sauf3zzqrwyzzwlafxhy8npa4tq83p73y"
+    },
     "osmosis-1": {
       "listener": "terra1d4ge6jklal6enlfjuz8wgzzdlwmtqtuj87rnxf3wzw9ykw3wrl7srzx0lz",
       "localChannel": "channel-93",
