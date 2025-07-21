@@ -74,7 +74,7 @@ export const AddressInput = <
             indexerQueries.searchDaos({
               chainId,
               query: formValue,
-              limit: 5,
+              limit: 10,
             })
           )
         : [],
