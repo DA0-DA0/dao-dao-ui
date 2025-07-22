@@ -213,6 +213,7 @@ export const ExecuteProposalComponent: ActionComponent<
                 }
               }}
               onlyExecutable
+              placeholderLoaders={3}
             />
           </DaoProviders>
         )}

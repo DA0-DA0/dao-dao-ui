@@ -62,6 +62,7 @@ type CommonProposalListInfoWithType = CommonProposalListInfo & {
 
 type ProposalPropsWithStatus = StatefulProposalLineProps & {
   status: ProposalStatus
+  executableEarly?: boolean
 }
 
 export const ProposalList = ({
@@ -292,6 +293,7 @@ export const ProposalList = ({
             const transformIntoProps = ({
               id,
               status,
+              executableEarly,
             }: (typeof newProposalInfos)[number]): ProposalPropsWithStatus => ({
               chainId: dao.chainId,
               coreAddress: dao.coreAddress,
@@ -303,6 +305,7 @@ export const ProposalList = ({
                 ? () => onClickRef.current?.({ proposalId: id })
                 : undefined,
               status,
+              executableEarly,
             })
 
             newOpenProposals = [
@@ -458,9 +461,15 @@ export const ProposalList = ({
           ? []
           : // Show executable proposals at the top in place of open proposals.
             onlyExecutable
-            ? historyProposals.filter(
-                ({ status }) => status === ProposalStatusEnum.Passed
-              )
+            ? [
+                ...openProposals.filter(
+                  ({ status, executableEarly }) =>
+                    isProposalStatusVetoTimelock(status) && executableEarly
+                ),
+                ...historyProposals.filter(
+                  ({ status }) => status === ProposalStatusEnum.Passed
+                ),
+              ]
             : openProposals
       }
       searchBarProps={

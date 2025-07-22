@@ -58,6 +58,10 @@ export type ProposalListProps<T extends { proposalId: string }> = {
    */
   loadingMore: boolean
   /**
+   * The number of placeholder loaders to show. Defaults to 20.
+   */
+  placeholderLoaders?: number
+  /**
    * Whether or not the current wallet is a member of the DAO.
    */
   isMember: boolean
@@ -94,7 +98,7 @@ export type ProposalListProps<T extends { proposalId: string }> = {
 
 export type StatefulProposalListProps = Pick<
   ProposalListProps<any>,
-  'className' | 'hideTitle'
+  'className' | 'hideTitle' | 'placeholderLoaders'
 > & {
   /**
    * If defined, will be called when a proposal is clicked instead of navigating

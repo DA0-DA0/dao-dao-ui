@@ -251,6 +251,10 @@ export type CommonProposalListInfo = {
   proposalNumber: number
   timestamp: Date | undefined
   status: ProposalStatus
+  /**
+   * Whether or not this proposal is executable early when in veto timelock.
+   */
+  executableEarly?: boolean
   // If true, will be not be shown in the proposal list. This is used for
   // example to hide completed pre-propose proposals that were approved, since
   // those show up as normal proposals. No need to double count.

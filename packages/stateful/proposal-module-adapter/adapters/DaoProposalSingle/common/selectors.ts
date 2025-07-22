@@ -113,11 +113,15 @@ export const reverseProposalInfosSelector: (
       )
 
       const proposalInfos: CommonProposalListInfo[] = proposalResponses.map(
-        ({ id, proposal: { status } }, index) => ({
+        ({ id, proposal }, index) => ({
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          status,
+          status: proposal.status,
+          ...('veto' in proposal &&
+            proposal.veto?.early_execute && {
+              executableEarly: true,
+            }),
         })
       )
 
