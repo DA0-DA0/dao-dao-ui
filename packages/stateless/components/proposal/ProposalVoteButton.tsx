@@ -1,8 +1,10 @@
 import clsx from 'clsx'
+import { ReactNode } from 'react'
 
 import { ProposalVoteOption } from '@dao-dao/types'
 
 import { Button } from '../buttons'
+import { Tooltip } from '../tooltip'
 
 export interface ProposalVoteButtonProps<Vote extends unknown> {
   option: ProposalVoteOption<Vote>
@@ -11,6 +13,7 @@ export interface ProposalVoteButtonProps<Vote extends unknown> {
   disabled?: boolean
   loading?: boolean
   className?: string
+  tooltip?: ReactNode
 }
 
 export const ProposalVoteButton = <Vote extends unknown>({
@@ -20,26 +23,29 @@ export const ProposalVoteButton = <Vote extends unknown>({
   disabled = false,
   loading = false,
   className,
+  tooltip,
 }: ProposalVoteButtonProps<Vote>) => (
-  <Button
-    className={clsx(
-      'border-2 border-transparent',
-      {
-        'border-border-primary': pressed,
-      },
-      className
-    )}
-    contentContainerClassName={clsx('justify-between text-sm', {
-      'primary-text': !pressed,
-    })}
-    disabled={disabled}
-    loading={loading}
-    onClick={onClick}
-    pressed={pressed}
-    size="lg"
-    variant="secondary"
-  >
-    <p className="text-left">{label}</p>
-    <Icon className="!h-6 !w-6" style={{ color }} />
-  </Button>
+  <Tooltip title={tooltip || undefined}>
+    <Button
+      className={clsx(
+        'border-2 border-transparent',
+        {
+          'border-border-primary': pressed,
+        },
+        className
+      )}
+      contentContainerClassName={clsx('justify-between text-sm', {
+        'primary-text': !pressed,
+      })}
+      disabled={disabled}
+      loading={loading}
+      onClick={onClick}
+      pressed={pressed}
+      size="lg"
+      variant="secondary"
+    >
+      <p className="text-left">{label}</p>
+      <Icon className="!h-6 !w-6" style={{ color }} />
+    </Button>
+  </Tooltip>
 )

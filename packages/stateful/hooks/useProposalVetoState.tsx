@@ -151,12 +151,10 @@ export const useProposalVetoState = ({
           )
         })
       : undefined
-  const walletCanEarlyExecute =
-    !!matchingWalletVetoer &&
-    statusKey === 'veto_timelock' &&
-    !!vetoConfig?.early_execute
+  const canEarlyExecute =
+    statusKey === 'veto_timelock' && !!vetoConfig?.early_execute
   const onVeto = useCallback(async () => {
-    if (vetoerEntity.loading || !matchingWalletVetoer) {
+    if (vetoerEntity.loading) {
       return
     }
 
@@ -175,7 +173,7 @@ export const useProposalVetoState = ({
       } else if (
         vetoerEntity.data.type === EntityType.Wallet ||
         (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
-          matchingWalletVetoer.type === EntityType.Wallet)
+          matchingWalletVetoer?.type === EntityType.Wallet)
       ) {
         const msg = makeExecuteSmartContractMessage({
           chainId,
@@ -210,23 +208,33 @@ export const useProposalVetoState = ({
         )
 
         await onVetoSuccess()
-      } else if (matchingWalletVetoer.type === EntityType.Dao) {
+      } else if (
+        vetoerEntity.data.type === EntityType.Dao ||
+        (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
+          matchingWalletVetoer?.type === EntityType.Dao)
+      ) {
         router.push(
-          getDaoProposalPath(matchingWalletVetoer.address, 'create', {
-            prefill: getDaoProposalSinglePrefill({
-              actions: [
-                {
-                  actionKey: ActionKey.VetoProposal,
-                  data: {
-                    chainId,
-                    coreAddress,
-                    proposalModuleAddress: proposalModule.address,
-                    proposalId: proposalNumber,
+          getDaoProposalPath(
+            vetoerEntity.data.type === EntityType.Dao
+              ? vetoerEntity.data.address
+              : (matchingWalletVetoer?.address ?? ''),
+            'create',
+            {
+              prefill: getDaoProposalSinglePrefill({
+                actions: [
+                  {
+                    actionKey: ActionKey.VetoProposal,
+                    data: {
+                      chainId,
+                      coreAddress,
+                      proposalModuleAddress: proposalModule.address,
+                      proposalId: proposalNumber,
+                    },
                   },
-                },
-              ],
-            }),
-          })
+                ],
+              }),
+            }
+          )
         )
       }
     } catch (err) {
@@ -253,7 +261,7 @@ export const useProposalVetoState = ({
     coreAddress,
   ])
   const onVetoEarlyExecute = useCallback(async () => {
-    if (vetoerEntity.loading || !matchingWalletVetoer) {
+    if (vetoerEntity.loading) {
       return
     }
 
@@ -262,7 +270,7 @@ export const useProposalVetoState = ({
       if (
         vetoerEntity.data.type === EntityType.Wallet ||
         (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
-          matchingWalletVetoer.type === EntityType.Wallet)
+          matchingWalletVetoer?.type === EntityType.Wallet)
       ) {
         const msg = makeExecuteSmartContractMessage({
           chainId,
@@ -297,23 +305,33 @@ export const useProposalVetoState = ({
         )
 
         await onExecuteSuccess()
-      } else if (matchingWalletVetoer.type === EntityType.Dao) {
+      } else if (
+        vetoerEntity.data.type === EntityType.Dao ||
+        (vetoerEntity.data.type === EntityType.Cw1Whitelist &&
+          matchingWalletVetoer?.type === EntityType.Dao)
+      ) {
         router.push(
-          getDaoProposalPath(matchingWalletVetoer.address, 'create', {
-            prefill: getDaoProposalSinglePrefill({
-              actions: [
-                {
-                  actionKey: ActionKey.ExecuteProposal,
-                  data: {
-                    chainId,
-                    coreAddress,
-                    proposalModuleAddress: proposalModule.address,
-                    proposalId: proposalNumber,
+          getDaoProposalPath(
+            vetoerEntity.data.type === EntityType.Dao
+              ? vetoerEntity.data.address
+              : (matchingWalletVetoer?.address ?? ''),
+            'create',
+            {
+              prefill: getDaoProposalSinglePrefill({
+                actions: [
+                  {
+                    actionKey: ActionKey.ExecuteProposal,
+                    data: {
+                      chainId,
+                      coreAddress,
+                      proposalModuleAddress: proposalModule.address,
+                      proposalId: proposalNumber,
+                    },
                   },
-                },
-              ],
-            }),
-          })
+                ],
+              }),
+            }
+          )
         )
       }
     } catch (err) {
@@ -342,15 +360,14 @@ export const useProposalVetoState = ({
   return {
     vetoEnabled,
     canBeVetoed,
-    vetoOrEarlyExecute: matchingWalletVetoer
+    vetoOrEarlyExecute: canBeVetoed
       ? {
           loading: vetoLoading,
           onVeto,
-          onEarlyExecute: walletCanEarlyExecute
-            ? onVetoEarlyExecute
-            : undefined,
-          isVetoerDaoMember: matchingWalletVetoer.type === EntityType.Dao,
+          onEarlyExecute: canEarlyExecute ? onVetoEarlyExecute : undefined,
           isNeutronOverrule: !!neutronTimelockOverrule,
+          walletCanVeto: !!matchingWalletVetoer,
+          isVetoerDaoMember: matchingWalletVetoer?.type === EntityType.Dao,
         }
       : undefined,
     vetoInfoItems:

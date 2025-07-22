@@ -27,13 +27,23 @@ export type ProposalStatusAndInfoProps = {
   vetoOrEarlyExecute?: {
     loading: 'veto' | 'earlyExecute' | false
     onVeto: () => void | Promise<void>
-    // If defined, the vetoer is allowed to execute instead of veto.
+    /**
+     * If defined, the vetoer is allowed to execute instead of veto.
+     */
     onEarlyExecute?: () => void | Promise<void>
-    // Whether or not the vetoer is a DAO and the current user is a member of
-    // that vetoer DAO.
-    isVetoerDaoMember: boolean
-    // Whether or not this is part of the Neutron fork overrule flow.
+    /**
+     * Whether or not this is part of the Neutron fork overrule flow.
+     */
     isNeutronOverrule: boolean
+    /**
+     * Whether or not the connected wallet can veto.
+     */
+    walletCanVeto: boolean
+    /**
+     * Whether or not the vetoer is a DAO and the current user is a member of
+     * that vetoer DAO.
+     */
+    isVetoerDaoMember: boolean
   }
   footer?: ReactNode
   className?: string
@@ -169,6 +179,7 @@ export const ProposalStatusAndInfo = ({
 
           <div className="flex flex-col gap-1">
             <ProposalVoteButton
+              disabled={!vetoOrEarlyExecute.walletCanVeto}
               loading={vetoOrEarlyExecute.loading === 'veto'}
               onClick={vetoOrEarlyExecute.onVeto}
               option={{
@@ -178,17 +189,25 @@ export const ProposalStatusAndInfo = ({
                   ? t('button.goToOverruleProposal')
                   : t('button.veto'),
               }}
+              tooltip={
+                !vetoOrEarlyExecute.walletCanVeto && t('info.walletCannotVeto')
+              }
             />
 
             {vetoOrEarlyExecute.onEarlyExecute && (
               <ProposalVoteButton
+                disabled={!vetoOrEarlyExecute.walletCanVeto}
                 loading={vetoOrEarlyExecute.loading === 'earlyExecute'}
                 onClick={vetoOrEarlyExecute.onEarlyExecute}
                 option={{
                   Icon: Key,
                   value: 'execute',
-                  label: t('button.execute'),
+                  label: t('button.earlyExecute'),
                 }}
+                tooltip={
+                  !vetoOrEarlyExecute.walletCanVeto &&
+                  t('info.walletCannotExecuteEarly')
+                }
               />
             )}
           </div>
