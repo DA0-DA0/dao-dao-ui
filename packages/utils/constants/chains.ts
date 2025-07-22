@@ -634,12 +634,12 @@ const regenTestnetChain = convertChainRegistryChainToAnyChain({
   apis: {
     rpc: [
       {
-        address: 'https://rpc.regen-temp.vitwit.com',
+        address: 'https://rpc-regen-upgrade.vitwit.com',
       },
     ],
     rest: [
       {
-        address: 'https://api.regen-temp.vitwit.com',
+        address: 'https://api-regen-upgrade.vitwit.com',
       },
     ],
   },
@@ -1207,16 +1207,16 @@ const BASE_SUPPORTED_CHAINS: Omit<
         name: 'regen',
         mainnet: false,
         noIndexer: true,
-        accentColor: '#000000',
+        accentColor: '#53b878',
         factoryContractAddress:
           'regen1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysp76v39',
         explorerUrlTemplates: {
-          tx: 'https://explorer.regen-temp.vitwit.com/regen-temp/tx/REPLACE',
-          gov: 'https://explorer.regen-temp.vitwit.com/regen-temp/gov',
+          tx: 'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/tx/REPLACE',
+          gov: 'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/gov',
           govProp:
-            'https://explorer.regen-temp.vitwit.com/regen-temp/gov/REPLACE',
+            'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/gov/REPLACE',
           wallet:
-            'https://explorer.regen-temp.vitwit.com/regen-temp/account/REPLACE',
+            'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/account/REPLACE',
         },
         latestVersion: ContractVersion.V280Beta,
       },
@@ -1405,6 +1405,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.PryzmMainnet]: {
     rpc: 'https://pryzm-rpc.polkachu.com',
     rest: 'https://pryzm-api.polkachu.com',
+  },
+  [ChainId.RegenTestnet]: {
+    rpc: 'https://rpc-regen-upgrade.vitwit.com',
+    rest: 'https://api-regen-upgrade.vitwit.com',
   },
 }
 

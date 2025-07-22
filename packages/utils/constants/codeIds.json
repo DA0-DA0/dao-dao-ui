@@ -1750,7 +1750,7 @@
       "QueryAuth": 12821
     }
   },
-  "regen-temp": {
+  "regen-upgrade": {
     "2.8.0-beta": {
       "Cw1Whitelist": 1,
       "Cw4Group": 2,

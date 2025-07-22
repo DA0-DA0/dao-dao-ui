@@ -107,7 +107,7 @@ export enum ChainId {
   DaodiseoTestnet = 'ithaca-1',
   KopiMainnet = 'luwak-1',
   RegenMainnet = 'regen-1',
-  RegenTestnet = 'regen-temp',
+  RegenTestnet = 'regen-upgrade',
   PryzmMainnet = 'pryzm-1',
 
   // Local testing chain powered by Starship.
