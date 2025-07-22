@@ -27,6 +27,7 @@ import {
 import {
   NEUTRON_GOVERNANCE_DAO,
   chainIsIndexed,
+  isProposalStatusVetoTimelock,
   mustGetSupportedChainConfig,
   webSocketChannelNameForDao,
 } from '@dao-dao/utils'
@@ -59,6 +60,10 @@ type CommonProposalListInfoWithType = CommonProposalListInfo & {
   type: ProposalType
 }
 
+type ProposalPropsWithStatus = StatefulProposalLineProps & {
+  status: ProposalStatus
+}
+
 export const ProposalList = ({
   onClick,
   hideVetoable = false,
@@ -72,11 +77,11 @@ export const ProposalList = ({
   const { mode } = useAppContext()
   const { isMember = false } = useMembership()
 
-  const [openProposals, setOpenProposals] = useState<
-    (StatefulProposalLineProps & { status: ProposalStatus })[]
-  >([])
+  const [openProposals, setOpenProposals] = useState<ProposalPropsWithStatus[]>(
+    []
+  )
   const [historyProposals, setHistoryProposals] = useState<
-    (StatefulProposalLineProps & { status: ProposalStatus })[]
+    ProposalPropsWithStatus[]
   >([])
 
   // Get selectors for all proposal modules so we can list proposals.
@@ -287,9 +292,7 @@ export const ProposalList = ({
             const transformIntoProps = ({
               id,
               status,
-            }: (typeof newProposalInfos)[number]): StatefulProposalLineProps & {
-              status: ProposalStatus
-            } => ({
+            }: (typeof newProposalInfos)[number]): ProposalPropsWithStatus => ({
               chainId: dao.chainId,
               coreAddress: dao.coreAddress,
               proposalId: id,
@@ -305,13 +308,21 @@ export const ProposalList = ({
             newOpenProposals = [
               ...newOpenProposals,
               ...newProposalInfos
-                .filter(({ status }) => status === ProposalStatusEnum.Open)
+                .filter(
+                  ({ status }) =>
+                    status === ProposalStatusEnum.Open ||
+                    isProposalStatusVetoTimelock(status)
+                )
                 .map(transformIntoProps),
             ]
             newHistoryProposals = [
               ...newHistoryProposals,
               ...newProposalInfos
-                .filter(({ status }) => status !== ProposalStatusEnum.Open)
+                .filter(
+                  ({ status }) =>
+                    status !== ProposalStatusEnum.Open &&
+                    !isProposalStatusVetoTimelock(status)
+                )
                 .map(transformIntoProps),
             ]
 

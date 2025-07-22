@@ -11,6 +11,7 @@ import {
 import {
   ProposalStatus,
   ProposalStatusKey,
+  ProposalStatusVetoTimelock,
 } from '@dao-dao/types/contracts/common'
 import {
   ProposalStatus as PreProposeStatus,
@@ -76,12 +77,20 @@ export const getProposalStatusKey = (
   status: ProposalStatus
 ): ProposalStatusKey =>
   typeof status === 'string'
-    ? status
+    ? (status as ProposalStatusKey)
     : typeof status === 'object' && status
       ? (Object.keys(status)[0] as any)
       : (() => {
           throw new Error('Invalid proposal status.')
         })()
+
+/**
+ * Returns whether or not the proposal status is veto timelock.
+ */
+export const isProposalStatusVetoTimelock = (
+  status: ProposalStatus
+): status is ProposalStatusVetoTimelock =>
+  typeof status === 'object' && 'veto_timelock' in status
 
 /**
  * Convert veto config into the veto object expected by proposal modules.
