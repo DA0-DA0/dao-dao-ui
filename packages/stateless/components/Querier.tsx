@@ -173,7 +173,7 @@ export const Querier = ({
             <InputLabel name={t('title.query')} title />
 
             <CodeMirrorInput
-              className="max-h-[min(32rem,50vh)] overflow-y-scroll"
+              className="styled-scrollbar max-h-[min(32rem,50vh)] overflow-y-scroll"
               control={control}
               error={errors?.query || queryJsonFormatError}
               fieldName="query"
@@ -222,7 +222,7 @@ export const Querier = ({
 
             <RawJsonDisplay
               className={clsx(
-                'max-h-[min(32rem,50vh)] overflow-y-scroll',
+                'styled-scrollbar max-h-[min(32rem,50vh)] overflow-y-scroll',
                 loading && 'animate-pulse',
                 error && 'text-text-interactive-error'
               )}
