@@ -31,6 +31,7 @@ export type Auth = {
   chainBech32Prefix: string
   publicKeyType: string
   publicKeyHex: string
+  timestamp: number
   // Backwards compatible.
   publicKey: string
 }
@@ -65,6 +66,7 @@ export const signOffChainAuth = async <
   const dataWithAuth: SignedBody<Data>['data'] = {
     ...data,
     auth: {
+      timestamp: Date.now(),
       type,
       nonce,
       chainId,
