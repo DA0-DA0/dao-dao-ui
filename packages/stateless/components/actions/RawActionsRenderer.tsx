@@ -9,11 +9,8 @@ import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { useActionsEncoder } from '../../contexts/ActionsEncoder'
 import { ActionsEncoderProvider } from '../../providers/ActionsEncoder'
-import {
-  CosmosMessageDisplay,
-  CosmosMessageDisplayProps,
-} from '../CosmosMessageDisplay'
 import { ErrorPage } from '../error'
+import { RawJsonDisplay, RawJsonDisplayProps } from '../RawJsonDisplay'
 
 export type RawActionsRendererProps =
   | {
@@ -67,7 +64,7 @@ const RawActionsRendererEncoder = () => {
       ) : encoder.ready ? (
         <RawActionsRendererMessages messages={encoder.messages} />
       ) : (
-        <CosmosMessageDisplay loading value="" />
+        <RawJsonDisplay loading value="" />
       )}
     </>
   )
@@ -78,11 +75,11 @@ export const RawActionsRendererMessages = ({
   ...props
 }: {
   messages: any[]
-} & Omit<CosmosMessageDisplayProps, 'value'>) => {
+} & Omit<RawJsonDisplayProps, 'value'>) => {
   const value = useMemo(() => {
     const decoded = decodeMessages(messages).map(decodeRawDataForDisplay)
     return JSON.stringify(decoded.length === 1 ? decoded[0] : decoded, null, 2)
   }, [messages])
 
-  return <CosmosMessageDisplay {...props} value={value} />
+  return <RawJsonDisplay {...props} value={value} />
 }

@@ -9,8 +9,8 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { CosmosMessageDisplay } from '../../../CosmosMessageDisplay'
 import { Checkbox } from '../../../inputs/Checkbox'
+import { RawJsonDisplay } from '../../../RawJsonDisplay'
 import { DaoInfoCards } from '../../DaoInfoCards'
 
 export const CreateDaoReview = ({
@@ -232,7 +232,7 @@ export const CreateDaoReview = ({
 
       {showingPreview && !!previewJson && (
         <div className="mt-4">
-          <CosmosMessageDisplay value={previewJson} />
+          <RawJsonDisplay value={previewJson} />
         </div>
       )}
       {!!previewError && (

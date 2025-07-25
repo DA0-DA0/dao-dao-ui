@@ -20,17 +20,19 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-export interface CosmosMessageDisplayProps {
+export interface RawJsonDisplayProps {
   value: string
   loading?: boolean
   className?: string
+  contentClassName?: string
 }
 
-export const CosmosMessageDisplay = ({
+export const RawJsonDisplay = ({
   value,
   loading,
   className,
-}: CosmosMessageDisplayProps) => {
+  contentClassName,
+}: RawJsonDisplayProps) => {
   const themeCtx = useThemeContext()
   const editorTheme =
     themeCtx.theme !== Theme.Dark ? 'default' : 'material-ocean'
@@ -41,7 +43,7 @@ export const CosmosMessageDisplay = ({
         <Loader />
       ) : (
         <CodeMirror
-          className="text-sm"
+          className={clsx('text-sm', contentClassName)}
           options={{
             theme: editorTheme,
             mode: {

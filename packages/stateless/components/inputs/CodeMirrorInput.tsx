@@ -41,6 +41,7 @@ export interface CodeMirrorInputProps<
    * Optionally transform value when displaying.
    */
   transform?: (value: any) => string
+  className?: string
 }
 
 export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
@@ -50,6 +51,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   readOnly = false,
   required,
   transform,
+  className,
 }: CodeMirrorInputProps<T, U>) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -83,7 +85,8 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
         <CodeMirror
           className={clsx(
             'rounded',
-            readOnly && 'max-h-[min(32rem,75vh)] overflow-y-auto'
+            readOnly && 'max-h-[min(32rem,67vh)] overflow-y-auto',
+            className
           )}
           onBeforeChange={(_editor, _data, value) => onChange(value)}
           onBlur={(_instance, _event) => onBlur()}

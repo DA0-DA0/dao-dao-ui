@@ -143,6 +143,7 @@ export enum AccountTabId {
   Wallet = 'wallet',
   Daos = 'daos',
   Actions = 'actions',
+  Querier = 'querier',
   Apps = 'apps',
 }
 

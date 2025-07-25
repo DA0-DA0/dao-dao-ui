@@ -14,11 +14,11 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Button,
-  CosmosMessageDisplay,
   InputErrorMessage,
   Loader,
   MarkdownRenderer,
   ProposalContentDisplay,
+  RawJsonDisplay,
   SegmentedControls,
   SwitchCard,
   TextAreaInput,
@@ -586,7 +586,7 @@ export const InnerComplete = ({
                   }}
                   description={proposalDescription}
                   innerContentDisplay={
-                    <CosmosMessageDisplay
+                    <RawJsonDisplay
                       value={decodedMessagesString(completeRatings.cosmosMsgs)}
                     />
                   }

@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CosmosMessageDisplay } from './CosmosMessageDisplay'
+import { RawJsonDisplay } from './RawJsonDisplay'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / CosmosMessageDisplay',
-  component: CosmosMessageDisplay,
-} as ComponentMeta<typeof CosmosMessageDisplay>
+  title: 'DAO DAO / packages / stateless / components / RawJsonDisplay',
+  component: RawJsonDisplay,
+} as ComponentMeta<typeof RawJsonDisplay>
 
-const Template: ComponentStory<typeof CosmosMessageDisplay> = (args) => (
-  <CosmosMessageDisplay {...args} />
+const Template: ComponentStory<typeof RawJsonDisplay> = (args) => (
+  <RawJsonDisplay {...args} />
 )
 
 export const Default = Template.bind({})

@@ -7,8 +7,8 @@ import {
   ActionsMatchAndRender,
   Button,
   ChainProvider,
-  CosmosMessageDisplay,
   Modal,
+  RawJsonDisplay,
 } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg, protobufToCwMsg } from '@dao-dao/types'
 import {
@@ -113,7 +113,7 @@ export const Web3AuthPromptModal = () => {
                 <WalletActionsRenderer messages={decoded.messages} />
               </WalletActionsProvider>
             ) : (
-              <CosmosMessageDisplay
+              <RawJsonDisplay
                 value={JSON.stringify(decoded.messages, undefined, 2).replace(
                   /\\n/g,
                   '\n'

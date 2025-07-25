@@ -1,4 +1,5 @@
 import {
+  DataObjectRounded,
   ExtensionRounded,
   GroupRounded,
   WalletRounded,
@@ -34,6 +35,7 @@ import {
   ProfileDaos,
   ProfileWallet,
 } from '../profile'
+import { Querier } from '../Querier'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const ProfileHome = () => {
@@ -58,6 +60,12 @@ export const ProfileHome = () => {
       label: t('title.actions'),
       Icon: ExtensionRounded,
       Component: ProfileActions,
+    },
+    {
+      id: AccountTabId.Querier,
+      label: t('title.querier'),
+      Icon: DataObjectRounded,
+      Component: Querier,
     },
     {
       id: AccountTabId.Apps,

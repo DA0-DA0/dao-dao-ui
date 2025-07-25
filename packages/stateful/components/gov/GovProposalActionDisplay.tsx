@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import {
   ActionsMatchAndRender,
   Button,
-  CosmosMessageDisplay,
   Loader,
   RawActionsRenderer,
+  RawJsonDisplay,
 } from '@dao-dao/stateless'
 import {
   GovProposalActionDisplayProps,
@@ -94,7 +94,7 @@ const InnerGovProposalActionDisplay = ({
           <div className="space-y-3">
             <p className="text-text-tertiary">{t('title.rawData')}</p>
 
-            <CosmosMessageDisplay
+            <RawJsonDisplay
               value={JSON.stringify(decodedNonText, undefined, 2)}
             />
           </div>

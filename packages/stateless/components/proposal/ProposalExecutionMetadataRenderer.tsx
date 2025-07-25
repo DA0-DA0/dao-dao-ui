@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLink,
-  CosmosMessageDisplay,
   InfoLineCard,
   InputLabel,
+  RawJsonDisplay,
 } from '@dao-dao/stateless'
 import { ProposalExecutionMetadata } from '@dao-dao/types'
 
@@ -110,7 +110,7 @@ export const ProposalExecutionMetadataRenderer = ({
                         className="!rounded-none !bg-transparent flex-col items-stretch !pt-2"
                         label={t('form.data')}
                         value={
-                          <CosmosMessageDisplay
+                          <RawJsonDisplay
                             className="grow"
                             value={stringifiedData}
                           />

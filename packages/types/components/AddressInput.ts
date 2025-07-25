@@ -27,7 +27,7 @@ export interface AddressInputProps<
   setValue?: UseFormSetValue<FV>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  error?: FieldError | string
+  error?: FieldError | string | boolean
   disabled?: boolean
   required?: boolean
   containerClassName?: string
