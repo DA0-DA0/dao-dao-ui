@@ -17,6 +17,7 @@ import {
   PFPK_API_BASE,
   SignedBody,
   getDisplayNameForChainId,
+  getPublicKeyTypeForChain,
   makeCombineQueryResultsIntoLoadingData,
   makeEmptyUnifiedProfile,
   makeManuallyResolvedPromise,
@@ -191,7 +192,7 @@ export const useManageProfile = ({
           }
 
           await pfpkApi.postRequest(
-            '/',
+            '/me',
             {
               profile: profileUpdate,
             },
@@ -331,7 +332,12 @@ export const useManageProfile = ({
             address,
             hexPublicKey,
             data: {
-              allow: currentHexPublicKey.data,
+              allow: {
+                publicKey: {
+                  type: getPublicKeyTypeForChain(chainWallet.chainId),
+                  hex: currentHexPublicKey.data,
+                },
+              },
               chainIds: [chainWallet.chainId],
             },
             offlineSignerAmino,

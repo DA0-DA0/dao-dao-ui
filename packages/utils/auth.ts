@@ -24,16 +24,16 @@ export type SignatureOptions<
 }
 
 export type Auth = {
+  timestamp: number
   type: string
   nonce: number
   chainId: string
   chainFeeDenom: string
   chainBech32Prefix: string
-  publicKeyType: string
-  publicKeyHex: string
-  timestamp: number
-  // Backwards compatible.
-  publicKey: string
+  publicKey: {
+    type: string
+    hex: string
+  }
 }
 
 export type SignedBody<
@@ -72,10 +72,10 @@ export const signOffChainAuth = async <
       chainId,
       chainFeeDenom: getNativeTokenForChainId(chainId).denomOrAddress,
       chainBech32Prefix: chain.bech32Prefix,
-      publicKeyType: getPublicKeyTypeForChain(chainId),
-      publicKeyHex: hexPublicKey,
-      // Backwards compatible.
-      publicKey: hexPublicKey,
+      publicKey: {
+        type: getPublicKeyTypeForChain(chainId),
+        hex: hexPublicKey,
+      },
     },
   }
 
