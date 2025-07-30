@@ -1,6 +1,5 @@
-import { toHex } from '@cosmjs/encoding'
 import { useQueries, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { profileQueries } from '@dao-dao/state'
@@ -15,17 +14,12 @@ import {
 } from '@dao-dao/types'
 import {
   PFPK_API_BASE,
-  SignedBody,
-  getDisplayNameForChainId,
-  getPublicKeyTypeForChain,
   makeCombineQueryResultsIntoLoadingData,
   makeEmptyUnifiedProfile,
-  makeManuallyResolvedPromise,
-  signOffChainAuth,
 } from '@dao-dao/utils'
 
 import { useQueryLoadingData } from './query/useQueryLoadingData'
-import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { usePfpkAuthenticatedFetch } from './usePfpkAuthenticatedFetch'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -141,12 +135,12 @@ export const useManageProfile = ({
     isWalletConnected,
     chain: { chainId: walletChainId },
     chainWallet: currentChainWallet,
-    hexPublicKey: currentHexPublicKey,
   } = useWallet({
     chainId,
     loadAccount: true,
   })
 
+  const queryClient = useQueryClient()
   const profile = useQueryLoadingData(
     profileQueries.unified(useQueryClient(), {
       chainId: walletChainId,
@@ -157,7 +151,10 @@ export const useManageProfile = ({
 
   const refreshProfile = useRefreshProfile(address, profile)
 
-  const pfpkApi = useCfWorkerAuthPostRequest(PFPK_API_BASE, '', walletChainId)
+  const { ready: readyPfpk, pfpkClient } = usePfpkAuthenticatedFetch({
+    apiUrl: PFPK_API_BASE,
+    chainId: walletChainId,
+  })
 
   const ready =
     !profile.loading &&
@@ -166,78 +163,33 @@ export const useManageProfile = ({
     // failed to load.
     profile.data.nonce >= 0 &&
     !!currentChainWallet &&
-    !currentHexPublicKey.loading &&
-    pfpkApi.ready
+    readyPfpk
 
   const [updating, setUpdating] = useState(false)
-  const [updatingNonce, setUpdatingNonce] = useState<number>()
-  const onUpdateRef = useRef<() => void>()
 
   const profileNonce = profile.loading ? -1 : profile.data.nonce
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateProfile = useCallback(
-    // Delay resolving the profile update promise until the new profile is
-    // loaded in state after a successful refresh.
-    makeManuallyResolvedPromise(
-      async (profileUpdates: Omit<PfpkProfileUpdate, 'nonce'>) => {
-        if (!ready || profileNonce < 0) {
-          return false
-        }
-
-        setUpdating(true)
-        try {
-          const profileUpdate: PfpkProfileUpdate = {
-            ...profileUpdates,
-            nonce: profileNonce,
-          }
-
-          await pfpkApi.postRequest(
-            '/me',
-            {
-              profile: profileUpdate,
-            },
-            'DAO DAO Profile | Update'
-          )
-
-          refreshProfile()
-
-          // On success, the updating state is cleared when the promise
-          // resolves.
-        } catch (err) {
-          setUpdating(false)
-
-          // Rethrow error.
-          throw err
-        }
-      },
-      (resolve) => {
-        // Set onUpdate handler.
-        onUpdateRef.current = () => {
-          resolve()
-          setUpdating(false)
-        }
-        setUpdatingNonce(profileNonce)
+    async (profile: Omit<PfpkProfileUpdate, 'nonce'>) => {
+      if (!ready || profileNonce < 0) {
+        return
       }
-    ),
-    [pfpkApi, profileNonce, ready, refreshProfile]
+
+      setUpdating(true)
+      try {
+        await pfpkClient.updateProfile({
+          chainId: walletChainId,
+          profile,
+        })
+      } catch (err) {
+        // Rethrow error.
+        throw err
+      } finally {
+        setUpdating(false)
+      }
+    },
+    [pfpkClient, profileNonce, ready, walletChainId]
   )
-
-  // Listen for nonce to incremenent to clear updating state, since we want the
-  // new profile to be ready on the same render that we stop loading.
-  useEffect(() => {
-    if (updatingNonce === undefined || profile.loading) {
-      return
-    }
-
-    // If nonce incremented, clear updating state and call onUpdate handler if
-    // exists.
-    if (profile.data.nonce > updatingNonce) {
-      onUpdateRef.current?.()
-      onUpdateRef.current = undefined
-
-      setUpdatingNonce(undefined)
-    }
-  }, [updatingNonce, profile])
 
   const [addChainsStatus, setAddChainsStatus] =
     useState<AddChainsStatus>('idle')
@@ -250,7 +202,7 @@ export const useManageProfile = ({
     }
 
     // Type-check.
-    if (!ready || currentHexPublicKey.loading) {
+    if (!ready) {
       throw new Error(t('error.loadingData'))
     }
 
@@ -259,109 +211,16 @@ export const useManageProfile = ({
 
       let error: unknown
       try {
-        // Get chain wallets.
-        const allChainWallets =
-          currentChainWallet.mainWallet.getChainWalletList(false)
-        const chainWallets = chainIds.map(
-          (chainId) => allChainWallets.find((cw) => cw.chainId === chainId)!
-        )
-
-        // Stop if missing chain wallets.
-        const missingChainWallets = chainIds.filter(
-          (_, index) => !chainWallets[index]
-        )
-        if (missingChainWallets.length > 0) {
-          throw new Error(
-            t('error.unexpectedlyMissingChains', {
-              chains: missingChainWallets
-                .map((chainId) => getDisplayNameForChainId(chainId))
-                .join(', '),
-            })
-          )
-        }
-
-        // Load nonce from API.
-        const nonce = await pfpkApi.getNonce()
-
-        const allowances: SignedBody<{}>[] = []
-
-        // For each chain, sign allowance.
-        for (const chainWallet of chainWallets) {
-          setChainStatus?.(chainWallet.chainId, 'loading')
-
-          // Make sure the chain is connected.
-          if (!chainWallet.isWalletConnected) {
-            await chainWallet.connect(false)
-          }
-
-          // If still not connected, error.
-          if (!chainWallet.isWalletConnected) {
-            throw new Error(t('error.failedToConnect'))
-          }
-
-          // Get the account public key.
-          const { address, pubkey: pubkeyData } =
-            (await chainWallet.client.getAccount?.(chainWallet.chainId)) ?? {}
-          if (!address || !pubkeyData) {
-            throw new Error(t('error.failedToGetAccountFromWallet'))
-          }
-
-          const offlineSignerAmino =
-            (await chainWallet.client.getOfflineSignerAmino?.(
-              chainWallet.chainId
-            )) ||
-            // Fallback to normal signer function in case amino signer getter is
-            // undefined. This may still return an amino signer, so let's check.
-            (await chainWallet.client.getOfflineSigner?.(chainWallet.chainId))
-          if (!offlineSignerAmino || !('signAmino' in offlineSignerAmino)) {
-            throw new Error(
-              t('error.unsupportedAminoWallet', {
-                name: chainWallet.walletPrettyName,
-              })
-            )
-          }
-
-          const hexPublicKey = toHex(pubkeyData)
-
-          // Sign allowance for main wallet to register this public key for this
-          // chain.
-          const body = await signOffChainAuth({
-            type: 'DAO DAO Profile | Add Chain Allowance',
-            nonce,
-            chainId: chainWallet.chainId,
-            address,
-            hexPublicKey,
-            data: {
-              allow: {
-                publicKey: {
-                  type: getPublicKeyTypeForChain(chainWallet.chainId),
-                  hex: currentHexPublicKey.data,
-                },
-              },
-              chainIds: [chainWallet.chainId],
-            },
-            offlineSignerAmino,
-            // No signature required if we're registering a new chain for the
-            // same public key already attached to the profile, which is the
-            // public key signing the entire registration request.
-            generateOnly: hexPublicKey === currentHexPublicKey.data,
-          })
-
-          allowances.push(body)
-
-          setChainStatus?.(chainWallet.chainId, 'done')
-        }
-
-        setAddChainsStatus('registering')
-
-        // Submit allowances. Throws error on failure.
-        await pfpkApi.postRequest(
-          '/register',
-          {
-            publicKeys: allowances,
-          },
-          'DAO DAO Profile | Add Chains'
-        )
+        await pfpkClient.registerPublicKeys({
+          chainId: walletChainId,
+          chainIds,
+          onAllowanceBeginGenerating:
+            setChainStatus &&
+            ((chainId) => setChainStatus?.(chainId, 'loading')),
+          onAllowanceGenerated:
+            setChainStatus && ((chainId) => setChainStatus?.(chainId, 'done')),
+          onAllAllowancesGenerated: () => setAddChainsStatus('registering'),
+        })
       } catch (err) {
         // Reset all chain statuses on error.
         if (setChainStatus) {
@@ -371,9 +230,6 @@ export const useManageProfile = ({
         // Set error to be thrown after finally block.
         error = err
       } finally {
-        // Refresh profile.
-        refreshProfile()
-
         // Reset status.
         setAddChainsStatus('idle')
       }
@@ -399,7 +255,6 @@ export const useManageProfile = ({
   ).filter(
     (chainWallet) => !!chainWallet.isWalletConnected && !!chainWallet.address
   )
-  const queryClient = useQueryClient()
   const otherChainWalletProfiles = useQueries({
     queries: otherConnectedChainWallets.map((chainWallet) =>
       profileQueries.unified(queryClient, {

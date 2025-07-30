@@ -39,6 +39,7 @@ export const STARGAZE_NAMES_CONTRACT = process.env
 
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
+export const PFPK_API_HOSTNAME = new URL(PFPK_API_BASE).hostname
 
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string

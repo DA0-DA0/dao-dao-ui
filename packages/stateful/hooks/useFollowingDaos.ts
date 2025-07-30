@@ -19,8 +19,8 @@ import {
   serializeDaoSource,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useManageProfile } from './useManageProfile'
+import { usePfpkAuthenticatedFetch } from './usePfpkAuthenticatedFetch'
 import { useProfile } from './useProfile'
 
 export type UseFollowingDaosReturn = {
@@ -71,10 +71,10 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   }, [followingDaosLoading])
 
   const [updating, setUpdating] = useState(false)
-  const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    KVPK_API_BASE,
-    'Update Following'
-  )
+  const { ready, postRequest } = usePfpkAuthenticatedFetch({
+    apiUrl: KVPK_API_BASE,
+    defaultSignatureType: 'Update Following',
+  })
 
   // Turn this into a reference so we can use it in `setFollowing` without
   // memoizing.

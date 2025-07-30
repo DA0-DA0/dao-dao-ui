@@ -46,7 +46,7 @@ import {
 
 import {
   useAwaitNextBlock,
-  useCfWorkerAuthPostRequest,
+  usePfpkAuthenticatedFetch,
   useProfile,
   useWallet,
 } from '../../hooks'
@@ -110,11 +110,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   ])
 
   const { ready: hiddenBalancesReady, postRequest: postHiddenBalancesRequest } =
-    useCfWorkerAuthPostRequest(
-      KVPK_API_BASE,
-      'Hidden Balances',
-      props.token.chainId
-    )
+    usePfpkAuthenticatedFetch({
+      apiUrl: KVPK_API_BASE,
+      defaultSignatureType: 'Hidden Balances',
+      chainId: props.token.chainId,
+    })
 
   const setRefreshHidden = useSetRecoilState(refreshHiddenBalancesAtom)
   const refreshHidden = useCallback(

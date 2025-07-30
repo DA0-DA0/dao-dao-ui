@@ -1,5 +1,7 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 
+import { RequestBody } from '@dao-dao/types/pfpk'
+
 import {
   getChainForChainId,
   getNativeTokenForChainId,
@@ -23,28 +25,6 @@ export type SignatureOptions<
   generateOnly?: boolean
 }
 
-export type Auth = {
-  timestamp: number
-  type: string
-  nonce: number
-  chainId: string
-  chainFeeDenom: string
-  chainBech32Prefix: string
-  publicKey: {
-    type: string
-    hex: string
-  }
-}
-
-export type SignedBody<
-  Data extends Record<string, unknown> | undefined = Record<string, any>,
-> = {
-  data: {
-    auth: Auth
-  } & Data
-  signature: string
-}
-
 /**
  * Function to sign a message as a wallet in the format expected by our various
  * off-chain services.
@@ -60,10 +40,10 @@ export const signOffChainAuth = async <
   data,
   offlineSignerAmino,
   generateOnly = false,
-}: SignatureOptions<Data>): Promise<SignedBody<Data>> => {
+}: SignatureOptions<Data>): Promise<RequestBody<Data>> => {
   const chain = getChainForChainId(chainId)
 
-  const dataWithAuth: SignedBody<Data>['data'] = {
+  const dataWithAuth: RequestBody<Data, true>['data'] = {
     ...data,
     auth: {
       timestamp: Date.now(),
@@ -112,7 +92,7 @@ export const signOffChainAuth = async <
       .signature.signature
   }
 
-  const signedBody: SignedBody<Data> = {
+  const signedBody: RequestBody<Data> = {
     data: dataWithAuth,
     signature,
   }

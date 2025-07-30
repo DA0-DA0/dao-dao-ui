@@ -29,7 +29,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
+import { usePfpkAuthenticatedFetch } from '../../hooks/usePfpkAuthenticatedFetch'
 import { useWallet } from '../../hooks/useWallet'
 import { ConnectWallet } from '../ConnectWallet'
 
@@ -46,10 +46,10 @@ export const DiscordNotifierConfigureModal = () => {
   const [visible, setVisible] = useState(false)
 
   // Handle discord notifier code redirect.
-  const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
-    DISCORD_NOTIFIER_API_BASE,
-    DISCORD_NOTIFIER_SIGNATURE_TYPE
-  )
+  const { ready: postRequestReady, postRequest } = usePfpkAuthenticatedFetch({
+    apiUrl: DISCORD_NOTIFIER_API_BASE,
+    defaultSignatureType: DISCORD_NOTIFIER_SIGNATURE_TYPE,
+  })
 
   const [discordNotifierSetup, setDiscordNotifierSetup] = useRecoilState(
     discordNotifierSetupAtom(coreAddress)

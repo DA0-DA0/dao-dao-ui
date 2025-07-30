@@ -36,7 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../actions'
-import { useCfWorkerAuthPostRequest, useWallet } from '../../hooks'
+import { usePfpkAuthenticatedFetch, useWallet } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
 
@@ -143,7 +143,10 @@ export const ProfileActions = ({
   )
 
   const { ready: txSavesReady, postRequest: postTxSavesRequest } =
-    useCfWorkerAuthPostRequest(KVPK_API_BASE, 'Transaction Saves')
+    usePfpkAuthenticatedFetch({
+      apiUrl: KVPK_API_BASE,
+      defaultSignatureType: 'Transaction Saves',
+    })
 
   const setRefreshSaves = useSetRecoilState(refreshSavedTxsAtom)
   const refreshSaves = useCallback(

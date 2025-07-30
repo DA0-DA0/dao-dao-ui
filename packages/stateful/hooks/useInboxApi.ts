@@ -19,7 +19,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { usePfpkAuthenticatedFetch } from './usePfpkAuthenticatedFetch'
 import { useWallet } from './useWallet'
 
 export const useInboxApi = (): InboxApi => {
@@ -34,10 +34,10 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const [updating, setUpdating] = useState(false)
-  const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    INBOX_API_BASE,
-    'Inbox'
-  )
+  const { ready, postRequest } = usePfpkAuthenticatedFetch({
+    apiUrl: INBOX_API_BASE,
+    defaultSignatureType: 'Inbox',
+  })
 
   const [config, setConfig] = useState<InboxConfig>()
 
