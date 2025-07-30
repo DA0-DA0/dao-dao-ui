@@ -7,16 +7,16 @@ import * as _499 from "./oracle/v1/genesis";
 import * as _500 from "./oracle/v1/query";
 import * as _501 from "./oracle/v1/tx";
 import * as _502 from "./types/v1/currency_pair";
-import * as _847 from "./marketmap/v1/tx.amino";
-import * as _848 from "./oracle/v1/tx.amino";
-import * as _849 from "./marketmap/v1/tx.registry";
-import * as _850 from "./oracle/v1/tx.registry";
-import * as _851 from "./marketmap/v1/query.rpc.Query";
-import * as _852 from "./oracle/v1/query.rpc.Query";
-import * as _853 from "./marketmap/v1/tx.rpc.msg";
-import * as _854 from "./oracle/v1/tx.rpc.msg";
-import * as _900 from "./rpc.query";
-import * as _901 from "./rpc.tx";
+import * as _852 from "./marketmap/v1/tx.amino";
+import * as _853 from "./oracle/v1/tx.amino";
+import * as _854 from "./marketmap/v1/tx.registry";
+import * as _855 from "./oracle/v1/tx.registry";
+import * as _856 from "./marketmap/v1/query.rpc.Query";
+import * as _857 from "./oracle/v1/query.rpc.Query";
+import * as _858 from "./marketmap/v1/tx.rpc.msg";
+import * as _859 from "./oracle/v1/tx.rpc.msg";
+import * as _909 from "./rpc.query";
+import * as _910 from "./rpc.tx";
 export namespace slinky {
   export namespace marketmap {
     export const v1 = {
@@ -25,10 +25,10 @@ export namespace slinky {
       ..._496,
       ..._497,
       ..._498,
-      ..._847,
-      ..._849,
-      ..._851,
-      ..._853
+      ..._852,
+      ..._854,
+      ..._856,
+      ..._858
     };
   }
   export namespace oracle {
@@ -36,10 +36,10 @@ export namespace slinky {
       ..._499,
       ..._500,
       ..._501,
-      ..._848,
-      ..._850,
-      ..._852,
-      ..._854
+      ..._853,
+      ..._855,
+      ..._857,
+      ..._859
     };
   }
   export namespace types {
@@ -48,7 +48,7 @@ export namespace slinky {
     };
   }
   export const ClientFactory = {
-    ..._900,
-    ..._901
+    ..._909,
+    ..._910
   };
 }

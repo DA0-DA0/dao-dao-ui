@@ -16,16 +16,16 @@ import * as _119 from "./stablestake/pool";
 import * as _120 from "./stablestake/query";
 import * as _121 from "./stablestake/tx";
 import * as _122 from "./stablestake/types";
-import * as _596 from "./amm/tx.amino";
-import * as _597 from "./stablestake/tx.amino";
-import * as _598 from "./amm/tx.registry";
-import * as _599 from "./stablestake/tx.registry";
-import * as _600 from "./amm/query.rpc.Query";
-import * as _601 from "./stablestake/query.rpc.Query";
-import * as _602 from "./amm/tx.rpc.msg";
-import * as _603 from "./stablestake/tx.rpc.msg";
-import * as _870 from "./rpc.query";
-import * as _871 from "./rpc.tx";
+import * as _601 from "./amm/tx.amino";
+import * as _602 from "./stablestake/tx.amino";
+import * as _603 from "./amm/tx.registry";
+import * as _604 from "./stablestake/tx.registry";
+import * as _605 from "./amm/query.rpc.Query";
+import * as _606 from "./stablestake/query.rpc.Query";
+import * as _607 from "./amm/tx.rpc.msg";
+import * as _608 from "./stablestake/tx.rpc.msg";
+import * as _879 from "./rpc.query";
+import * as _880 from "./rpc.tx";
 export namespace elys {
   export const amm = {
     ..._105,
@@ -39,10 +39,10 @@ export namespace elys {
     ..._113,
     ..._114,
     ..._115,
-    ..._596,
-    ..._598,
-    ..._600,
-    ..._602
+    ..._601,
+    ..._603,
+    ..._605,
+    ..._607
   };
   export const stablestake = {
     ..._116,
@@ -52,13 +52,13 @@ export namespace elys {
     ..._120,
     ..._121,
     ..._122,
-    ..._597,
-    ..._599,
-    ..._601,
-    ..._603
+    ..._602,
+    ..._604,
+    ..._606,
+    ..._608
   };
   export const ClientFactory = {
-    ..._870,
-    ..._871
+    ..._879,
+    ..._880
   };
 }

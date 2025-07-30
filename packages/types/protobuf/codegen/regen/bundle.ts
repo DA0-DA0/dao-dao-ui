@@ -25,30 +25,30 @@ import * as _476 from "./ecocredit/v1alpha1/tx";
 import * as _477 from "./ecocredit/v1alpha1/types";
 import * as _478 from "./intertx/v1/query";
 import * as _479 from "./intertx/v1/tx";
-import * as _812 from "./data/v1/tx.amino";
-import * as _813 from "./data/v2/tx.amino";
-import * as _814 from "./ecocredit/basket/v1/tx.amino";
-import * as _815 from "./ecocredit/marketplace/v1/tx.amino";
-import * as _816 from "./ecocredit/v1/tx.amino";
-import * as _817 from "./ecocredit/v1alpha1/tx.amino";
-import * as _818 from "./intertx/v1/tx.amino";
-import * as _819 from "./data/v1/tx.registry";
-import * as _820 from "./data/v2/tx.registry";
-import * as _821 from "./ecocredit/basket/v1/tx.registry";
-import * as _822 from "./ecocredit/marketplace/v1/tx.registry";
-import * as _823 from "./ecocredit/v1/tx.registry";
-import * as _824 from "./ecocredit/v1alpha1/tx.registry";
-import * as _825 from "./intertx/v1/tx.registry";
-import * as _826 from "./intertx/v1/query.rpc.Query";
-import * as _827 from "./data/v1/tx.rpc.msg";
-import * as _828 from "./data/v2/tx.rpc.msg";
-import * as _829 from "./ecocredit/basket/v1/tx.rpc.msg";
-import * as _830 from "./ecocredit/marketplace/v1/tx.rpc.msg";
-import * as _831 from "./ecocredit/v1/tx.rpc.msg";
-import * as _832 from "./ecocredit/v1alpha1/tx.rpc.msg";
-import * as _833 from "./intertx/v1/tx.rpc.msg";
-import * as _896 from "./rpc.query";
-import * as _897 from "./rpc.tx";
+import * as _817 from "./data/v1/tx.amino";
+import * as _818 from "./data/v2/tx.amino";
+import * as _819 from "./ecocredit/basket/v1/tx.amino";
+import * as _820 from "./ecocredit/marketplace/v1/tx.amino";
+import * as _821 from "./ecocredit/v1/tx.amino";
+import * as _822 from "./ecocredit/v1alpha1/tx.amino";
+import * as _823 from "./intertx/v1/tx.amino";
+import * as _824 from "./data/v1/tx.registry";
+import * as _825 from "./data/v2/tx.registry";
+import * as _826 from "./ecocredit/basket/v1/tx.registry";
+import * as _827 from "./ecocredit/marketplace/v1/tx.registry";
+import * as _828 from "./ecocredit/v1/tx.registry";
+import * as _829 from "./ecocredit/v1alpha1/tx.registry";
+import * as _830 from "./intertx/v1/tx.registry";
+import * as _831 from "./intertx/v1/query.rpc.Query";
+import * as _832 from "./data/v1/tx.rpc.msg";
+import * as _833 from "./data/v2/tx.rpc.msg";
+import * as _834 from "./ecocredit/basket/v1/tx.rpc.msg";
+import * as _835 from "./ecocredit/marketplace/v1/tx.rpc.msg";
+import * as _836 from "./ecocredit/v1/tx.rpc.msg";
+import * as _837 from "./ecocredit/v1alpha1/tx.rpc.msg";
+import * as _838 from "./intertx/v1/tx.rpc.msg";
+import * as _905 from "./rpc.query";
+import * as _906 from "./rpc.tx";
 export namespace regen {
   export namespace data {
     export const v1 = {
@@ -56,18 +56,18 @@ export namespace regen {
       ..._454,
       ..._455,
       ..._456,
-      ..._812,
-      ..._819,
-      ..._827
+      ..._817,
+      ..._824,
+      ..._832
     };
     export const v2 = {
       ..._457,
       ..._458,
       ..._459,
       ..._460,
-      ..._813,
-      ..._820,
-      ..._828
+      ..._818,
+      ..._825,
+      ..._833
     };
   }
   export namespace ecocredit {
@@ -77,9 +77,9 @@ export namespace regen {
         ..._462,
         ..._463,
         ..._464,
-        ..._814,
-        ..._821,
-        ..._829
+        ..._819,
+        ..._826,
+        ..._834
       };
     }
     export namespace marketplace {
@@ -88,9 +88,9 @@ export namespace regen {
         ..._466,
         ..._467,
         ..._468,
-        ..._815,
-        ..._822,
-        ..._830
+        ..._820,
+        ..._827,
+        ..._835
       };
     }
     export namespace orderbook {
@@ -103,32 +103,32 @@ export namespace regen {
       ..._471,
       ..._472,
       ..._473,
-      ..._816,
-      ..._823,
-      ..._831
+      ..._821,
+      ..._828,
+      ..._836
     };
     export const v1alpha1 = {
       ..._474,
       ..._475,
       ..._476,
       ..._477,
-      ..._817,
-      ..._824,
-      ..._832
+      ..._822,
+      ..._829,
+      ..._837
     };
   }
   export namespace intertx {
     export const v1 = {
       ..._478,
       ..._479,
-      ..._818,
-      ..._825,
-      ..._826,
-      ..._833
+      ..._823,
+      ..._830,
+      ..._831,
+      ..._838
     };
   }
   export const ClientFactory = {
-    ..._896,
-    ..._897
+    ..._905,
+    ..._906
   };
 }

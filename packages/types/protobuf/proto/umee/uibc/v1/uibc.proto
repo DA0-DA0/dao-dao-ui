@@ -1,0 +1,36 @@
+syntax = "proto3";
+package umee.uibc.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/umee-network/umee/v6/x/uibc";
+
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.messagename_all)     = true;
+
+// ICS20Memo payload for IBC transfer memo field.
+message ICS20Memo {
+  // messages is a list of `sdk.Msg`s that will be executed when handling ICS20 transfer.
+  repeated google.protobuf.Any messages = 1;
+  // fallback_addr [optional] is a bech23 account address used to overwrite the original ICS20
+  // recipient when:
+  // 1. it is defined
+  // 2. and memo is can be properly deserialized into this structure
+  // 3. and `messages` processes failed.
+  // When memo can't be properly deserialized, then the ICS20 processing will continue to other
+  // middlewares.
+  string fallback_addr = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// DecCoinSymbol extends the Cosmos SDK DecCoin type and adds symbol name.
+message DecCoinSymbol {
+  string denom  = 1;
+  string amount = 2
+      [(cosmos_proto.scalar)  = "cosmos.Dec",
+       (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+       (gogoproto.nullable)   = false];
+  // token symbol name
+  string symbol = 3;
+}

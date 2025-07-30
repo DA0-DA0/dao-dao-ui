@@ -54,6 +54,8 @@ export * from "./Switcheo/bundle";
 export * from "./Switcheo/client";
 export * from "./noble/bundle";
 export * from "./tendermint/bundle";
+export * from "./umee/bundle";
+export * from "./umee/client";
 export * from "./varint";
 export * from "./utf8";
 export * from "./binary";

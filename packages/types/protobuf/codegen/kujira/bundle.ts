@@ -12,17 +12,17 @@ import * as _196 from "./scheduler/hook";
 import * as _197 from "./scheduler/params";
 import * as _198 from "./scheduler/proposal";
 import * as _199 from "./scheduler/query";
-import * as _648 from "./denom/tx.amino";
-import * as _649 from "./oracle/tx.amino";
-import * as _650 from "./denom/tx.registry";
-import * as _651 from "./oracle/tx.registry";
-import * as _652 from "./denom/query.rpc.Query";
-import * as _653 from "./oracle/query.rpc.Query";
-import * as _654 from "./scheduler/query.rpc.Query";
-import * as _655 from "./denom/tx.rpc.msg";
-import * as _656 from "./oracle/tx.rpc.msg";
-import * as _882 from "./rpc.query";
-import * as _883 from "./rpc.tx";
+import * as _653 from "./denom/tx.amino";
+import * as _654 from "./oracle/tx.amino";
+import * as _655 from "./denom/tx.registry";
+import * as _656 from "./oracle/tx.registry";
+import * as _657 from "./denom/query.rpc.Query";
+import * as _658 from "./oracle/query.rpc.Query";
+import * as _659 from "./scheduler/query.rpc.Query";
+import * as _660 from "./denom/tx.rpc.msg";
+import * as _661 from "./oracle/tx.rpc.msg";
+import * as _891 from "./rpc.query";
+import * as _892 from "./rpc.tx";
 export namespace kujira {
   export const denom = {
     ..._186,
@@ -30,20 +30,20 @@ export namespace kujira {
     ..._188,
     ..._189,
     ..._190,
-    ..._648,
-    ..._650,
-    ..._652,
-    ..._655
+    ..._653,
+    ..._655,
+    ..._657,
+    ..._660
   };
   export const oracle = {
     ..._191,
     ..._192,
     ..._193,
     ..._194,
-    ..._649,
-    ..._651,
-    ..._653,
-    ..._656
+    ..._654,
+    ..._656,
+    ..._658,
+    ..._661
   };
   export const scheduler = {
     ..._195,
@@ -51,10 +51,10 @@ export namespace kujira {
     ..._197,
     ..._198,
     ..._199,
-    ..._654
+    ..._659
   };
   export const ClientFactory = {
-    ..._882,
-    ..._883
+    ..._891,
+    ..._892
   };
 }
