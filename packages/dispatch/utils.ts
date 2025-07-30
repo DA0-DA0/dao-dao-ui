@@ -92,7 +92,7 @@ export const instantiateContract = async ({
 
     // Poll for TX.
     let events
-    let tries = 15
+    let tries = 60
     while (tries > 0) {
       try {
         events = (await client.getTx(transactionHash))?.events
@@ -102,7 +102,7 @@ export const instantiateContract = async ({
       } catch {}
 
       tries--
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 500))
     }
 
     if (!events) {
@@ -216,7 +216,7 @@ export const uploadContract = async ({
 
       // Poll for TX.
       let tx
-      let tries = 50
+      let tries = 60
       while (tries > 0) {
         try {
           tx = await client.getTx(transactionHash)
@@ -226,7 +226,7 @@ export const uploadContract = async ({
         } catch {}
 
         tries--
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        await new Promise((resolve) => setTimeout(resolve, 500))
       }
 
       if (!tx) {

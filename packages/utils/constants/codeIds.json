@@ -1750,6 +1750,30 @@
       "QueryAuth": 12821
     }
   },
+  "regen-1": {
+    "2.7.1": {
+      "Cw1Whitelist": 1,
+      "Cw4Group": 2,
+      "Cw721Base": 3,
+      "CwAdminFactory": 4,
+      "CwPayrollFactory": 5,
+      "CwTokenSwap": 6,
+      "CwVesting": 19,
+      "DaoDaoCore": 7,
+      "DaoPreProposeApprovalMultiple": 8,
+      "DaoPreProposeApprovalSingle": 9,
+      "DaoPreProposeApprover": 10,
+      "DaoPreProposeMultiple": 12,
+      "DaoPreProposeSingle": 13,
+      "DaoProposalMultiple": 14,
+      "DaoProposalSingle": 15,
+      "DaoRewardsDistributor": 16,
+      "DaoVoteDelegation": 17,
+      "DaoVotingCw4": 18,
+      "DaoVotingCw721Staked": 20,
+      "DaoVotingTokenStaked": 21
+    }
+  },
   "regen-upgrade": {
     "2.8.0-beta": {
       "Cw1Whitelist": 1,

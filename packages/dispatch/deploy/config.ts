@@ -28,6 +28,7 @@ export const chainIndexerGroupVarsName: Record<string, string> = {
   [ChainId.BabylonTestnet]: 'babylon_testnet',
   [ChainId.ThorchainMainnet]: 'thorChain_mainnet',
   [ChainId.ThorchainStagenet]: 'thorChain_stagenet',
+  [ChainId.RegenMainnet]: 'regen_mainnet',
 }
 
 /**

@@ -1203,6 +1203,23 @@ const BASE_SUPPORTED_CHAINS: Omit<
         noIndexer: true,
       },
       {
+        chainId: ChainId.RegenMainnet,
+        name: 'regen',
+        mainnet: true,
+        noIndexer: true,
+        noTokenCreation: true,
+        accentColor: '#53b878',
+        factoryContractAddress:
+          'regen18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3qz4kya2',
+        explorerUrlTemplates: {
+          tx: 'https://explorer.chainroot.io/regen/transactions/REPLACE',
+          gov: 'https://explorer.chainroot.io/regen/proposals',
+          govProp: 'https://explorer.chainroot.io/regen/proposals/REPLACE',
+          wallet: 'https://explorer.chainroot.io/regen/accounts/REPLACE',
+        },
+        latestVersion: ContractVersion.V271,
+      },
+      {
         chainId: ChainId.RegenTestnet,
         name: 'regen',
         mainnet: false,
@@ -1405,6 +1422,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.PryzmMainnet]: {
     rpc: 'https://pryzm-rpc.polkachu.com',
     rest: 'https://pryzm-api.polkachu.com',
+  },
+  [ChainId.RegenMainnet]: {
+    rpc: 'https://regen-rpc.publicnode.com',
+    rest: 'https://regen-lcd.publicnode.com',
   },
   [ChainId.RegenTestnet]: {
     rpc: 'https://rpc-regen-upgrade.vitwit.com',
