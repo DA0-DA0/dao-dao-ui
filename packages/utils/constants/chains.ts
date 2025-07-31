@@ -932,22 +932,21 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V250,
       },
-      // TODO: uncomment once thorchain fixes contract permissions
-      // {
-      //   chainId: ChainId.ThorchainMainnet,
-      //   name: 'thorchain',
-      //   mainnet: true,
-      //   indexer: SupportedChainIndexerMode.All,
-      //   createSubDaoViaDao: true,
-      //   accentColor: '#00eed1',
-      //   factoryContractAddress:
-      //     'thor1d8thneasuuhrflhel59hcvj77rj5vf6vjmz3njsu5n3ss94jjh5s73xqh5',
-      //   explorerUrlTemplates: {
-      //     tx: 'https://runescan.io/tx/REPLACE',
-      //     wallet: 'https://runescan.io/address/REPLACE',
-      //   },
-      //   latestVersion: ContractVersion.V271,
-      // },
+      {
+        chainId: ChainId.ThorchainMainnet,
+        name: 'thorchain',
+        mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
+        createSubDaoViaDao: true,
+        accentColor: '#00eed1',
+        factoryContractAddress:
+          'thor1d8thneasuuhrflhel59hcvj77rj5vf6vjmz3njsu5n3ss94jjh5s73xqh5',
+        explorerUrlTemplates: {
+          tx: 'https://runescan.io/tx/REPLACE',
+          wallet: 'https://runescan.io/address/REPLACE',
+        },
+        latestVersion: ContractVersion.V271,
+      },
       {
         chainId: ChainId.BitsongMainnet,
         name: 'bitsong',
