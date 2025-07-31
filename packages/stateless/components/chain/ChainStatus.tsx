@@ -55,7 +55,8 @@ export const ChainStatus = ({ chainId, upStatus }: ChainStatusProps) => {
 
           <p className="font-mono text-text-interactive-error">
             {(
-              upStatus.data.chainBlock.height - upStatus.data.nodeBlock.height
+              upStatus.data.remoteBlock.height -
+              upStatus.data.exportedBlock.height
             ).toLocaleString()}
           </p>
         </div>
@@ -72,13 +73,15 @@ export const ChainStatus = ({ chainId, upStatus }: ChainStatusProps) => {
         >
           <p>
             {!upStatus.loading && !upStatus.errored
-              ? upStatus.data.nodeBlock.height.toLocaleString()
+              ? upStatus.data.exportedBlock.height.toLocaleString()
               : '...'}
           </p>
 
           <p>
             {!upStatus.loading && !upStatus.errored
-              ? formatDateTimeTz(new Date(upStatus.data.nodeBlock.timestamp))
+              ? formatDateTimeTz(
+                  new Date(upStatus.data.exportedBlock.timestamp)
+                )
               : '...'}
           </p>
         </div>

@@ -1,6 +1,7 @@
 import {
   IndexerFormulaType,
   IndexerUpStatus,
+  SupportedChainIndexerMode,
   WithChainId,
 } from '@dao-dao/types'
 import { CommonError, INDEXER_URL, chainIsIndexed } from '@dao-dao/utils'
@@ -48,7 +49,7 @@ export const queryIndexer = async <T = any>({
   chainId,
   ttl,
 }: QueryIndexerOptions): Promise<T | undefined> => {
-  if (!chainIsIndexed(chainId)) {
+  if (!chainIsIndexed(chainId, SupportedChainIndexerMode.All)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
@@ -123,7 +124,13 @@ export const queryIndexer = async <T = any>({
 export const queryIndexerUpStatus = async ({
   chainId,
 }: WithChainId<{}>): Promise<IndexerUpStatus> => {
-  if (!chainIsIndexed(chainId)) {
+  if (
+    !chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
+  ) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 

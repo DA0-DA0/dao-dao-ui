@@ -19,6 +19,7 @@ import {
   IChainContext,
   SupportedChain,
   SupportedChainConfig,
+  SupportedChainIndexerMode,
   TokenType,
   Validator,
 } from '@dao-dao/types'
@@ -624,7 +625,7 @@ export const isSupportedChain = (chainId: string): boolean =>
  */
 export const getSupportedChains = ({
   mainnet = MAINNET,
-  hasIndexer,
+  indexer,
 }: {
   /**
    * Whether or not to fetch supported chains on mainnet or testnet. Defaults to
@@ -632,26 +633,39 @@ export const getSupportedChains = ({
    */
   mainnet?: boolean
   /**
-   * Whether or not to filter by chains that have an indexer. Defaults to all.
+   * Optionally filter by chains that have an indexer.
    */
-  hasIndexer?: boolean
+  indexer?: SupportedChainIndexerMode | SupportedChainIndexerMode[]
 } = {}): SupportedChain[] =>
   SUPPORTED_CHAINS.filter(
     (config) =>
       (mainnet === undefined || config.mainnet === mainnet) &&
-      (hasIndexer === undefined || hasIndexer === !config.noIndexer)
+      (indexer === undefined ||
+        (Array.isArray(indexer)
+          ? indexer.includes(config.indexer)
+          : indexer === config.indexer))
   ).map((config) => ({
     chain: getChainForChainId(config.chainId),
     ...config,
   }))
 
 /**
- * Whether or not we index this chain.
+ * Whether or not we index this chain. If no indexer modes are provided,
+ * defaults to only SupportedChainIndexerMode.All for backwards compatibility.
  */
-export const chainIsIndexed = (chainId: string): boolean =>
-  SUPPORTED_CHAINS.some(
-    (config) => config.chainId === chainId && !config.noIndexer
+export const chainIsIndexed = (
+  chainId: string,
+  ...allowedIndexerModes: SupportedChainIndexerMode[]
+): boolean => {
+  if (allowedIndexerModes.length === 0) {
+    allowedIndexerModes = [SupportedChainIndexerMode.All]
+  }
+
+  return SUPPORTED_CHAINS.some(
+    (config) =>
+      config.chainId === chainId && allowedIndexerModes.includes(config.indexer)
   )
+}
 
 /**
  * Returns the supported chain IDs for the given address based on the prefix.

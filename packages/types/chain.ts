@@ -165,6 +165,21 @@ export type ConfiguredChain = BaseChainConfig & {
   chain: AnyChain
 }
 
+export enum SupportedChainIndexerMode {
+  /**
+   * No indexer.
+   */
+  None = 'none',
+  /**
+   * Just the TX indexer. This is the block-based indexer.
+   */
+  Tx = 'tx',
+  /**
+   * All indexer features. This is the state-based indexer.
+   */
+  All = 'all',
+}
+
 export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
   /**
    * Chain ID.
@@ -251,9 +266,9 @@ export type SupportedChainConfig = Omit<BaseChainConfig, 'chainId'> & {
    */
   noInstantiate2Create?: boolean
   /**
-   * Whether or not this chain has an indexer.
+   * Status of the indexer.
    */
-  noIndexer?: boolean
+  indexer: SupportedChainIndexerMode
   /**
    * If this chain uses a DAO as its chain governance instead of x/gov, set this
    * to the DAO's address.

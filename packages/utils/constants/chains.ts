@@ -15,6 +15,7 @@ import {
   PolytoneConfig,
   SkipChain,
   SupportedChainConfig,
+  SupportedChainIndexerMode,
   TokenType,
 } from '@dao-dao/types'
 
@@ -737,6 +738,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.CosmosHubMainnet,
         name: 'cosmos',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#5064fb',
         factoryContractAddress:
           'cosmos19jjaejvhfyqzjlgc6l2xa7w3gwwtvx4qvgad2gkw5dynxx2lmpxq9s5g3y',
@@ -754,6 +756,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.JunoMainnet,
         name: 'juno',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#f74a49',
         factoryContractAddress:
           'juno1f3xxy7cw5lvljf38ehhcxavxlawpmkezq7qtrhesvympfudjvlaqzz6exr',
@@ -778,6 +781,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OsmosisMainnet,
         name: 'osmosis',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#5604e8',
         factoryContractAddress:
           'osmo1qpszqk458arkkdff5z4vrqlqv4k2n9a0tjme23vn00uyt30nrr7sfe87cv',
@@ -796,6 +800,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.NeutronMainnet,
         name: 'neutron',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#000000',
         factoryContractAddress:
           'neutron1asszs9mjglv2rzpeu8fzlsa0cy55th0jkv27hsw3ulddt7f74gpsrqhatg',
@@ -824,6 +829,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.StargazeMainnet,
         name: 'stargaze',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#8ac3cc',
         factoryContractAddress:
           'stars1rncaxmp9n0cw6l5uw9qjwzptqjckdrk99hewh857j72pr3gv7tzqv5s88r',
@@ -839,6 +845,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.MigalooMainnet,
         name: 'migaloo',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#3ccd64',
         factoryContractAddress:
           'migaloo1d08e0gph0awec2ut76tzh92c6ftl6n85wpm0gq8xxe0eu8j97kzqpys8nw',
@@ -854,6 +861,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraMainnet,
         name: 'terra',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         overrideChainImageUrl: '/chains/terra.png',
         accentColor: '#113da5',
         factoryContractAddress:
@@ -873,6 +881,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraClassicMainnet,
         name: 'terraclassic',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#ffd842',
         noInstantiate2Create: true,
         factoryContractAddress:
@@ -891,6 +900,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OraichainMainnet,
         name: 'oraichain',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         overrideChainImageUrl: '/chains/oraichain.svg',
         accentColor: '#ffffff',
         factoryContractAddress:
@@ -908,6 +918,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.KujiraMainnet,
         name: 'kujira',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#e53935',
         // Permissioned, only Kujira governance can create DAOs.
         factoryContractAddress:
@@ -926,6 +937,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   chainId: ChainId.ThorchainMainnet,
       //   name: 'thorchain',
       //   mainnet: true,
+      //   indexer: SupportedChainIndexerMode.All,
       //   createSubDaoViaDao: true,
       //   accentColor: '#00eed1',
       //   factoryContractAddress:
@@ -940,6 +952,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.BitsongMainnet,
         name: 'bitsong',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#c53381',
         factoryContractAddress:
           'bitsong1glrutywr7268g9ew0uwj6xq5z5hv7rv0t7pum9gyvpkj7egty5cqzf7rdt',
@@ -960,6 +973,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OmniflixHubMainnet,
         name: 'omniflixhub',
         mainnet: true,
+        indexer: SupportedChainIndexerMode.All,
         accentColor: '#d71d6a',
         factoryContractAddress:
           'omniflix1rg5jtk5984e3um65l92pagexxj9z6xrkkaw2lrrkhfeyq4376rlsf6j04f',
@@ -975,7 +989,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.CosmosHubProviderTestnet,
         name: 'cosmosprovider',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#5064fb',
         factoryContractAddress:
           'cosmos1re4sge3zf9fr8g0j0q4lf6ks2gedq50qgp8jvhac7agavjvlhrdqqp5wqr',
@@ -993,7 +1007,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.JunoTestnet,
         name: 'juno',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#f74a49',
         factoryContractAddress:
           'juno10kkn698hpzm07kj0klhj3hrkxjsmngj9598esypm5kh9hfpealpq9vjvcw',
@@ -1009,7 +1023,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OsmosisTestnet,
         name: 'osmosis',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#5604e8',
         factoryContractAddress:
           'osmo1em9rp0zucf9dm7luqf06n20ke9dj9q0yyyd26k5w348sm8rq7h4qwrx8uw',
@@ -1025,7 +1039,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.StargazeTestnet,
         name: 'stargaze',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#8ac3cc',
         factoryContractAddress:
           'stars1ezkctzcnrvnwy94d6vjp2zkg68z272qndw688crzhh9nn4ud0q6sw8z03f',
@@ -1041,7 +1055,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.MigalooTestnet,
         name: 'migaloo',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#3ccd64',
         factoryContractAddress:
           'migaloo1x393zjpv0ve7wk2w3d40gwjxeww7n8c0unxtdf87u366dlvazryq239pxu',
@@ -1058,7 +1072,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   chainId: ChainId.KujiraTestnet,
       //   name: 'kujira',
       //   mainnet: false,
-      //   noIndexer: true,
+      //   indexer: SupportedChainIndexerMode.None,
       //   accentColor: '#e53935',
       //   factoryContractAddress:
       //     'kujira13aa6np9kh2ejue5mgqd88ktmkmswcs4vyn6djtf3d0h8n0dt2uysfxx9a7',
@@ -1076,7 +1090,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.NeutronTestnet,
         name: 'neutron',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#000000',
         factoryContractAddress:
           'neutron1caflev8smuslum9uque5z2qhma8xxxmap5dafeynekl37s966k8sq034r4',
@@ -1092,7 +1106,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //   chainId: ChainId.BitsongTestnet,
       //   name: 'bitsong',
       //   mainnet: false,
-      //   noIndexer: true,
+      //   indexer: SupportedChainIndexerMode.None,
       //   accentColor: '#c53381',
       //   factoryContractAddress:
       //     'bitsong1zftu69lqmhgwyuqlyawssrm62h58hqyl0gvv4n9aj8pvkr6qqd8s2wl5ve',
@@ -1104,7 +1118,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OmniflixHubTestnet,
         name: 'omniflixhub',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#d71d6a',
         factoryContractAddress:
           'omniflix1dlz906ww79sq49yykjvvlkf9fu0tv4u94gywfd7ldrtyjd8873hqufdvuc',
@@ -1120,7 +1134,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.SecretTestnet,
         name: 'secret',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#000000',
         factoryContractAddress: 'secret1us532v7wpky7af5vhk68nj7th976d6lygpalaf',
         noInstantiate2Create: true,
@@ -1137,7 +1151,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.BabylonTestnet,
         name: 'babylon',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#ce6533',
         factoryContractAddress:
           'bbn1jwx9r9hcdmcag2zka3dwsg4ekx965ega3wd9gl90pd46gcp7ecnqh3se4m',
@@ -1158,7 +1172,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.ThorchainStagenet,
         name: 'thorchain',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#00eed1',
         factoryContractAddress:
           'sthor122ht2h5ca482vlyqt22ecs6yw5n8f3rx6mwj9wu3jym99ct9xl2qj4cgrz',
@@ -1172,7 +1186,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.DaodiseoTestnet,
         name: 'daodiseo',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#a454ac',
         factoryContractAddress:
           'odiseo124x902fdvdcaawkr7njtjtccx94jq5vq4vtw6mhshxlrjqqxezqqgzgzrq',
@@ -1200,13 +1214,13 @@ const BASE_SUPPORTED_CHAINS: Omit<
           wallet: 'https://explorer.kopi.money/luwak-1/account/REPLACE',
         },
         latestVersion: ContractVersion.V270,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
       },
       {
         chainId: ChainId.RegenMainnet,
         name: 'regen',
         mainnet: true,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         noTokenCreation: true,
         accentColor: '#53b878',
         factoryContractAddress:
@@ -1223,7 +1237,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.RegenTestnet,
         name: 'regen',
         mainnet: false,
-        noIndexer: true,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#53b878',
         factoryContractAddress:
           'regen1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysp76v39',
@@ -1662,7 +1676,7 @@ export const _addSupportedChain = ({
     chainId: anyChain.chainId,
     name: anyChain.chainName,
     mainnet: false,
-    noIndexer: true,
+    indexer: SupportedChainIndexerMode.None,
     accentColor: '',
     factoryContractAddress,
     explorerUrlTemplates: {

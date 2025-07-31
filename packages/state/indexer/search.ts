@@ -1,6 +1,10 @@
 import MeiliSearch, { SearchResponse } from 'meilisearch'
 
-import { IndexerDumpState, WithChainId } from '@dao-dao/types'
+import {
+  IndexerDumpState,
+  SupportedChainIndexerMode,
+  WithChainId,
+} from '@dao-dao/types'
 import { ProposalResponse as MultipleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { ProposalResponse as SingleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
@@ -82,7 +86,13 @@ export const searchDaos = async ({
 }: SearchDaosOptions): Promise<SearchResponse<DaoSearchResult>> => {
   const client = await loadMeilisearchClient()
 
-  if (!chainIsIndexed(chainId)) {
+  if (
+    !chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
+  ) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 

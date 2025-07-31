@@ -19,6 +19,7 @@ import {
 } from '@dao-dao/types'
 import {
   NEUTRON_GOVERNANCE_DAO,
+  chainIsIndexed,
   getDisplayNameForChainId,
   serializeTokenSource,
 } from '@dao-dao/utils'
@@ -74,7 +75,6 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
   const { t } = useTranslation()
   const {
     chain: { chainId: currentChainId },
-    config: { noIndexer },
   } = useSupportedChainContext()
   const { chainId: daoChainId, coreAddress, accounts } = useDao()
 
@@ -233,29 +233,29 @@ export const TreasuryTab = <T extends TokenCardInfo, N extends object>({
       {
         // Don't show the treasury history graph if the DAO's chain doesn't
         // support indexing or for the Neutron DAO for performance reasons.
-        !(
-          noIndexer ||
-          (daoChainId === ChainId.NeutronMainnet &&
-            coreAddress === NEUTRON_GOVERNANCE_DAO)
-        ) && (
-          <TreasuryHistoryGraph
-            address={coreAddress}
-            chainId={daoChainId}
-            className="mb-8 hidden rounded-md bg-background-tertiary p-6 sm:flex"
-            graphClassName="max-h-[20rem]"
-            header={
-              <div className="flex flex-row items-center justify-center gap-1">
-                <p className="title-text">{t('title.treasuryValue')}</p>
+        chainIsIndexed(daoChainId) &&
+          !(
+            daoChainId === ChainId.NeutronMainnet &&
+            coreAddress === NEUTRON_GOVERNANCE_DAO
+          ) && (
+            <TreasuryHistoryGraph
+              address={coreAddress}
+              chainId={daoChainId}
+              className="mb-8 hidden rounded-md bg-background-tertiary p-6 sm:flex"
+              graphClassName="max-h-[20rem]"
+              header={
+                <div className="flex flex-row items-center justify-center gap-1">
+                  <p className="title-text">{t('title.treasuryValue')}</p>
 
-                <TooltipInfoIcon
-                  size="sm"
-                  title={t('info.treasuryValueTooltip')}
-                />
-              </div>
-            }
-            registerTokenColors={setTokenSourceColorMap}
-          />
-        )
+                  <TooltipInfoIcon
+                    size="sm"
+                    title={t('info.treasuryValueTooltip')}
+                  />
+                </div>
+              }
+              registerTokenColors={setTokenSourceColorMap}
+            />
+          )
       }
 
       <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2">

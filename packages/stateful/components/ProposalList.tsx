@@ -23,6 +23,7 @@ import {
   ProposalStatusEnum,
   StatefulProposalLineProps,
   StatefulProposalListProps,
+  SupportedChainIndexerMode,
 } from '@dao-dao/types'
 import {
   NEUTRON_GOVERNANCE_DAO,
@@ -390,7 +391,11 @@ export const ProposalList = ({
 
   const [search, setSearch] = useState('')
   // Cannot search without an indexer on the chain.
-  const canSearch = chainIsIndexed(dao.chainId)
+  const canSearch = chainIsIndexed(
+    dao.chainId,
+    SupportedChainIndexerMode.Tx,
+    SupportedChainIndexerMode.All
+  )
   const showingSearchResults = canSearch && !!search && search.length > 0
   const searchedProposals = useQueryLoadingDataWithError(
     showingSearchResults

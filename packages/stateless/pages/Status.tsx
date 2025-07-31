@@ -1,7 +1,10 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StatefulChainStatusProps } from '@dao-dao/types'
+import {
+  StatefulChainStatusProps,
+  SupportedChainIndexerMode,
+} from '@dao-dao/types'
 import { getSupportedChains } from '@dao-dao/utils'
 
 export type StatusProps = {
@@ -11,7 +14,9 @@ export type StatusProps = {
 export const Status = ({ ChainStatus }: StatusProps) => {
   const { t } = useTranslation()
 
-  const chains = getSupportedChains({ hasIndexer: true })
+  const chains = getSupportedChains({
+    indexer: [SupportedChainIndexerMode.Tx, SupportedChainIndexerMode.All],
+  })
 
   return (
     <div className="flex flex-col gap-2">

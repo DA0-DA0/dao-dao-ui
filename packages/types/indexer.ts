@@ -40,8 +40,8 @@ export type IndexerUpBlock = {
 
 export type IndexerUpStatus = {
   chainId: string
-  chainBlock: IndexerUpBlock
-  nodeBlock: IndexerUpBlock
+  remoteBlock: IndexerUpBlock
+  localBlock?: IndexerUpBlock
   exportedBlock: IndexerUpBlock
   caughtUp: boolean
 }

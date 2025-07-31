@@ -5,6 +5,7 @@ import {
   Expiration,
   IndexerFormulaType,
   IndexerUpStatus,
+  SupportedChainIndexerMode,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -234,7 +235,9 @@ export const recentDaoProposalsSelector = selectorFamily<
   get:
     (options) =>
     async ({ get }) => {
-      const chains = getSupportedChains({ hasIndexer: true })
+      const chains = getSupportedChains({
+        indexer: SupportedChainIndexerMode.All,
+      })
 
       // Get options.limit most recent across all chains by getting
       // options.limit most recent per-chain, sorting, and then slicing only the
