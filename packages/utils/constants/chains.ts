@@ -1220,7 +1220,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.RegenMainnet,
         name: 'regen',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.None,
+        indexer: SupportedChainIndexerMode.Tx,
         noTokenCreation: true,
         accentColor: '#53b878',
         factoryContractAddress:
