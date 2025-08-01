@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { AddressInputProps } from '@dao-dao/types'
 import { APPS, processError, toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { useChain } from '../../contexts'
 import { useQuerySyncedState } from '../../hooks'
 import { Button, ButtonLink } from '../buttons'
 import { ErrorPage } from '../error'
@@ -296,6 +297,13 @@ const AppOpener = ({
 }: AppOpenerProps) => {
   const { t } = useTranslation()
 
+  const { chainId } = useChain()
+  const appsForChain = APPS.filter(
+    ({ chainIdFilter }) =>
+      (!chainIdFilter?.include || chainIdFilter.include.includes(chainId)) &&
+      (!chainIdFilter?.exclude || !chainIdFilter.exclude.includes(chainId))
+  )
+
   const [inputUrl, setInputUrl] = useState<string>(url)
   // Update the input field to match the URL if it changes in the parent
   // component. This should handle the URL being updated from the query params.
@@ -311,64 +319,67 @@ const AppOpener = ({
   }, [setInputUrl, url])
 
   // If no app URL matching, choose the last one (custom) with empty URL.
-  const selectedAppIndex = APPS.findIndex(
+  const selectedAppIndex = appsForChain.findIndex(
     ({ url: appUrl }) => appUrl === inputUrl || !appUrl
   )
 
-  const customSelected = !!inputUrl && selectedAppIndex === APPS.length - 1
+  const customSelected =
+    !!inputUrl && selectedAppIndex === appsForChain.length - 1
 
   return (
     <div className="flex flex-col gap-4">
       <div className="styled-scrollbar flex shrink-0 flex-row items-stretch gap-2 overflow-x-scroll pb-2">
-        {APPS.map(({ platform, name, imageUrl, url: appUrl }, index) => {
-          const isCustom = !appUrl
-          const selected = index === selectedAppIndex
+        {appsForChain.map(
+          ({ platform, name, imageUrl, url: appUrl }, index) => {
+            const isCustom = !appUrl
+            const selected = index === selectedAppIndex
 
-          return (
-            <Button
-              key={appUrl}
-              className={clsx(
-                'shrink-0 overflow-hidden border-2 !p-0 transition',
-                isCustom && 'border-dashed border-border-primary',
-                selected
-                  ? '!border-border-interactive-active'
-                  : !isCustom && 'border-transparent'
-              )}
-              onClick={() => {
-                setInputUrl(appUrl)
-                setError(undefined)
-              }}
-              variant="none"
-            >
-              {/* Background. */}
-              {!isCustom && (
-                <div
-                  className={clsx(
-                    'absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center',
-                    !!name && 'brightness-50'
+            return (
+              <Button
+                key={appUrl}
+                className={clsx(
+                  'shrink-0 overflow-hidden border-2 !p-0 transition',
+                  isCustom && 'border-dashed border-border-primary',
+                  selected
+                    ? '!border-border-interactive-active'
+                    : !isCustom && 'border-transparent'
+                )}
+                onClick={() => {
+                  setInputUrl(appUrl)
+                  setError(undefined)
+                }}
+                variant="none"
+              >
+                {/* Background. */}
+                {!isCustom && (
+                  <div
+                    className={clsx(
+                      'absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center',
+                      !!name && 'brightness-50'
+                    )}
+                    style={{
+                      backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
+                    }}
+                  ></div>
+                )}
+
+                <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
+                  {platform && (
+                    <p className="caption-text text-color-light-transparent">
+                      {platform}
+                    </p>
                   )}
-                  style={{
-                    backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
-                  }}
-                ></div>
-              )}
 
-              <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
-                {platform && (
-                  <p className="caption-text text-color-light-transparent">
-                    {platform}
-                  </p>
-                )}
-
-                {(isCustom || name) && (
-                  <p className="primary-text break-words text-color-light">
-                    {isCustom ? t('title.custom') : name}
-                  </p>
-                )}
-              </div>
-            </Button>
-          )
-        })}
+                  {(isCustom || name) && (
+                    <p className="primary-text break-words text-color-light">
+                      {isCustom ? t('title.custom') : name}
+                    </p>
+                  )}
+                </div>
+              </Button>
+            )
+          }
+        )}
       </div>
 
       {customSelected && (

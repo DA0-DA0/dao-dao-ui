@@ -540,6 +540,13 @@ export type App = {
    * App URL.
    */
   url: string
+  /**
+   * Chain ID filter to apply based on the DAO's home chain.
+   */
+  chainIdFilter?: {
+    include?: string[]
+    exclude?: string[]
+  }
 }
 
 export type IndexerDaoWithVetoableProposals = {
