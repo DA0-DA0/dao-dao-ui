@@ -51,7 +51,6 @@
     "@dao-dao/stateless": "2.7.1-rc.3"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "f3eca5c8b53d2d3f16cab978f08fc24c15e2f783",
   "publishConfig": {
     "access": "public"
   }

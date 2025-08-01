@@ -22,7 +22,6 @@
     "i18n-unused": "^0.10.0"
   },
   "prettier": "@dao-dao/config/prettier",
-  "gitHead": "f3eca5c8b53d2d3f16cab978f08fc24c15e2f783",
   "publishConfig": {
     "access": "public"
   }
