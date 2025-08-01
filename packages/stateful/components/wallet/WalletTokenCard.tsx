@@ -36,7 +36,6 @@ import {
 import {
   CHAIN_GAS_MULTIPLIER,
   HIDDEN_BALANCE_PREFIX,
-  KVPK_API_BASE,
   getActionBuilderPrefillPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,
@@ -46,7 +45,7 @@ import {
 
 import {
   useAwaitNextBlock,
-  usePfpkClient,
+  useKvpkClient,
   useProfile,
   useWallet,
 } from '../../hooks'
@@ -109,10 +108,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     setRefreshTokenCardLazyInfo,
   ])
 
-  const { isWalletConnected, pfpkClient } = usePfpkClient({
-    apiUrl: KVPK_API_BASE,
+  const { isWalletConnected, kvpkClient } = useKvpkClient({
     defaultSignatureType: 'Hidden Balances',
     chainId: props.token.chainId,
+    keyPrefix: HIDDEN_BALANCE_PREFIX,
   })
 
   const setRefreshHidden = useSetRecoilState(refreshHiddenBalancesAtom)
@@ -144,21 +143,17 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
     setSavingHidden(true)
     try {
-      const key = HIDDEN_BALANCE_PREFIX + props.token.denomOrAddress
       // Delete the key if hidden is false.
       const value = hidden ? 1 : null
 
-      await pfpkClient.signAndSend({
-        endpoint: '/set',
-        data: {
-          key,
-          value,
-        },
+      const setKey = await kvpkClient.set({
+        key: props.token.denomOrAddress,
+        value,
       })
 
       setTemporaryHiddenBalances((prev) => ({
         ...prev,
-        [key]: value,
+        [setKey]: value,
       }))
       refreshHidden()
     } catch (err) {

@@ -28,7 +28,6 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   decodeJsonFromBase64,
   objectMatchesStructure,
@@ -36,7 +35,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../actions'
-import { usePfpkClient, useWallet } from '../../hooks'
+import { useKvpkClient, useWallet } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
 
@@ -142,9 +141,9 @@ export const ProfileActions = ({
     [chain.chainId, getSigningClient, holdingAltForDirectSign, t, walletAddress]
   )
 
-  const { isWalletConnected, pfpkClient } = usePfpkClient({
-    apiUrl: KVPK_API_BASE,
+  const { isWalletConnected, kvpkClient } = useKvpkClient({
     defaultSignatureType: 'Transaction Saves',
+    keyPrefix: ME_SAVED_TX_PREFIX,
   })
 
   const setRefreshSaves = useSetRecoilState(refreshSavedTxsAtom)
@@ -179,18 +178,14 @@ export const ProfileActions = ({
         )
       )
 
-      const key = ME_SAVED_TX_PREFIX + nameHash
-      await pfpkClient.signAndSend({
-        endpoint: '/set',
-        data: {
-          key,
-          value: save,
-        },
+      const setKey = await kvpkClient.set({
+        key: nameHash,
+        value: save,
       })
 
       setTemporarySaves((prev) => ({
         ...prev,
-        [key]: save,
+        [setKey]: save,
       }))
       refreshSaves()
 
@@ -221,18 +216,13 @@ export const ProfileActions = ({
         )
       )
 
-      const key = ME_SAVED_TX_PREFIX + nameHash
-      await pfpkClient.signAndSend({
-        endpoint: '/set',
-        data: {
-          key,
-          value: null,
-        },
+      const deletedKey = await kvpkClient.delete({
+        key: nameHash,
       })
 
       setTemporarySaves((prev) => ({
         ...prev,
-        [key]: null,
+        [deletedKey]: null,
       }))
       refreshSaves()
 

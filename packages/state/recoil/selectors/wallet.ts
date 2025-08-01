@@ -24,12 +24,13 @@ import {
   DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
   HIDDEN_BALANCE_PREFIX,
   INACTIVE_DAO_NAMES,
-  KVPK_API_BASE,
+  KvpkClient,
   ME_SAVED_TX_PREFIX,
   getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
   parseContractVersion,
+  processError,
 } from '@dao-dao/utils'
 
 import {
@@ -187,17 +188,11 @@ export const savedTxsSelector = selectorFamily<AccountTxSave[], string>({
 
       const temporary = get(temporarySavedTxsAtom(walletPublicKey))
 
-      const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${ME_SAVED_TX_PREFIX}`
-      )
-
-      if (response.ok) {
-        const { items } = (await response.json()) as {
-          items: {
-            key: string
-            value: AccountTxSave
-          }[]
-        }
+      try {
+        const { items } = await new KvpkClient().list({
+          publicKey: walletPublicKey,
+          prefix: ME_SAVED_TX_PREFIX,
+        })
 
         const savedItems = Object.entries(temporary)
         // Add any items that are in the KV store but not in the temporary map.
@@ -215,11 +210,14 @@ export const savedTxsSelector = selectorFamily<AccountTxSave[], string>({
           .sort((a, b) => a.name.localeCompare(b.name))
 
         return saves
-      } else {
+      } catch (err) {
         throw new Error(
-          `Failed to fetch tx saves: ${response.status}/${
-            response.statusText
-          } ${await response.text().catch(() => '')}`.trim()
+          `Failed to fetch TX saves for ${walletPublicKey}: ${processError(
+            err,
+            {
+              forceCapture: false,
+            }
+          )}`
         )
       }
     },
@@ -251,17 +249,11 @@ export const hiddenBalancesSelector = selectorFamily<string[], string>({
 
       const temporary = get(temporaryHiddenBalancesAtom(walletPublicKey))
 
-      const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${HIDDEN_BALANCE_PREFIX}`
-      )
-
-      if (response.ok) {
-        const { items } = (await response.json()) as {
-          items: {
-            key: string
-            value: number | null
-          }[]
-        }
+      try {
+        const { items } = await new KvpkClient().list({
+          publicKey: walletPublicKey,
+          prefix: HIDDEN_BALANCE_PREFIX,
+        })
 
         const hiddenBalances = Object.entries(temporary)
         // Add any items that are in the KV store but not in the temporary map.
@@ -277,11 +269,14 @@ export const hiddenBalancesSelector = selectorFamily<string[], string>({
           .map(([key]) => key.replace(HIDDEN_BALANCE_PREFIX, ''))
 
         return hidden
-      } else {
+      } catch (err) {
         throw new Error(
-          `Failed to fetch hidden balances: ${response.status}/${
-            response.statusText
-          } ${await response.text().catch(() => '')}`.trim()
+          `Failed to fetch hidden balances for ${walletPublicKey}: ${processError(
+            err,
+            {
+              forceCapture: false,
+            }
+          )}`
         )
       }
     },

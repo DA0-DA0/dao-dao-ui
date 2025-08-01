@@ -159,6 +159,11 @@ export type TokenJson = {
   expiresAt: number
 }
 
+export type TokenFilter = {
+  audience?: string | string[]
+  role?: string | string[]
+}
+
 export type TokenJsonNoToken = Omit<TokenJson, 'token'>
 
 export type FetchTokensResponse = {

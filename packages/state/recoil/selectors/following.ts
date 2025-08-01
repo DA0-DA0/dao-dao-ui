@@ -4,11 +4,12 @@ import { selectorFamily, waitForAllSettled } from 'recoil'
 import { DaoDropdownInfo, DaoSource } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
-  KVPK_API_BASE,
+  KvpkClient,
   MAINNET,
   deserializeDaoSource,
   keepSubDaosInDropdown,
   maybeGetChainForChainId,
+  processError,
   subDaoExistsInDropdown,
 } from '@dao-dao/utils'
 
@@ -29,17 +30,11 @@ export const followingDaosSelector = selectorFamily<
 
       const tmp = get(temporaryFollowingDaosAtom)
 
-      const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${FOLLOWING_DAOS_PREFIX}`
-      )
-
-      if (response.ok) {
-        const { items } = (await response.json()) as {
-          items: {
-            key: string
-            value: number | null
-          }[]
-        }
+      try {
+        const { items } = await new KvpkClient().list({
+          publicKey: walletPublicKey,
+          prefix: FOLLOWING_DAOS_PREFIX,
+        })
 
         // Serialized DaoSources.
         const currentFollowing = items.map(({ key }) =>
@@ -62,13 +57,14 @@ export const followingDaosSelector = selectorFamily<
             ? dao
             : []
         })
-      } else {
+      } catch (err) {
         throw new Error(
-          `Failed to fetch following DAOs for ${walletPublicKey}: ${
-            response.status
-          }/${response.statusText} ${await response
-            .text()
-            .catch(() => '')}`.trim()
+          `Failed to fetch following DAOs for ${walletPublicKey}: ${processError(
+            err,
+            {
+              forceCapture: false,
+            }
+          )}`
         )
       }
     },

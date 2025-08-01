@@ -3,7 +3,12 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { profileQueries } from '@dao-dao/state'
-import { PfpkClient, getChainForChainId } from '@dao-dao/utils'
+import {
+  KvpkClient,
+  PfpkClient,
+  PfpkClientOptions,
+  getChainForChainId,
+} from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
@@ -25,11 +30,11 @@ export type UsePfpkClientOptions = {
 }
 
 /**
- * Hook that sets up a `PfpkClient` instance with the currently connected wallet
- * that makes it easy to interact with various off-chain services that use the
- * core PFPK auth system.
+ * Hook that gets the options to set up a `PfpkClient` instance with the
+ * currently connected wallet that makes it easy to interact with various
+ * off-chain services that use the core PFPK auth system.
  */
-export const usePfpkClient = ({
+export const usePfpkClientOptions = ({
   apiUrl,
   defaultSignatureType = 'DAO DAO Auth',
   chainId,
@@ -45,69 +50,68 @@ export const usePfpkClient = ({
     loadAccount: true,
   })
 
-  const pfpkClient = useMemo(
-    () =>
-      new PfpkClient({
-        urlPrefix: apiUrl,
-        defaultChainId: currentChain.chainId,
-        defaultSignatureType,
-        getOfflineSignerAmino: async (chainId) => {
-          const chainWallet =
-            chainId === currentChain.chainId
-              ? currentChainWallet
-              : currentChainWallet?.mainWallet.getChainWallet(
-                  getChainForChainId(chainId).chainName
-                )
+  const pfpkClientOptions: PfpkClientOptions = useMemo(
+    () => ({
+      urlPrefix: apiUrl,
+      defaultChainId: currentChain.chainId,
+      defaultSignatureType,
+      getOfflineSignerAmino: async (chainId) => {
+        const chainWallet =
+          chainId === currentChain.chainId
+            ? currentChainWallet
+            : currentChainWallet?.mainWallet.getChainWallet(
+                getChainForChainId(chainId).chainName
+              )
 
-          // If hex public key not loaded, load it from the wallet.
-          if (!chainWallet) {
-            throw new Error(t('error.logInToContinue'))
-          }
+        // If hex public key not loaded, load it from the wallet.
+        if (!chainWallet) {
+          throw new Error(t('error.logInToContinue'))
+        }
 
-          // Attempt to connect if needed.
-          if (!chainWallet.isWalletConnected) {
-            await chainWallet.connect(false)
-          }
+        // Attempt to connect if needed.
+        if (!chainWallet.isWalletConnected) {
+          await chainWallet.connect(false)
+        }
 
-          // If still disconnected, throw.
-          if (!chainWallet.isWalletConnected) {
-            throw new Error(t('error.logInToContinue'))
-          }
+        // If still disconnected, throw.
+        if (!chainWallet.isWalletConnected) {
+          throw new Error(t('error.logInToContinue'))
+        }
 
-          const offlineSignerAmino =
-            (await chainWallet.client.getOfflineSignerAmino?.bind(
-              chainWallet.client
-            )?.(chainWallet.chainId)) ||
-            // Fallback to normal signer function in case amino signer getter is
-            // undefined. This may still return an amino signer, so let's check.
-            (await chainWallet.client.getOfflineSigner?.bind(
-              chainWallet.client
-            )?.(chainWallet.chainId))
-          if (!offlineSignerAmino || !('signAmino' in offlineSignerAmino)) {
-            throw new Error(
-              t('error.unsupportedAminoWallet', {
-                name: chainWallet.walletPrettyName,
-              })
-            )
-          }
-
-          return offlineSignerAmino
-        },
-        // Refresh query state when profile is updated.
-        onProfileUpdated: async ({ chain: { chainId }, address }) => {
-          await queryClient.refetchQueries(
-            profileQueries.pfpk({
-              address,
+        const offlineSignerAmino =
+          (await chainWallet.client.getOfflineSignerAmino?.bind(
+            chainWallet.client
+          )?.(chainWallet.chainId)) ||
+          // Fallback to normal signer function in case amino signer getter is
+          // undefined. This may still return an amino signer, so let's check.
+          (await chainWallet.client.getOfflineSigner?.bind(
+            chainWallet.client
+          )?.(chainWallet.chainId))
+        if (!offlineSignerAmino || !('signAmino' in offlineSignerAmino)) {
+          throw new Error(
+            t('error.unsupportedAminoWallet', {
+              name: chainWallet.walletPrettyName,
             })
           )
-          await queryClient.refetchQueries(
-            profileQueries.unified(queryClient, {
-              chainId,
-              address,
-            })
-          )
-        },
-      }),
+        }
+
+        return offlineSignerAmino
+      },
+      // Refresh query state when profile is updated.
+      onProfileUpdated: async ({ chain: { chainId }, address }) => {
+        await queryClient.refetchQueries(
+          profileQueries.pfpk({
+            address,
+          })
+        )
+        await queryClient.refetchQueries(
+          profileQueries.unified(queryClient, {
+            chainId,
+            address,
+          })
+        )
+      },
+    }),
     // Reset when wallet changes since they may have switched chains/accounts.
     [
       apiUrl,
@@ -119,16 +123,78 @@ export const usePfpkClient = ({
     ]
   )
 
+  return {
+    isWalletConnected,
+    pfpkClientOptions,
+  }
+}
+
+/**
+ * Hook that sets up a `PfpkClient` instance with the currently connected wallet
+ * that makes it easy to interact with various off-chain services that use the
+ * core PFPK auth system.
+ */
+export const usePfpkClient = (options: UsePfpkClientOptions) => {
+  const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
+
+  const pfpkClient = useMemo(
+    () => new PfpkClient(pfpkClientOptions),
+    [pfpkClientOptions]
+  )
+
   // Tear down the client when it changes or the component unmounts.
   useEffect(() => {
-    return () => {
-      console.log('tearing down pfpkClient')
-      pfpkClient.teardown()
-    }
+    return () => pfpkClient.teardown()
   }, [pfpkClient])
 
   return {
     isWalletConnected,
     pfpkClient,
+  }
+}
+
+export type UseKvpkClientOptions = {
+  /**
+   * The default signature type to use. This can be overriden per-request.
+   */
+  defaultSignatureType?: string
+  /**
+   * Optionally override the current chain context.
+   */
+  chainId?: string
+  /**
+   * Optionally provide a prefix for all keys.
+   */
+  keyPrefix?: string
+}
+
+/**
+ * Hook that sets up a `PfpkClient` instance with the currently connected wallet
+ * that makes it easy to interact with various off-chain services that use the
+ * core PFPK auth system.
+ */
+export const useKvpkClient = ({
+  keyPrefix,
+  ...options
+}: UseKvpkClientOptions) => {
+  const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
+
+  const kvpkClient = useMemo(
+    () =>
+      new KvpkClient({
+        ...pfpkClientOptions,
+        keyPrefix,
+      }),
+    [keyPrefix, pfpkClientOptions]
+  )
+
+  // Tear down the client when it changes or the component unmounts.
+  useEffect(() => {
+    return () => kvpkClient.teardown()
+  }, [kvpkClient])
+
+  return {
+    isWalletConnected,
+    kvpkClient,
   }
 }

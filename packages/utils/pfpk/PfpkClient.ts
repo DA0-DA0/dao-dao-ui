@@ -12,6 +12,7 @@ import {
   PublicKeyJson,
   RegisterPublicKeysRequest,
   RequestBody,
+  TokenFilter,
   TokenJson,
 } from '@dao-dao/types/pfpk'
 
@@ -34,7 +35,7 @@ import {
 } from './routes'
 
 export type PfpkClientOptions = {
-  getOfflineSignerAmino: (
+  getOfflineSignerAmino?: (
     chainId: string
   ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
   onProfileUpdated?: (
@@ -75,23 +76,12 @@ export type SignAndSendOptions<
    * The data to sign and send.
    */
   data?: Data
+  /**
+   * The token to use for authentication. If not provided, will use wallet
+   * signature auth instead.
+   */
+  token?: string
 }
-
-/**
- * Whether or not a token has at least 5 minutes left before expiration.
- *
- * @param token - The token to check.
- * @returns Whether or not the token has at least 5 minutes left before
- * expiration.
- */
-const isTokenExpired = (token: TokenJson) =>
-  token.expiresAt <= Date.now() / 1000 + 5 * 60
-
-/**
- * Get the local storage key for a given public key hex.
- */
-const getLocalStorageKey = (publicKeyHex: string) =>
-  `pfpkTokens:${publicKeyHex}`
 
 // Add extra field to StorageEvent to indicate the PFPK client ID that sent the
 // event.
@@ -109,9 +99,10 @@ declare global {
 
 export class PfpkClient {
   /**
-   * The function to get an offline amino signer for a given chain ID.
+   * The function to get an offline amino signer for a given chain ID. If not
+   * defined, only the query methods will be available.
    */
-  public readonly getOfflineSignerAmino: (
+  public readonly getOfflineSignerAmino?: (
     chainId: string
   ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
 
@@ -172,7 +163,7 @@ export class PfpkClient {
     urlPrefix,
     defaultChainId,
     defaultSignatureType,
-  }: PfpkClientOptions) {
+  }: PfpkClientOptions = {}) {
     this.id = nanoid()
     this.getOfflineSignerAmino = getOfflineSignerAmino
     this.onProfileUpdated = onProfileUpdated
@@ -212,6 +203,13 @@ export class PfpkClient {
    * Prepare a chain for signing. Returns the prepared signer.
    */
   async prepare(chainId?: string): Promise<PfpkClientPreparedSigner> {
+    // TODO(pfpk): support manually specifying public keys for queries? other clients (like KvpkClient) may want to expose non-signing query methods.
+    if (!this.getOfflineSignerAmino) {
+      throw new Error(
+        'No offline signer amino function provided. All signing methods are unavailable.'
+      )
+    }
+
     const resolvedChainId = this.resolveChainId(chainId)
     const chain = getChainForChainId(resolvedChainId)
     const signer = await this.getOfflineSignerAmino(resolvedChainId)
@@ -349,7 +347,7 @@ export class PfpkClient {
   /**
    * Validate tokens (optionally filtered), removing them if invalid.
    */
-  private async _validateTokens(
+  protected async _validateTokens(
     chainId?: string,
     filter: (token: TokenJson) => boolean = () => true
   ) {
@@ -466,36 +464,56 @@ export class PfpkClient {
   }
 
   /**
-   * Get the admin token for a given chain, creating it if it doesn't exist.
+   * Get the PFPK admin token for a given chain signer, creating if needed.
    */
   async getAdminToken(chainId?: string): Promise<string> {
+    return this.findOrCreateToken({
+      chainId,
+      audience: PFPK_API_HOSTNAME,
+      role: 'admin',
+    })
+  }
+
+  /**
+   * Find a non-expired token for a given chain signer and audience, optionally
+   * with a specific role as well. Creates a new one with the specified audience
+   * and role if not found.
+   */
+  async findOrCreateToken({
+    chainId,
+    ...filter
+  }: {
+    chainId?: string
+    audience: string
+    role?: string
+  }): Promise<string> {
     const alreadyPrepared = this.isPrepared(chainId)
 
-    // Validate admin tokens if already prepared.
+    // Validate desired tokens if already prepared.
     if (alreadyPrepared) {
-      await this._validateTokens(
-        chainId,
-        (token) =>
-          !!token.audience?.includes(PFPK_API_HOSTNAME) &&
-          token.role === 'admin'
-      )
+      await this._validateTokens(chainId, makeTokenFilter(filter))
     }
-    // Otherwise, prepare the chain, which also validates all loaded tokens.
+    // Otherwise, prepare the chain signer, which also validates all tokens.
     else {
       await this.prepare(chainId)
     }
 
-    const existingAdminToken = this._getAdminToken(chainId)
-    if (existingAdminToken) {
-      return existingAdminToken
+    // Attempt to find an existing token.
+    const existingToken = this.findToken({
+      chainId,
+      ...filter,
+    })
+    if (existingToken) {
+      return existingToken
     }
 
+    // If no token is found, create a new one and return it.
     const [{ token }] = await this.createTokens({
       chainId,
       tokens: [
         {
-          audience: [PFPK_API_HOSTNAME],
-          role: 'admin',
+          audience: [filter.audience],
+          role: filter.role,
         },
       ],
     })
@@ -504,22 +522,21 @@ export class PfpkClient {
   }
 
   /**
-   * Get the admin token for a given chain signer, or null if not prepared or
-   * not found.
+   * Find a non-expired token for a given chain signer, optionally filtered by
+   * audience and role. Returns null if not found.
    */
-  private _getAdminToken(chainId?: string): string | null {
-    const publicKeyHex = this.getPublicKey(chainId)?.hex ?? null
-    if (!publicKeyHex) {
-      return null
-    }
+  findToken({
+    chainId,
+    ...filter
+  }: {
+    chainId?: string
+  } & TokenFilter): string | null {
+    const publicKeyHex = this.getPublicKey(chainId).hex
 
-    // Find PFPK admin token with at least 5 minutes left before expiration.
+    // Find non-expired token that matches the filter.
     const token =
       this._tokens[publicKeyHex]?.find(
-        (token) =>
-          token.audience?.includes(PFPK_API_HOSTNAME) &&
-          token.role === 'admin' &&
-          !isTokenExpired(token)
+        (token) => doesTokenMatchFilter(token, filter) && !isTokenExpired(token)
       )?.token || null
 
     return token
@@ -965,6 +982,7 @@ export class PfpkClient {
       method = 'POST',
       type = this.defaultSignatureType,
       data,
+      token,
     } = options || {}
 
     if (!type) {
@@ -976,16 +994,20 @@ export class PfpkClient {
       throw new Error('No endpoint nor default provided')
     }
 
-    const body = await this.signRequestBody({
-      chainId,
-      type,
-      data,
-    })
+    // If a token is provided, use data as-is. Otherwise, sign the request body.
+    const body = token
+      ? { data }
+      : await this.signRequestBody({
+          chainId,
+          type,
+          data,
+        })
 
     const response = await fetch(endpoint, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(body),
     })
@@ -1009,3 +1031,48 @@ export class PfpkClient {
       : ((await response.json()) as Response)
   }
 }
+
+/**
+ * Whether or not a token has at least 5 minutes left before expiration.
+ *
+ * @param token - The token to check.
+ * @returns Whether or not the token has at least 5 minutes left before
+ * expiration.
+ */
+const isTokenExpired = (token: TokenJson) =>
+  token.expiresAt <= Date.now() / 1000 + 5 * 60
+
+/**
+ * Whether or not a token matches a given audience and role.
+ *
+ * @param token - The token to check.
+ * @param filter - The filter to check against.
+ * @returns Whether or not the token matches the filter.
+ */
+const doesTokenMatchFilter = (
+  token: TokenJson,
+  { audience, role }: TokenFilter
+) => {
+  const allowedAudiences = audience?.length ? [audience].flat() : undefined
+  const allowedRoles = role?.length ? [role].flat() : undefined
+  return (
+    (!allowedAudiences ||
+      allowedAudiences.some((audience) =>
+        token.audience?.includes(audience)
+      )) &&
+    (!allowedRoles || allowedRoles.some((role) => token.role === role))
+  )
+}
+
+/**
+ * Make a filter that returns whether or not a token matches a given audience
+ * and role.
+ */
+const makeTokenFilter = (filter: TokenFilter) => (token: TokenJson) =>
+  doesTokenMatchFilter(token, filter)
+
+/**
+ * Get the local storage key for a given public key hex.
+ */
+const getLocalStorageKey = (publicKeyHex: string) =>
+  `pfpkTokens:${publicKeyHex}`

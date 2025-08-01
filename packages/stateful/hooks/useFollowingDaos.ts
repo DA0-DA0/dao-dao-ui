@@ -13,14 +13,13 @@ import { useCachedLoadingWithError, useUpdatingRef } from '@dao-dao/stateless'
 import { DaoSource } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
-  KVPK_API_BASE,
   daoSourcesEqual,
   processError,
   serializeDaoSource,
 } from '@dao-dao/utils'
 
 import { useManageProfile } from './useManageProfile'
-import { usePfpkClient } from './usePfpkClient'
+import { useKvpkClient } from './usePfpkClient'
 import { useProfile } from './useProfile'
 
 export type UseFollowingDaosReturn = {
@@ -71,9 +70,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   }, [followingDaosLoading])
 
   const [updating, setUpdating] = useState(false)
-  const { isWalletConnected, pfpkClient } = usePfpkClient({
-    apiUrl: KVPK_API_BASE,
+  const { isWalletConnected, kvpkClient } = useKvpkClient({
     defaultSignatureType: 'Update Following',
+    keyPrefix: FOLLOWING_DAOS_PREFIX,
   })
 
   // Turn this into a reference so we can use it in `setFollowing` without
@@ -102,12 +101,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
         const serializedDaoSource = serializeDaoSource(dao)
 
-        await pfpkClient.signAndSend({
-          endpoint: '/set',
-          data: {
-            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-            value: 1,
-          },
+        await kvpkClient.set({
+          key: serializedDaoSource,
+          value: 1,
           // Use DAO chain ID for following state to ensure we use the same
           // chain ID when following and unfollowing the DAO.
           chainId: dao.chainId,
@@ -137,7 +133,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     [
       addChainsRef,
       isWalletConnected,
-      pfpkClient,
+      kvpkClient,
       profile,
       refreshFollowing,
       setTemporary,
@@ -184,12 +180,8 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
         const serializedDaoSource = serializeDaoSource(dao)
 
-        await pfpkClient.signAndSend({
-          endpoint: '/set',
-          data: {
-            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-            value: null,
-          },
+        await kvpkClient.delete({
+          key: serializedDaoSource,
           chainId: unfollowChainId,
         })
 
@@ -217,7 +209,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     [
       followingDaosLoading,
       isWalletConnected,
-      pfpkClient,
+      kvpkClient,
       refreshFollowing,
       setTemporary,
       t,
