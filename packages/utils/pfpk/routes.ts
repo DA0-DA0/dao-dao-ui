@@ -13,7 +13,8 @@ import {
   UnregisterPublicKeysRequest,
   UpdateProfileRequest,
 } from '@dao-dao/types/pfpk'
-import { PFPK_API_BASE } from '@dao-dao/utils'
+
+import { PFPK_API_BASE } from '../constants/env'
 
 const url = (
   path: string,

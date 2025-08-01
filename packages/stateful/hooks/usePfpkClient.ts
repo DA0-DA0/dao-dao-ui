@@ -2,8 +2,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PfpkClient, profileQueries } from '@dao-dao/state'
-import { getChainForChainId } from '@dao-dao/utils'
+import { profileQueries } from '@dao-dao/state'
+import { PfpkClient, getChainForChainId } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 

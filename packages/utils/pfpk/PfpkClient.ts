@@ -14,13 +14,13 @@ import {
   RequestBody,
   TokenJson,
 } from '@dao-dao/types/pfpk'
+
 import {
-  PFPK_API_HOSTNAME,
   getChainForChainId,
   getNativeTokenForChainId,
   getPublicKeyTypeForChain,
-} from '@dao-dao/utils'
-
+} from '../chain'
+import { PFPK_API_HOSTNAME } from '../constants/env'
 import {
   createTokens,
   fetchAuthenticated,
@@ -326,6 +326,7 @@ export class PfpkClient {
       // Add event listener that updates token cache if local storage changes in
       // another PFPK client.
       this._localStorageEventListeners[publicKeyHex] = (event) => {
+        // Ignore events from this client to prevent redundant reloads.
         if (event.pfpkClientId === this.id) {
           return
         }
