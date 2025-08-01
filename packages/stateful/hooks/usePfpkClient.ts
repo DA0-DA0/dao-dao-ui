@@ -1,9 +1,8 @@
-import useId from '@mui/material/utils/useId'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PfpkClient } from '@dao-dao/state'
+import { PfpkClient, profileQueries } from '@dao-dao/state'
 import { getChainForChainId } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
@@ -49,7 +48,6 @@ export const usePfpkClient = ({
   const pfpkClient = useMemo(
     () =>
       new PfpkClient({
-        queryClient,
         urlPrefix: apiUrl,
         defaultChainId: currentChain.chainId,
         defaultSignatureType,
@@ -95,6 +93,20 @@ export const usePfpkClient = ({
 
           return offlineSignerAmino
         },
+        // Refresh query state when profile is updated.
+        onProfileUpdated: async ({ chain: { chainId }, address }) => {
+          await queryClient.refetchQueries(
+            profileQueries.pfpk({
+              address,
+            })
+          )
+          await queryClient.refetchQueries(
+            profileQueries.unified(queryClient, {
+              chainId,
+              address,
+            })
+          )
+        },
       }),
     // Reset when wallet changes since they may have switched chains/accounts.
     [
@@ -107,19 +119,13 @@ export const usePfpkClient = ({
     ]
   )
 
-  const id = useId()
-
+  // Tear down the client when it changes or the component unmounts.
   useEffect(() => {
-    console.log(id, 'pfpkClient changed', pfpkClient)
-  }, [id, pfpkClient])
-
-  useEffect(() => {
-    console.log(id, 'currentChain changed', currentChain.chainId)
-  }, [id, currentChain.chainId])
-
-  useEffect(() => {
-    console.log(id, 'currentChainWallet changed', currentChainWallet)
-  }, [id, currentChainWallet])
+    return () => {
+      console.log('tearing down pfpkClient')
+      pfpkClient.teardown()
+    }
+  }, [pfpkClient])
 
   return {
     isWalletConnected,

@@ -1,6 +1,6 @@
 import { OfflineAminoSigner, makeSignDoc } from '@cosmjs/amino'
 import { toHex } from '@cosmjs/encoding'
-import { QueryClient } from '@tanstack/react-query'
+import { nanoid } from 'nanoid'
 
 import { AnyChain } from '@dao-dao/types'
 import {
@@ -21,7 +21,6 @@ import {
   getPublicKeyTypeForChain,
 } from '@dao-dao/utils'
 
-import { profileQueries } from '../../query'
 import {
   createTokens,
   fetchAuthenticated,
@@ -34,7 +33,19 @@ import {
   updateProfile,
 } from './routes'
 
-export type PfpkClientChain = {
+export type PfpkClientOptions = {
+  getOfflineSignerAmino: (
+    chainId: string
+  ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
+  onProfileUpdated?: (
+    preparedSigner: PfpkClientPreparedSigner
+  ) => void | Promise<void>
+  urlPrefix?: string
+  defaultChainId?: string
+  defaultSignatureType?: string
+}
+
+export type PfpkClientPreparedSigner = {
   chain: AnyChain
   signer: OfflineAminoSigner
   address: string
@@ -76,11 +87,49 @@ export type SignAndSendOptions<
 const isTokenExpired = (token: TokenJson) =>
   token.expiresAt <= Date.now() / 1000 + 5 * 60
 
+/**
+ * Get the local storage key for a given public key hex.
+ */
+const getLocalStorageKey = (publicKeyHex: string) =>
+  `pfpkTokens:${publicKeyHex}`
+
+// Add extra field to StorageEvent to indicate the PFPK client ID that sent the
+// event.
+declare global {
+  interface StorageEvent {
+    /**
+     * If the storage event was emitted from a PFPK client, this will be the ID
+     * of the client that emitted the event. This is used in clients to avoid
+     * performing a redundant reload in the same client. Storage event updates
+     * are intended to notify other PFPK clients.
+     */
+    pfpkClientId?: string
+  }
+}
+
 export class PfpkClient {
-  public readonly queryClient: QueryClient
+  /**
+   * The function to get an offline amino signer for a given chain ID.
+   */
   public readonly getOfflineSignerAmino: (
     chainId: string
   ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
+
+  /**
+   * The callback that executes when the profile is updated. This might be used
+   * to refresh query state.
+   */
+  public onProfileUpdated?: (
+    preparedSigner: PfpkClientPreparedSigner
+  ) => void | Promise<void>
+
+  /**
+   * A unique ID among all PFPK clients.
+   *
+   * This is used to prevent token storage update events sent from this client
+   * from triggering a redundant load in this same client.
+   */
+  public readonly id: string
 
   /**
    * The URL prefix to use for all requests.
@@ -102,33 +151,48 @@ export class PfpkClient {
   /**
    * Signer information for each chain.
    */
-  private _chains: Record<string, PfpkClientChain> = {}
+  private _signers: Record<string, PfpkClientPreparedSigner> = {}
 
   /**
    * Map of public key hex to tokens.
    */
   private _tokens: Record<string, TokenJson[]> = {}
 
+  /**
+   * Map of public key hex to local storage event listeners.
+   */
+  private _localStorageEventListeners: Record<
+    string,
+    (event: StorageEvent) => void
+  > = {}
+
   constructor({
-    queryClient,
     getOfflineSignerAmino,
+    onProfileUpdated,
     urlPrefix,
     defaultChainId,
     defaultSignatureType,
-  }: {
-    queryClient: QueryClient
-    getOfflineSignerAmino: (
-      chainId: string
-    ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
-    urlPrefix?: string
-    defaultChainId?: string
-    defaultSignatureType?: string
-  }) {
-    this.queryClient = queryClient
+  }: PfpkClientOptions) {
+    this.id = nanoid()
     this.getOfflineSignerAmino = getOfflineSignerAmino
+    this.onProfileUpdated = onProfileUpdated
     this.urlPrefix = urlPrefix
     this.defaultChainId = defaultChainId
     this.defaultSignatureType = defaultSignatureType
+  }
+
+  /**
+   * Teardown the client.
+   *
+   * This removes all local storage event listeners.
+   */
+  teardown() {
+    for (const publicKeyHex in this._localStorageEventListeners) {
+      window.removeEventListener(
+        'storage',
+        this._localStorageEventListeners[publicKeyHex]
+      )
+    }
   }
 
   /**
@@ -145,9 +209,9 @@ export class PfpkClient {
   }
 
   /**
-   * Prepare a chain for signing. Returns the prepared chain.
+   * Prepare a chain for signing. Returns the prepared signer.
    */
-  async prepare(chainId?: string): Promise<PfpkClientChain> {
+  async prepare(chainId?: string): Promise<PfpkClientPreparedSigner> {
     const resolvedChainId = this.resolveChainId(chainId)
     const chain = getChainForChainId(resolvedChainId)
     const signer = await this.getOfflineSignerAmino(resolvedChainId)
@@ -157,7 +221,7 @@ export class PfpkClient {
       throw new Error('Failed to get amino signer account')
     }
 
-    this._chains[resolvedChainId] = {
+    this._signers[resolvedChainId] = {
       chain,
       signer,
       address,
@@ -172,90 +236,62 @@ export class PfpkClient {
     // Load tokens into cache.
     await this.loadTokens(resolvedChainId)
 
-    return this._chains[resolvedChainId]
+    return this._signers[resolvedChainId]
   }
 
   /**
-   * Get prepared chain or prepare it if not already prepared.
+   * Get prepared chain signer or prepare if not already prepared.
    */
-  async getOrPrepare(chainId?: string): Promise<PfpkClientChain> {
+  async getOrPrepare(chainId?: string): Promise<PfpkClientPreparedSigner> {
     const resolvedChainId = this.resolveChainId(chainId)
-    if (this._chains[resolvedChainId]) {
-      return this._chains[resolvedChainId]
+    if (this._signers[resolvedChainId]) {
+      return this._signers[resolvedChainId]
     }
     return this.prepare(resolvedChainId)
   }
 
   /**
-   * Whether or not the chain is prepared.
+   * Whether or not the chain signer is prepared.
    */
   isPrepared(chainId?: string) {
     const resolvedChainId = this.resolveChainId(chainId)
-    return !!this._chains[resolvedChainId]
+    return !!this._signers[resolvedChainId]
   }
 
   /**
-   * Get the chain for a given chain ID, if prepared.
+   * Get a chain signer, if prepared.
    */
-  getChain(chainId?: string): PfpkClientChain | null {
+  getSigner(chainId?: string): PfpkClientPreparedSigner | null {
     const resolvedChainId = this.resolveChainId(chainId)
-    return this._chains[resolvedChainId]
+    return this._signers[resolvedChainId]
   }
 
   /**
-   * Get the chain for a given chain ID. Throws if the chain is not prepared.
+   * Get a chain signer. Throws if not prepared.
    */
-  mustGetChain(chainId?: string): PfpkClientChain {
+  mustGetSigner(chainId?: string): PfpkClientPreparedSigner {
     const resolvedChainId = this.resolveChainId(chainId)
-    const chain = this.getChain(resolvedChainId)
-    if (!chain) {
+    const signer = this.getSigner(resolvedChainId)
+    if (!signer) {
       throw new Error(`Chain ${resolvedChainId} not prepared`)
     }
-    return chain
+    return signer
   }
 
   /**
-   * Get the signer for a given chain ID. Throws if the chain is not prepared.
-   */
-  getSigner(chainId?: string): OfflineAminoSigner {
-    return this.mustGetChain(chainId).signer
-  }
-
-  /**
-   * Get the address for a given chain ID. Throws if the chain is not prepared.
+   * Get the address for a given chain signer. Throws if the signer is not
+   * prepared.
    */
   getAddress(chainId?: string): string {
-    return this.mustGetChain(chainId).address
+    return this.mustGetSigner(chainId).address
   }
 
   /**
-   * Get the public key for a given chain ID. Throws if the chain is not
+   * Get the public key for a given chain signer. Throws if the signer is not
    * prepared.
    */
   getPublicKey(chainId?: string): PublicKeyJson {
-    return this.mustGetChain(chainId).publicKey
-  }
-
-  /**
-   * Get the PFPK admin token for a given chain, or null if not found. Use
-   * `ensureAdminToken` to guarantee the PFPK admin token exists.
-   */
-  getAdminToken(chainId?: string): string | null {
-    const publicKeyHex = this.getChain(chainId)?.publicKey.hex ?? null
-    if (!publicKeyHex) {
-      return null
-    }
-
-    // Find PFPK admin token with at least 5 minutes left before expiration.
-    const token =
-      this._tokens[publicKeyHex]?.find(
-        (token) =>
-          token.audience?.includes(PFPK_API_HOSTNAME) &&
-          token.role === 'admin' &&
-          !isTokenExpired(token)
-      )?.token || null
-
-    return token
+    return this.mustGetSigner(chainId).publicKey
   }
 
   /**
@@ -264,20 +300,47 @@ export class PfpkClient {
   async loadTokens(chainId?: string): Promise<TokenJson[] | null> {
     const publicKeyHex = (await this.getOrPrepare(chainId)).publicKey.hex
 
+    // Return cached tokens if available.
     if (this._tokens[publicKeyHex]) {
       return this._tokens[publicKeyHex]
     }
 
+    // Load tokens from local storage.
+    const key = getLocalStorageKey(publicKeyHex)
     const tokens =
-      typeof localStorage !== 'undefined' &&
-      localStorage.getItem(`pfpkTokens:${publicKeyHex}`)
+      typeof localStorage !== 'undefined' && localStorage.getItem(key)
 
+    // Cache tokens.
     this._tokens[publicKeyHex] = tokens
       ? (JSON.parse(tokens) as TokenJson[])
       : []
 
-    // Validate loaded tokens.
-    await this.validateTokens(chainId)
+    // Validate loaded tokens, removing invalid ones.
+    await this._validateTokens(chainId)
+
+    // Add local storage event listener if in a browser and not already added.
+    if (
+      typeof window !== 'undefined' &&
+      !this._localStorageEventListeners[publicKeyHex]
+    ) {
+      // Add event listener that updates token cache if local storage changes in
+      // another PFPK client.
+      this._localStorageEventListeners[publicKeyHex] = (event) => {
+        if (event.pfpkClientId === this.id) {
+          return
+        }
+
+        if (event.key === key) {
+          this._tokens[publicKeyHex] = event.newValue
+            ? (JSON.parse(event.newValue) as TokenJson[])
+            : []
+        }
+      }
+      window.addEventListener(
+        'storage',
+        this._localStorageEventListeners[publicKeyHex]
+      )
+    }
 
     return this._tokens[publicKeyHex]
   }
@@ -285,7 +348,7 @@ export class PfpkClient {
   /**
    * Validate tokens (optionally filtered), removing them if invalid.
    */
-  async validateTokens(
+  private async _validateTokens(
     chainId?: string,
     filter: (token: TokenJson) => boolean = () => true
   ) {
@@ -318,14 +381,14 @@ export class PfpkClient {
 
     // Remove invalid tokens, if any.
     if (invalidTokenIds.length) {
-      await this.removeTokens({ chainId, tokenIds: invalidTokenIds })
+      await this._removeTokens({ chainId, tokenIds: invalidTokenIds })
     }
   }
 
   /**
    * Add tokens for a chain.
    */
-  async addTokens({
+  private async _addTokens({
     chainId,
     tokens,
   }: {
@@ -345,7 +408,7 @@ export class PfpkClient {
   /**
    * Remove tokens for a chain.
    */
-  async removeTokens({
+  private async _removeTokens({
     chainId,
     tokenIds,
   }: {
@@ -377,18 +440,39 @@ export class PfpkClient {
       throw new Error('No tokens to save')
     }
 
-    localStorage.setItem(`pfpkTokens:${publicKeyHex}`, JSON.stringify(tokens))
+    const key = getLocalStorageKey(publicKeyHex)
+    const newValue = tokens.length ? JSON.stringify(tokens) : null
+
+    if (newValue) {
+      localStorage.setItem(key, newValue)
+    } else {
+      localStorage.removeItem(key)
+    }
+
+    // Dispatch storage event if available so that other PFPK clients can
+    // refresh their tokens.
+    if (typeof window !== 'undefined') {
+      const event = new StorageEvent('storage', {
+        key,
+        newValue,
+        storageArea: localStorage,
+      })
+      // Add our client ID to the event.
+      event.pfpkClientId = this.id
+
+      window.dispatchEvent(event)
+    }
   }
 
   /**
-   * Ensure the PFPK admin token exists.
+   * Get the admin token for a given chain, creating it if it doesn't exist.
    */
-  async ensureAdminToken(chainId?: string): Promise<string> {
+  async getAdminToken(chainId?: string): Promise<string> {
     const alreadyPrepared = this.isPrepared(chainId)
 
     // Validate admin tokens if already prepared.
     if (alreadyPrepared) {
-      await this.validateTokens(
+      await this._validateTokens(
         chainId,
         (token) =>
           !!token.audience?.includes(PFPK_API_HOSTNAME) &&
@@ -400,7 +484,7 @@ export class PfpkClient {
       await this.prepare(chainId)
     }
 
-    const existingAdminToken = this.getAdminToken(chainId)
+    const existingAdminToken = this._getAdminToken(chainId)
     if (existingAdminToken) {
       return existingAdminToken
     }
@@ -419,21 +503,25 @@ export class PfpkClient {
   }
 
   /**
-   * Refresh query state for a chain.
+   * Get the admin token for a given chain signer, or null if not prepared or
+   * not found.
    */
-  async refreshQueryState(chainId?: string) {
-    const resolvedChainId = this.resolveChainId(chainId)
-    await this.queryClient.refetchQueries(
-      profileQueries.pfpk({
-        address: this.getAddress(resolvedChainId),
-      })
-    )
-    await this.queryClient.refetchQueries(
-      profileQueries.unified(this.queryClient, {
-        chainId: resolvedChainId,
-        address: this.getAddress(resolvedChainId),
-      })
-    )
+  private _getAdminToken(chainId?: string): string | null {
+    const publicKeyHex = this.getPublicKey(chainId)?.hex ?? null
+    if (!publicKeyHex) {
+      return null
+    }
+
+    // Find PFPK admin token with at least 5 minutes left before expiration.
+    const token =
+      this._tokens[publicKeyHex]?.find(
+        (token) =>
+          token.audience?.includes(PFPK_API_HOSTNAME) &&
+          token.role === 'admin' &&
+          !isTokenExpired(token)
+      )?.token || null
+
+    return token
   }
 
   /**
@@ -465,7 +553,7 @@ export class PfpkClient {
       }
 
       // Use token auth.
-      token = await this.ensureAdminToken(chainId)
+      token = await this.getAdminToken(chainId)
     }
 
     const { response, body, error } = await createTokens(requestBody, token)
@@ -474,7 +562,7 @@ export class PfpkClient {
     }
 
     // Save tokens.
-    await this.addTokens({ chainId, tokens: body.tokens })
+    await this._addTokens({ chainId, tokens: body.tokens })
 
     return body.tokens
   }
@@ -483,7 +571,7 @@ export class PfpkClient {
    * Fetch whether or not the user is authenticated.
    */
   async fetchAuthenticated(chainId?: string): Promise<boolean> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const adminToken = await this.getAdminToken(chainId)
     const { response } = await fetchAuthenticated(adminToken)
     return response.status === 200
   }
@@ -541,7 +629,7 @@ export class PfpkClient {
    * Fetch the tokens created during authentications.
    */
   async fetchTokens(chainId?: string): Promise<FetchTokensResponse['tokens']> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const adminToken = await this.getAdminToken(chainId)
     const {
       response,
       body: { tokens },
@@ -564,7 +652,7 @@ export class PfpkClient {
     chainId?: string
     tokenIds: string[]
   }): Promise<void> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const adminToken = await this.getAdminToken(chainId)
     const { response, error } = await invalidateTokens(
       {
         data: {
@@ -579,7 +667,7 @@ export class PfpkClient {
       )
     }
 
-    await this.removeTokens({ chainId, tokenIds })
+    await this._removeTokens({ chainId, tokenIds })
   }
 
   /**
@@ -610,7 +698,8 @@ export class PfpkClient {
      */
     onAllAllowancesGenerated?: () => void
   }): Promise<void> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const preparedSigner = await this.getOrPrepare(chainId)
+    const adminToken = await this.getAdminToken(chainId)
 
     let profile = await this.fetchProfile(chainId)
     if (!profile.uuid) {
@@ -665,8 +754,8 @@ export class PfpkClient {
       )
     }
 
-    // Refresh query state.
-    await this.refreshQueryState(chainId)
+    // Call `onProfileUpdated` callback if defined.
+    await this.onProfileUpdated?.(preparedSigner)
   }
 
   /**
@@ -679,7 +768,8 @@ export class PfpkClient {
     chainId?: string
     publicKeys: PublicKeyJson[]
   }): Promise<void> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const preparedSigner = await this.getOrPrepare(chainId)
+    const adminToken = await this.getAdminToken(chainId)
     const { response, error } = await unregisterPublicKeys(
       {
         data: {
@@ -694,8 +784,8 @@ export class PfpkClient {
       )
     }
 
-    // Refresh query state.
-    await this.refreshQueryState(chainId)
+    // Call `onProfileUpdated` callback if defined.
+    await this.onProfileUpdated?.(preparedSigner)
   }
 
   /**
@@ -708,7 +798,8 @@ export class PfpkClient {
     chainId?: string
     profile?: Omit<ProfileUpdate, 'nonce'>
   } = {}): Promise<void> {
-    const adminToken = await this.ensureAdminToken(chainId)
+    const preparedSigner = await this.getOrPrepare(chainId)
+    const adminToken = await this.getAdminToken(chainId)
     const { response, error } = await updateProfile(
       {
         data: {
@@ -721,8 +812,8 @@ export class PfpkClient {
       throw new Error(`Failed to update profile: ${response.status} ${error}`)
     }
 
-    // Refresh query state.
-    await this.refreshQueryState(chainId)
+    // Call `onProfileUpdated` callback if defined.
+    await this.onProfileUpdated?.(preparedSigner)
   }
 
   /**
