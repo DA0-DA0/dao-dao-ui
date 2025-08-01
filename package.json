@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.7.1-rc.2",
+  "version": "2.7.1-rc.3",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -30,7 +30,7 @@
     "math": "yarn workspace @dao-dao/math",
     "tests": "yarn workspace @dao-dao/tests",
     "starship": "yarn tests starship",
-    "publish-all": "find . -name '*.log' -delete && lerna publish --no-private from-package"
+    "publish-all": "find . -name '*.log' -delete && find . -name '.turbo' -delete && find . -name '.DS_Store' -delete && lerna publish --no-private from-package"
   },
   "devDependencies": {
     "lerna": "^6.4.1",
