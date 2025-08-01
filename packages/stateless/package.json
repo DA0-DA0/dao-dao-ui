@@ -48,7 +48,7 @@
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.50.159",
+    "@chain-registry/types": "^0.50.185",
     "@cosmos-kit/core": "^2.16.0",
     "@dao-dao/config": "2.7.1-rc.2",
     "@storybook/react": "^6.5.10",

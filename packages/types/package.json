@@ -11,7 +11,7 @@
     "protobuf": "npm run protobuf:codegen && npm run protobuf:patch"
   },
   "dependencies": {
-    "@chain-registry/types": "0.50.159",
+    "@chain-registry/types": "^0.50.185",
     "@cosmjs/cosmwasm-stargate": "0.33.1",
     "@cosmjs/proto-signing": "0.33.1",
     "@cosmology/telescope": "^1.8.3",

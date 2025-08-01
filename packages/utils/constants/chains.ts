@@ -64,8 +64,6 @@ let chains: AnyChain[] = chainRegistryChains.map(
 const assets = [...chainRegistryAssets]
 
 const chainsToRemove = [
-  // Remove thorchain since we're replacing it below.
-  'thorchain',
   // Remove althea and andromeda1 since they spam the console.
   'althea',
   'andromeda1',
@@ -148,37 +146,69 @@ if (junoTestnetChain?.chainRegistry) {
 }
 
 // THORChain/Rujira mainnet and stagenet
-const thorchainMainnetChain = convertChainRegistryChainToAnyChain({
-  chain_id: ChainId.ThorchainMainnet,
-  chain_name: 'thorchain',
-  chain_type: 'cosmos',
-  status: 'live',
-  network_type: 'mainnet',
-  pretty_name: 'THORChain',
-  bech32_prefix: 'thor',
-  slip44: 931,
-  apis: {
-    rpc: [
-      {
-        address: 'https://thornode-mainnet-rpc.bryanlabs.net',
-      },
-    ],
-    rest: [
-      {
-        address: 'https://thornode-mainnet-api.bryanlabs.net',
-      },
-    ],
+
+// Fix THORChain mainnet because the chain registry doesn't have `apis` nor
+// `fees` set.
+// https://github.com/cosmos/chain-registry/blob/master/thorchain/chain.json
+const thorchainMainnetChainRegistry = chains.find(
+  (c) => c.chainId === ChainId.ThorchainMainnet
+)!.chainRegistry!
+thorchainMainnetChainRegistry.apis = {
+  rpc: [
+    {
+      address: 'https://thornode-mainnet-rpc.bryanlabs.net',
+    },
+  ],
+  rest: [
+    {
+      address: 'https://thornode-mainnet-api.bryanlabs.net',
+    },
+  ],
+}
+thorchainMainnetChainRegistry.fees = {
+  fee_tokens: [
+    {
+      denom: 'rune',
+      fixed_min_gas_price: 0,
+    },
+  ],
+}
+const thorchainMainnetChainRegistryAssets = assets.find(
+  (a) => a.chain_name === thorchainMainnetChainRegistry.chain_name
+)!
+thorchainMainnetChainRegistryAssets.assets.push({
+  denom_units: [
+    {
+      denom: 'eth.usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      exponent: 0,
+      aliases: ['uusdc'],
+    },
+    {
+      denom: 'USDC',
+      exponent: 8,
+    },
+  ],
+  base: 'eth.usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  name: 'USDC',
+  display: 'USDC',
+  symbol: 'USDC',
+  logo_URIs: {
+    png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.png',
+    svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg',
   },
-  fees: {
-    fee_tokens: [
-      {
-        denom: 'rune',
-        fixed_min_gas_price: 0,
+  coingecko_id: 'usd-coin',
+  images: [
+    {
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg',
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.png',
+      theme: {
+        circle: true,
+        primary_color_hex: '#2775CA',
       },
-    ],
-  },
+    },
+  ],
+  type_asset: 'unknown',
 })
-chains.push(thorchainMainnetChain)
 
 const thorchainStagenetChain = convertChainRegistryChainToAnyChain({
   chain_id: ChainId.ThorchainStagenet,
