@@ -17,6 +17,7 @@ import {
   DaoInfo,
   GenericToken,
   IChainContext,
+  SkipChain,
   SupportedChain,
   SupportedChainConfig,
   SupportedChainIndexerMode,
@@ -825,3 +826,14 @@ export const waitUntilBlockHeight = async ({
     }, interval)
   })
 }
+
+/**
+ * Convert Skip chain to AnyChain.
+ */
+export const convertSkipChainToAnyChain = (chain: SkipChain): AnyChain => ({
+  chainId: chain.chain_id,
+  chainName: chain.chain_name,
+  bech32Prefix: chain.bech32_prefix,
+  prettyName: chain.pretty_name ?? chain.chain_name,
+  skipChain: chain,
+})
