@@ -46,7 +46,7 @@ import {
 
 import {
   useAwaitNextBlock,
-  usePfpkAuthenticatedFetch,
+  usePfpkClient,
   useProfile,
   useWallet,
 } from '../../hooks'
@@ -109,12 +109,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     setRefreshTokenCardLazyInfo,
   ])
 
-  const { ready: hiddenBalancesReady, postRequest: postHiddenBalancesRequest } =
-    usePfpkAuthenticatedFetch({
-      apiUrl: KVPK_API_BASE,
-      defaultSignatureType: 'Hidden Balances',
-      chainId: props.token.chainId,
-    })
+  const { isWalletConnected, pfpkClient } = usePfpkClient({
+    apiUrl: KVPK_API_BASE,
+    defaultSignatureType: 'Hidden Balances',
+    chainId: props.token.chainId,
+  })
 
   const setRefreshHidden = useSetRecoilState(refreshHiddenBalancesAtom)
   const refreshHidden = useCallback(
@@ -138,7 +137,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const [savingHidden, setSavingHidden] = useState(false)
 
   const setBalanceHidden = async (hidden: boolean) => {
-    if (!hiddenBalancesReady) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
     }
@@ -149,9 +148,12 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       // Delete the key if hidden is false.
       const value = hidden ? 1 : null
 
-      await postHiddenBalancesRequest('/set', {
-        key,
-        value,
+      await pfpkClient.signAndSend({
+        endpoint: '/set',
+        data: {
+          key,
+          value,
+        },
       })
 
       setTemporaryHiddenBalances((prev) => ({

@@ -43,6 +43,29 @@ export type PfpkClientChain = {
   feeDenom: string
 }
 
+export type SignAndSendOptions<
+  Data extends Record<string, unknown> | undefined = Record<string, unknown>,
+> = {
+  chainId?: string
+  /**
+   * The endpoint to send the request to. Added to `urlPrefix` if set.
+   */
+  endpoint?: string
+  /**
+   * The request method. Defaults to POST.
+   */
+  method?: string
+  /**
+   * The signature type to use (arbitrary string). Defaults to
+   * `defaultSignatureType` if not provided.
+   */
+  type?: string
+  /**
+   * The data to sign and send.
+   */
+  data?: Data
+}
+
 /**
  * Whether or not a token has at least 5 minutes left before expiration.
  *
@@ -60,10 +83,21 @@ export class PfpkClient {
   ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
 
   /**
+   * The URL prefix to use for all requests.
+   */
+  public urlPrefix: string | undefined
+
+  /**
    * The default chain ID to use for requests. This can be overridden
    * per-request.
    */
   public defaultChainId: string | undefined
+
+  /**
+   * The default signature type to use for requests. This can be overridden
+   * per-request.
+   */
+  public defaultSignatureType: string | undefined
 
   /**
    * Signer information for each chain.
@@ -78,31 +112,36 @@ export class PfpkClient {
   constructor({
     queryClient,
     getOfflineSignerAmino,
+    urlPrefix,
     defaultChainId,
+    defaultSignatureType,
   }: {
     queryClient: QueryClient
     getOfflineSignerAmino: (
       chainId: string
     ) => OfflineAminoSigner | Promise<OfflineAminoSigner>
+    urlPrefix?: string
     defaultChainId?: string
+    defaultSignatureType?: string
   }) {
     this.queryClient = queryClient
     this.getOfflineSignerAmino = getOfflineSignerAmino
+    this.urlPrefix = urlPrefix
     this.defaultChainId = defaultChainId
+    this.defaultSignatureType = defaultSignatureType
   }
 
   /**
-   * Resolve the chain ID to use, falling back to defaultChainId if not
-   * provided.
+   * Resolve the chain ID to use, falling back to `defaultChainId` if undefined,
+   * and throwing if neither are provided.
    */
-  private resolveChainId(chainId?: string): string {
-    if (chainId) {
-      return chainId
+  private resolveChainId(
+    chainId: string | undefined = this.defaultChainId
+  ): string {
+    if (!chainId) {
+      throw new Error('No chain ID nor default provided')
     }
-    if (this.defaultChainId) {
-      return this.defaultChainId
-    }
-    throw new Error('No chainId provided and no default set')
+    return chainId
   }
 
   /**
@@ -782,26 +821,76 @@ export class PfpkClient {
    * undefined if the response is 204 no content. Throws if the response is not
    * OK.
    */
-  async sendSignedRequest<R = any>({
-    chainId,
-    url,
-    method = 'POST',
-    type,
-    data,
-  }: {
-    chainId?: string
-    url: string
-    method?: string
-    type: string
-    data?: Record<string, unknown>
-  }): Promise<R> {
+  async signAndSend<
+    Response = unknown,
+    Data extends Record<string, unknown> | undefined = Record<string, unknown>,
+  >(
+    /**
+     * The options to use for the request, overriding the defaults.
+     */
+    options?: SignAndSendOptions<Data>
+  ): Promise<Response>
+  async signAndSend<
+    Response = unknown,
+    Data extends Record<string, unknown> | undefined = Record<string, unknown>,
+  >(
+    /**
+     * The endpoint to send the request to. Added to `urlPrefix` if set.
+     */
+    endpoint: string,
+    /**
+     * The data to send with the request, if any (not allowed for GET requests).
+     */
+    data?: Data,
+    /**
+     * The options to use for the request, overriding the defaults.
+     */
+    options?: Omit<SignAndSendOptions<Data>, 'endpoint' | 'data'>
+  ): Promise<Response>
+  async signAndSend<
+    Response = unknown,
+    Data extends Record<string, unknown> | undefined = Record<string, unknown>,
+  >(
+    _endpointOrOptions?: string | SignAndSendOptions<Data>,
+    _data?: Data,
+    _options?: Omit<SignAndSendOptions<Data>, 'endpoint' | 'data'>
+  ): Promise<Response> {
+    const isFirstFunction =
+      _endpointOrOptions === undefined ||
+      (typeof _endpointOrOptions === 'object' && _endpointOrOptions !== null)
+
+    const options: SignAndSendOptions<Data> = isFirstFunction
+      ? _endpointOrOptions || {}
+      : {
+          endpoint: _endpointOrOptions,
+          data: _data,
+          ..._options,
+        }
+
+    let {
+      chainId,
+      endpoint,
+      method = 'POST',
+      type = this.defaultSignatureType,
+      data,
+    } = options || {}
+
+    if (!type) {
+      throw new Error('No signature type nor default provided')
+    }
+
+    endpoint = (this.urlPrefix || '') + (endpoint || '')
+    if (!endpoint) {
+      throw new Error('No endpoint nor default provided')
+    }
+
     const body = await this.signRequestBody({
       chainId,
       type,
       data,
     })
 
-    const response = await fetch(url, {
+    const response = await fetch(endpoint, {
       method,
       headers: {
         'Content-Type': 'application/json',
@@ -824,7 +913,7 @@ export class PfpkClient {
     // If response OK, return response body (unless 204 no content, in which
     // case return undefined).
     return response.status === 204
-      ? (undefined as R)
-      : ((await response.json()) as R)
+      ? (undefined as Response)
+      : ((await response.json()) as Response)
   }
 }

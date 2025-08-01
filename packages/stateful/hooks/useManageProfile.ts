@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useQueryLoadingData } from './query/useQueryLoadingData'
-import { usePfpkAuthenticatedFetch } from './usePfpkAuthenticatedFetch'
+import { usePfpkClient } from './usePfpkClient'
 import { useRefreshProfile } from './useRefreshProfile'
 import { useWallet } from './useWallet'
 
@@ -151,7 +151,7 @@ export const useManageProfile = ({
 
   const refreshProfile = useRefreshProfile(address, profile)
 
-  const { ready: readyPfpk, pfpkClient } = usePfpkAuthenticatedFetch({
+  const { pfpkClient } = usePfpkClient({
     apiUrl: PFPK_API_BASE,
     chainId: walletChainId,
   })
@@ -163,7 +163,7 @@ export const useManageProfile = ({
     // failed to load.
     profile.data.nonce >= 0 &&
     !!currentChainWallet &&
-    readyPfpk
+    isWalletConnected
 
   const [updating, setUpdating] = useState(false)
 

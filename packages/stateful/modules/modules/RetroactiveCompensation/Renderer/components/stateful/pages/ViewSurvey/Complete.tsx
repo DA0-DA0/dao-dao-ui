@@ -33,7 +33,7 @@ import {
   useEntity,
   useWallet,
 } from '../../../../../../../../hooks'
-import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../../hooks/usePfpkClientPost'
 import { retroactiveCompensationQueries } from '../../../../queries'
 import {
   CompleteRatings,
@@ -60,7 +60,7 @@ export const Complete = ({
   const { goToDaoProposal } = useDaoNavHelpers()
   const { chainId, bech32Prefix } = useChain()
   const { address: walletAddress = '' } = useWallet()
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
   const queryClient = useQueryClient()
 
   const publishProposal = useDaoProposalSinglePublishProposal()

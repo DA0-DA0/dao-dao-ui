@@ -7,7 +7,7 @@ import { useChain, useDao } from '@dao-dao/stateless'
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../../../../components'
-import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../../hooks/usePfpkClientPost'
 import { CompletedSurvey } from '../../../../types'
 import { Info as StatelessInfo } from '../../../stateless/pages/ViewSurvey/Info'
 import { ViewSurveyPageProps } from './types'
@@ -16,7 +16,7 @@ export const Info = ({ status, isMember }: ViewSurveyPageProps) => {
   const dao = useDao()
   const { bech32Prefix } = useChain()
 
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
 
   const [downloading, setDownloading] = useState(false)
   const download = async () => {

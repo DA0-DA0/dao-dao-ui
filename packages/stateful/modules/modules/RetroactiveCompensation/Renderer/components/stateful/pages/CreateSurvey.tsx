@@ -17,7 +17,7 @@ import { ModuleId, TokenType } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
-import { usePostRequest } from '../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../hooks/usePfpkClientPost'
 import { retroactiveCompensationQueries } from '../../../queries'
 import {
   Cw20Token,
@@ -62,7 +62,7 @@ export const CreateSurvey = () => {
   )
 
   const queryClient = useQueryClient()
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
 
   const [loading, setLoading] = useState(false)
   const onCreate = useCallback(

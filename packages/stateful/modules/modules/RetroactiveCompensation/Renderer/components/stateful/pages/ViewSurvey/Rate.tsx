@@ -18,7 +18,7 @@ import {
   SuspenseLoader,
   Trans,
 } from '../../../../../../../../components'
-import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../../hooks/usePfpkClientPost'
 import {
   Contribution,
   ContributionRating,
@@ -39,7 +39,7 @@ export const Rate = ({ status, refreshRef, isMember }: ViewSurveyPageProps) => {
   const { coreAddress } = useDao()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
 
   const [loadingState, setLoadingState] = useState(false)
   const [state, setState] = useState<SurveyContributionRatingState>()

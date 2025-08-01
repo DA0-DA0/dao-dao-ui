@@ -21,7 +21,7 @@ import {
   useQueryLoadingDataWithError,
   useWallet,
 } from '../../../../../../../../hooks'
-import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../../hooks/usePfpkClientPost'
 import { retroactiveCompensationQueries } from '../../../../queries'
 import { SurveyStatus, SurveyWithMetadata } from '../../../../types'
 import { Complete } from './Complete'
@@ -94,17 +94,14 @@ export const InnerViewSurvey = ({
   })
 
   const [deleting, setDeleting] = useState(false)
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
   const onDelete = async () => {
     setDeleting(true)
     try {
-      await postRequest(
-        `/${dao.coreAddress}/${status.survey.uuid}`,
-        undefined,
-        undefined,
-        undefined,
-        'DELETE'
-      )
+      await postRequest({
+        method: 'DELETE',
+        endpoint: `/${dao.coreAddress}/${status.survey.uuid}`,
+      })
 
       toast.success(t('success.compensationCycleDeleted'))
 

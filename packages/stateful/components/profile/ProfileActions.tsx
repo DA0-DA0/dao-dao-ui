@@ -36,7 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../actions'
-import { usePfpkAuthenticatedFetch, useWallet } from '../../hooks'
+import { usePfpkClient, useWallet } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
 
@@ -142,11 +142,10 @@ export const ProfileActions = ({
     [chain.chainId, getSigningClient, holdingAltForDirectSign, t, walletAddress]
   )
 
-  const { ready: txSavesReady, postRequest: postTxSavesRequest } =
-    usePfpkAuthenticatedFetch({
-      apiUrl: KVPK_API_BASE,
-      defaultSignatureType: 'Transaction Saves',
-    })
+  const { isWalletConnected, pfpkClient } = usePfpkClient({
+    apiUrl: KVPK_API_BASE,
+    defaultSignatureType: 'Transaction Saves',
+  })
 
   const setRefreshSaves = useSetRecoilState(refreshSavedTxsAtom)
   const refreshSaves = useCallback(
@@ -164,7 +163,7 @@ export const ProfileActions = ({
   const [saving, setSaving] = useState(false)
 
   const save = async (save: AccountTxSave) => {
-    if (!txSavesReady) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return false
     }
@@ -181,9 +180,12 @@ export const ProfileActions = ({
       )
 
       const key = ME_SAVED_TX_PREFIX + nameHash
-      await postTxSavesRequest('/set', {
-        key,
-        value: save,
+      await pfpkClient.signAndSend({
+        endpoint: '/set',
+        data: {
+          key,
+          value: save,
+        },
       })
 
       setTemporarySaves((prev) => ({
@@ -202,8 +204,9 @@ export const ProfileActions = ({
 
     return false
   }
+
   const deleteSave = async (save: AccountTxSave) => {
-    if (!txSavesReady) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return false
     }
@@ -219,9 +222,12 @@ export const ProfileActions = ({
       )
 
       const key = ME_SAVED_TX_PREFIX + nameHash
-      await postTxSavesRequest('/set', {
-        key,
-        value: null,
+      await pfpkClient.signAndSend({
+        endpoint: '/set',
+        data: {
+          key,
+          value: null,
+        },
       })
 
       setTemporarySaves((prev) => ({

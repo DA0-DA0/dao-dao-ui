@@ -1,5 +1,6 @@
+import useId from '@mui/material/utils/useId'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PfpkClient } from '@dao-dao/state'
@@ -7,11 +8,11 @@ import { getChainForChainId } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
-export type UsePfpkAuthenticatedFetchOptions = {
+export type UsePfpkClientOptions = {
   /**
-   * The API URL.
+   * Optionally provide an API URL to use as a prefix for all requests.
    */
-  apiUrl: string
+  apiUrl?: string
   /**
    * The default signature type to use. This can be overriden per-request.
    *
@@ -25,26 +26,33 @@ export type UsePfpkAuthenticatedFetchOptions = {
 }
 
 /**
- * Hook that makes it easy to interact with our various off-chain services that
- * use the core PFPK auth system.
+ * Hook that sets up a `PfpkClient` instance with the currently connected wallet
+ * that makes it easy to interact with various off-chain services that use the
+ * core PFPK auth system.
  */
-export const usePfpkAuthenticatedFetch = ({
+export const usePfpkClient = ({
   apiUrl,
   defaultSignatureType = 'DAO DAO Auth',
   chainId,
-}: UsePfpkAuthenticatedFetchOptions) => {
+}: UsePfpkClientOptions) => {
   const { t } = useTranslation()
-  const { chain: currentChain, chainWallet: currentChainWallet } = useWallet({
+  const queryClient = useQueryClient()
+  const {
+    chain: currentChain,
+    chainWallet: currentChainWallet,
+    isWalletConnected,
+  } = useWallet({
     chainId,
     loadAccount: true,
   })
 
-  const queryClient = useQueryClient()
   const pfpkClient = useMemo(
     () =>
       new PfpkClient({
         queryClient,
+        urlPrefix: apiUrl,
         defaultChainId: currentChain.chainId,
+        defaultSignatureType,
         getOfflineSignerAmino: async (chainId) => {
           const chainWallet =
             chainId === currentChain.chainId
@@ -89,49 +97,32 @@ export const usePfpkAuthenticatedFetch = ({
         },
       }),
     // Reset when wallet changes since they may have switched chains/accounts.
-    [currentChain.chainId, currentChainWallet, queryClient, t]
+    [
+      apiUrl,
+      currentChain.chainId,
+      currentChainWallet,
+      defaultSignatureType,
+      queryClient,
+      t,
+    ]
   )
 
-  // Ready if we have a chain wallet that we can attempt connection to (this is
-  // the same as being logged in).
-  const ready = !!currentChainWallet
+  const id = useId()
 
-  const postRequest = useCallback(
-    async <R = any>(
-      /**
-       * The endpoint to send the request to.
-       */
-      endpoint: string,
-      /**
-       * The data to send.
-       */
-      data?: Record<string, unknown>,
-      /**
-       * The signature type to use.
-       */
-      signatureType = defaultSignatureType,
-      /**
-       * Override the current chain.
-       */
-      overrideChainId?: string,
-      /**
-       * Optionally override the request method. Defaults to POST.
-       */
-      method = 'POST'
-    ): Promise<R> =>
-      pfpkClient.sendSignedRequest({
-        chainId: overrideChainId,
-        url: apiUrl + endpoint,
-        method,
-        type: signatureType,
-        data,
-      }),
-    [defaultSignatureType, pfpkClient, apiUrl]
-  )
+  useEffect(() => {
+    console.log(id, 'pfpkClient changed', pfpkClient)
+  }, [id, pfpkClient])
+
+  useEffect(() => {
+    console.log(id, 'currentChain changed', currentChain.chainId)
+  }, [id, currentChain.chainId])
+
+  useEffect(() => {
+    console.log(id, 'currentChainWallet changed', currentChainWallet)
+  }, [id, currentChainWallet])
 
   return {
-    ready,
-    postRequest,
+    isWalletConnected,
     pfpkClient,
   }
 }

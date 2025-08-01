@@ -10,7 +10,7 @@ import {
   Trans,
 } from '../../../../../../../../components'
 import { useEntity, useWallet } from '../../../../../../../../hooks'
-import { usePostRequest } from '../../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../../hooks/usePfpkClientPost'
 import { ContributionFormData } from '../../../../types'
 import { prepareContributionFormData } from '../../../../utils'
 import { Submit as StatelessSubmit } from '../../../stateless/pages/ViewSurvey/Submit'
@@ -25,7 +25,7 @@ export const Submit = ({
   const dao = useDao()
   const { address: walletAddress = '' } = useWallet()
   const { entity: walletEntity } = useEntity(walletAddress)
-  const postRequest = usePostRequest()
+  const postRequest = usePfpkClientPost()
 
   const [loading, setLoading] = useState(false)
   const onSubmit = async (data: ContributionFormData) => {

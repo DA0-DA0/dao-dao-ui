@@ -20,7 +20,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useManageProfile } from './useManageProfile'
-import { usePfpkAuthenticatedFetch } from './usePfpkAuthenticatedFetch'
+import { usePfpkClient } from './usePfpkClient'
 import { useProfile } from './useProfile'
 
 export type UseFollowingDaosReturn = {
@@ -71,7 +71,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   }, [followingDaosLoading])
 
   const [updating, setUpdating] = useState(false)
-  const { ready, postRequest } = usePfpkAuthenticatedFetch({
+  const { isWalletConnected, pfpkClient } = usePfpkClient({
     apiUrl: KVPK_API_BASE,
     defaultSignatureType: 'Update Following',
   })
@@ -84,7 +84,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     async (dao: DaoSource) => {
       const addChains = addChainsRef.current
 
-      if (!ready || profile.loading || !addChains.ready) {
+      if (!isWalletConnected || profile.loading || !addChains.ready) {
         toast.error(t('error.logInToFollow'))
         return false
       }
@@ -102,17 +102,16 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
         const serializedDaoSource = serializeDaoSource(dao)
 
-        await postRequest(
-          '/set',
-          {
+        await pfpkClient.signAndSend({
+          endpoint: '/set',
+          data: {
             key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
             value: 1,
           },
-          undefined,
           // Use DAO chain ID for following state to ensure we use the same
           // chain ID when following and unfollowing the DAO.
-          dao.chainId
-        )
+          chainId: dao.chainId,
+        })
 
         setTemporary((prev) => ({
           // Add to the tmp list of followed DAOs.
@@ -137,9 +136,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     },
     [
       addChainsRef,
-      postRequest,
+      isWalletConnected,
+      pfpkClient,
       profile,
-      ready,
       refreshFollowing,
       setTemporary,
       t,
@@ -149,7 +148,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
   const setUnfollowing = useCallback(
     async (dao: DaoSource) => {
-      if (!ready) {
+      if (!isWalletConnected) {
         toast.error(t('error.logInToFollow'))
         return false
       }
@@ -185,15 +184,14 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
         const serializedDaoSource = serializeDaoSource(dao)
 
-        await postRequest(
-          '/set',
-          {
+        await pfpkClient.signAndSend({
+          endpoint: '/set',
+          data: {
             key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
             value: null,
           },
-          undefined,
-          unfollowChainId
-        )
+          chainId: unfollowChainId,
+        })
 
         setTemporary((prev) => ({
           // Remove from the tmp list of followed DAOs.
@@ -218,8 +216,8 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     },
     [
       followingDaosLoading,
-      postRequest,
-      ready,
+      isWalletConnected,
+      pfpkClient,
       refreshFollowing,
       setTemporary,
       t,
