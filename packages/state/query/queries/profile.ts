@@ -52,10 +52,11 @@ export const fetchProfileInfo = async (
   )
   // Copy PFPK profile info into unified profile.
   profile.uuid = pfpkProfile.uuid
-  profile.nonce = pfpkProfile.nonce
   profile.name = pfpkProfile.name
   profile.nft = pfpkProfile.nft
   profile.chains = pfpkProfile.chains
+  profile.createdAt = pfpkProfile.createdAt
+  profile.updatedAt = pfpkProfile.updatedAt
 
   // Use profile address for Stargaze if set, falling back to transforming the
   // address (which is unreliable due to different chains using different HD

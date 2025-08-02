@@ -110,15 +110,15 @@ export const InnerPfpkNftSelectionModal = ({
     !nfts.loading && !nfts.errored && selectedKey
       ? nfts.data.find((nft) => selectedKey === nft.key)
       : undefined
-  // If nonce changes, set selected NFT.
-  const [lastNonce, setLastNonce] = useState(
-    profile.loading ? 0 : profile.data.nonce
+  // If profile last updated changes, set selected NFT.
+  const [profileLastUpdated, setProfileLastUpdated] = useState(
+    profile.loading ? 0 : profile.data.updatedAt
   )
   useEffect(() => {
     if (
       !profile.loading &&
       profile.data.nft &&
-      profile.data.nonce > lastNonce
+      profile.data.updatedAt > profileLastUpdated
     ) {
       setSelectedKey(
         getNftKey(
@@ -127,9 +127,9 @@ export const InnerPfpkNftSelectionModal = ({
           profile.data.nft.tokenId
         )
       )
-      setLastNonce(profile.data.nonce)
+      setProfileLastUpdated(profile.data.updatedAt)
     }
-  }, [lastNonce, profile])
+  }, [profileLastUpdated, profile])
 
   const onAction = useCallback(async () => {
     // Only give error about no NFTs if something should be selected. This

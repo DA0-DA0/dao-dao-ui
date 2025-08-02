@@ -67,7 +67,7 @@ export const WalletLazyNftCard = (
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
-    ...(!profile.loading && profile.data.nonce >= 0
+    ...(!profile.loading && profile.data.uuid
       ? [
           {
             label: t('title.profile'),

@@ -159,19 +159,18 @@ export const useManageProfile = ({
   const ready =
     !profile.loading &&
     !profile.updating &&
-    // Ensure we have a profile loaded from the server. The nonce is -1 if it
-    // failed to load.
-    profile.data.nonce >= 0 &&
+    // Ensure we have a profile loaded from the server.
+    !!profile.data.uuid &&
     !!currentChainWallet &&
     isWalletConnected
 
   const [updating, setUpdating] = useState(false)
 
-  const profileNonce = profile.loading ? -1 : profile.data.nonce
+  const profileUuid = profile.loading ? '' : profile.data.uuid
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateProfile = useCallback(
-    async (profile: Omit<PfpkProfileUpdate, 'nonce'>) => {
-      if (!ready || profileNonce < 0) {
+    async (profile: PfpkProfileUpdate) => {
+      if (!ready || !profileUuid) {
         return
       }
 
@@ -188,7 +187,7 @@ export const useManageProfile = ({
         setUpdating(false)
       }
     },
-    [pfpkClient, profileNonce, ready, walletChainId]
+    [pfpkClient, profileUuid, ready, walletChainId]
   )
 
   const [addChainsStatus, setAddChainsStatus] =
@@ -336,8 +335,14 @@ export const useManageProfile = ({
             return 1
           }
 
-          // If all else equal, sort by nonce as a heuristic for which is older.
-          return b.profile.nonce - a.profile.nonce
+          // If all else equal, sort by age.
+          if (a.profile.createdAt > -1 && b.profile.createdAt === -1) {
+            return -1
+          } else if (a.profile.createdAt === -1 && b.profile.createdAt > -1) {
+            return 1
+          } else {
+            return b.profile.createdAt - a.profile.createdAt
+          }
         })
         // Remove duplicates. Since they are all the same profile, we only need
         // one.
@@ -360,8 +365,8 @@ export const useManageProfile = ({
 
       // If any profiles in the list have been used before, remove any that
       // haven't.
-      if (options.some(({ profile }) => profile.nonce > 0)) {
-        options = options.filter(({ profile }) => profile.nonce > 0)
+      if (options.some(({ profile }) => !!profile.uuid)) {
+        options = options.filter(({ profile }) => !!profile.uuid)
       }
       // If no profile in the list has been used before, remove all but one
       // since it doesn't matter which is chosen.

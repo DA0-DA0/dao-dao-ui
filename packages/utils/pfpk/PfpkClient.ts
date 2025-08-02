@@ -614,15 +614,20 @@ export class PfpkClient {
   }
 
   /**
-   * Fetch the nonce for the user.
+   * Fetch the nonce for the public key of the chain signer.
    */
   async fetchNonce(chainId?: string): Promise<number> {
-    const publicKeyHex = (await this.getOrPrepare(chainId)).publicKey.hex
+    const resolvedChainId = this.resolveChainId(chainId)
+    const publicKeyHex = (await this.getOrPrepare(resolvedChainId)).publicKey
+      .hex
     const {
       response,
       body: { nonce },
       error,
-    } = await fetchNonce(publicKeyHex)
+    } = await fetchNonce(
+      getPublicKeyTypeForChain(resolvedChainId),
+      publicKeyHex
+    )
     if (response.status !== 200) {
       throw new Error(`Failed to fetch nonce: ${response.status} ${error}`)
     }
@@ -720,8 +725,9 @@ export class PfpkClient {
     const adminToken = await this.getAdminToken(chainId)
 
     let profile = await this.fetchProfile(chainId)
+    // If profile doesn't exist yet, create it. This should never happen since
+    // we created a profile when the admin token was created.
     if (!profile.uuid) {
-      // If profile doesn't exist yet, create it.
       await this.updateProfile({ chainId })
       profile = await this.fetchProfile(chainId)
       if (!profile.uuid) {
@@ -741,7 +747,7 @@ export class PfpkClient {
         .publicKey.hex
 
       const allowance = await this.signRequestBody({
-        chainId,
+        chainId: registeringChainId,
         type: 'DAO DAO Profile | Add Chain Allowance',
         data: {
           allow: { uuid: profile.uuid },

@@ -5,10 +5,11 @@ export const CHAIN_ID = ChainId.JunoMainnet
 
 export const WALLET_PROFILE_DATA: UnifiedProfile = {
   uuid: 'uuid',
-  nonce: 1,
   name: '@Modern-Edamame',
   nft: null,
   chains: {},
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
   source: {
     chainId: CHAIN_ID,
     address: 'address',

@@ -95,8 +95,8 @@ export const fetchMe = async (token: string) => {
   }
 }
 
-export const fetchNonce = async (publicKey: string) => {
-  const response = await fetch(url(`/nonce/${publicKey}`), {
+export const fetchNonce = async (type: string, publicKey: string) => {
+  const response = await fetch(url(`/nonce/${publicKey}`, { type }), {
     method: 'GET',
   })
   const body = response.body ? await response.json() : {}
@@ -133,6 +133,18 @@ export const fetchProfileViaAddress = async (bech32Address: string) => {
 
 export const fetchProfileViaAddressHex = async (addressHex: string) => {
   const response = await fetch(url(`/hex/${addressHex}`), {
+    method: 'GET',
+  })
+  const body = await response.json().catch(() => ({ error: 'Unknown error' }))
+  return {
+    response,
+    body: body as FetchProfileResponse,
+    error: body.error as string | undefined,
+  }
+}
+
+export const fetchProfileViaUuid = async (uuid: string) => {
+  const response = await fetch(url(`/uuid/${uuid}`), {
     method: 'GET',
   })
   const body = await response.json().catch(() => ({ error: 'Unknown error' }))

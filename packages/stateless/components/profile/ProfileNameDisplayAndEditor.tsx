@@ -45,7 +45,7 @@ export const ProfileNameDisplayAndEditor = ({
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 
-  const canEdit = !!updateProfile && !profile.loading && profile.data.nonce >= 0
+  const canEdit = !!updateProfile && !profile.loading && !!profile.data.uuid
 
   // If set, will show edit input.
   const [editingName, setEditingName] = useState<string | undefined>()
