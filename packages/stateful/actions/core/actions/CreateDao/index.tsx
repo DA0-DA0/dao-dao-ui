@@ -17,18 +17,16 @@ import { CreateDaoComponent, CreateDaoData } from './Component'
 
 const Component: ActionComponent<undefined, CreateDaoData> = (props) => {
   const { chainId } = useChain()
+  const queryClient = useQueryClient()
 
   // If admin is set, attempt to load parent DAO info.
   const parentDao = useQueryLoadingDataWithError(
-    daoQueries.parentInfo(
-      useQueryClient(),
-      props.data.admin
-        ? {
-            chainId,
-            parentAddress: props.data.admin,
-          }
-        : undefined
-    )
+    props.data.admin
+      ? daoQueries.parentInfo(queryClient, {
+          chainId,
+          parentAddress: props.data.admin,
+        })
+      : undefined
   )
 
   return (

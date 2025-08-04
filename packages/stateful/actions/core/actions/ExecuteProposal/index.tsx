@@ -42,15 +42,12 @@ const Component: ActionComponent<undefined, ExecuteProposalData> = (props) => {
 
   const queryClient = useQueryClient()
   const selectedDaoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
-      queryClient,
-      chainId && coreAddress && isValidBech32Address(coreAddress)
-        ? {
-            chainId,
-            coreAddress,
-          }
-        : undefined
-    )
+    chainId && coreAddress && isValidBech32Address(coreAddress)
+      ? daoQueries.info(queryClient, {
+          chainId,
+          coreAddress,
+        })
+      : undefined
   )
 
   return (

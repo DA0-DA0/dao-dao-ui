@@ -20,7 +20,7 @@ import {
   AccountTxForm,
   AccountTxSave,
   ActionEncodeContext,
-  LoadingData,
+  LoadingDataWithError,
   SuspenseLoaderProps,
   UnifiedCosmosMsg,
   WalletChainSwitcherProps,
@@ -52,7 +52,7 @@ export type ProfileActionsProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
   txHash?: string
-  saves: LoadingData<AccountTxSave[]>
+  saves: LoadingDataWithError<AccountTxSave[]>
   save: (save: AccountTxSave) => Promise<boolean>
   deleteSave: (save: AccountTxSave) => Promise<boolean>
   saving: boolean
@@ -337,7 +337,7 @@ export const ProfileActions = ({
           <p className="secondary-text">{t('info.txSavesDescription')}</p>
         </div>
 
-        {!saves.loading && saves.data.length > 0 ? (
+        {!saves.loading && !saves.errored && saves.data.length > 0 ? (
           <div className="flex flex-row flex-wrap gap-2">
             {saves.data.map((save, index) => (
               <Button
@@ -406,7 +406,8 @@ export const ProfileActions = ({
             <InputErrorMessage error={saveErrors.name} />
 
             {!saves.loading &&
-              saves.data?.some(({ name }) => name === watchSaveName) && (
+              !saves.errored &&
+              saves.data.some(({ name }) => name === watchSaveName) && (
                 <p className="caption-text">{t('info.overwritingSave')}</p>
               )}
           </div>

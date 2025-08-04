@@ -1,7 +1,7 @@
 import { Asset } from '@chain-registry/types'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Block, Coin } from '@cosmjs/stargate'
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -1574,11 +1574,11 @@ export const chainQueries = {
    * Fetch the sum of native tokens staked across all validators.
    */
   nativeStakedBalance: (
-    options?: Parameters<typeof fetchNativeStakedBalance>[0]
+    options: Parameters<typeof fetchNativeStakedBalance>[0]
   ) =>
     queryOptions({
       queryKey: ['chain', 'nativeStakedBalance', options],
-      queryFn: options ? () => fetchNativeStakedBalance(options) : skipToken,
+      queryFn: () => fetchNativeStakedBalance(options),
     }),
   /**
    * Fetch the total native tokens staked across the whole chain.

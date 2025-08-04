@@ -1,14 +1,15 @@
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import uniqBy from 'lodash.uniqby'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
-  followingDaoDropdownInfosSelector,
+  daoQueries,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
@@ -20,13 +21,19 @@ import {
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
-  useCachedLoading,
   usePlatform,
 } from '@dao-dao/stateless'
-import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
+import {
+  getSupportedChains,
+  keepSubDaosInDropdown,
+  makeCombineQueryResultsIntoLoadingDataWithError,
+  maybeGetChainForChainId,
+  serializeDaoSource,
+  subDaoExistsInDropdown,
+} from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
-import { useAutoRefreshData, useProfile, useWallet } from '../hooks'
+import { useAutoRefreshData, useFollowingDaos, useWallet } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
@@ -122,24 +129,40 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useAutoRefreshData()
 
   //! Following DAOs
-  const { uniquePublicKeys } = useProfile()
-  const followingDaoDropdownInfos = useCachedLoading(
-    !uniquePublicKeys.loading
-      ? waitForAll(
-          uniquePublicKeys.data.map(({ publicKey }) =>
-            followingDaoDropdownInfosSelector({
-              walletPublicKey: publicKey,
-              // If not compact, remove any SubDAO from the top level that
-              // exists as a SubDAO of another followed DAO at the top level.
-              // When compact, SubDAOs aren't visible, so we should show
-              // followed SubDAOs in the top level.
-              removeTopLevelSubDaos: !compact,
+  const { following } = useFollowingDaos()
+  const queryClient = useQueryClient()
+  const followingDaoDropdownInfos = useQueries({
+    queries:
+      following.loading || following.errored
+        ? []
+        : following.data.map(({ chainId, coreAddress }) =>
+            daoQueries.daoDropdownInfo(queryClient, {
+              chainId,
+              coreAddress,
             })
-          )
-        )
-      : undefined,
-    []
-  )
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      // Load if DAOs are loading, but return none if errored.
+      loadIfNone: following.loading,
+      firstLoad: 'one',
+      errorIf: 'all',
+      transform: (infos) =>
+        // Remove SubDAOs that are not being followed.
+        keepSubDaosInDropdown(
+          // Keep top-level DAOs only if they are not SubDAOs elsewhere. This
+          // ensures that a SubDAO is not shown multiple times. If both a parent
+          // DAO and SubDAO are followed, the SubDAO will only appear in the
+          // parent's dropdown. If the parent isn't followed, the SubDAO will
+          // appear in the top level.
+          !compact
+            ? infos.filter(
+                ({ coreAddress }) => !subDaoExistsInDropdown(infos, coreAddress)
+              )
+            : infos,
+          infos
+        ),
+    }),
+  })
 
   return (
     // Default wrap Dapp in chain provider. Used in DappNavigation for default
@@ -171,12 +194,13 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
               ? { loading: true }
               : {
                   loading: false,
-                  data: uniqBy(
-                    followingDaoDropdownInfos.data.flat(),
-                    (d) => d.chainId + d.coreAddress
-                  )
-                    // Alphabetize.
-                    .sort((a, b) => a.name.localeCompare(b.name)),
+                  data: followingDaoDropdownInfos.errored
+                    ? []
+                    : uniqBy(followingDaoDropdownInfos.data, (d) =>
+                        serializeDaoSource(d)
+                      )
+                        // Alphabetize.
+                        .sort((a, b) => a.name.localeCompare(b.name)),
                 }
             : // Prevent hydration errors by loading until mounted.
               { loading: true },

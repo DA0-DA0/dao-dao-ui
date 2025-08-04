@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  refreshDaoVotingPowerAtom,
-  refreshFollowingDaosAtom,
-  stakingLoadingAtom,
-} from '@dao-dao/state'
+import { refreshDaoVotingPowerAtom, stakingLoadingAtom } from '@dao-dao/state'
 import {
   ModalLoader,
   StakingModal as StatelessStakingModal,
@@ -88,10 +84,8 @@ const InnerStakingModal = ({
   const setRefreshDaoVotingPower = useSetRecoilState(
     refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
-  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {
     setRefreshDaoVotingPower((id) => id + 1)
-    setRefreshFollowedDaos((id) => id + 1)
   }
 
   const awaitNextBlock = useAwaitNextBlock()

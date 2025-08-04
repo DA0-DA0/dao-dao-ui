@@ -15,16 +15,12 @@ import { useSetRecoilState } from 'recoil'
 
 import {
   chainQueries,
-  hiddenBalancesSelector,
-  refreshHiddenBalancesAtom,
   refreshTokenCardLazyInfoAtom,
-  temporaryHiddenBalancesAtom,
   tokenCardLazyInfoSelector,
 } from '@dao-dao/state'
 import {
   ChainProvider,
   TokenCard as StatelessTokenCard,
-  useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import {
@@ -47,6 +43,7 @@ import {
   useAwaitNextBlock,
   useKvpkClient,
   useProfile,
+  useQueryLoadingDataWithError,
   useWallet,
 } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
@@ -56,11 +53,7 @@ import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
-  const { chains } = useProfile()
-
-  const profileChain = chains.loading
-    ? undefined
-    : chains.data.find((c) => c.chainId === props.token.chainId)
+  const { profile } = useProfile()
 
   const { chainWallet, refreshBalances } = useWallet({
     chainId: props.token.chainId,
@@ -108,30 +101,24 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     setRefreshTokenCardLazyInfo,
   ])
 
-  const { isWalletConnected, kvpkClient } = useKvpkClient({
-    defaultSignatureType: 'Hidden Balances',
-    chainId: props.token.chainId,
-    keyPrefix: HIDDEN_BALANCE_PREFIX,
-  })
-
-  const setRefreshHidden = useSetRecoilState(refreshHiddenBalancesAtom)
-  const refreshHidden = useCallback(
-    () => setRefreshHidden((id) => id + 1),
-    [setRefreshHidden]
+  const { isWalletConnected, client: hiddenBalancesKvpkClient } = useKvpkClient(
+    {
+      defaultSignatureType: 'Hidden Balances',
+      chainId: props.token.chainId,
+      keyPrefix: HIDDEN_BALANCE_PREFIX,
+    }
   )
 
-  const setTemporaryHiddenBalances = useSetRecoilState(
-    temporaryHiddenBalancesAtom(profileChain?.publicKey.hex || '')
-  )
-  const hiddenBalancesLoadable = useCachedLoadable(
-    profileChain
-      ? hiddenBalancesSelector(profileChain.publicKey.hex)
-      : undefined
+  const hiddenBalances = useQueryLoadingDataWithError(
+    !profile.loading
+      ? hiddenBalancesKvpkClient.listQuery({ uuid: profile.data.uuid })
+      : undefined,
+    (data) => data.map(({ key }) => key)
   )
   const isHidden =
-    hiddenBalancesLoadable.state === 'hasValue'
-      ? hiddenBalancesLoadable.contents.includes(props.token.denomOrAddress)
-      : undefined
+    !hiddenBalances.loading &&
+    !hiddenBalances.errored &&
+    hiddenBalances.data.includes(props.token.denomOrAddress)
 
   const [savingHidden, setSavingHidden] = useState(false)
 
@@ -146,16 +133,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       // Delete the key if hidden is false.
       const value = hidden ? 1 : null
 
-      const setKey = await kvpkClient.set({
+      await hiddenBalancesKvpkClient.set({
         key: props.token.denomOrAddress,
         value,
       })
-
-      setTemporaryHiddenBalances((prev) => ({
-        ...prev,
-        [setKey]: value,
-      }))
-      refreshHidden()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

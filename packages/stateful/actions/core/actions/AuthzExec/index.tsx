@@ -82,15 +82,12 @@ const InnerComponentWrapper: ActionComponent<
 
   const validAddress = !!address && isValidBech32Address(address, bech32Prefix)
   const isDao = useQueryLoadingData(
-    contractQueries.isDao(
-      queryClient,
-      validAddress
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    ),
+    validAddress
+      ? contractQueries.isDao(queryClient, {
+          chainId,
+          address,
+        })
+      : undefined,
     false
   )
 

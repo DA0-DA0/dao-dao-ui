@@ -48,14 +48,12 @@ export const AddressInput = <
     !isValidBech32Address(formValue, currentChain.bech32Prefix)
 
   const searchProfilesLoading = useQueryLoadingDataWithError(
-    profileQueries.searchByNamePrefix(
-      hasFormValue && props.type !== 'contract'
-        ? {
-            chainId: currentChain.chainId,
-            namePrefix: formValue,
-          }
-        : undefined
-    )
+    hasFormValue && props.type !== 'contract'
+      ? profileQueries.searchByNamePrefix({
+          chainId: currentChain.chainId,
+          namePrefix: formValue,
+        })
+      : undefined
   )
 
   // Search DAOs on current chains and all polytone-connected chains so we can

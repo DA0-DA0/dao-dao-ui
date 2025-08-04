@@ -1,20 +1,22 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
-import {
-  followingDaosSelector,
-  refreshProposalsIdAtom,
-} from '@dao-dao/state/recoil'
+import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
   VetoableProposalsProps,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useOnWebSocketMessage, useProfile } from '../../../hooks'
-import { feedVetoableProposalsSelector } from './state'
+import {
+  useFollowingDaos,
+  useOnWebSocketMessage,
+  useProfile,
+  useQueryLoadingDataWithError,
+} from '../../../hooks'
+import { feedVetoableProposalQueries } from './state'
 
 export const VetoableProposals: FeedSource<
   VetoableProposalsProps<StatefulProposalLineProps>
@@ -25,18 +27,16 @@ export const VetoableProposals: FeedSource<
     const setRefresh = useSetRecoilState(refreshProposalsIdAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const { uniquePublicKeys } = useProfile()
+    const { profile } = useProfile()
+    const { following } = useFollowingDaos()
+    const queryClient = useQueryClient()
 
-    const daosWithItemsLoadable = useCachedLoadingWithError(
-      uniquePublicKeys.loading
-        ? undefined
-        : uniquePublicKeys.data.length > 0
-          ? feedVetoableProposalsSelector({
-              publicKeys: uniquePublicKeys.data.map(
-                ({ publicKey }) => publicKey
-              ),
-            })
-          : constSelector([]),
+    const daosWithItemsLoadable = useQueryLoadingDataWithError(
+      !profile.loading
+        ? feedVetoableProposalQueries.vetoableProposals(queryClient, {
+            uuid: profile.data.uuid,
+          })
+        : undefined,
       (data) =>
         data.map((d) => ({
           ...d,
@@ -50,24 +50,11 @@ export const VetoableProposals: FeedSource<
         }))
     )
 
-    const followingDaosLoadable = useCachedLoadingWithError(
-      !uniquePublicKeys.loading
-        ? waitForAll(
-            uniquePublicKeys.data.map(({ publicKey }) =>
-              followingDaosSelector({
-                walletPublicKey: publicKey,
-              })
-            )
-          )
-        : undefined,
-      (data) => data.flat()
-    )
-
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
-      !followingDaosLoadable.loading && !followingDaosLoadable.errored
-        ? followingDaosLoadable.data.map(({ chainId, coreAddress }) =>
+      !following.loading && !following.errored
+        ? following.data.map(({ chainId, coreAddress }) =>
             webSocketChannelNameForDao({
               chainId,
               coreAddress,

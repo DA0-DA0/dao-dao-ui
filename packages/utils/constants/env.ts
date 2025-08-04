@@ -64,6 +64,7 @@ export const INBOX_API_BASE = process.env.NEXT_PUBLIC_INBOX_API_BASE as string
 
 // KVPK API (https://github.com/DA0-DA0/kvpk)
 export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
+export const KVPK_API_HOSTNAME = new URL(KVPK_API_BASE).hostname
 
 // Single DAO Mode
 export const SINGLE_DAO_MODE =

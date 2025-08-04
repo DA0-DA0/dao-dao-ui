@@ -1,7 +1,7 @@
 import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { BlockHeader } from '@cosmjs/stargate'
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { ContractSummary, InfoResponse } from '@dao-dao/types'
 import {
@@ -541,28 +541,23 @@ export const contractQueries = {
    */
   isContract: (
     queryClient: QueryClient,
-    options?: Parameters<typeof fetchIsContract>[1]
+    options: Parameters<typeof fetchIsContract>[1]
   ) =>
     queryOptions({
       queryKey: ['contract', 'isContract', options],
-      queryFn: options
-        ? () => fetchIsContract(queryClient, options)
-        : skipToken,
+      queryFn: () => fetchIsContract(queryClient, options),
     }),
   /**
    * Check if a contract is a DAO.
    */
   isDao: (
     queryClient: QueryClient,
-    options?: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
+    options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(
-      queryClient,
-      options && {
-        ...options,
-        nameOrNames: DAO_CORE_CONTRACT_NAMES,
-      }
-    ),
+    contractQueries.isContract(queryClient, {
+      ...options,
+      nameOrNames: DAO_CORE_CONTRACT_NAMES,
+    }),
   /**
    * Check if a contract is a Polytone proxy.
    */

@@ -55,28 +55,24 @@ export const useGovernanceCollectionInfo = ({
 
   // Wallet balance
   const loadingWalletBalance = useQueryLoadingDataWithError(
-    omniflixQueries.onftCollectionSupply(
-      fetchWalletBalance && walletAddress
-        ? {
-            chainId: votingModule.chainId,
-            id: onft_collection_id,
-            owner: walletAddress,
-          }
-        : undefined
-    )
+    fetchWalletBalance && walletAddress
+      ? omniflixQueries.onftCollectionSupply({
+          chainId: votingModule.chainId,
+          id: onft_collection_id,
+          owner: walletAddress,
+        })
+      : undefined
   )
 
   // Treasury balance
   const loadingTreasuryBalance = useQueryLoadingDataWithError(
-    omniflixQueries.onftCollectionSupply(
-      fetchTreasuryBalance
-        ? {
-            chainId: votingModule.chainId,
-            id: onft_collection_id,
-            owner: votingModule.dao.coreAddress,
-          }
-        : undefined
-    )
+    fetchTreasuryBalance
+      ? omniflixQueries.onftCollectionSupply({
+          chainId: votingModule.chainId,
+          id: onft_collection_id,
+          owner: votingModule.dao.coreAddress,
+        })
+      : undefined
   )
 
   return {

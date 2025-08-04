@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { profileQueries } from '@dao-dao/state'
 import {
+  FollowingDaosKvpkClient,
   KvpkClient,
   PfpkClient,
   PfpkClientOptions,
@@ -38,7 +39,7 @@ export const usePfpkClientOptions = ({
   apiUrl,
   defaultSignatureType = 'DAO DAO Auth',
   chainId,
-}: UsePfpkClientOptions) => {
+}: UsePfpkClientOptions = {}) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const {
@@ -134,7 +135,7 @@ export const usePfpkClientOptions = ({
  * that makes it easy to interact with various off-chain services that use the
  * core PFPK auth system.
  */
-export const usePfpkClient = (options: UsePfpkClientOptions) => {
+export const usePfpkClient = (options?: UsePfpkClientOptions) => {
   const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
 
   const pfpkClient = useMemo(
@@ -169,32 +170,67 @@ export type UseKvpkClientOptions = {
 }
 
 /**
- * Hook that sets up a `PfpkClient` instance with the currently connected wallet
- * that makes it easy to interact with various off-chain services that use the
- * core PFPK auth system.
+ * Hook that sets up a `KvpkClient` with the currently connected wallet.
  */
 export const useKvpkClient = ({
   keyPrefix,
   ...options
-}: UseKvpkClientOptions) => {
+}: UseKvpkClientOptions = {}) => {
+  const queryClient = useQueryClient()
   const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
 
-  const kvpkClient = useMemo(
+  const client = useMemo(
     () =>
       new KvpkClient({
         ...pfpkClientOptions,
+        queryClient,
         keyPrefix,
       }),
-    [keyPrefix, pfpkClientOptions]
+    [keyPrefix, pfpkClientOptions, queryClient]
   )
 
   // Tear down the client when it changes or the component unmounts.
   useEffect(() => {
-    return () => kvpkClient.teardown()
-  }, [kvpkClient])
+    return () => client.teardown()
+  }, [client])
 
   return {
     isWalletConnected,
-    kvpkClient,
+    client,
+  }
+}
+
+export type UseFollowingDaosKvpkClientOptions = Omit<
+  UseKvpkClientOptions,
+  'defaultSignatureType' | 'keyPrefix'
+>
+
+/**
+ * Hook that sets up a `FollowingDaosKvpkClient` with the currently connected
+ * wallet.
+ */
+export const useFollowingDaosKvpkClient = (
+  options?: UseFollowingDaosKvpkClientOptions
+) => {
+  const queryClient = useQueryClient()
+  const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
+
+  const client = useMemo(
+    () =>
+      new FollowingDaosKvpkClient({
+        ...pfpkClientOptions,
+        queryClient,
+      }),
+    [pfpkClientOptions, queryClient]
+  )
+
+  // Tear down the client when it changes or the component unmounts.
+  useEffect(() => {
+    return () => client.teardown()
+  }, [client])
+
+  return {
+    isWalletConnected,
+    client,
   }
 }

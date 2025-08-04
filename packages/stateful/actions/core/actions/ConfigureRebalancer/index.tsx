@@ -89,26 +89,23 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
 
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
   const whitelists = useQueryLoadingDataWithError(
-    valenceRebalancerExtraQueries.whitelistGenericTokens(
-      queryClient,
-      rebalancer
-        ? {
-            chainId,
-            address: rebalancer,
-          }
-        : undefined
-    )
+    rebalancer
+      ? valenceRebalancerExtraQueries.whitelistGenericTokens(queryClient, {
+          chainId,
+          address: rebalancer,
+        })
+      : undefined
   )
   const serviceFee = useQueryLoadingDataWithError(
-    valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
-      queryClient,
-      rebalancer
-        ? {
+    rebalancer
+      ? valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
+          queryClient,
+          {
             chainId,
             address: rebalancer,
           }
-        : undefined
-    )
+        )
+      : undefined
   )
 
   const minBalanceDenom = watch(

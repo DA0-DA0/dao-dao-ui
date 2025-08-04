@@ -10,7 +10,6 @@ import {
   genericTokenBalanceSelector,
   neutronVaultQueries,
   refreshDaoVotingPowerAtom,
-  refreshFollowingDaosAtom,
   refreshWalletBalancesIdAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
@@ -143,10 +142,8 @@ const InnerStakingModal = ({
   const setRefreshDaoVotingPower = useSetRecoilState(
     refreshDaoVotingPowerAtom(votingModule.dao.coreAddress)
   )
-  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {
     setRefreshDaoVotingPower((id) => id + 1)
-    setRefreshFollowedDaos((id) => id + 1)
   }
 
   const awaitNextBlock = useAwaitNextBlock()

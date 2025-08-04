@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
   ONFT,
@@ -246,14 +246,11 @@ export const omniflixQueries = {
    * Fetch ONFT collection supply.
    */
   onftCollectionSupply: (
-    /**
-     * If undefined, returns loading state.
-     */
-    options?: Parameters<typeof fetchOnftCollectionSupply>[0]
+    options: Parameters<typeof fetchOnftCollectionSupply>[0]
   ) =>
     queryOptions({
       queryKey: ['omniflix', 'onftCollectionSupply', options],
-      queryFn: options ? () => fetchOnftCollectionSupply(options) : skipToken,
+      queryFn: () => fetchOnftCollectionSupply(options),
     }),
   /**
    * Fetch paginated ONFTs.

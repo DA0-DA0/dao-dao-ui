@@ -472,15 +472,12 @@ const StatefulSpendComponent: ComponentType<
 
   const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
   const loadingEntity = useQueryLoadingDataWithError(
-    entityQueries.info(
-      queryClient,
-      validRecipient
-        ? {
-            address: recipient,
-            chainId: toChainId,
-          }
-        : undefined
-    )
+    validRecipient
+      ? entityQueries.info(queryClient, {
+          address: recipient,
+          chainId: toChainId,
+        })
+      : undefined
   )
   // Cache last successfully loaded entity.
   useEffect(() => {

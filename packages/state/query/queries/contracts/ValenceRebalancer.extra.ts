@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { GenericToken, GenericTokenBalance, TokenType } from '@dao-dao/types'
 
@@ -108,21 +108,19 @@ export const valenceRebalancerExtraQueries = {
    */
   whitelistGenericTokens: (
     queryClient: QueryClient,
-    options?: Parameters<typeof fetchValenceRebalancerWhitelistGenericTokens>[1]
+    options: Parameters<typeof fetchValenceRebalancerWhitelistGenericTokens>[1]
   ) =>
     queryOptions({
       queryKey: ['valenceRebalancerExtra', 'whitelistGenericTokens', options],
-      queryFn: options
-        ? () =>
-            fetchValenceRebalancerWhitelistGenericTokens(queryClient, options)
-        : skipToken,
+      queryFn: () =>
+        fetchValenceRebalancerWhitelistGenericTokens(queryClient, options),
     }),
   /**
    * Get the rebalancer registration service fee.
    */
   rebalancerRegistrationServiceFee: (
     queryClient: QueryClient,
-    options?: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
+    options: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
   ) =>
     queryOptions({
       queryKey: [
@@ -130,9 +128,7 @@ export const valenceRebalancerExtraQueries = {
         'rebalancerRegistrationServiceFee',
         options,
       ],
-      queryFn: options
-        ? () =>
-            fetchValenceRebalancerRegistrationServiceFee(queryClient, options)
-        : skipToken,
+      queryFn: () =>
+        fetchValenceRebalancerRegistrationServiceFee(queryClient, options),
     }),
 }

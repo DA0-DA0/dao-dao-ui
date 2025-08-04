@@ -1,5 +1,5 @@
 import { toHex } from '@cosmjs/encoding'
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
   Account,
@@ -690,13 +690,11 @@ export const accountQueries = {
    */
   multisig: (
     queryClient: QueryClient,
-    options?: Parameters<typeof fetchMultisigAccount>[1]
+    options: Parameters<typeof fetchMultisigAccount>[1]
   ) =>
     queryOptions({
       queryKey: ['account', 'multisig', options],
-      queryFn: options
-        ? () => fetchMultisigAccount(queryClient, options)
-        : skipToken,
+      queryFn: () => fetchMultisigAccount(queryClient, options),
     }),
   /**
    * Fetch a Valence account.

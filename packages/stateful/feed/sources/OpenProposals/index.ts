@@ -1,18 +1,13 @@
 import { useCallback } from 'react'
-import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
+import { constSelector, useSetRecoilState } from 'recoil'
 
-import {
-  followingDaosSelector,
-  refreshOpenProposalsAtom,
-} from '@dao-dao/state/recoil'
-import {
-  useCachedLoadable,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
 import {
+  useFollowingDaos,
   useOnWebSocketMessage,
   useProfile,
   useRefreshGovProposals,
@@ -32,16 +27,14 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
       setRefreshOpenProposals((id) => id + 1)
     }, [refreshGovProposals, setRefreshOpenProposals])
 
-    const { chains, uniquePublicKeys } = useProfile()
+    const { profile, chains } = useProfile()
 
     const daosWithItemsLoadable = useCachedLoadable(
-      uniquePublicKeys.loading || chains.loading
+      profile.loading || chains.loading
         ? undefined
-        : uniquePublicKeys.data.length > 0
+        : profile.data.uuid
           ? feedOpenProposalsSelector({
-              publicKeys: uniquePublicKeys.data.map(
-                ({ publicKey }) => publicKey
-              ),
+              uuid: profile.data.uuid,
               profileAddresses: chains.data.map(({ chainId, address }) => ({
                 chainId,
                 address,
@@ -50,24 +43,13 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
           : constSelector([])
     )
 
-    const followingDaosLoadable = useCachedLoadingWithError(
-      !uniquePublicKeys.loading
-        ? waitForAll(
-            uniquePublicKeys.data.map(({ publicKey }) =>
-              followingDaosSelector({
-                walletPublicKey: publicKey,
-              })
-            )
-          )
-        : undefined,
-      (data) => data.flat()
-    )
+    const { following } = useFollowingDaos()
 
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
-      !followingDaosLoadable.loading && !followingDaosLoadable.errored
-        ? followingDaosLoadable.data.map(({ chainId, coreAddress }) =>
+      !following.loading && !following.errored
+        ? following.data.map(({ chainId, coreAddress }) =>
             webSocketChannelNameForDao({
               chainId,
               coreAddress,

@@ -21,6 +21,8 @@ export const ImportMultisigModal = (
   props: StatefulImportMultisigModalProps
 ) => {
   const { chainId: currentChainId } = useChain()
+  const queryClient = useQueryClient()
+
   const form = useForm<ImportMultisigForm>({
     defaultValues: {
       chainId: currentChainId,
@@ -30,17 +32,14 @@ export const ImportMultisigModal = (
   const address = form.watch('address')
 
   const loadingMultisig = useQueryLoadingDataWithError(
-    accountQueries.multisig(
-      useQueryClient(),
-      chainId &&
-        address &&
-        isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    )
+    chainId &&
+      address &&
+      isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
+      ? accountQueries.multisig(queryClient, {
+          chainId,
+          address,
+        })
+      : undefined
   )
 
   return (

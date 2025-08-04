@@ -1,9 +1,10 @@
-import { daoVetoableDaosSelector } from '@dao-dao/state/recoil'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { daoQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
   ThumbDownEmoji,
   useActionOptions,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
@@ -17,6 +18,7 @@ import {
 import { VETOABLE_DAOS_ITEM_KEY_PREFIX } from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { ManageStorageItemsAction } from '../ManageStorageItems'
 import {
   ManageVetoableDaosData,
@@ -29,8 +31,9 @@ const Component: ActionComponent = (props) => {
     chain: { chainId },
   } = useActionOptions()
 
-  const currentlyEnabledLoading = useCachedLoadingWithError(
-    daoVetoableDaosSelector({
+  const queryClient = useQueryClient()
+  const currentlyEnabledLoading = useQueryLoadingDataWithError(
+    daoQueries.vetoableDaos(queryClient, {
       chainId,
       coreAddress: address,
     })

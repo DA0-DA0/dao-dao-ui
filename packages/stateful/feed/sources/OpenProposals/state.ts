@@ -6,11 +6,13 @@ import {
   waitForNone,
 } from 'recoil'
 
+import { daoQueries } from '@dao-dao/state/query'
 import {
   DaoDaoCoreSelectors,
   govProposalVoteSelector,
   govProposalsSelector,
   openProposalsSelector,
+  queryClientAtom,
 } from '@dao-dao/state/recoil'
 import {
   DaoPageMode,
@@ -18,23 +20,24 @@ import {
   FeedSourceItem,
   ProfileChain,
 } from '@dao-dao/types'
+import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoDaoCore'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
+  FollowingDaosKvpkClient,
   getDaoProposalPath,
   isConfiguredChainName,
   serializeDaoSource,
 } from '@dao-dao/utils'
 
-import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 import { OpenProposalsProposalLineProps } from './types'
 
 export const feedOpenProposalsSelector = selectorFamily<
   FeedSourceDaoWithItems<OpenProposalsProposalLineProps>[],
   {
     /**
-     * The hex public keys to load from.
+     * The UUID to load from.
      */
-    publicKeys: string[]
+    uuid: string
     /**
      * The profile's addresses on each chain.
      */
@@ -43,24 +46,45 @@ export const feedOpenProposalsSelector = selectorFamily<
 >({
   key: 'feedOpenProposals',
   get:
-    ({ publicKeys, profileAddresses }) =>
-    ({ get }) => {
+    ({ uuid, profileAddresses }) =>
+    async ({ get }) => {
       // Map profile chain ID to address.
       const profileChainAddressMap: Record<string, string | undefined> =
         Object.fromEntries(
           profileAddresses.map(({ chainId, address }) => [chainId, address])
         )
 
-      // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = get(
-        waitForAny(
-          publicKeys.map((walletPublicKey) =>
-            followingDaosWithProposalModulesSelector({
-              walletPublicKey,
-            })
-          )
+      const queryClient = get(queryClientAtom)
+      const followingDaosKvpkClient = new FollowingDaosKvpkClient({
+        queryClient,
+      })
+
+      // TODO(kvpk): refresh this when following DAOs change.
+      const following = await queryClient.fetchQuery(
+        followingDaosKvpkClient.listFollowingDaosQuery({
+          uuid,
+        })
+      )
+
+      const proposalModules = await Promise.all(
+        following.map((dao) =>
+          isConfiguredChainName(dao.chainId, dao.coreAddress)
+            ? ([] as ProposalModuleWithInfo[])
+            : queryClient.fetchQuery(
+                daoQueries.proposalModules(queryClient, {
+                  chainId: dao.chainId,
+                  coreAddress: dao.coreAddress,
+                })
+              )
         )
-      ).flatMap((l) => l.valueMaybe() || [])
+      )
+
+      const followingDaosWithProposalModules = following.map(
+        (daoSource, index) => ({
+          ...daoSource,
+          proposalModules: proposalModules[index],
+        })
+      )
 
       // Native chain governance DAOs.
 

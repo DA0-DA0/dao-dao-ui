@@ -73,15 +73,15 @@ const Component: ActionComponent = (props) => {
   const queryClient = useQueryClient()
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
   const serviceFee = useQueryLoadingDataWithError(
-    valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
-      queryClient,
-      rebalancer
-        ? {
+    rebalancer
+      ? valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
+          queryClient,
+          {
             chainId,
             address: rebalancer,
           }
-        : undefined
-    )
+        )
+      : undefined
   )
   useEffect(() => {
     setValue(

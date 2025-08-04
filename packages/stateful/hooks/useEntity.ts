@@ -54,16 +54,14 @@ export const useEntity = (address: string): UseEntityReturn => {
     return currentChainId
   }, [address, currentBech32Prefix, currentChainId])
 
+  const queryClient = useQueryClient()
   const entity = useQueryLoadingData(
-    entityQueries.info(
-      useQueryClient(),
-      address
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    ),
+    address
+      ? entityQueries.info(queryClient, {
+          chainId,
+          address,
+        })
+      : undefined,
     // Should never error but just in case...
     {
       type: EntityType.Wallet,

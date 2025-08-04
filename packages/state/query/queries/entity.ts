@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { Entity, EntityType } from '@dao-dao/types'
 import {
@@ -234,13 +234,10 @@ export const entityQueries = {
    */
   info: (
     queryClient: QueryClient,
-    // If undefined, query will be disabled.
-    options?: Parameters<typeof fetchEntityInfo>[1]
+    options: Parameters<typeof fetchEntityInfo>[1]
   ) =>
     queryOptions({
       queryKey: ['entity', 'info', options],
-      queryFn: options
-        ? () => fetchEntityInfo(queryClient, options)
-        : skipToken,
+      queryFn: () => fetchEntityInfo(queryClient, options),
     }),
 }

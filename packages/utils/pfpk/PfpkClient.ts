@@ -26,6 +26,7 @@ import {
   createTokens,
   fetchAuthenticated,
   fetchNonce,
+  fetchProfileUuidViaPublicKey,
   fetchProfileViaPublicKey,
   fetchTokens,
   invalidateTokens,
@@ -44,6 +45,7 @@ export type PfpkClientOptions = {
   urlPrefix?: string
   defaultChainId?: string
   defaultSignatureType?: string
+  flattenData?: boolean
 }
 
 export type PfpkClientPreparedSigner = {
@@ -97,6 +99,10 @@ declare global {
   }
 }
 
+// TODO(pfpk): use this client as the source of truth for profiles and UUIDs.
+// move queries here, auto refresh, etc. so we don't have to call fetchProfile a
+// bunch. also useful in KvpkClient and other derivatives since they'll need
+// UUID to query stuff.
 export class PfpkClient {
   /**
    * The function to get an offline amino signer for a given chain ID. If not
@@ -140,6 +146,12 @@ export class PfpkClient {
   public defaultSignatureType: string | undefined
 
   /**
+   * Whether or not to flatten the data when sending requests with token auth
+   * instead of key signature auth. Defaults to false.
+   */
+  public flattenData: boolean
+
+  /**
    * Signer information for each chain.
    */
   private _signers: Record<string, PfpkClientPreparedSigner> = {}
@@ -163,6 +175,7 @@ export class PfpkClient {
     urlPrefix,
     defaultChainId,
     defaultSignatureType,
+    flattenData = false,
   }: PfpkClientOptions = {}) {
     this.id = nanoid()
     this.getOfflineSignerAmino = getOfflineSignerAmino
@@ -170,6 +183,7 @@ export class PfpkClient {
     this.urlPrefix = urlPrefix
     this.defaultChainId = defaultChainId
     this.defaultSignatureType = defaultSignatureType
+    this.flattenData = flattenData
   }
 
   /**
@@ -190,7 +204,7 @@ export class PfpkClient {
    * Resolve the chain ID to use, falling back to `defaultChainId` if undefined,
    * and throwing if neither are provided.
    */
-  private resolveChainId(
+  protected resolveChainId(
     chainId: string | undefined = this.defaultChainId
   ): string {
     if (!chainId) {
@@ -347,7 +361,7 @@ export class PfpkClient {
   /**
    * Validate tokens (optionally filtered), removing them if invalid.
    */
-  protected async _validateTokens(
+  private async _validateTokens(
     chainId?: string,
     filter: (token: TokenJson) => boolean = () => true
   ) {
@@ -556,10 +570,10 @@ export class PfpkClient {
     let requestBody: RequestBody<CreateTokensRequest>
     let token: string | undefined
 
-    // If tokens includes PFPK service itself, use wallet signature auth.
+    // If tokens includes PFPK service itself, use key signature auth.
     // Otherwise, use token auth.
     if (tokens.some((token) => token.audience?.includes(PFPK_API_HOSTNAME))) {
-      // Use wallet signature auth.
+      // Use key signature auth.
       requestBody = await this.signRequestBody({
         chainId,
         type: 'DAO DAO Profile | Login',
@@ -646,6 +660,21 @@ export class PfpkClient {
       throw new Error(`Failed to fetch profile: ${response.status} ${error}`)
     }
     return body
+  }
+
+  /**
+   * Fetch the user's profile UUID via public key (no authentication required).
+   */
+  async fetchProfileUuid(chainId?: string): Promise<string> {
+    const publicKeyHex = (await this.getOrPrepare(chainId)).publicKey.hex
+    const { response, body, error } =
+      await fetchProfileUuidViaPublicKey(publicKeyHex)
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to fetch profile UUID: ${response.status} ${error}`
+      )
+    }
+    return body.uuid
   }
 
   /**
@@ -1002,7 +1031,9 @@ export class PfpkClient {
 
     // If a token is provided, use data as-is. Otherwise, sign the request body.
     const body = token
-      ? { data }
+      ? this.flattenData
+        ? data
+        : { data }
       : await this.signRequestBody({
           chainId,
           type,

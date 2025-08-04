@@ -3,6 +3,7 @@ import {
   CreateTokensResponse,
   FetchAuthenticatedResponse,
   FetchProfileResponse,
+  FetchProfileUuidOnlyResponse,
   FetchTokensResponse,
   InvalidateTokensRequest,
   NonceResponse,
@@ -115,6 +116,18 @@ export const fetchProfileViaPublicKey = async (publicKey: string) => {
   return {
     response,
     body: body as FetchProfileResponse,
+    error: body.error as string | undefined,
+  }
+}
+
+export const fetchProfileUuidViaPublicKey = async (publicKey: string) => {
+  const response = await fetch(url(`/${publicKey}`, { onlyUuid: 'true' }), {
+    method: 'GET',
+  })
+  const body = await response.json().catch(() => ({ error: 'Unknown error' }))
+  return {
+    response,
+    body: body as FetchProfileUuidOnlyResponse,
     error: body.error as string | undefined,
   }
 }

@@ -2,18 +2,25 @@ import {
   FetchQueryOptions,
   QueryClient,
   queryOptions,
-  skipToken,
 } from '@tanstack/react-query'
+import uniq from 'lodash.uniq'
 
 import {
   AmountWithTimestamp,
   ContractVersion,
   ContractVersionInfo,
+  DaoDropdownInfo,
   DaoInfo,
+  DaoPageMode,
   DaoParentInfo,
   DaoSource,
+  DaoWithDropdownVetoableProposalList,
+  DaoWithVetoableProposals,
   Feature,
+  IndexerDaoWithVetoableProposals,
   InfoResponse,
+  LazyDaoCardProps,
+  StatefulProposalLineProps,
 } from '@dao-dao/types'
 import {
   ProposalModuleWithInfo,
@@ -25,10 +32,16 @@ import {
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   DAO_CORE_CONTRACT_NAMES,
+  INACTIVE_DAO_NAMES,
   PerformanceContext,
+  VETOABLE_DAOS_ITEM_KEY_PREFIX,
+  getChainGovernanceDaoDescription,
   getCosmWasmClientForChainId,
   getDaoInfoForChainId,
+  getDaoProposalPath,
+  getDisplayNameForChainId,
   getFallbackImage,
+  getImageUrlForChainId,
   getSupportedChainConfig,
   indexToProposalModulePrefix,
   isConfiguredChainName,
@@ -869,6 +882,373 @@ export const fetchProposalModules = async (
   return proposalModules
 }
 
+/**
+ * Fetch lazy DAO card props.
+ */
+export const fetchLazyDaoCardProps = async (
+  queryClient: QueryClient,
+  { chainId, coreAddress }: DaoSource
+): Promise<LazyDaoCardProps> => {
+  // Native chain x/gov module.
+  if (isConfiguredChainName(chainId, coreAddress)) {
+    return {
+      info: {
+        chainId,
+        coreAddress,
+        coreVersion: ContractVersion.Gov,
+        name: getDisplayNameForChainId(chainId),
+        description: getChainGovernanceDaoDescription(chainId),
+        imageUrl: getImageUrlForChainId(chainId),
+      },
+    }
+  }
+
+  // DAO.
+  const [
+    {
+      info: { version },
+    },
+    config,
+  ] = await Promise.all([
+    queryClient.fetchQuery(
+      contractQueries.info(queryClient, {
+        chainId,
+        address: coreAddress,
+      })
+    ),
+    queryClient.fetchQuery(
+      daoDaoCoreQueries.config(queryClient, {
+        chainId,
+        contractAddress: coreAddress,
+      })
+    ),
+  ])
+
+  const coreVersion = parseContractVersion(version)
+  if (!coreVersion) {
+    throw new Error('Failed to parse core version.')
+  }
+
+  return {
+    info: {
+      chainId,
+      coreAddress,
+      coreVersion,
+      name: config.name,
+      description: config.description,
+      imageUrl: config.image_url || getFallbackImage(coreAddress),
+    },
+    isInactive: INACTIVE_DAO_NAMES.includes(config.name),
+  }
+}
+
+/**
+ * Fetch DAO dropdown info.
+ */
+export const fetchDaoDropdownInfo = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    coreAddress,
+    parents,
+    noSubDaos,
+  }: DaoSource & {
+    // Catch and prevent cycles.
+    parents?: string[]
+    noSubDaos?: boolean
+  }
+): Promise<DaoDropdownInfo> => {
+  const isGovModule = isConfiguredChainName(chainId, coreAddress)
+  // Native chain x/gov module.
+  if (isGovModule) {
+    const lazyInfo = await queryClient.fetchQuery(
+      daoQueries.lazyDaoCardProps(queryClient, {
+        chainId,
+        coreAddress,
+      })
+    )
+    const subDaos = await Promise.all(
+      (getSupportedChainConfig(chainId)?.subDaos || []).map((subDaoAddress) =>
+        queryClient.fetchQuery(
+          daoQueries.daoDropdownInfo(queryClient, {
+            chainId,
+            coreAddress: subDaoAddress,
+            // Add the current DAO to the parents to prevent cycles.
+            parents: [...(parents ?? []), coreAddress],
+            // Prevents cycles. If one of our children is also our
+            // ancestor, don't let it load any children, but still load it
+            // so we can see the cycle exists.
+            noSubDaos: !!parents?.includes(subDaoAddress),
+          })
+        )
+      )
+    )
+
+    return {
+      chainId,
+      coreAddress,
+      imageUrl: lazyInfo.info.imageUrl,
+      name: lazyInfo.info.name,
+      subDaos,
+    }
+  }
+
+  // DAOs.
+  const [version, config] = await Promise.all([
+    queryClient.fetchQuery(
+      contractQueries.version(queryClient, {
+        chainId,
+        address: coreAddress,
+      })
+    ),
+    queryClient.fetchQuery(
+      daoDaoCoreQueries.config(queryClient, {
+        chainId,
+        contractAddress: coreAddress,
+      })
+    ),
+  ])
+
+  // Don't load SubDAOs if we shouldn't to prevent cycles.
+  const subDaosList =
+    !noSubDaos && isFeatureSupportedByVersion(Feature.SubDaos, version)
+      ? await queryClient.fetchQuery(
+          daoQueries.listAllSubDaos(queryClient, {
+            chainId,
+            address: coreAddress,
+          })
+        )
+      : []
+
+  const subDaos = await Promise.all(
+    subDaosList.map(({ chainId, addr: subDaoAddress }) =>
+      queryClient.fetchQuery(
+        daoQueries.daoDropdownInfo(queryClient, {
+          chainId,
+          coreAddress: subDaoAddress,
+          // Add the current DAO to the parents to prevent cycles.
+          parents: [...(parents ?? []), coreAddress],
+          // Prevents cycles. If one of our children is also our
+          // ancestor, don't let it load any children, but still load it
+          // so we can see the cycle exists.
+          noSubDaos: !!parents?.includes(subDaoAddress),
+        })
+      )
+    )
+  )
+
+  return {
+    chainId,
+    coreAddress,
+    imageUrl: config.image_url || getFallbackImage(coreAddress),
+    name: config.name,
+    subDaos,
+  }
+}
+
+/**
+ * Fetch DAOs this DAO has enabled vetoable proposal listing for.
+ */
+export const fetchVetoableDaos = async (
+  queryClient: QueryClient,
+  { chainId, coreAddress }: DaoSource
+): Promise<DaoSource[]> => {
+  const daos = await queryClient.fetchQuery(
+    daoDaoCoreQueries.listAllItems(queryClient, {
+      chainId,
+      contractAddress: coreAddress,
+      args: {
+        prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+      },
+    })
+  )
+
+  return daos.map(([key]) => {
+    const [chainId, coreAddress] = key.split(':')
+    return { chainId, coreAddress }
+  })
+}
+
+/**
+ * Fetch proposals which this DAO can currently veto in other DAOs.
+ */
+export const fetchDaosWithVetoableProposals = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    coreAddress,
+    includeAll = false,
+  }: DaoSource & {
+    /**
+     * Include even DAOs not added to the vetoable DAOs list. By default, this
+     * will filter out DAOs not explicitly registered in the list.
+     */
+    includeAll?: boolean
+  }
+): Promise<DaoWithVetoableProposals[]> => {
+  const accounts = await queryClient.fetchQuery(
+    accountQueries.list(queryClient, {
+      chainId,
+      address: coreAddress,
+    })
+  )
+
+  // Load DAOs this DAO has enabled vetoable proposal listing for.
+  const vetoableDaos =
+    !includeAll &&
+    (await queryClient.fetchQuery(
+      contractQueries.isDao(queryClient, {
+        chainId,
+        address: coreAddress,
+      })
+    ))
+      ? await queryClient
+          .fetchQuery(
+            daoQueries.vetoableDaos(queryClient, {
+              chainId,
+              coreAddress,
+            })
+          )
+          .catch(() => [])
+      : []
+
+  const daoVetoableProposalsPerChain = (
+    await Promise.all(
+      accounts.map(({ chainId, address }) =>
+        queryClient.fetchQuery(
+          indexerQueries.queryAccount<IndexerDaoWithVetoableProposals[] | null>(
+            queryClient,
+            {
+              chainId,
+              address,
+              formula: 'veto/vetoableProposals',
+              noFallback: true,
+            }
+          )
+        )
+      )
+    )
+  )
+    .flatMap((data, index) =>
+      (data || []).map((d) => ({
+        chainId: accounts[index].chainId,
+        ...d,
+      }))
+    )
+    .filter(
+      ({ chainId, dao }) =>
+        includeAll ||
+        vetoableDaos.some(
+          (vetoable) =>
+            vetoable.chainId === chainId && vetoable.coreAddress === dao
+        )
+    )
+
+  const uniqueChainsAndDaos = uniq(
+    daoVetoableProposalsPerChain.map(({ chainId, dao }) => `${chainId}:${dao}`)
+  )
+
+  const daoConfigs = await Promise.all(
+    uniqueChainsAndDaos.map((chainAndDao) => {
+      const [chainId, coreAddress] = chainAndDao.split(':')
+      return queryClient
+        .fetchQuery(
+          daoDaoCoreQueries.config(queryClient, {
+            chainId,
+            contractAddress: coreAddress,
+          })
+        )
+        .catch(() => null)
+    })
+  )
+
+  return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
+    const config = daoConfigs[index]
+
+    return config
+      ? {
+          chainId: chainAndDao.split(':')[0],
+          dao: chainAndDao.split(':')[1],
+          name: config.name,
+          proposalsWithModule: daoVetoableProposalsPerChain.find(
+            (vetoable) => `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
+          )!.proposalsWithModule,
+        }
+      : []
+  })
+}
+
+/**
+ * Fetch proposals which this DAO can currently veto, grouped by DAO with
+ * dropdown info.
+ */
+export const fetchDaosWithDropdownVetoableProposalList = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    coreAddress,
+    daoPageMode,
+  }: DaoSource & {
+    daoPageMode: DaoPageMode
+  }
+): Promise<
+  DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>[]
+> => {
+  const daosWithVetoableProposals = await queryClient.fetchQuery(
+    daoQueries.daosWithVetoableProposals(queryClient, {
+      chainId,
+      coreAddress,
+    })
+  )
+
+  const daoDropdownInfos = await Promise.all(
+    daosWithVetoableProposals.map(({ chainId, dao }) =>
+      queryClient
+        .fetchQuery(
+          daoQueries.daoDropdownInfo(queryClient, {
+            chainId,
+            coreAddress: dao,
+          })
+        )
+        .catch(() => null)
+    )
+  )
+
+  return daosWithVetoableProposals.flatMap(
+    ({
+      chainId,
+      dao,
+      proposalsWithModule,
+    }): DaoWithDropdownVetoableProposalList<StatefulProposalLineProps> | [] => {
+      const dropdownInfo = daoDropdownInfos.find(
+        (info) => info && info.chainId === chainId && info.coreAddress === dao
+      )
+      if (!dropdownInfo) {
+        return []
+      }
+
+      return {
+        dao: dropdownInfo,
+        proposals: proposalsWithModule.flatMap(
+          ({ proposalModule: { prefix }, proposals }) =>
+            proposals.map(
+              ({ id }): StatefulProposalLineProps => ({
+                chainId,
+                coreAddress: dao,
+                proposalId: `${prefix}${id}`,
+                proposalViewUrl: getDaoProposalPath(
+                  daoPageMode,
+                  dao,
+                  `${prefix}${id}`
+                ),
+              })
+            )
+        ),
+      }
+    }
+  )
+}
+
 export const daoQueries = {
   /**
    * Fetch DAO info.
@@ -878,27 +1258,22 @@ export const daoQueries = {
     /**
      * If undefined, query will be disabled.
      */
-    options?: Parameters<typeof fetchDaoInfo>[1]
+    options: Parameters<typeof fetchDaoInfo>[1]
   ) =>
     queryOptions({
       queryKey: ['dao', 'info', options],
-      queryFn: options ? () => fetchDaoInfo(queryClient, options) : skipToken,
+      queryFn: () => fetchDaoInfo(queryClient, options),
     }),
   /**
    * Fetch DAO parent info.
    */
   parentInfo: (
     queryClient: QueryClient,
-    /**
-     * If undefined, query will be disabled.
-     */
-    options?: Parameters<typeof fetchDaoParentInfo>[1]
+    options: Parameters<typeof fetchDaoParentInfo>[1]
   ) =>
     queryOptions({
       queryKey: ['dao', 'parentInfo', options],
-      queryFn: options
-        ? () => fetchDaoParentInfo(queryClient, options)
-        : skipToken,
+      queryFn: () => fetchDaoParentInfo(queryClient, options),
     }),
   /**
    * Fetch DAO info for all of a DAO's SubDAOs.
@@ -947,9 +1322,7 @@ export const daoQueries = {
     options: Parameters<typeof fetchChainVotingPower>[1]
   ): FetchQueryOptions<VotingPowerAtHeightResponse> => ({
     queryKey: ['dao', 'chainVotingPower', options],
-    queryFn: options
-      ? () => fetchChainVotingPower(queryClient, options)
-      : skipToken,
+    queryFn: () => fetchChainVotingPower(queryClient, options),
   }),
   /**
    * Fetch chain DAO total power-shaped response.
@@ -1056,5 +1429,57 @@ export const daoQueries = {
   ) => ({
     queryKey: ['dao', 'proposalModules', options],
     queryFn: () => fetchProposalModules(queryClient, options),
+  }),
+  /**
+   * Fetch lazy DAO card props.
+   */
+  lazyDaoCardProps: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchLazyDaoCardProps>[1]
+  ) => ({
+    queryKey: ['dao', 'lazyDaoCardProps', options],
+    queryFn: () => fetchLazyDaoCardProps(queryClient, options),
+  }),
+  /**
+   * Fetch DAO dropdown info.
+   */
+  daoDropdownInfo: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaoDropdownInfo>[1]
+  ) => ({
+    queryKey: ['dao', 'daoDropdownInfo', options],
+    queryFn: () => fetchDaoDropdownInfo(queryClient, options),
+  }),
+  /**
+   * Fetch DAOs this DAO has enabled vetoable proposal listing for.
+   */
+  vetoableDaos: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchVetoableDaos>[1]
+  ) => ({
+    queryKey: ['dao', 'vetoableDaos', options],
+    queryFn: () => fetchVetoableDaos(queryClient, options),
+  }),
+  /**
+   * Fetch DAOs with vetoable proposals.
+   */
+  daosWithVetoableProposals: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaosWithVetoableProposals>[1]
+  ) => ({
+    queryKey: ['dao', 'daosWithVetoableProposals', options],
+    queryFn: () => fetchDaosWithVetoableProposals(queryClient, options),
+  }),
+  /**
+   * Fetch proposals which this DAO can currently veto, grouped by DAO with
+   * dropdown info.
+   */
+  daosWithDropdownVetoableProposalList: (
+    queryClient: QueryClient,
+    options: Parameters<typeof fetchDaosWithDropdownVetoableProposalList>[1]
+  ) => ({
+    queryKey: ['dao', 'daosWithDropdownVetoableProposalList', options],
+    queryFn: () =>
+      fetchDaosWithDropdownVetoableProposalList(queryClient, options),
   }),
 }

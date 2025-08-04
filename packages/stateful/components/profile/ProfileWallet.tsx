@@ -1,19 +1,25 @@
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { constSelector, waitForAny } from 'recoil'
 
-import {
-  accountsSelector,
-  hiddenBalancesSelector,
-  walletTokenCardInfosSelector,
-} from '@dao-dao/state/recoil'
+import { accountQueries } from '@dao-dao/state/query'
+import { walletTokenCardInfosSelector } from '@dao-dao/state/recoil'
 import {
   ProfileWallet as StatelessProfileWallet,
   useCachedLoadingWithError,
   useInitializedActionForKey,
 } from '@dao-dao/stateless'
 import { ActionKey, StatefulProfileWalletProps } from '@dao-dao/types'
-import { getActionBuilderPrefillPath } from '@dao-dao/utils'
+import {
+  HIDDEN_BALANCE_PREFIX,
+  getActionBuilderPrefillPath,
+  makeCombineQueryResultsIntoLoadingDataWithError,
+} from '@dao-dao/utils'
 
-import { useProfile } from '../../hooks'
+import {
+  useKvpkClient,
+  useProfile,
+  useQueryLoadingDataWithError,
+} from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
 import { IconButtonLink } from '../IconButtonLink'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
@@ -25,25 +31,31 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
   // Read-only if address is defined.
   const readOnly = !!address
 
-  const { chains, uniquePublicKeys } = useProfile({
+  const queryClient = useQueryClient()
+  const { profile, chains } = useProfile({
     address,
   })
+  const { client: hiddenBalancesKvpkClient } = useKvpkClient({
+    keyPrefix: HIDDEN_BALANCE_PREFIX,
+  })
 
-  const accounts = useCachedLoadingWithError(
-    chains.loading
-      ? undefined
-      : chains.data.length > 0
-        ? waitForAny(
-            chains.data.map(({ chainId, address }) =>
-              accountsSelector({
-                chainId,
-                address,
-              })
-            )
-          )
-        : constSelector([]),
-    (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
-  )
+  const accounts = useQueries({
+    queries:
+      chains.loading || chains.data.length === 0
+        ? []
+        : chains.data.map(({ chainId, address }) =>
+            accountQueries.list(queryClient, {
+              chainId,
+              address,
+            })
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      loadIfNone: chains.loading,
+      firstLoad: 'one',
+      errorIf: 'all',
+      transform: (data) => data.flat(),
+    }),
+  })
 
   const tokens = useCachedLoadingWithError(
     chains.loading
@@ -61,17 +73,11 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
     (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
   )
 
-  const hiddenTokens = useCachedLoadingWithError(
-    uniquePublicKeys.loading
+  const hiddenTokens = useQueryLoadingDataWithError(
+    profile.loading
       ? undefined
-      : uniquePublicKeys.data.length > 0
-        ? waitForAny(
-            uniquePublicKeys.data.map(({ publicKey }) =>
-              hiddenBalancesSelector(publicKey)
-            )
-          )
-        : constSelector([]),
-    (chainLoadables) => chainLoadables.flatMap((l) => l.valueMaybe() || [])
+      : hiddenBalancesKvpkClient.listQuery({ uuid: profile.data.uuid }),
+    (data) => data.map(({ key }) => key)
   )
 
   const configureRebalancerAction = useInitializedActionForKey(

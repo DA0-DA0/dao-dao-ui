@@ -8,7 +8,6 @@ import {
   ActionBase,
   ThumbDownEmoji,
   useActionOptions,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
@@ -32,7 +31,6 @@ import {
   ProposalLine,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { daosWithVetoableProposalsSelector } from '../../../../recoil'
 import {
   VetoProposalComponent as StatelessVetoProposalComponent,
   VetoProposalData,
@@ -45,6 +43,7 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     address,
   } = useActionOptions()
   const { watch, setValue } = useFormContext<VetoProposalData>()
+  const queryClient = useQueryClient()
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const coreAddress = watch(
@@ -54,8 +53,8 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     (props.fieldNamePrefix + 'proposalId') as 'proposalId'
   )
 
-  const daoVetoableProposals = useCachedLoadingWithError(
-    daosWithVetoableProposalsSelector({
+  const daoVetoableProposals = useQueryLoadingDataWithError(
+    daoQueries.daosWithVetoableProposals(queryClient, {
       chainId: daoChainId,
       coreAddress: address,
       // Include even those not registered in the DAO's list.
@@ -92,17 +91,13 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     setValue,
   ])
 
-  const queryClient = useQueryClient()
   const selectedDaoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
-      queryClient,
-      chainId && coreAddress
-        ? {
-            chainId,
-            coreAddress,
-          }
-        : undefined
-    )
+    chainId && coreAddress
+      ? daoQueries.info(queryClient, {
+          chainId,
+          coreAddress,
+        })
+      : undefined
   )
 
   // Select first proposal once loaded if nothing selected.
