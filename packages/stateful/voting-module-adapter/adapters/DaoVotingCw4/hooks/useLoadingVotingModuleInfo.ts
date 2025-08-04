@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { cw4GroupExtraQueries, daoVotingCw4Queries } from '@dao-dao/state'
@@ -21,10 +20,9 @@ export const useLoadingVotingModuleInfo = ({
   fetchMembers,
 }: UseVotingModuleInfoOptions = {}): LoadingDataWithError<UseVotingModuleInfoReturn> => {
   const votingModule = useVotingModule()
-  const queryClient = useQueryClient()
 
   const cw4GroupAddress = useQueryLoadingDataWithError(
-    daoVotingCw4Queries.groupContract(queryClient, {
+    daoVotingCw4Queries.groupContract({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
     })
@@ -34,7 +32,7 @@ export const useLoadingVotingModuleInfo = ({
     fetchMembers
       ? cw4GroupAddress.loading || cw4GroupAddress.errored
         ? undefined
-        : cw4GroupExtraQueries.listAllMembers(queryClient, {
+        : cw4GroupExtraQueries.listAllMembers({
             chainId: votingModule.chainId,
             address: cw4GroupAddress.data,
           })

@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -112,17 +108,18 @@ export const neutronVotingRegistryQueryKeys = {
     ] as const,
 }
 export const neutronVotingRegistryQueries = {
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: NeutronVotingRegistryDaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronVotingRegistryDaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: neutronVotingRegistryQueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'item',
@@ -143,21 +140,18 @@ export const neutronVotingRegistryQueries = {
       },
       ...options,
     }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronVotingRegistryConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronVotingRegistryConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: neutronVotingRegistryQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'item',

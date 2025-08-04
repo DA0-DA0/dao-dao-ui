@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { daoQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -27,11 +25,10 @@ import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { TransferSubDaoComponent, TransferSubDaoData } from './Component'
 
 const Component: ActionComponent<undefined, TransferSubDaoData> = (props) => {
-  const queryClient = useQueryClient()
   const options = useActionOptions()
 
   const subDaos = useQueryLoadingDataWithError(
-    daoQueries.subDaoInfos(queryClient, {
+    daoQueries.subDaoInfos({
       chainId: options.chain.chainId,
       coreAddress: options.address,
     })

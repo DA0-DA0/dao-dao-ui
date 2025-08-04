@@ -252,7 +252,7 @@ export const useWallet = ({
     })
     // Then native delegation info.
     queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+      queryKey: chainQueries.nativeDelegationInfo({
         chainId,
         ...(address && { address }),
       } as any).queryKey,

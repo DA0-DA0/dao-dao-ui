@@ -21,7 +21,7 @@ export const listAllMembers = async (
   try {
     const indexerMembers: ListMembersResponse['members'] =
       await queryClient.fetchQuery(
-        indexerQueries.queryContract(queryClient, {
+        indexerQueries.queryContract({
           chainId,
           contractAddress: address,
           formula: 'cw4Group/listMembers',
@@ -42,7 +42,7 @@ export const listAllMembers = async (
   while (true) {
     const response = (
       await queryClient.fetchQuery(
-        cw4GroupQueries.listMembers(queryClient, {
+        cw4GroupQueries.listMembers({
           chainId,
           contractAddress: address,
           args: {
@@ -74,12 +74,9 @@ export const cw4GroupExtraQueries = {
   /**
    * List all members.
    */
-  listAllMembers: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listAllMembers>[1]
-  ) =>
+  listAllMembers: (options: Parameters<typeof listAllMembers>[1]) =>
     queryOptions({
       queryKey: ['cw4GroupExtra', 'listAllMembers', options],
-      queryFn: () => listAllMembers(queryClient, options),
+      queryFn: (ctx) => listAllMembers(ctx.client, options),
     }),
 }

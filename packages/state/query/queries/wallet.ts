@@ -29,7 +29,7 @@ export const fetchLazyWalletDaos = async (
     config: DaoDaoCoreConfig
     proposalCount: number
   }[] = await queryClient.fetchQuery(
-    indexerQueries.queryAccount(queryClient, {
+    indexerQueries.queryAccount({
       chainId,
       address,
       formula: 'daos/memberOf',
@@ -62,12 +62,9 @@ export const walletQueries = {
   /**
    * Fetch lazy card info for DAOs this wallet is a member of.
    */
-  lazyWalletDaos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchLazyWalletDaos>[1]
-  ) =>
+  lazyWalletDaos: (options: Parameters<typeof fetchLazyWalletDaos>[1]) =>
     queryOptions({
       queryKey: ['wallet', 'lazyWalletDaos', options],
-      queryFn: () => fetchLazyWalletDaos(queryClient, options),
+      queryFn: (ctx) => fetchLazyWalletDaos(ctx.client, options),
     }),
 }

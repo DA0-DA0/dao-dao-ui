@@ -156,7 +156,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   // This is the entity we will use for the app.
   const loadingAppEntity = useQueryLoadingDataWithError(
     appAddress
-      ? entityQueries.info(queryClient, {
+      ? entityQueries.info({
           chainId: appChainId,
           address: appAddress,
         })

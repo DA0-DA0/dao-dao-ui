@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Config,
@@ -312,19 +308,18 @@ export const cw3FlexMultisigQueries = {
       ...options,
     }),
   listAllVoters: <TData = VoterListResponse>({
-    queryClient,
     chainId,
     contractAddress,
     options,
   }: Cw3FlexMultisigListAllVotersQuery<TData>) =>
     queryOptions<VoterListResponse, Error, TData>({
       queryKey: cw3FlexMultisigQueryKeys.listVoters(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         const voters: VoterListResponse['voters'] = []
 
         const limit = 30
         while (true) {
-          const page = await queryClient.fetchQuery(
+          const page = await ctx.client.fetchQuery(
             cw3FlexMultisigQueries.listVoters({
               chainId,
               contractAddress,
@@ -390,9 +385,7 @@ export interface Cw3FlexMultisigListVotersQuery<TData>
   }
 }
 export interface Cw3FlexMultisigListAllVotersQuery<TData>
-  extends Cw3FlexMultisigReactQuery<VoterListResponse, TData> {
-  queryClient: QueryClient
-}
+  extends Cw3FlexMultisigReactQuery<VoterListResponse, TData> {}
 export interface Cw3FlexMultisigVoterQuery<TData>
   extends Cw3FlexMultisigReactQuery<VoterResponse, TData> {
   args: {

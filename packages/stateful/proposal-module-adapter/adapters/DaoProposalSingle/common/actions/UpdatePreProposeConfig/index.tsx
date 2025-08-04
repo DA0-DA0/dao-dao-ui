@@ -166,7 +166,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
       : undefined
 
     const config = await this.options.queryClient.fetchQuery(
-      daoPreProposeSingleQueries.config(this.options.queryClient, {
+      daoPreProposeSingleQueries.config({
         chainId: this.proposalModule.chainId,
         contractAddress: this.prePropose.address,
       })
@@ -176,7 +176,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
     // `voting_module_token` is only passed in on execution.
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
-          tokenQueries.info(this.options.queryClient, {
+          tokenQueries.info({
             chainId: this.proposalModule.chainId,
             type:
               'native' in config.deposit_info.denom
@@ -338,7 +338,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
       }) &&
       chainId === this.proposalModule.chainId &&
       (await this.options.queryClient.fetchQuery(
-        contractQueries.isContract(this.options.queryClient, {
+        contractQueries.isContract({
           chainId,
           address: decodedMessage.wasm.execute.contract_addr,
           nameOrNames: DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
@@ -367,7 +367,7 @@ export class DaoProposalSingleUpdatePreProposeConfigAction extends ActionBase<Up
             )
           : undefined
         : await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type:
                 'native' in configDepositInfo.denom.token.denom

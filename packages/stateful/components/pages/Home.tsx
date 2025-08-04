@@ -1,8 +1,4 @@
-import {
-  DehydratedState,
-  useInfiniteQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { DehydratedState, useInfiniteQuery } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -242,9 +238,8 @@ export const Home: NextPage<StatefulHomeProps> = ({
             ),
           }
 
-  const queryClient = useQueryClient()
   const freshStats = useQueryLoadingDataWithError(
-    miscQueries.homePageStats(queryClient, {
+    miscQueries.homePageStats({
       chainId,
     })
   )

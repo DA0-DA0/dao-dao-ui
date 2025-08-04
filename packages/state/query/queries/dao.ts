@@ -79,7 +79,7 @@ export const fetchDaoInfo = async (
         })
       )
       const accounts = await queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address: govModuleAddress,
         })
@@ -112,7 +112,7 @@ export const fetchDaoInfo = async (
         .time(
           'dump_state',
           queryClient.fetchQuery(
-            daoDaoCoreQueries.dumpState(queryClient, {
+            daoDaoCoreQueries.dumpState({
               chainId,
               contractAddress: coreAddress,
             })
@@ -137,7 +137,7 @@ export const fetchDaoInfo = async (
                   'parent_info',
                   queryClient
                     .fetchQuery(
-                      daoQueries.parentInfo(queryClient, {
+                      daoQueries.parentInfo({
                         chainId,
                         parentAddress: state.admin,
                         subDaoAddress: coreAddress,
@@ -152,7 +152,7 @@ export const fetchDaoInfo = async (
               : p.time(
                   'voting_module_info',
                   queryClient.fetchQuery(
-                    contractQueries.info(queryClient, {
+                    contractQueries.info({
                       chainId,
                       address: state.voting_module,
                     })
@@ -165,7 +165,7 @@ export const fetchDaoInfo = async (
                   'created_at',
                   queryClient
                     .fetchQuery(
-                      contractQueries.instantiationTime(queryClient, {
+                      contractQueries.instantiationTime({
                         chainId,
                         address: coreAddress,
                       })
@@ -178,7 +178,7 @@ export const fetchDaoInfo = async (
               : p.time(
                   'polytone_proxies',
                   queryClient.fetchQuery(
-                    polytoneQueries.proxies(queryClient, {
+                    polytoneQueries.proxies({
                       chainId,
                       address: coreAddress,
                     })
@@ -203,7 +203,7 @@ export const fetchDaoInfo = async (
               'active_threshold',
               queryClient
                 .fetchQuery(
-                  votingModuleQueries.activeThresold(queryClient, {
+                  votingModuleQueries.activeThresold({
                     chainId,
                     address: state.voting_module,
                   })
@@ -216,7 +216,7 @@ export const fetchDaoInfo = async (
       p.time(
         'proposal_modules',
         queryClient.fetchQuery(
-          daoQueries.proposalModules(queryClient, {
+          daoQueries.proposalModules({
             chainId,
             coreAddress,
           })
@@ -225,7 +225,7 @@ export const fetchDaoInfo = async (
       p.time(
         'items',
         queryClient.fetchQuery(
-          daoDaoCoreQueries.listAllItems(queryClient, {
+          daoDaoCoreQueries.listAllItems({
             chainId,
             contractAddress: coreAddress,
           })
@@ -234,7 +234,7 @@ export const fetchDaoInfo = async (
       p.time(
         'accounts',
         queryClient.fetchQuery(
-          accountQueries.list(queryClient, {
+          accountQueries.list({
             chainId,
             address: coreAddress,
           })
@@ -307,13 +307,13 @@ export const fetchDaoParentInfo = async (
   // If address is a DAO contract...
   let [isDao, isPolytoneProxy] = await Promise.all([
     queryClient.fetchQuery(
-      contractQueries.isDao(queryClient, {
+      contractQueries.isDao({
         chainId: parentChainId,
         address: parentDaoAddress,
       })
     ),
     queryClient.fetchQuery(
-      contractQueries.isPolytoneProxy(queryClient, {
+      contractQueries.isPolytoneProxy({
         chainId: parentChainId,
         address: parentDaoAddress,
       })
@@ -323,14 +323,14 @@ export const fetchDaoParentInfo = async (
   if (isPolytoneProxy) {
     const { chainId: remoteChainId, remoteAddress } =
       await queryClient.fetchQuery(
-        polytoneQueries.reverseLookupProxy(queryClient, {
+        polytoneQueries.reverseLookupProxy({
           chainId: parentChainId,
           address: parentDaoAddress,
         })
       )
 
     const remoteIsDao = await queryClient.fetchQuery(
-      contractQueries.isDao(queryClient, {
+      contractQueries.isDao({
         chainId: remoteChainId,
         address: remoteAddress,
       })
@@ -349,20 +349,20 @@ export const fetchDaoParentInfo = async (
       [
         queryClient
           .fetchQuery(
-            contractQueries.info(queryClient, {
+            contractQueries.info({
               chainId: parentChainId,
               address: parentDaoAddress,
             })
           )
           .then(({ info }) => parseContractVersion(info.version)),
         queryClient.fetchQuery(
-          daoDaoCoreQueries.admin(queryClient, {
+          daoDaoCoreQueries.admin({
             chainId: parentChainId,
             contractAddress: parentDaoAddress,
           })
         ),
         queryClient.fetchQuery(
-          daoDaoCoreQueries.config(queryClient, {
+          daoDaoCoreQueries.config({
             chainId: parentChainId,
             contractAddress: parentDaoAddress,
           })
@@ -376,7 +376,7 @@ export const fetchDaoParentInfo = async (
       isFeatureSupportedByVersion(Feature.SubDaos, parentVersion) &&
       (
         await queryClient.fetchQuery(
-          daoQueries.listAllSubDaos(queryClient, {
+          daoQueries.listAllSubDaos({
             chainId: parentChainId,
             address: parentDaoAddress,
           })
@@ -388,7 +388,7 @@ export const fetchDaoParentInfo = async (
       parentAdmin && parentAdmin !== parentDaoAddress
         ? await queryClient
             .fetchQuery(
-              daoQueries.parentInfo(queryClient, {
+              daoQueries.parentInfo({
                 chainId: parentChainId,
                 parentAddress: parentAdmin,
                 subDaoAddress: parentDaoAddress,
@@ -413,7 +413,7 @@ export const fetchDaoParentInfo = async (
   } else {
     // If address is the chain's x/gov module...
     const isGov = await queryClient.fetchQuery(
-      chainQueries.isAddressModule(queryClient, {
+      chainQueries.isAddressModule({
         chainId,
         address: parentAddress,
         moduleName: 'gov',
@@ -448,7 +448,7 @@ export const fetchSubDaoInfos = async (
   { chainId, coreAddress }: DaoSource
 ): Promise<DaoInfo[]> => {
   const subDaos = await queryClient.fetchQuery(
-    daoQueries.listAllSubDaos(queryClient, {
+    daoQueries.listAllSubDaos({
       chainId,
       address: coreAddress,
     })
@@ -456,9 +456,7 @@ export const fetchSubDaoInfos = async (
 
   return await Promise.all(
     subDaos.map(({ chainId, addr }) =>
-      queryClient.fetchQuery(
-        daoQueries.info(queryClient, { chainId, coreAddress: addr })
-      )
+      queryClient.fetchQuery(daoQueries.info({ chainId, coreAddress: addr }))
     )
   )
 }
@@ -472,9 +470,7 @@ export const fetchChainSubDaoInfos = (
 ): Promise<DaoInfo[]> =>
   Promise.all(
     (getSupportedChainConfig(chainId)?.subDaos || []).map((coreAddress) =>
-      queryClient.fetchQuery(
-        daoQueries.info(queryClient, { chainId, coreAddress })
-      )
+      queryClient.fetchQuery(daoQueries.info({ chainId, coreAddress }))
     )
   )
 
@@ -558,7 +554,7 @@ export const listAllSubDaos = async (
 ): Promise<SubDaoWithChainId[]> => {
   const accounts = onlyAdmin
     ? await queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address,
         })
@@ -569,7 +565,7 @@ export const listAllSubDaos = async (
 
   try {
     const indexerSubDaos = await queryClient.fetchQuery(
-      indexerQueries.queryContract<SubDao[]>(queryClient, {
+      indexerQueries.queryContract<SubDao[]>({
         chainId,
         contractAddress: address,
         formula: 'daoCore/listSubDaos',
@@ -620,13 +616,13 @@ export const listAllSubDaos = async (
 
         let [isDao, isPolytoneProxy] = await Promise.all([
           queryClient.fetchQuery(
-            contractQueries.isDao(queryClient, {
+            contractQueries.isDao({
               chainId: subDaoChainId,
               address: subDaoAddress,
             })
           ),
           queryClient.fetchQuery(
-            contractQueries.isPolytoneProxy(queryClient, {
+            contractQueries.isPolytoneProxy({
               chainId: subDaoChainId,
               address: subDaoAddress,
             })
@@ -638,14 +634,14 @@ export const listAllSubDaos = async (
           try {
             const { chainId: remoteChainId, remoteAddress } =
               await queryClient.fetchQuery(
-                polytoneQueries.reverseLookupProxy(queryClient, {
+                polytoneQueries.reverseLookupProxy({
                   chainId: subDaoChainId,
                   address: subDaoAddress,
                 })
               )
 
             const remoteIsDao = await queryClient.fetchQuery(
-              contractQueries.isDao(queryClient, {
+              contractQueries.isDao({
                 chainId: remoteChainId,
                 address: remoteAddress,
               })
@@ -665,7 +661,7 @@ export const listAllSubDaos = async (
           // Filter SubDAO by admin if specified.
           if (onlyAdmin) {
             const admin = await queryClient.fetchQuery(
-              daoDaoCoreQueries.admin(queryClient, {
+              daoDaoCoreQueries.admin({
                 chainId: subDaoChainId,
                 contractAddress: subDaoAddress,
               })
@@ -714,7 +710,7 @@ export const listWalletAdminOfDaos = async (
   }
 ): Promise<string[]> => {
   const walletAdminOfDaos = await queryClient.fetchQuery(
-    indexerQueries.queryAccount(queryClient, {
+    indexerQueries.queryAccount({
       chainId,
       address,
       formula: 'daos/adminOf',
@@ -746,7 +742,7 @@ export const listPotentialSubDaos = async (
         contractAddress: string
         info: ContractVersionInfo
       }[]
-    >(queryClient, {
+    >({
       chainId,
       contractAddress: address,
       formula: 'daoCore/potentialSubDaos',
@@ -778,7 +774,7 @@ export const fetchProposalModules = async (
   // Try indexer first.
   try {
     return await queryClient.fetchQuery(
-      indexerQueries.queryContract(queryClient, {
+      indexerQueries.queryContract({
         chainId,
         contractAddress: coreAddress,
         formula: 'daoCore/activeProposalModules',
@@ -811,7 +807,7 @@ export const fetchProposalModules = async (
         .slice(proposalModules.length > 0 ? 1 : 0)
         .map(async (address, index) => {
           const { info } = await queryClient.fetchQuery(
-            contractQueries.info(queryClient, {
+            contractQueries.info({
               chainId,
               address,
             })
@@ -842,7 +838,7 @@ export const fetchProposalModules = async (
         })
       ).map(async (data) => {
         const { info } = await queryClient.fetchQuery(
-          contractQueries.info(queryClient, {
+          contractQueries.info({
             chainId,
             address: data.address,
           })
@@ -856,7 +852,7 @@ export const fetchProposalModules = async (
     )
 
   const { info } = await queryClient.fetchQuery(
-    contractQueries.info(queryClient, {
+    contractQueries.info({
       chainId,
       address: coreAddress,
     })
@@ -907,13 +903,13 @@ export const fetchLazyDaoCardProps = async (
     config,
   ] = await Promise.all([
     queryClient.fetchQuery(
-      contractQueries.info(queryClient, {
+      contractQueries.info({
         chainId,
         address: coreAddress,
       })
     ),
     queryClient.fetchQuery(
-      daoDaoCoreQueries.config(queryClient, {
+      daoDaoCoreQueries.config({
         chainId,
         contractAddress: coreAddress,
       })
@@ -958,7 +954,7 @@ export const fetchDaoDropdownInfo = async (
   // Native chain x/gov module.
   if (isGovModule) {
     const lazyInfo = await queryClient.fetchQuery(
-      daoQueries.lazyDaoCardProps(queryClient, {
+      daoQueries.lazyDaoCardProps({
         chainId,
         coreAddress,
       })
@@ -966,7 +962,7 @@ export const fetchDaoDropdownInfo = async (
     const subDaos = await Promise.all(
       (getSupportedChainConfig(chainId)?.subDaos || []).map((subDaoAddress) =>
         queryClient.fetchQuery(
-          daoQueries.daoDropdownInfo(queryClient, {
+          daoQueries.daoDropdownInfo({
             chainId,
             coreAddress: subDaoAddress,
             // Add the current DAO to the parents to prevent cycles.
@@ -992,13 +988,13 @@ export const fetchDaoDropdownInfo = async (
   // DAOs.
   const [version, config] = await Promise.all([
     queryClient.fetchQuery(
-      contractQueries.version(queryClient, {
+      contractQueries.version({
         chainId,
         address: coreAddress,
       })
     ),
     queryClient.fetchQuery(
-      daoDaoCoreQueries.config(queryClient, {
+      daoDaoCoreQueries.config({
         chainId,
         contractAddress: coreAddress,
       })
@@ -1009,7 +1005,7 @@ export const fetchDaoDropdownInfo = async (
   const subDaosList =
     !noSubDaos && isFeatureSupportedByVersion(Feature.SubDaos, version)
       ? await queryClient.fetchQuery(
-          daoQueries.listAllSubDaos(queryClient, {
+          daoQueries.listAllSubDaos({
             chainId,
             address: coreAddress,
           })
@@ -1019,7 +1015,7 @@ export const fetchDaoDropdownInfo = async (
   const subDaos = await Promise.all(
     subDaosList.map(({ chainId, addr: subDaoAddress }) =>
       queryClient.fetchQuery(
-        daoQueries.daoDropdownInfo(queryClient, {
+        daoQueries.daoDropdownInfo({
           chainId,
           coreAddress: subDaoAddress,
           // Add the current DAO to the parents to prevent cycles.
@@ -1050,7 +1046,7 @@ export const fetchVetoableDaos = async (
   { chainId, coreAddress }: DaoSource
 ): Promise<DaoSource[]> => {
   const daos = await queryClient.fetchQuery(
-    daoDaoCoreQueries.listAllItems(queryClient, {
+    daoDaoCoreQueries.listAllItems({
       chainId,
       contractAddress: coreAddress,
       args: {
@@ -1083,7 +1079,7 @@ export const fetchDaosWithVetoableProposals = async (
   }
 ): Promise<DaoWithVetoableProposals[]> => {
   const accounts = await queryClient.fetchQuery(
-    accountQueries.list(queryClient, {
+    accountQueries.list({
       chainId,
       address: coreAddress,
     })
@@ -1093,14 +1089,14 @@ export const fetchDaosWithVetoableProposals = async (
   const vetoableDaos =
     !includeAll &&
     (await queryClient.fetchQuery(
-      contractQueries.isDao(queryClient, {
+      contractQueries.isDao({
         chainId,
         address: coreAddress,
       })
     ))
       ? await queryClient
           .fetchQuery(
-            daoQueries.vetoableDaos(queryClient, {
+            daoQueries.vetoableDaos({
               chainId,
               coreAddress,
             })
@@ -1113,7 +1109,6 @@ export const fetchDaosWithVetoableProposals = async (
       accounts.map(({ chainId, address }) =>
         queryClient.fetchQuery(
           indexerQueries.queryAccount<IndexerDaoWithVetoableProposals[] | null>(
-            queryClient,
             {
               chainId,
               address,
@@ -1149,7 +1144,7 @@ export const fetchDaosWithVetoableProposals = async (
       const [chainId, coreAddress] = chainAndDao.split(':')
       return queryClient
         .fetchQuery(
-          daoDaoCoreQueries.config(queryClient, {
+          daoDaoCoreQueries.config({
             chainId,
             contractAddress: coreAddress,
           })
@@ -1191,7 +1186,7 @@ export const fetchDaosWithDropdownVetoableProposalList = async (
   DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>[]
 > => {
   const daosWithVetoableProposals = await queryClient.fetchQuery(
-    daoQueries.daosWithVetoableProposals(queryClient, {
+    daoQueries.daosWithVetoableProposals({
       chainId,
       coreAddress,
     })
@@ -1201,7 +1196,7 @@ export const fetchDaosWithDropdownVetoableProposalList = async (
     daosWithVetoableProposals.map(({ chainId, dao }) =>
       queryClient
         .fetchQuery(
-          daoQueries.daoDropdownInfo(queryClient, {
+          daoQueries.daoDropdownInfo({
             chainId,
             coreAddress: dao,
           })
@@ -1250,7 +1245,6 @@ export const daoQueries = {
    * Fetch DAO info.
    */
   info: (
-    queryClient: QueryClient,
     /**
      * If undefined, query will be disabled.
      */
@@ -1258,40 +1252,31 @@ export const daoQueries = {
   ) =>
     queryOptions({
       queryKey: ['dao', 'info', options],
-      queryFn: () => fetchDaoInfo(queryClient, options),
+      queryFn: (ctx) => fetchDaoInfo(ctx.client, options),
     }),
   /**
    * Fetch DAO parent info.
    */
-  parentInfo: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoParentInfo>[1]
-  ) =>
+  parentInfo: (options: Parameters<typeof fetchDaoParentInfo>[1]) =>
     queryOptions({
       queryKey: ['dao', 'parentInfo', options],
-      queryFn: () => fetchDaoParentInfo(queryClient, options),
+      queryFn: (ctx) => fetchDaoParentInfo(ctx.client, options),
     }),
   /**
    * Fetch DAO info for all of a DAO's SubDAOs.
    */
-  subDaoInfos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchSubDaoInfos>[1]
-  ) =>
+  subDaoInfos: (options: Parameters<typeof fetchSubDaoInfos>[1]) =>
     queryOptions({
       queryKey: ['dao', 'subDaoInfos', options],
-      queryFn: () => fetchSubDaoInfos(queryClient, options),
+      queryFn: (ctx) => fetchSubDaoInfos(ctx.client, options),
     }),
   /**
    * Fetch DAO info for all of a chain's SubDAOs.
    */
-  chainSubDaoInfos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchChainSubDaoInfos>[1]
-  ) =>
+  chainSubDaoInfos: (options: Parameters<typeof fetchChainSubDaoInfos>[1]) =>
     queryOptions({
       queryKey: ['dao', 'chainSubDaoInfos', options],
-      queryFn: () => fetchChainSubDaoInfos(queryClient, options),
+      queryFn: (ctx) => fetchChainSubDaoInfos(ctx.client, options),
     }),
   /**
    * Fetch featured DAOs.
@@ -1303,85 +1288,69 @@ export const daoQueries = {
   /**
    * Fetch a DAO's TVL.
    */
-  tvl: (queryClient: QueryClient, options: Parameters<typeof fetchDaoTvl>[1]) =>
+  tvl: (options: Parameters<typeof fetchDaoTvl>[1]) =>
     queryOptions<AmountWithTimestamp>({
       queryKey: ['dao', 'tvl', options],
-      queryFn: () => fetchDaoTvl(queryClient, options),
+      queryFn: (ctx) => fetchDaoTvl(ctx.client, options),
     }),
   /**
    * Fetch chain DAO voting power-shaped response.
    */
-  chainVotingPower: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchChainVotingPower>[1]
-  ) =>
+  chainVotingPower: (options: Parameters<typeof fetchChainVotingPower>[1]) =>
     queryOptions<VotingPowerAtHeightResponse>({
       queryKey: ['dao', 'chainVotingPower', options],
-      queryFn: () => fetchChainVotingPower(queryClient, options),
+      queryFn: (ctx) => fetchChainVotingPower(ctx.client, options),
     }),
   /**
    * Fetch chain DAO total power-shaped response.
    */
-  chainTotalPower: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchChainTotalPower>[1]
-  ) =>
+  chainTotalPower: (options: Parameters<typeof fetchChainTotalPower>[1]) =>
     queryOptions<TotalPowerAtHeightResponse>({
       queryKey: ['dao', 'chainTotalPower', options],
-      queryFn: () => fetchChainTotalPower(queryClient, options),
+      queryFn: (ctx) => fetchChainTotalPower(ctx.client, options),
     }),
   /**
    * List all SubDAOs for a DAO.
    */
-  listAllSubDaos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listAllSubDaos>[1]
-  ) =>
+  listAllSubDaos: (options: Parameters<typeof listAllSubDaos>[1]) =>
     queryOptions<SubDaoWithChainId[]>({
       queryKey: ['dao', 'listAllSubDaos', options],
-      queryFn: () => listAllSubDaos(queryClient, options),
+      queryFn: (ctx) => listAllSubDaos(ctx.client, options),
     }),
   /**
    * List all DAOs a wallet is the admin of.
    */
   listWalletAdminOfDaos: (
-    queryClient: QueryClient,
     options: Parameters<typeof listWalletAdminOfDaos>[1]
   ) =>
     queryOptions<string[]>({
       queryKey: ['dao', 'listWalletAdminOfDaos', options],
-      queryFn: () => listWalletAdminOfDaos(queryClient, options),
+      queryFn: (ctx) => listWalletAdminOfDaos(ctx.client, options),
     }),
   /**
    * List all potential SubDAOs of the DAO.
    */
-  listPotentialSubDaos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listPotentialSubDaos>[1]
-  ) =>
+  listPotentialSubDaos: (options: Parameters<typeof listPotentialSubDaos>[1]) =>
     queryOptions<string[]>({
       queryKey: ['dao', 'listPotentialSubDaos', options],
-      queryFn: () => listPotentialSubDaos(queryClient, options),
+      queryFn: (ctx) => listPotentialSubDaos(ctx.client, options),
     }),
   /**
    * List all potential approval DAOs.
    */
-  listPotentialApprovalDaos: (
-    queryClient: QueryClient,
-    {
-      chainId,
-      address,
-    }: {
-      chainId: string
-      address: string
-    }
-  ) =>
+  listPotentialApprovalDaos: ({
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }) =>
     indexerQueries.queryContract<
       {
         dao: string
         preProposeAddress: string
       }[]
-    >(queryClient, {
+    >({
       chainId,
       contractAddress: address,
       formula: 'daoCore/approvalDaos',
@@ -1398,22 +1367,13 @@ export const daoQueries = {
   /**
    * List all DAO members.
    */
-  listMembers: (
-    queryClient: QueryClient,
-    {
-      chainId,
-      address,
-    }: {
-      chainId: string
-      address: string
-    }
-  ) =>
+  listMembers: ({ chainId, address }: { chainId: string; address: string }) =>
     indexerQueries.queryContract<
       {
         address: string
         votingPowerPercent: number
       }[]
-    >(queryClient, {
+    >({
       chainId,
       contractAddress: address,
       formula: 'daoCore/listMembers',
@@ -1422,63 +1382,55 @@ export const daoQueries = {
   /**
    * Load proposal modules with info.
    */
-  proposalModules: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchProposalModules>[1]
-  ) => ({
-    queryKey: ['dao', 'proposalModules', options],
-    queryFn: () => fetchProposalModules(queryClient, options),
-  }),
+  proposalModules: (options: Parameters<typeof fetchProposalModules>[1]) =>
+    queryOptions({
+      queryKey: ['dao', 'proposalModules', options],
+      queryFn: (ctx) => fetchProposalModules(ctx.client, options),
+    }),
   /**
    * Fetch lazy DAO card props.
    */
-  lazyDaoCardProps: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchLazyDaoCardProps>[1]
-  ) => ({
-    queryKey: ['dao', 'lazyDaoCardProps', options],
-    queryFn: () => fetchLazyDaoCardProps(queryClient, options),
-  }),
+  lazyDaoCardProps: (options: Parameters<typeof fetchLazyDaoCardProps>[1]) =>
+    queryOptions({
+      queryKey: ['dao', 'lazyDaoCardProps', options],
+      queryFn: (ctx) => fetchLazyDaoCardProps(ctx.client, options),
+    }),
   /**
    * Fetch DAO dropdown info.
    */
-  daoDropdownInfo: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoDropdownInfo>[1]
-  ) => ({
-    queryKey: ['dao', 'daoDropdownInfo', options],
-    queryFn: () => fetchDaoDropdownInfo(queryClient, options),
-  }),
+  daoDropdownInfo: (options: Parameters<typeof fetchDaoDropdownInfo>[1]) =>
+    queryOptions({
+      queryKey: ['dao', 'daoDropdownInfo', options],
+      queryFn: (ctx) => fetchDaoDropdownInfo(ctx.client, options),
+    }),
   /**
    * Fetch DAOs this DAO has enabled vetoable proposal listing for.
    */
-  vetoableDaos: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchVetoableDaos>[1]
-  ) => ({
-    queryKey: ['dao', 'vetoableDaos', options],
-    queryFn: () => fetchVetoableDaos(queryClient, options),
-  }),
+  vetoableDaos: (options: Parameters<typeof fetchVetoableDaos>[1]) =>
+    queryOptions({
+      queryKey: ['dao', 'vetoableDaos', options],
+      queryFn: (ctx) => fetchVetoableDaos(ctx.client, options),
+    }),
   /**
    * Fetch DAOs with vetoable proposals.
    */
   daosWithVetoableProposals: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchDaosWithVetoableProposals>[1]
-  ) => ({
-    queryKey: ['dao', 'daosWithVetoableProposals', options],
-    queryFn: () => fetchDaosWithVetoableProposals(queryClient, options),
-  }),
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'daosWithVetoableProposals', options],
+      queryFn: (ctx) => fetchDaosWithVetoableProposals(ctx.client, options),
+    }),
   /**
    * Fetch proposals which this DAO can currently veto, grouped by DAO with
    * dropdown info.
    */
   daosWithDropdownVetoableProposalList: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchDaosWithDropdownVetoableProposalList>[1]
-  ) => ({
-    queryKey: ['dao', 'daosWithDropdownVetoableProposalList', options],
-    queryFn: () =>
-      fetchDaosWithDropdownVetoableProposalList(queryClient, options),
-  }),
+  ) =>
+    queryOptions({
+      queryKey: ['dao', 'daosWithDropdownVetoableProposalList', options],
+      queryFn: (ctx) =>
+        fetchDaosWithDropdownVetoableProposalList(ctx.client, options),
+    }),
 }

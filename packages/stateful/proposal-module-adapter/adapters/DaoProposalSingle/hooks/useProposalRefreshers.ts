@@ -41,7 +41,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     if (isApprovalProposal && proposalModule.prePropose) {
       queryClient
         .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId: proposalModule.chainId,
             contractAddress: proposalModule.prePropose.address,
             formula: 'daoPreProposeApprovalSingle/proposal',
@@ -60,7 +60,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
 
       queryClient
         .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId: proposalModule.chainId,
             contractAddress: proposalModule.prePropose.address,
             formula:
@@ -72,7 +72,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
         )
         .then(() =>
           queryClient.refetchQueries(
-            daoPreProposeApprovalSingleQueries.queryExtension(queryClient, {
+            daoPreProposeApprovalSingleQueries.queryExtension({
               chainId: proposalModule.chainId,
               contractAddress: proposalModule.prePropose!.address,
               args: {
@@ -88,7 +88,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     } else {
       queryClient
         .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId: proposalModule.chainId,
             contractAddress: proposalModule.address,
             formula: 'daoProposalSingle/vote',
@@ -108,7 +108,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
 
       queryClient
         .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId: proposalModule.chainId,
             contractAddress: proposalModule.address,
             formula: 'daoProposalSingle/proposal',

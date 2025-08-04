@@ -58,7 +58,7 @@ export const useAutoRefreshData = () => {
         .then(() =>
           queryClient.refetchQueries({
             queryKey: tokenQueries
-              .usdPrice(queryClient, {
+              .usdPrice({
                 chainId: '',
                 type: TokenType.Native,
                 denomOrAddress: '',

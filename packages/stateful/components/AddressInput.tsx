@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import Fuse from 'fuse.js'
 import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
@@ -82,12 +82,11 @@ export const AddressInput = <
     }),
   })
 
-  const queryClient = useQueryClient()
   const loadingEntities = useQueries({
     queries: [
       ...(!searchProfilesLoading.loading && !searchProfilesLoading.errored
         ? searchProfilesLoading.data.map(({ address }) =>
-            entityQueries.info(queryClient, {
+            entityQueries.info({
               chainId: currentChain.chainId,
               address,
             })
@@ -95,7 +94,7 @@ export const AddressInput = <
         : []),
       ...(!searchedDaos.loading
         ? searchedDaos.data.flatMap(({ chainId, id: address }) =>
-            entityQueries.info(queryClient, {
+            entityQueries.info({
               chainId,
               address,
             })

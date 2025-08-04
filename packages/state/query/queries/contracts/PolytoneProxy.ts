@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { Addr } from '@dao-dao/types'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -38,17 +34,18 @@ export const polytoneProxyQueryKeys = {
     ] as const,
 }
 export const polytoneProxyQueries = {
-  instantiator: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: PolytoneProxyInstantiatorQuery<TData>
-  ) =>
+  instantiator: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: PolytoneProxyInstantiatorQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: polytoneProxyQueryKeys.instantiator(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         let indexerNonExistent = false
         try {
-          const instantiator = await queryClient.fetchQuery(
-            indexerQueries.queryContract<string>(queryClient, {
+          const instantiator = await ctx.client.fetchQuery(
+            indexerQueries.queryContract<string>({
               chainId,
               contractAddress,
               formula: 'polytone/proxy/instantiator',

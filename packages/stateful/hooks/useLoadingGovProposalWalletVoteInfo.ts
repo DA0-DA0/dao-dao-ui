@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { chainQueries } from '@dao-dao/state'
 import { useConfiguredChainContext } from '@dao-dao/stateless'
 import { GovProposalWalletVoteInfo, LoadingDataWithError } from '@dao-dao/types'
@@ -14,11 +12,10 @@ export const useLoadingGovProposalWalletVoteInfo = (
     chain: { chainId },
   } = useConfiguredChainContext()
   const { address: voter } = useWallet()
-  const queryClient = useQueryClient()
 
   return useQueryLoadingDataWithError(
     voter
-      ? chainQueries.govProposalVote(queryClient, {
+      ? chainQueries.govProposalVote({
           chainId,
           proposalId: Number(proposalId),
           voter,

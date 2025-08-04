@@ -20,19 +20,19 @@ export const useRefreshGovProposals = () => {
       }).queryKey,
     })
     queryClient.invalidateQueries({
-      queryKey: chainQueries.searchAndDecodeGovProposals(queryClient, {
+      queryKey: chainQueries.searchAndDecodeGovProposals({
         chainId,
       }).queryKey,
     })
     queryClient.invalidateQueries({
-      queryKey: chainQueries.govProposals(queryClient, {
+      queryKey: chainQueries.govProposals({
         chainId,
       }).queryKey,
     })
 
     // Proposal
     queryClient.invalidateQueries({
-      queryKey: indexerQueries.queryGeneric(queryClient, {
+      queryKey: indexerQueries.queryGeneric({
         chainId,
         formula: 'gov/proposal',
       }).queryKey,

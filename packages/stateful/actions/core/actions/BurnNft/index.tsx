@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 
 import { nftQueries } from '@dao-dao/state/query'
@@ -42,7 +42,7 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId: currentChainId },
   } = useActionOptions()
-  const queryClient = useQueryClient()
+
   const { watch } = useFormContext<BurnNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -66,7 +66,7 @@ const Component: ActionComponent = (props) => {
   const nftInfos = useQueries({
     queries: nfts.length
       ? nfts.map(({ chainId, collection, tokenId }) =>
-          nftQueries.cardInfo(queryClient, { chainId, collection, tokenId })
+          nftQueries.cardInfo({ chainId, collection, tokenId })
         )
       : [],
     combine: makeCombineQueryResultsIntoLoadingDataWithError(),

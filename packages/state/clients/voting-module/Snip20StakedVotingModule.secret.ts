@@ -232,17 +232,16 @@ export class SecretSnip20StakedVotingModule extends VotingModuleBase<SecretCwDao
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { addr: governanceTokenAddress } =
-          await this.queryClient.fetchQuery(
-            secretDaoVotingSnip20StakedQueries.tokenContract({
-              chainId: this.chainId,
-              contractAddress: this.address,
-            })
-          )
+      queryFn: async (ctx) => {
+        const { addr: governanceTokenAddress } = await ctx.client.fetchQuery(
+          secretDaoVotingSnip20StakedQueries.tokenContract({
+            chainId: this.chainId,
+            contractAddress: this.address,
+          })
+        )
 
-        const token = await this.queryClient.fetchQuery(
-          tokenQueries.info(this.queryClient, {
+        const token = await ctx.client.fetchQuery(
+          tokenQueries.info({
             chainId: this.chainId,
             type: TokenType.Cw20,
             denomOrAddress: governanceTokenAddress,

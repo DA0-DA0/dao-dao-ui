@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -125,24 +121,21 @@ export const daoPreProposeSingleQueryKeys = {
     ] as const,
 }
 export const daoPreProposeSingleQueries = {
-  proposalModule: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoPreProposeSingleProposalModuleQuery<TData>
-  ) =>
+  proposalModule: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeSingleProposalModuleQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoPreProposeSingleQueryKeys.proposalModule(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeSingle/proposalModule',
@@ -160,17 +153,18 @@ export const daoPreProposeSingleQueries = {
       },
       ...options,
     }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoPreProposeSingleDaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeSingleDaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoPreProposeSingleQueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeSingle/dao',
@@ -188,17 +182,18 @@ export const daoPreProposeSingleQueries = {
       },
       ...options,
     }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoPreProposeSingleConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeSingleConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: daoPreProposeSingleQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeSingle/config',
@@ -216,26 +211,23 @@ export const daoPreProposeSingleQueries = {
       },
       ...options,
     }),
-  depositInfo: <TData = DepositInfoResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoPreProposeSingleDepositInfoQuery<TData>
-  ) =>
+  depositInfo: <TData = DepositInfoResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeSingleDepositInfoQuery<TData>) =>
     queryOptions<DepositInfoResponse, Error, TData>({
       queryKey: daoPreProposeSingleQueryKeys.depositInfo(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeSingle/depositInfo',

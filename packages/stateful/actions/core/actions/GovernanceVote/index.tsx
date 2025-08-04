@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -53,7 +52,6 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const options = useActionOptions()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceVoteData>()
-  const queryClient = useQueryClient()
 
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const proposalId = watch(
@@ -62,7 +60,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 
   const openProposals = useQueryLoadingDataWithError(
     isCreating
-      ? chainQueries.govProposals(queryClient, {
+      ? chainQueries.govProposals({
           status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
           chainId,
         })
@@ -88,7 +86,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   // load just the one we voted on and add it to the list so we can display it.
   const selectedProposal = useQueryLoadingDataWithError(
     !isCreating && proposalId
-      ? chainQueries.govProposal(queryClient, {
+      ? chainQueries.govProposal({
           proposalId: Number(proposalId),
           chainId,
         })
@@ -98,7 +96,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const address = getChainAddressForActionOptions(options, chainId)
   const existingVotesLoading = useQueryLoadingDataWithError(
     proposalId && address
-      ? chainQueries.govProposalVote(queryClient, {
+      ? chainQueries.govProposalVote({
           proposalId: Number(proposalId),
           voter: address,
           chainId,

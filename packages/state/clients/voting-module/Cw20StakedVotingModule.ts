@@ -163,7 +163,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingCw20StakedQueries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingCw20StakedQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -176,7 +176,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw20StakedQueries.totalPowerAtHeight(this.queryClient, {
+    return daoVotingCw20StakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -195,16 +195,16 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const governanceTokenAddress = await this.queryClient.fetchQuery(
-          daoVotingCw20StakedQueries.tokenContract(this.queryClient, {
+      queryFn: async (ctx) => {
+        const governanceTokenAddress = await ctx.client.fetchQuery(
+          daoVotingCw20StakedQueries.tokenContract({
             chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
-        const token = await this.queryClient.fetchQuery(
-          tokenQueries.info(this.queryClient, {
+        const token = await ctx.client.fetchQuery(
+          tokenQueries.info({
             chainId: this.chainId,
             type: TokenType.Cw20,
             denomOrAddress: governanceTokenAddress,
@@ -218,7 +218,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
 
   async getHookCaller(): Promise<string> {
     return this.queryClient.fetchQuery(
-      daoVotingCw20StakedQueries.stakingContract(this.queryClient, {
+      daoVotingCw20StakedQueries.stakingContract({
         chainId: this.chainId,
         contractAddress: this.address,
       })
@@ -228,7 +228,7 @@ export class Cw20StakedVotingModule extends VotingModuleBase<CwDao> {
   async getHooks(): Promise<string[]> {
     return (
       await this.queryClient.fetchQuery(
-        cw20StakeQueries.getHooks(this.queryClient, {
+        cw20StakeQueries.getHooks({
           chainId: this.chainId,
           contractAddress: await this.getHookCaller(),
         })

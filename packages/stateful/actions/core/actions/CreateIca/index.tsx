@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -43,13 +42,12 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId: srcChainId },
   } = useActionOptions()
-  const queryClient = useQueryClient()
 
   const { watch, setError, clearErrors } = useFormContext<CreateIcaData>()
   const destChainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
   const createdAddressLoading = useQueryLoadingDataWithError(
-    accountQueries.remoteIcaAddress(queryClient, {
+    accountQueries.remoteIcaAddress({
       address,
       srcChainId,
       destChainId,
@@ -154,7 +152,7 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
 
     // Get existing ICA address.
     const existingIcaAddress = await this.options.queryClient.fetchQuery(
-      accountQueries.remoteIcaAddress(this.options.queryClient, {
+      accountQueries.remoteIcaAddress({
         address: this.options.address,
         srcChainId: this.options.chain.chainId,
         destChainId: chainId,

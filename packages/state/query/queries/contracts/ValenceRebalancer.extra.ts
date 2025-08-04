@@ -32,7 +32,7 @@ export const fetchValenceRebalancerWhitelistGenericTokens = async (
     Promise.all(
       whitelists.base_denom_whitelist.map(({ denom }) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -43,7 +43,7 @@ export const fetchValenceRebalancerWhitelistGenericTokens = async (
     Promise.all(
       whitelists.denom_whitelist.map((denom) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -86,7 +86,7 @@ export const fetchValenceRebalancerRegistrationServiceFee = async (
   const token =
     serviceFee &&
     (await queryClient.fetchQuery(
-      tokenQueries.info(queryClient, {
+      tokenQueries.info({
         chainId,
         type: TokenType.Native,
         denomOrAddress: serviceFee.denom,
@@ -107,19 +107,17 @@ export const valenceRebalancerExtraQueries = {
    * Get the generic tokens for the whitelisted tokens in the rebalancer.
    */
   whitelistGenericTokens: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchValenceRebalancerWhitelistGenericTokens>[1]
   ) =>
     queryOptions({
       queryKey: ['valenceRebalancerExtra', 'whitelistGenericTokens', options],
-      queryFn: () =>
-        fetchValenceRebalancerWhitelistGenericTokens(queryClient, options),
+      queryFn: (ctx) =>
+        fetchValenceRebalancerWhitelistGenericTokens(ctx.client, options),
     }),
   /**
    * Get the rebalancer registration service fee.
    */
   rebalancerRegistrationServiceFee: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
   ) =>
     queryOptions({
@@ -128,7 +126,7 @@ export const valenceRebalancerExtraQueries = {
         'rebalancerRegistrationServiceFee',
         options,
       ],
-      queryFn: () =>
-        fetchValenceRebalancerRegistrationServiceFee(queryClient, options),
+      queryFn: (ctx) =>
+        fetchValenceRebalancerRegistrationServiceFee(ctx.client, options),
     }),
 }

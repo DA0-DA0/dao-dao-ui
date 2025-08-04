@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -98,17 +94,18 @@ export const daoVotingCw4QueryKeys = {
     ] as const,
 }
 export const daoVotingCw4Queries = {
-  groupContract: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingCw4GroupContractQuery<TData>
-  ) =>
+  groupContract: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingCw4GroupContractQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoVotingCw4QueryKeys.groupContract(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingCw4/groupContract',
@@ -126,26 +123,23 @@ export const daoVotingCw4Queries = {
       },
       ...options,
     }),
-  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingCw4VotingPowerAtHeightQuery<TData>
-  ) =>
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingCw4VotingPowerAtHeightQuery<TData>) =>
     queryOptions<VotingPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingCw4QueryKeys.votingPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingCw4/votingPowerAtHeight',
@@ -170,26 +164,23 @@ export const daoVotingCw4Queries = {
       },
       ...options,
     }),
-  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingCw4TotalPowerAtHeightQuery<TData>
-  ) =>
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingCw4TotalPowerAtHeightQuery<TData>) =>
     queryOptions<TotalPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingCw4QueryKeys.totalPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingCw4/totalPowerAtHeight',
@@ -212,17 +203,18 @@ export const daoVotingCw4Queries = {
       },
       ...options,
     }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingCw4DaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingCw4DaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoVotingCw4QueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingCw4/dao',

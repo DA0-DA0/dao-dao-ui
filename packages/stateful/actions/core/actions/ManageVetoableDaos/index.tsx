@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { daoQueries } from '@dao-dao/state/query'
 import {
   ActionBase,
@@ -31,9 +29,8 @@ const Component: ActionComponent = (props) => {
     chain: { chainId },
   } = useActionOptions()
 
-  const queryClient = useQueryClient()
   const currentlyEnabledLoading = useQueryLoadingDataWithError(
-    daoQueries.vetoableDaos(queryClient, {
+    daoQueries.vetoableDaos({
       chainId,
       coreAddress: address,
     })

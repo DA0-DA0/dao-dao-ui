@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { queryOptions, useQueries } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 import { nanoid } from 'nanoid'
 import { useEffect, useMemo } from 'react'
@@ -87,7 +87,6 @@ export const useTxRelayState = ({
   const {
     chain: { chainId: srcChainId },
   } = useSupportedChainContext()
-  const queryClient = useQueryClient()
 
   /**
    * Whether or not the messages have been executed.
@@ -214,7 +213,7 @@ export const useTxRelayState = ({
                   packet.destinationPort === dstPort
               )
 
-              return {
+              return queryOptions({
                 queryKey: [
                   'txRelayState',
                   'relayedTxHashes',
@@ -226,14 +225,14 @@ export const useTxRelayState = ({
                     packets: packets.length,
                   },
                 ],
-                queryFn: async () => ({
+                queryFn: async (ctx) => ({
                   uuid,
                   hashes: uniq(
                     (
                       await Promise.all(
                         packets.map(
                           ({ sourceChannel, destinationChannel, sequence }) =>
-                            queryClient.fetchQuery(
+                            ctx.client.fetchQuery(
                               chainQueries.relayedCrossChainPacketTxHash({
                                 srcPort,
                                 srcChannel: sourceChannel,
@@ -248,7 +247,7 @@ export const useTxRelayState = ({
                     ).flatMap((h) => h || [])
                   ),
                 }),
-              }
+              })
             }
           ),
     combine: makeCombineQueryResultsIntoLoadingDataWithError({

@@ -41,7 +41,7 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingNativeStakedQueries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingNativeStakedQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -54,7 +54,7 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
-    return daoVotingNativeStakedQueries.totalPowerAtHeight(this.queryClient, {
+    return daoVotingNativeStakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -73,16 +73,16 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { denom } = await this.queryClient.fetchQuery(
-          daoVotingNativeStakedQueries.getConfig(this.queryClient, {
+      queryFn: async (ctx) => {
+        const { denom } = await ctx.client.fetchQuery(
+          daoVotingNativeStakedQueries.getConfig({
             chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
-        const token = await this.queryClient.fetchQuery(
-          tokenQueries.info(this.queryClient, {
+        const token = await ctx.client.fetchQuery(
+          tokenQueries.info({
             chainId: this.chainId,
             type: TokenType.Native,
             denomOrAddress: denom,

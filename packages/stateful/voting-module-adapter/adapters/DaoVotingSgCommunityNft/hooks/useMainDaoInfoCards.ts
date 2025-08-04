@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { daoVotingSgCommunityNftExtraQueries } from '@dao-dao/state'
@@ -11,9 +10,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   const { t } = useTranslation()
   const votingModule = useVotingModule()
 
-  const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
-    daoVotingSgCommunityNftExtraQueries.allVoters(queryClient, {
+    daoVotingSgCommunityNftExtraQueries.allVoters({
       chainId: votingModule.chainId,
       address: votingModule.address,
     })

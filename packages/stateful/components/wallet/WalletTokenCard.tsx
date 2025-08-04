@@ -87,7 +87,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     })
     // Then native delegation info.
     queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+      queryKey: chainQueries.nativeDelegationInfo({
         chainId: props.token.chainId,
         address: props.owner.address,
       }).queryKey,

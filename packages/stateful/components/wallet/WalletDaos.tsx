@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import uniqBy from 'lodash.uniqby'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,7 +27,7 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
   const { t } = useTranslation()
 
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
+
   const { connected, chains } = useProfile({
     address,
   })
@@ -43,13 +43,13 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
       : chains.data.length === 0 && address
         ? // If no chains and an address is passed, just use the current chain.
           [
-            walletQueries.lazyWalletDaos(queryClient, {
+            walletQueries.lazyWalletDaos({
               chainId,
               address,
             }),
           ]
         : chains.data.map(({ chainId, address }) =>
-            walletQueries.lazyWalletDaos(queryClient, {
+            walletQueries.lazyWalletDaos({
               chainId,
               address,
             })

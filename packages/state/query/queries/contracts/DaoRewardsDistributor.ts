@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   DistributionState,
@@ -113,24 +109,21 @@ export const daoRewardsDistributorQueryKeys = {
 }
 export const daoRewardsDistributorQueries = {
   info: contractQueries.info,
-  ownership: <TData = OwnershipForAddr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoRewardsDistributorOwnershipQuery<TData>
-  ) =>
+  ownership: <TData = OwnershipForAddr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoRewardsDistributorOwnershipQuery<TData>) =>
     queryOptions<OwnershipForAddr, Error, TData>({
       queryKey: daoRewardsDistributorQueryKeys.ownership(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'ownership',
@@ -194,26 +187,23 @@ export const daoRewardsDistributorQueries = {
       },
       ...options,
     }),
-  distribution: <TData = DistributionState>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoRewardsDistributorDistributionQuery<TData>
-  ) =>
+  distribution: <TData = DistributionState>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoRewardsDistributorDistributionQuery<TData>) =>
     queryOptions<DistributionState, Error, TData>({
       queryKey: daoRewardsDistributorQueryKeys.distribution(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoRewardsDistributor/distribution',
@@ -234,26 +224,23 @@ export const daoRewardsDistributorQueries = {
       },
       ...options,
     }),
-  distributions: <TData = DistributionsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoRewardsDistributorDistributionsQuery<TData>
-  ) =>
+  distributions: <TData = DistributionsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoRewardsDistributorDistributionsQuery<TData>) =>
     queryOptions<DistributionsResponse, Error, TData>({
       queryKey: daoRewardsDistributorQueryKeys.distributions(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoRewardsDistributor/distributions',

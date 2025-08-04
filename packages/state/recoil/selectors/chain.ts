@@ -348,9 +348,7 @@ export const govProposalsSelector = selectorFamily<
       }
 
       const queryClient = get(queryClientAtom)
-      return await queryClient.fetchQuery(
-        chainQueries.govProposals(queryClient, options)
-      )
+      return await queryClient.fetchQuery(chainQueries.govProposals(options))
     },
 })
 
@@ -368,9 +366,7 @@ export const govProposalVoteSelector = selectorFamily<
       get(refreshGovProposalsAtom(options.chainId))
 
       const queryClient = get(queryClientAtom)
-      return await queryClient.fetchQuery(
-        chainQueries.govProposalVote(queryClient, options)
-      )
+      return await queryClient.fetchQuery(chainQueries.govProposalVote(options))
     },
 })
 

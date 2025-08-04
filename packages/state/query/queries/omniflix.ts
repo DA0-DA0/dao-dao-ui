@@ -255,24 +255,18 @@ export const omniflixQueries = {
   /**
    * Fetch paginated ONFTs.
    */
-  paginatedOnfts: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchPaginatedOnfts>[1]
-  ) =>
+  paginatedOnfts: (options: Parameters<typeof fetchPaginatedOnfts>[1]) =>
     queryOptions({
       queryKey: ['omniflix', 'paginatedOnfts', options],
-      queryFn: () => fetchPaginatedOnfts(queryClient, options),
+      queryFn: (ctx) => fetchPaginatedOnfts(ctx.client, options),
     }),
   /**
    * Fetch all ONFTs.
    */
-  allOnfts: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchAllOnfts>[1]
-  ) =>
+  allOnfts: (options: Parameters<typeof fetchAllOnfts>[1]) =>
     queryOptions({
       queryKey: ['omniflix', 'allOnfts', options],
-      queryFn: () => fetchAllOnfts(queryClient, options),
+      queryFn: (ctx) => fetchAllOnfts(ctx.client, options),
     }),
   /**
    * Fetch ONFT.

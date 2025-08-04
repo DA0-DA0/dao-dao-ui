@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { SenderInfo } from '@dao-dao/types/contracts/PolytoneVoice'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -38,26 +34,23 @@ export const polytoneVoiceQueryKeys = {
     ] as const,
 }
 export const polytoneVoiceQueries = {
-  senderInfoForProxy: <TData = SenderInfo>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: PolytoneVoiceSenderInfoForProxyQuery<TData>
-  ) =>
+  senderInfoForProxy: <TData = SenderInfo>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: PolytoneVoiceSenderInfoForProxyQuery<TData>) =>
     queryOptions<SenderInfo, Error, TData>({
       queryKey: polytoneVoiceQueryKeys.senderInfoForProxy(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         let indexerNonExistent = false
         try {
-          const senderInfo = await queryClient.fetchQuery(
-            indexerQueries.queryContract<SenderInfo>(queryClient, {
+          const senderInfo = await ctx.client.fetchQuery(
+            indexerQueries.queryContract<SenderInfo>({
               chainId,
               contractAddress,
               formula: 'polytone/voice/senderInfoForProxy',

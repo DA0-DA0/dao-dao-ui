@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { constSelector, waitForAny } from 'recoil'
 
 import { accountQueries } from '@dao-dao/state/query'
@@ -31,7 +31,6 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
   // Read-only if address is defined.
   const readOnly = !!address
 
-  const queryClient = useQueryClient()
   const { profile, chains } = useProfile({
     address,
   })
@@ -44,7 +43,7 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
       chains.loading || chains.data.length === 0
         ? []
         : chains.data.map(({ chainId, address }) =>
-            accountQueries.list(queryClient, {
+            accountQueries.list({
               chainId,
               address,
             })

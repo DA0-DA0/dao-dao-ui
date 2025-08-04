@@ -138,7 +138,7 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
             ? {
                 depositInfo,
                 token: await this.options.queryClient.fetchQuery(
-                  tokenQueries.info(this.options.queryClient, {
+                  tokenQueries.info({
                     chainId: this.options.chain.chainId,
                     type:
                       'cw20' in depositInfo.denom
@@ -260,7 +260,7 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
       // by the first action, before the hook is added.
       const predictedMultipleChoiceProposalModuleAddress =
         await this.options.queryClient.fetchQuery(
-          contractQueries.instantiate2Address(this.options.queryClient, {
+          contractQueries.instantiate2Address({
             chainId: this.options.chain.chainId,
             creator: this.options.address,
             codeId: info.code_id,
@@ -381,7 +381,7 @@ export class EnableMultipleChoiceAction extends ActionBase<{}> {
         ) {
           const predictedMultipleChoiceProposalModuleAddress =
             await this.options.queryClient.fetchQuery(
-              contractQueries.instantiate2Address(this.options.queryClient, {
+              contractQueries.instantiate2Address({
                 chainId: this.options.chain.chainId,
                 creator: this.options.address,
                 codeId: info.code_id,

@@ -28,7 +28,7 @@ export const getProposalModuleType = async ({
   const {
     info: { contract },
   } = await queryClient.fetchQuery(
-    contractQueries.info(queryClient, {
+    contractQueries.info({
       chainId,
       address,
     })
@@ -64,7 +64,7 @@ export const getProposalModule = async ({
   })
 
   const daoAddress = await queryClient.fetchQuery(
-    ProposalModuleType.getDaoAddressQuery(queryClient, {
+    ProposalModuleType.getDaoAddressQuery({
       chainId,
       contractAddress: address,
     })

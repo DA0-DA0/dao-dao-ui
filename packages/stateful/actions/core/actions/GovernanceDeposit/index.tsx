@@ -1,5 +1,4 @@
 import { Coin } from '@cosmjs/stargate'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -81,7 +80,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   const { chainId } = useChain()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceDepositData>()
-  const queryClient = useQueryClient()
+
   const { context } = useActionOptions()
 
   // Type-check. This component is wrapped in a gov actions provider.
@@ -95,7 +94,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
 
   const proposalOptions = useQueryLoadingDataWithError(
     isCreating
-      ? chainQueries.govProposals(queryClient, {
+      ? chainQueries.govProposals({
           status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
           chainId,
         })
@@ -121,7 +120,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   // load just the one we voted on and add it to the list so we can display it.
   const selectedProposal = useQueryLoadingDataWithError(
     !isCreating && proposalId
-      ? chainQueries.govProposal(queryClient, {
+      ? chainQueries.govProposal({
           proposalId: Number(proposalId),
           chainId,
         })
@@ -257,7 +256,7 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
     const amount = await Promise.all(
       deposit.map(async ({ denom, amount }) => {
         const { decimals } = await this.options.queryClient.fetchQuery(
-          tokenQueries.info(this.options.queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -302,7 +301,7 @@ export class GovernanceDepositAction extends ActionBase<GovernanceDepositData> {
       (decodedMessage.stargate.value.amount as Coin[]).map(
         async ({ denom, amount }) => {
           const { decimals } = await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,

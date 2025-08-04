@@ -21,7 +21,7 @@ export const adminsIfCw1Whitelist = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       return await queryClient.fetchQuery(
-        cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
+        cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
           chainId,
           address,
         })

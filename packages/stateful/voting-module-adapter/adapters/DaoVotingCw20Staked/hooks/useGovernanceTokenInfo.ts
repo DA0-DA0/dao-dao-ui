@@ -1,4 +1,4 @@
-import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
+import { useSuspenseQueries } from '@tanstack/react-query'
 import { constSelector } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -25,16 +25,15 @@ export const useGovernanceTokenInfo = ({
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const dao = useDao()
   const { address: walletAddress } = useWallet()
-  const queryClient = useQueryClient()
 
   const [{ data: stakingContractAddress }, { data: governanceTokenAddress }] =
     useSuspenseQueries({
       queries: [
-        daoVotingCw20StakedQueries.stakingContract(queryClient, {
+        daoVotingCw20StakedQueries.stakingContract({
           chainId: dao.chainId,
           contractAddress: dao.votingModule.address,
         }),
-        daoVotingCw20StakedQueries.tokenContract(queryClient, {
+        daoVotingCw20StakedQueries.tokenContract({
           chainId: dao.chainId,
           contractAddress: dao.votingModule.address,
         }),
@@ -44,12 +43,12 @@ export const useGovernanceTokenInfo = ({
   const [{ data: governanceToken }, { data: cw20TokenInfo }] =
     useSuspenseQueries({
       queries: [
-        tokenQueries.info(queryClient, {
+        tokenQueries.info({
           chainId: dao.chainId,
           type: TokenType.Cw20,
           denomOrAddress: governanceTokenAddress,
         }),
-        cw20BaseQueries.tokenInfo(queryClient, {
+        cw20BaseQueries.tokenInfo({
           chainId: dao.chainId,
           contractAddress: governanceTokenAddress,
         }),

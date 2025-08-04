@@ -56,7 +56,7 @@ const InnerGovProposalVotes = ({
     try {
       const newVotes = (
         await queryClient.fetchQuery(
-          chainQueries.govProposalVotes(queryClient, {
+          chainQueries.govProposalVotes({
             chainId,
             proposalId: Number(proposalId),
             offset: votes.length,

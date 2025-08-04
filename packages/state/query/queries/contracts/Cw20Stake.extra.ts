@@ -20,7 +20,7 @@ export const fetchOraichainProxySnapshotConfig = async (
   }
 ): Promise<OraichainCw20StakingProxySnapshotConfigResponse> => {
   const isOraichainProxy = await queryClient.fetchQuery(
-    cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
+    cw20StakeExtraQueries.isOraichainProxySnapshotContract({
       chainId,
       address,
     })
@@ -32,7 +32,7 @@ export const fetchOraichainProxySnapshotConfig = async (
   }
 
   const config = await queryClient.fetchQuery(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId,
       contractAddress: address,
       formula: 'item',
@@ -76,7 +76,7 @@ export const fetchCw20StakeTopStakers = async (
   // If Oraichain proxy, get staking token and pass to indexer query.
   let oraichainStakingToken: string | undefined
   const isOraichainProxy = await queryClient.fetchQuery(
-    cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
+    cw20StakeExtraQueries.isOraichainProxySnapshotContract({
       chainId,
       address,
     })
@@ -84,7 +84,7 @@ export const fetchCw20StakeTopStakers = async (
   if (isOraichainProxy) {
     oraichainStakingToken = (
       await queryClient.fetchQuery(
-        cw20StakeExtraQueries.oraichainProxySnapshotConfig(queryClient, {
+        cw20StakeExtraQueries.oraichainProxySnapshotConfig({
           chainId,
           address,
         })
@@ -94,7 +94,7 @@ export const fetchCw20StakeTopStakers = async (
 
   return (
     (await queryClient.fetchQuery(
-      indexerQueries.queryContract(queryClient, {
+      indexerQueries.queryContract({
         chainId,
         contractAddress: address,
         formula: 'cw20Stake/topStakers',
@@ -114,14 +114,11 @@ export const cw20StakeExtraQueries = {
    * contract for their custom staking solution. This selector returns whether
    * or not this is a cw20-staking-proxy-snapshot contract.
    */
-  isOraichainProxySnapshotContract: (
-    queryClient: QueryClient,
-    options: {
-      chainId: string
-      address: string
-    }
-  ) =>
-    contractQueries.isContract(queryClient, {
+  isOraichainProxySnapshotContract: (options: {
+    chainId: string
+    address: string
+  }) =>
+    contractQueries.isContract({
       ...options,
       nameOrNames: ContractName.OraichainCw20StakingProxySnapshot,
     }),
@@ -129,22 +126,18 @@ export const cw20StakeExtraQueries = {
    * Get config for Oraichain's cw20-staking-proxy-snapshot contract.
    */
   oraichainProxySnapshotConfig: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchOraichainProxySnapshotConfig>[1]
   ) =>
     queryOptions({
       queryKey: ['cw20StakeExtra', 'oraichainProxySnapshotConfig', options],
-      queryFn: () => fetchOraichainProxySnapshotConfig(queryClient, options),
+      queryFn: (ctx) => fetchOraichainProxySnapshotConfig(ctx.client, options),
     }),
   /**
    * Fetch cw20-stake top stakers.
    */
-  topStakers: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchCw20StakeTopStakers>[1]
-  ) =>
+  topStakers: (options: Parameters<typeof fetchCw20StakeTopStakers>[1]) =>
     queryOptions({
       queryKey: ['cw20StakeExtra', 'topStakers', options],
-      queryFn: () => fetchCw20StakeTopStakers(queryClient, options),
+      queryFn: (ctx) => fetchCw20StakeTopStakers(ctx.client, options),
     }),
 }

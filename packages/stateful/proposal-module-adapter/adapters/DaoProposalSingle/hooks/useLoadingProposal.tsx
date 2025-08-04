@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -37,7 +36,6 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     proposalNumber,
     chain: { chainId },
   } = useProposalModuleAdapterOptions()
-  const queryClient = useQueryClient()
 
   const { prePropose } = proposalModule
 
@@ -61,7 +59,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     proposalStatus === ProposalStatusEnum.Executed
   const loadingNeutronTimelockOverrule = useQueryLoadingDataWithError(
     usesNeutronPreProposeTimelockOverruleSystem
-      ? proposalQueries.neutronTimelockOverrule(queryClient, {
+      ? proposalQueries.neutronTimelockOverrule({
           chainId,
           preProposeOverruleAddress:
             prePropose.config.timelockConfig.overrule_pre_propose,
@@ -109,7 +107,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const approverProposalId = useQueryLoadingDataWithError(
     prePropose?.type === PreProposeModuleType.Approval &&
       !!prePropose.config.preProposeApproverContract
-      ? proposalQueries.approverIdForPreProposeApprovalId(queryClient, {
+      ? proposalQueries.approverIdForPreProposeApprovalId({
           chainId,
           preProposeAddress: prePropose.address,
           proposalNumber,
@@ -128,7 +126,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const approvedProposalId = useQueryLoadingDataWithError(
     prePropose?.type === PreProposeModuleType.Approver &&
       proposalStatus === ProposalStatusEnum.Executed
-      ? proposalQueries.approvedIdForPreProposeApproverId(queryClient, {
+      ? proposalQueries.approvedIdForPreProposeApproverId({
           chainId,
           preProposeAddress: prePropose.address,
           proposalNumber,

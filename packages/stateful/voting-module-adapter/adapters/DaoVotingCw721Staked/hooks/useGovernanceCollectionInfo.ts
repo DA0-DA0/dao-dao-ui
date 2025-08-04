@@ -1,4 +1,4 @@
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -18,12 +18,11 @@ export const useGovernanceCollectionInfo = ({
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
   const dao = useDao()
   const { address: walletAddress } = useWallet()
-  const queryClient = useQueryClient()
 
   const {
     data: { nft_address: collectionAddress },
   } = useSuspenseQuery(
-    daoVotingCw721StakedQueries.config(queryClient, {
+    daoVotingCw721StakedQueries.config({
       chainId: dao.chainId,
       contractAddress: dao.votingModule.address,
     })

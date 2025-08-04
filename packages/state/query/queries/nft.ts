@@ -77,12 +77,12 @@ export const fetchNftOwnerOrStaker = async (
     stakingContractAddress && owner === stakingContractAddress
       ? await queryClient.fetchQuery(
           isOmniFlix
-            ? daoVotingOnftStakedExtraQueries.staker(queryClient, {
+            ? daoVotingOnftStakedExtraQueries.staker({
                 chainId,
                 address: stakingContractAddress,
                 tokenId,
               })
-            : daoVotingCw721StakedExtraQueries.staker(queryClient, {
+            : daoVotingCw721StakedExtraQueries.staker({
                 chainId,
                 address: stakingContractAddress,
                 tokenId,
@@ -134,7 +134,7 @@ export const fetchNftCardInfo = async (
     if (data?.token) {
       const genericToken = data.token?.highestOffer?.offerPrice?.denom
         ? await queryClient.fetchQuery(
-            tokenQueries.info(queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: data.token.highestOffer.offerPrice.denom,
@@ -198,7 +198,7 @@ export const fetchNftCardInfo = async (
   )
 
   return await queryClient.fetchQuery(
-    nftQueries.cardInfoMaybeFromUri(queryClient, {
+    nftQueries.cardInfoMaybeFromUri({
       chainId,
       collection,
       tokenId,
@@ -325,35 +325,28 @@ export const nftQueries = {
    * Fetch owner of NFT, or staked if NFT is staked with the given staking
    * contract (probably a DAO voting module.)
    */
-  ownerOrStaker: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchNftOwnerOrStaker>[1]
-  ) =>
+  ownerOrStaker: (options: Parameters<typeof fetchNftOwnerOrStaker>[1]) =>
     queryOptions({
       queryKey: ['nft', 'ownerOrStaker', options],
-      queryFn: () => fetchNftOwnerOrStaker(queryClient, options),
+      queryFn: (ctx) => fetchNftOwnerOrStaker(ctx.client, options),
     }),
   /**
    * Fetch NFT card info.
    */
-  cardInfo: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchNftCardInfo>[1]
-  ) =>
+  cardInfo: (options: Parameters<typeof fetchNftCardInfo>[1]) =>
     queryOptions({
       queryKey: ['nft', 'cardInfo', options],
-      queryFn: () => fetchNftCardInfo(queryClient, options),
+      queryFn: (ctx) => fetchNftCardInfo(ctx.client, options),
     }),
   /**
    * Fetch NFT card info, maybe with a token URI.
    */
   cardInfoMaybeFromUri: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchNftCardInfoMaybeFromUri>[1]
   ) =>
     queryOptions({
       queryKey: ['nft', 'cardInfoMaybeFromUri', options],
-      queryFn: () => fetchNftCardInfoMaybeFromUri(queryClient, options),
+      queryFn: (ctx) => fetchNftCardInfoMaybeFromUri(ctx.client, options),
     }),
   /**
    * Fetch NFT metadata from a token URI.

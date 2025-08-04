@@ -29,7 +29,7 @@ export const fetchNeutronIbcTransferFee = async (
     const tokens = await Promise.all(
       uniqueDenoms.map((denom) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -57,9 +57,9 @@ export const neutronQueries = {
   /**
    * Fetch Neutron IBC transfer fee.
    */
-  ibcTransferFee: (queryClient: QueryClient) =>
+  ibcTransferFee: () =>
     queryOptions({
       queryKey: ['neutron', 'ibcTransferFee'],
-      queryFn: () => fetchNeutronIbcTransferFee(queryClient),
+      queryFn: (ctx) => fetchNeutronIbcTransferFee(ctx.client),
     }),
 }

@@ -13,7 +13,7 @@ export const makeDaoProvidersDecorator = (info: DaoInfo): DecoratorFn =>
     // initialized immediately and doesn't try to fetch it.
     useMemo(() => {
       queryClient.setQueryData(
-        daoQueries.info(queryClient, {
+        daoQueries.info({
           chainId: info.chainId,
           coreAddress: info.coreAddress,
         }).queryKey,

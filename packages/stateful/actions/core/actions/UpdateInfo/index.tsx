@@ -43,7 +43,7 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
 
     this.defaults = {
       ...(await this.options.queryClient.fetchQuery(
-        daoDaoCoreQueries.config(this.options.queryClient, {
+        daoDaoCoreQueries.config({
           chainId: this.options.chain.chainId,
           contractAddress: this.options.address,
         })
@@ -65,7 +65,7 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
 
     const hasBanner = !!(
       await this.options.queryClient.fetchQuery(
-        daoDaoCoreQueries.getItem(this.options.queryClient, {
+        daoDaoCoreQueries.getItem({
           chainId: this.options.chain.chainId,
           contractAddress: this.options.address,
           args: {

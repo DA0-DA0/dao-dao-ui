@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -177,24 +173,21 @@ export const daoVotingSgCommunityNftQueryKeys = {
     ] as const,
 }
 export const daoVotingSgCommunityNftQueries = {
-  nftContract: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoVotingSgCommunityNftNftContractQuery<TData>
-  ) =>
+  nftContract: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingSgCommunityNftNftContractQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.nftContract(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/nftContract',
@@ -212,24 +205,21 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  hooks: <TData = HooksResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoVotingSgCommunityNftHooksQuery<TData>
-  ) =>
+  hooks: <TData = HooksResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingSgCommunityNftHooksQuery<TData>) =>
     queryOptions<HooksResponse, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.hooks(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/hooks',
@@ -247,26 +237,23 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  registeredNft: <TData = RegisteredNftResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingSgCommunityNftRegisteredNftQuery<TData>
-  ) =>
+  registeredNft: <TData = RegisteredNftResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingSgCommunityNftRegisteredNftQuery<TData>) =>
     queryOptions<RegisteredNftResponse, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.registeredNft(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/registeredNft',
@@ -287,26 +274,23 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  listVoters: <TData = ListVotersResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingSgCommunityNftListVotersQuery<TData>
-  ) =>
+  listVoters: <TData = ListVotersResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingSgCommunityNftListVotersQuery<TData>) =>
     queryOptions<ListVotersResponse, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.listVoters(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/listVoters',
@@ -346,26 +330,23 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingSgCommunityNftVotingPowerAtHeightQuery<TData>
-  ) =>
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingSgCommunityNftVotingPowerAtHeightQuery<TData>) =>
     queryOptions<VotingPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.votingPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/votingPowerAtHeight',
@@ -390,26 +371,23 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingSgCommunityNftTotalPowerAtHeightQuery<TData>
-  ) =>
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingSgCommunityNftTotalPowerAtHeightQuery<TData>) =>
     queryOptions<TotalPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.totalPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/totalPowerAtHeight',
@@ -432,21 +410,18 @@ export const daoVotingSgCommunityNftQueries = {
       },
       ...options,
     }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoVotingSgCommunityNftDaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingSgCommunityNftDaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoVotingSgCommunityNftQueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingSgCommunityNft/dao',

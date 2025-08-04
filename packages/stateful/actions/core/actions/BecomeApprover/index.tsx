@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 import { useFormContext } from 'react-hook-form'
 
@@ -57,7 +57,6 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId },
   } = useActionOptions()
-  const queryClient = useQueryClient()
 
   const { watch } = useFormContext<BecomeApproverData>()
   const preProposeApprovalContracts =
@@ -69,7 +68,7 @@ const Component: ActionComponent = (props) => {
     queries:
       !props.isCreating && preProposeApprovalContracts.length
         ? preProposeApprovalContracts.map((contract) =>
-            daoPreProposeApprovalSingleQueries.dao(queryClient, {
+            daoPreProposeApprovalSingleQueries.dao({
               chainId,
               contractAddress: contract,
             })
@@ -83,7 +82,7 @@ const Component: ActionComponent = (props) => {
   })
 
   const options = useQueryLoadingDataWithError(
-    daoQueries.listPotentialApprovalDaos(queryClient, {
+    daoQueries.listPotentialApprovalDaos({
       chainId,
       address,
     }),

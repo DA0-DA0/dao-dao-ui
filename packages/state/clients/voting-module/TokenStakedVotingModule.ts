@@ -147,7 +147,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingTokenStakedQueries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingTokenStakedQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -160,7 +160,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
-    return daoVotingTokenStakedQueries.totalPowerAtHeight(this.queryClient, {
+    return daoVotingTokenStakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -179,16 +179,16 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { denom } = await this.queryClient.fetchQuery(
-          daoVotingTokenStakedQueries.denom(this.queryClient, {
+      queryFn: async (ctx) => {
+        const { denom } = await ctx.client.fetchQuery(
+          daoVotingTokenStakedQueries.denom({
             chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
-        const token = await this.queryClient.fetchQuery(
-          tokenQueries.info(this.queryClient, {
+        const token = await ctx.client.fetchQuery(
+          tokenQueries.info({
             chainId: this.chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -207,7 +207,7 @@ export class TokenStakedVotingModule extends VotingModuleBase<CwDao> {
   async getHooks(): Promise<string[]> {
     return (
       await this.queryClient.fetchQuery(
-        daoVotingTokenStakedQueries.getHooks(this.queryClient, {
+        daoVotingTokenStakedQueries.getHooks({
           chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })

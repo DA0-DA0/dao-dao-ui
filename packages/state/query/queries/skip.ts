@@ -116,45 +116,37 @@ export const skipQueries = {
   /**
    * Fetch Skip chain.
    */
-  chain: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchSkipChain>[1]
-  ) =>
+  chain: (options: Parameters<typeof fetchSkipChain>[1]) =>
     queryOptions({
       queryKey: ['skip', 'chain', options],
-      queryFn: () => fetchSkipChain(queryClient, options),
+      queryFn: (ctx) => fetchSkipChain(ctx.client, options),
     }),
   /**
    * Fetch Skip asset.
    */
-  asset: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchSkipAsset>[1]
-  ) =>
+  asset: (options: Parameters<typeof fetchSkipAsset>[1]) =>
     queryOptions({
       queryKey: ['skip', 'asset', options],
-      queryFn: () => fetchSkipAsset(queryClient, options),
+      queryFn: (ctx) => fetchSkipAsset(ctx.client, options),
     }),
   /**
    * Fetch Skip recommended asset.
    */
   recommendedAsset: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchSkipRecommendedAsset>[1]
   ) =>
     queryOptions({
       queryKey: ['skip', 'recommendedAsset', options],
-      queryFn: () => fetchSkipRecommendedAsset(queryClient, options),
+      queryFn: (ctx) => fetchSkipRecommendedAsset(ctx.client, options),
     }),
   /**
    * Fetch Skip recommended asset for generic token.
    */
   recommendedAssetForGenericToken: (
-    queryClient: QueryClient,
     options: Omit<Parameters<typeof fetchSkipRecommendedAsset>[1], 'denom'> &
       Pick<GenericTokenSource, 'type' | 'denomOrAddress'>
   ) =>
-    skipQueries.recommendedAsset(queryClient, {
+    skipQueries.recommendedAsset({
       fromChainId: options.fromChainId,
       toChainId: options.toChainId,
       denom:
@@ -164,12 +156,9 @@ export const skipQueries = {
   /**
    * Fetch whether or not pfm is enabled for a chain.
    */
-  chainPfmEnabled: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchSkipChainPfmEnabled>[1]
-  ) =>
+  chainPfmEnabled: (options: Parameters<typeof fetchSkipChainPfmEnabled>[1]) =>
     queryOptions({
       queryKey: ['skip', 'chainPfmEnabled', options],
-      queryFn: () => fetchSkipChainPfmEnabled(queryClient, options),
+      queryFn: (ctx) => fetchSkipChainPfmEnabled(ctx.client, options),
     }),
 }

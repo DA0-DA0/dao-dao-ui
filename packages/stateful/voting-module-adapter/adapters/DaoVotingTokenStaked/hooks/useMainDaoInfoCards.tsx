@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { indexerQueries } from '@dao-dao/state'
@@ -31,9 +30,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     supply,
   } = useGovernanceTokenInfo()
 
-  const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       formula:

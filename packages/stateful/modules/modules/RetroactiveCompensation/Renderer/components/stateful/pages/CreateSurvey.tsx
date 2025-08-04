@@ -146,7 +146,7 @@ export const CreateSurvey = () => {
 
         // Reload survey list.
         await queryClient.refetchQueries({
-          queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+          queryKey: retroactiveCompensationQueries.listSurveys({
             daoAddress: coreAddress,
           }).queryKey,
         })

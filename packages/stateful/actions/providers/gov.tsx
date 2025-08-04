@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { accountQueries, chainQueries } from '@dao-dao/state'
 import { ErrorPage, PageLoader, useChain } from '@dao-dao/stateless'
 import {
@@ -16,9 +14,9 @@ export const GovActionsProvider = ({
   children,
 }: GovActionsProviderProps) => {
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
+
   const govParams = useQueryLoadingDataWithError(
-    chainQueries.govParams(queryClient, {
+    chainQueries.govParams({
       chainId,
     })
   )
@@ -31,7 +29,7 @@ export const GovActionsProvider = ({
   const accounts = useQueryLoadingDataWithError(
     moduleAddress.loading || moduleAddress.errored
       ? undefined
-      : accountQueries.list(queryClient, {
+      : accountQueries.list({
           chainId,
           address: moduleAddress.data,
           // Make sure to load ICAs for Neutron so Valence accounts load.

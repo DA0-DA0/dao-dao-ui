@@ -75,13 +75,10 @@ export class UpdateRewardDistributionAction extends ActionBase<UpdateRewardDistr
         this.distributors.map(
           async ({ address }) =>
             await this.options.queryClient.fetchQuery(
-              daoRewardsDistributorExtraQueries.distributions(
-                this.options.queryClient,
-                {
-                  chainId: this.options.chain.chainId,
-                  address,
-                }
-              )
+              daoRewardsDistributorExtraQueries.distributions({
+                chainId: this.options.chain.chainId,
+                address,
+              })
             )
         )
       )

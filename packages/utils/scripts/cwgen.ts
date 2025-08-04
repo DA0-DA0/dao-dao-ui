@@ -158,13 +158,6 @@ codegen({
         /info: <TData = InfoResponse,?>[^}]+\}[^{]+\{[^,]+,[^,]+,[^)]+\),?/m,
         'info: contractQueries.info,'
       )
-      // add queryClient argument to functions
-      if (indexer) {
-        content = content.replace(
-          /(: <TData = [^>]+>\()\{/g,
-          '$1queryClient: QueryClient,{'
-        )
-      }
       // replace client with chain ID and contract address
       content = content.replace(
         /client: [^;]+;/g,
@@ -192,11 +185,11 @@ codegen({
         /queryFn: \(\) => client\.([^(]+)(\([^\)]*\)),/gm,
         indexer
           ? `
-    queryFn: async () => {
+    queryFn: async (ctx) => {
       try {
         // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+        return await ctx.client.fetchQuery(
+          indexerQueries.queryContract({
             chainId,
             contractAddress,
             formula: '${camelCasedContractName}/$1',

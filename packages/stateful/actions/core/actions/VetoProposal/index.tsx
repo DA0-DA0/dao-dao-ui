@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -43,7 +42,6 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     address,
   } = useActionOptions()
   const { watch, setValue } = useFormContext<VetoProposalData>()
-  const queryClient = useQueryClient()
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const coreAddress = watch(
@@ -54,7 +52,7 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
   )
 
   const daoVetoableProposals = useQueryLoadingDataWithError(
-    daoQueries.daosWithVetoableProposals(queryClient, {
+    daoQueries.daosWithVetoableProposals({
       chainId: daoChainId,
       coreAddress: address,
       // Include even those not registered in the DAO's list.
@@ -93,7 +91,7 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
 
   const selectedDaoInfo = useQueryLoadingDataWithError(
     chainId && coreAddress
-      ? daoQueries.info(queryClient, {
+      ? daoQueries.info({
           chainId,
           coreAddress,
         })
@@ -184,7 +182,7 @@ export class VetoProposalAction extends ActionBase<VetoProposalData> {
 
     const isCw1Whitelist = proposal.veto
       ? await this.options.queryClient.fetchQuery(
-          contractQueries.isCw1Whitelist(this.options.queryClient, {
+          contractQueries.isCw1Whitelist({
             chainId,
             address: proposal.veto.vetoer,
           })

@@ -1,4 +1,4 @@
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { constSelector, useSetRecoilState } from 'recoil'
 
@@ -26,10 +26,9 @@ export const useStakingInfo = ({
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet()
-  const queryClient = useQueryClient()
 
   const { data: config } = useSuspenseQuery(
-    daoVotingTokenStakedQueries.getConfig(queryClient, {
+    daoVotingTokenStakedQueries.getConfig({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
     })

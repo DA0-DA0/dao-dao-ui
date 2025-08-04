@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { daoQueries } from '@dao-dao/state/query'
 import { ActionBase, DaoEmoji, useChain } from '@dao-dao/stateless'
 import {
@@ -17,12 +15,11 @@ import { CreateDaoComponent, CreateDaoData } from './Component'
 
 const Component: ActionComponent<undefined, CreateDaoData> = (props) => {
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
 
   // If admin is set, attempt to load parent DAO info.
   const parentDao = useQueryLoadingDataWithError(
     props.data.admin
-      ? daoQueries.parentInfo(queryClient, {
+      ? daoQueries.parentInfo({
           chainId,
           parentAddress: props.data.admin,
         })

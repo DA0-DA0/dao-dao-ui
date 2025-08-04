@@ -107,7 +107,7 @@ export const InnerViewSurvey = ({
 
       // Reload survey list.
       await queryClient.refetchQueries({
-        queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+        queryKey: retroactiveCompensationQueries.listSurveys({
           daoAddress: dao.coreAddress,
         }).queryKey,
       })

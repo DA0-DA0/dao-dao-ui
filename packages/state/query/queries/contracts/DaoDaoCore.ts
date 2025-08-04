@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { IndexerDumpState } from '@dao-dao/types'
 import {
@@ -304,17 +300,18 @@ export const daoDaoCoreQueryKeys = {
     ] as const,
 }
 export const daoDaoCoreQueries = {
-  admin: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreAdminQuery<TData>
-  ) =>
+  admin: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreAdminQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.admin(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/admin',
@@ -332,18 +329,19 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  adminNomination: <TData = AdminNominationResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreAdminNominationQuery<TData>
-  ) =>
+  adminNomination: <TData = AdminNominationResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreAdminNominationQuery<TData>) =>
     queryOptions<AdminNominationResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.adminNomination(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            nomination: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            nomination: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoCore/adminNomination',
@@ -362,17 +360,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/config',
@@ -459,17 +458,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  dumpState: <TData = DumpStateResponse | IndexerDumpState>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreDumpStateQuery<TData>
-  ) =>
+  dumpState: <TData = DumpStateResponse | IndexerDumpState>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreDumpStateQuery<TData>) =>
     queryOptions<DumpStateResponse | IndexerDumpState, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          const state = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          const state = await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/dumpState',
@@ -490,19 +490,21 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  getItem: <TData = GetItemResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: DaoDaoCoreGetItemQuery<TData>
-  ) =>
+  getItem: <TData = GetItemResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreGetItemQuery<TData>) =>
     queryOptions<GetItemResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
             item:
-              (await queryClient.fetchQuery(
-                indexerQueries.queryContract(queryClient, {
+              (await ctx.client.fetchQuery(
+                indexerQueries.queryContract({
                   chainId,
                   contractAddress,
                   formula: 'daoCore/getItem',
@@ -543,27 +545,24 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  listAllItems: <TData = ListItemsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreListAllItemsQuery<TData>
-  ) =>
+  listAllItems: <TData = ListItemsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreListAllItemsQuery<TData>) =>
     queryOptions<ListItemsResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.listAllItems(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         let items: ListItemsResponse | undefined
 
         try {
-          const indexerItems = await queryClient.fetchQuery(
-            indexerQueries.queryContract<ListItemsResponse>(queryClient, {
+          const indexerItems = await ctx.client.fetchQuery(
+            indexerQueries.queryContract<ListItemsResponse>({
               chainId,
               contractAddress,
               formula: 'daoCore/listItems',
@@ -582,7 +581,7 @@ export const daoDaoCoreQueries = {
           items = []
           const limit = 30
           while (true) {
-            const page = await queryClient.fetchQuery(
+            const page = await ctx.client.fetchQuery(
               daoDaoCoreQueries.listItems({
                 chainId,
                 contractAddress,
@@ -622,26 +621,23 @@ export const daoDaoCoreQueries = {
       ...options,
     }),
   info: contractQueries.info,
-  proposalModules: <TData = ArrayOfProposalModule>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreProposalModulesQuery<TData>
-  ) =>
+  proposalModules: <TData = ArrayOfProposalModule>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreProposalModulesQuery<TData>) =>
     queryOptions<ArrayOfProposalModule, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.proposalModules(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/proposalModules',
@@ -664,26 +660,23 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  activeProposalModules: <TData = ArrayOfProposalModule>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreActiveProposalModulesQuery<TData>
-  ) =>
+  activeProposalModules: <TData = ArrayOfProposalModule>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreActiveProposalModulesQuery<TData>) =>
     queryOptions<ArrayOfProposalModule, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.activeProposalModules(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/activeProposalModules',
@@ -724,17 +717,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  pauseInfo: <TData = PauseInfoResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCorePauseInfoQuery<TData>
-  ) =>
+  pauseInfo: <TData = PauseInfoResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCorePauseInfoQuery<TData>) =>
     queryOptions<PauseInfoResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/pauseInfo',
@@ -752,17 +746,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  votingModule: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreVotingModuleQuery<TData>
-  ) =>
+  votingModule: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreVotingModuleQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/votingModule',
@@ -799,17 +794,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  daoURI: <TData = DaoURIResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreDaoURIQuery<TData>
-  ) =>
+  daoURI: <TData = DaoURIResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreDaoURIQuery<TData>) =>
     queryOptions<DaoURIResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/daoUri',
@@ -827,26 +823,23 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreVotingPowerAtHeightQuery<TData>
-  ) =>
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreVotingPowerAtHeightQuery<TData>) =>
     queryOptions<VotingPowerAtHeightResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/votingPowerAtHeight',
@@ -871,26 +864,23 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoDaoCoreTotalPowerAtHeightQuery<TData>
-  ) =>
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoDaoCoreTotalPowerAtHeightQuery<TData>) =>
     queryOptions<TotalPowerAtHeightResponse, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/totalPowerAtHeight',
@@ -913,17 +903,18 @@ export const daoDaoCoreQueries = {
       },
       ...options,
     }),
-  initialActions: <TData = ArrayOfCosmosMsgForEmpty>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreInitialActionsQuery<TData>
-  ) =>
+  initialActions: <TData = ArrayOfCosmosMsgForEmpty>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoDaoCoreInitialActionsQuery<TData>) =>
     queryOptions<ArrayOfCosmosMsgForEmpty, Error, TData>({
       queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoCore/initialActions',

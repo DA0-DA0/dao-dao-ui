@@ -106,7 +106,7 @@ export const usePfpkClientOptions = ({
           })
         )
         await queryClient.refetchQueries(
-          profileQueries.unified(queryClient, {
+          profileQueries.unified({
             chainId,
             address,
           })

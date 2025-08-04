@@ -33,7 +33,7 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoDaoCoreQueries.votingPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.dao.coreAddress,
       args: {
@@ -46,7 +46,7 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
   getTotalVotingPowerQuery(
     height?: number
   ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
-    return daoDaoCoreQueries.totalPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.dao.coreAddress,
       args: {

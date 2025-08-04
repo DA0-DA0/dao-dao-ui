@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 
 import { daoQueries } from '@dao-dao/state/query'
 import {
@@ -21,12 +21,11 @@ export const useLoadingDaos = (
   daos: LoadingData<DaoSource[]>,
   alphabetize = false
 ): LoadingData<DaoInfo[]> => {
-  const queryClient = useQueryClient()
   return useQueries({
     queries: daos.loading
       ? []
       : daos.data.map(({ chainId, coreAddress }) =>
-          daoQueries.info(queryClient, {
+          daoQueries.info({
             chainId,
             coreAddress,
           })
@@ -45,13 +44,12 @@ export const useLoadingLazyDaos = (
   daos: LoadingData<DaoSource[]> | LoadingDataWithError<DaoSource[]>,
   alphabetize = false
 ): LoadingDataWithError<LazyDaoCardProps[]> => {
-  const queryClient = useQueryClient()
   return useQueries({
     queries:
       daos.loading || ('errored' in daos && daos.errored)
         ? []
         : daos.data.map(({ chainId, coreAddress }) =>
-            daoQueries.lazyDaoCardProps(queryClient, {
+            daoQueries.lazyDaoCardProps({
               chainId,
               coreAddress,
             })

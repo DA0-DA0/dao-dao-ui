@@ -39,11 +39,11 @@ export const useStakingInfo = ({
 
   const [stakingContractVersion, unstakingDuration] = useSuspenseQueries({
     queries: [
-      contractQueries.version(queryClient, {
+      contractQueries.version({
         chainId: votingModule.chainId,
         address: votingModule.address,
       }),
-      daoVotingOnftStakedQueries.config(queryClient, {
+      daoVotingOnftStakedQueries.config({
         chainId: votingModule.chainId,
         contractAddress: votingModule.address,
       }),
@@ -191,7 +191,7 @@ export const useStakingInfo = ({
   }, [votingModule, queryClient, walletAddress])
 
   const loadingClaims = useQueryLoadingData(
-    daoVotingOnftStakedQueries.nftClaims(queryClient, {
+    daoVotingOnftStakedQueries.nftClaims({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       args: {
@@ -221,7 +221,7 @@ export const useStakingInfo = ({
 
   // Wallet staked value
   const loadingWalletStakedNfts = useQueryLoadingDataWithError(
-    daoVotingOnftStakedQueries.stakedNfts(queryClient, {
+    daoVotingOnftStakedQueries.stakedNfts({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       args: {
@@ -244,7 +244,7 @@ export const useStakingInfo = ({
 
   const loadingWalletUnstakedNfts = useQueryLoadingDataWithError(
     {
-      ...omniflixQueries.allOnfts(queryClient, {
+      ...omniflixQueries.allOnfts({
         chainId: votingModule.chainId,
         id: collectionAddress,
         owner: walletAddress ?? '',

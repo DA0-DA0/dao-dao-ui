@@ -98,7 +98,7 @@ export const reverseProposalInfosSelector: (
             ? new Date(response.createdAt)
             : queryClient
                 .fetchQuery(
-                  chainQueries.blockTimestampSafe(queryClient, {
+                  chainQueries.blockTimestampSafe({
                     chainId,
                     height: start_height,
                   })
@@ -143,7 +143,7 @@ export const reversePreProposePendingProposalInfosSelector: (
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const pendingProposals = (await queryClient.fetchQuery(
-        daoPreProposeApprovalMultipleQueries.queryExtension(queryClient, {
+        daoPreProposeApprovalMultipleQueries.queryExtension({
           contractAddress: proposalModuleAddress,
           chainId,
           args: {
@@ -190,7 +190,7 @@ export const reversePreProposeCompletedProposalInfosSelector: (
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const completedProposals = (await queryClient.fetchQuery(
-        daoPreProposeApprovalMultipleQueries.queryExtension(queryClient, {
+        daoPreProposeApprovalMultipleQueries.queryExtension({
           contractAddress: proposalModuleAddress,
           chainId,
           args: {

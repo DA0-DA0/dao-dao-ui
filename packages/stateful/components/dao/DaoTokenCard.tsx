@@ -89,7 +89,7 @@ export const DaoTokenCard = ({
     })
     // Then native delegation info.
     queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+      queryKey: chainQueries.nativeDelegationInfo({
         chainId: owner.chainId,
         address: owner.address,
       }).queryKey,

@@ -94,7 +94,7 @@ export class NeutronOverruleSubDaoProposalAction extends ActionBase<NeutronOverr
         },
       }) ||
       !(await this.options.queryClient.fetchQuery(
-        contractQueries.isContract(this.options.queryClient, {
+        contractQueries.isContract({
           chainId: this.options.chain.chainId,
           address: decodedMessage.wasm.execute.contract_addr,
           nameOrNames: ContractName.NeutronCwdSubdaoTimelockSingle,
@@ -106,7 +106,7 @@ export class NeutronOverruleSubDaoProposalAction extends ActionBase<NeutronOverr
 
     // Get SubDAO from the timelock module used in the message.
     const { subdao } = await this.options.queryClient.fetchQuery(
-      neutronCwdSubdaoTimelockSingleQueries.config(this.options.queryClient, {
+      neutronCwdSubdaoTimelockSingleQueries.config({
         chainId,
         contractAddress: decodedMessage.wasm.execute.contract_addr,
       })
@@ -138,7 +138,7 @@ export class NeutronOverruleSubDaoProposalAction extends ActionBase<NeutronOverr
   ]: ProcessedMessage[]): Promise<NeutronOverruleSubDaoProposalData> {
     // Get SubDAO from the timelock module used in the message.
     const { subdao } = await this.options.queryClient.fetchQuery(
-      neutronCwdSubdaoTimelockSingleQueries.config(this.options.queryClient, {
+      neutronCwdSubdaoTimelockSingleQueries.config({
         chainId,
         contractAddress: decodedMessage.wasm.execute.contract_addr,
       })

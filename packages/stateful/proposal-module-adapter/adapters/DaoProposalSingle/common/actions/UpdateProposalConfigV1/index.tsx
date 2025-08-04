@@ -120,7 +120,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
 
   async setup() {
     const config = await this.options.queryClient.fetchQuery(
-      cwProposalSingleV1Queries.config(this.options.queryClient, {
+      cwProposalSingleV1Queries.config({
         chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
@@ -128,7 +128,7 @@ export class DaoProposalSingleV1UpdateConfigAction extends ActionBase<UpdateProp
 
     const token = config.deposit_info
       ? await this.options.queryClient.fetchQuery(
-          tokenQueries.info(this.options.queryClient, {
+          tokenQueries.info({
             chainId: this.proposalModule.chainId,
             type: TokenType.Cw20,
             denomOrAddress: config.deposit_info.token,

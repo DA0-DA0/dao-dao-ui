@@ -69,11 +69,11 @@ export const oraichainCw20StakingExtraQueries = {
    * Get all lock infos for Oraichain's cw20-staking contract.
    */
   listAllLockInfos: (
-    queryClient: QueryClient,
     options: Parameters<typeof listAllOraichainCw20StakingLockInfos>[1]
   ) =>
     queryOptions({
       queryKey: ['oraichainCw20StakingExtra', 'listAllLockInfos', options],
-      queryFn: () => listAllOraichainCw20StakingLockInfos(queryClient, options),
+      queryFn: (ctx) =>
+        listAllOraichainCw20StakingLockInfos(ctx.client, options),
     }),
 }

@@ -29,7 +29,7 @@ export const fetchPolytoneProxies = async (
     return polytoneNoteProxyMapToChainIdMap(
       chainId,
       await queryClient.fetchQuery(
-        indexerQueries.queryAccount(queryClient, {
+        indexerQueries.queryAccount({
           chainId,
           address,
           formula: 'polytone/proxies',
@@ -55,7 +55,7 @@ export const fetchPolytoneProxies = async (
       await Promise.all(
         polytoneConnections.map(async ([proxyChainId, { note }]) => {
           const proxy = await queryClient.fetchQuery(
-            polytoneNoteQueries.remoteAddress(queryClient, {
+            polytoneNoteQueries.remoteAddress({
               chainId,
               contractAddress: note,
               args: {
@@ -93,7 +93,7 @@ export const reverseLookupPolytoneProxy = async (
   note: string
 }> => {
   const voice = await queryClient.fetchQuery(
-    polytoneProxyQueries.instantiator(queryClient, {
+    polytoneProxyQueries.instantiator({
       chainId,
       contractAddress: address,
     })
@@ -101,7 +101,7 @@ export const reverseLookupPolytoneProxy = async (
 
   // Get sender info for this voice.
   const senderInfo = await queryClient.fetchQuery(
-    polytoneVoiceQueries.senderInfoForProxy(queryClient, {
+    polytoneVoiceQueries.senderInfoForProxy({
       chainId,
       contractAddress: voice,
       args: {
@@ -134,24 +134,20 @@ export const polytoneQueries = {
   /**
    * Fetch polytone proxies for an account.
    */
-  proxies: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchPolytoneProxies>[1]
-  ) =>
+  proxies: (options: Parameters<typeof fetchPolytoneProxies>[1]) =>
     queryOptions({
       queryKey: ['polytone', 'proxies', options],
-      queryFn: () => fetchPolytoneProxies(queryClient, options),
+      queryFn: (ctx) => fetchPolytoneProxies(ctx.client, options),
     }),
   /**
    * Given a polytone proxy, fetch the source chain, remote address, and
    * polytone note.
    */
   reverseLookupProxy: (
-    queryClient: QueryClient,
     options: Parameters<typeof reverseLookupPolytoneProxy>[1]
   ) =>
     queryOptions({
       queryKey: ['polytone', 'reverseLookupProxy', options],
-      queryFn: () => reverseLookupPolytoneProxy(queryClient, options),
+      queryFn: (ctx) => reverseLookupPolytoneProxy(ctx.client, options),
     }),
 }

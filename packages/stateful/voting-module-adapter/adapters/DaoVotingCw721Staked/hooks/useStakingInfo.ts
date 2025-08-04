@@ -1,4 +1,4 @@
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -26,7 +26,6 @@ export const useStakingInfo = ({
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const dao = useDao()
   const { address: walletAddress = '' } = useWallet()
-  const queryClient = useQueryClient()
 
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()
@@ -34,7 +33,7 @@ export const useStakingInfo = ({
   const {
     data: { unstaking_duration: unstakingDuration },
   } = useSuspenseQuery(
-    daoVotingCw721StakedQueries.config(queryClient, {
+    daoVotingCw721StakedQueries.config({
       chainId: dao.chainId,
       contractAddress: dao.votingModule.address,
     })
@@ -75,7 +74,7 @@ export const useStakingInfo = ({
   )
 
   const loadingClaims = useQueryLoadingDataWithError({
-    ...daoVotingCw721StakedQueries.nftClaims(queryClient, {
+    ...daoVotingCw721StakedQueries.nftClaims({
       chainId: dao.chainId,
       contractAddress: dao.votingModule.address,
       args: { address: walletAddress },
@@ -97,7 +96,7 @@ export const useStakingInfo = ({
 
   // Total staked value
   const loadingTotalStakedValue = useQueryLoadingDataWithError({
-    ...daoVotingCw721StakedQueries.totalPowerAtHeight(queryClient, {
+    ...daoVotingCw721StakedQueries.totalPowerAtHeight({
       chainId: dao.chainId,
       contractAddress: dao.votingModule.address,
       args: {},
@@ -108,7 +107,7 @@ export const useStakingInfo = ({
   // Wallet staked value
   const loadingWalletStakedNfts = useQueryLoadingDataWithError(
     {
-      ...daoVotingCw721StakedQueries.stakedNfts(queryClient, {
+      ...daoVotingCw721StakedQueries.stakedNfts({
         chainId: dao.chainId,
         contractAddress: dao.votingModule.address,
         args: { address: walletAddress },

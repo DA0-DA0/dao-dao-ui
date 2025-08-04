@@ -1,8 +1,4 @@
-import {
-  useQueryClient,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { daoVotingOnftStakedQueries, omniflixQueries } from '@dao-dao/state'
@@ -23,11 +19,10 @@ export const useGovernanceCollectionInfo = ({
   const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet()
 
-  const queryClient = useQueryClient()
   const {
     data: { onft_collection_id },
   } = useSuspenseQuery(
-    daoVotingOnftStakedQueries.config(queryClient, {
+    daoVotingOnftStakedQueries.config({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
     })

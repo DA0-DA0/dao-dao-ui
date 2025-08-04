@@ -231,7 +231,7 @@ export const VestingStakingModal = ({
         })
         // Invalidate staking info.
         queryClient.invalidateQueries({
-          queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+          queryKey: chainQueries.nativeDelegationInfo({
             chainId,
             address: vestingContractAddress,
           }).queryKey,
@@ -253,7 +253,7 @@ export const VestingStakingModal = ({
         })
         // Then info query.
         queryClient.invalidateQueries({
-          queryKey: cwVestingExtraQueries.info(queryClient, {
+          queryKey: cwVestingExtraQueries.info({
             chainId,
             address: vestingContractAddress,
           }).queryKey,

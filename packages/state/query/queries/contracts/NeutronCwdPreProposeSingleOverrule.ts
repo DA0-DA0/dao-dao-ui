@@ -1,4 +1,4 @@
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -103,191 +103,183 @@ export const neutronCwdPreProposeSingleOverruleQueryKeys = {
 }
 
 export const neutronCwdPreProposeSingleOverruleQueries = {
-  proposalModule: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronCwdPreProposeSingleOverruleProposalModulesQuery<TData>
-  ) => ({
-    queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.proposalModule(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdPreProposeSingleOverrule/proposalModule',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdPreProposeSingleOverruleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  proposalModule: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronCwdPreProposeSingleOverruleProposalModulesQuery<TData>) =>
+    queryOptions({
+      queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.proposalModule(
+        chainId,
         contractAddress
-      ).proposalModule()
-    },
-    ...options,
-  }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronCwdPreProposeSingleOverruleDaoQuery<TData>
-  ) => ({
-    queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.dao(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdPreProposeSingleOverrule/dao',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdPreProposeSingleOverruleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronCwdPreProposeSingleOverruleConfigQuery<TData>
-  ) => ({
-    queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdPreProposeSingleOverrule/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdPreProposeSingleOverruleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
-  depositInfo: <TData = DepositInfoResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: NeutronCwdPreProposeSingleOverruleDepositInfoQuery<TData>
-  ) => ({
-    queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.depositInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdPreProposeSingleOverrule/depositInfo',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdPreProposeSingleOverruleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).depositInfo(args)
-    },
-    ...options,
-  }),
-  queryExtension: <TData = any>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: NeutronCwdPreProposeSingleOverruleQueryExtensionQuery<TData>
-  ) => ({
-    queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.queryExtension(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        const query = args.msg
-        if ('overrule_proposal_id' in query) {
-          const overruleProposalId = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'neutron/cwdPreProposeSingleOverrule/overruleProposalId',
-              args: {
-                timelockAddress: query.overrule_proposal_id.timelock_address,
-                subdaoProposalId: query.overrule_proposal_id.subdao_proposal_id,
-              },
+              formula: 'neutron/cwdPreProposeSingleOverrule/proposalModule',
             })
           )
-          if (typeof overruleProposalId === 'number') {
-            return overruleProposalId
-          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdPreProposeSingleOverruleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdPreProposeSingleOverruleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModule()
+      },
+      ...options,
+    }),
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronCwdPreProposeSingleOverruleDaoQuery<TData>) =>
+    queryOptions({
+      queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.dao(
+        chainId,
         contractAddress
-      ).queryExtension(args)
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'neutron/cwdPreProposeSingleOverrule/dao',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdPreProposeSingleOverruleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronCwdPreProposeSingleOverruleConfigQuery<TData>) =>
+    queryOptions({
+      queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.config(
+        chainId,
+        contractAddress
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'neutron/cwdPreProposeSingleOverrule/config',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdPreProposeSingleOverruleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
+  depositInfo: <TData = DepositInfoResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: NeutronCwdPreProposeSingleOverruleDepositInfoQuery<TData>) =>
+    queryOptions({
+      queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.depositInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'neutron/cwdPreProposeSingleOverrule/depositInfo',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdPreProposeSingleOverruleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).depositInfo(args)
+      },
+      ...options,
+    }),
+  queryExtension: <TData = any>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: NeutronCwdPreProposeSingleOverruleQueryExtensionQuery<TData>) =>
+    queryOptions({
+      queryKey: neutronCwdPreProposeSingleOverruleQueryKeys.queryExtension(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          const query = args.msg
+          if ('overrule_proposal_id' in query) {
+            const overruleProposalId = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula:
+                  'neutron/cwdPreProposeSingleOverrule/overruleProposalId',
+                args: {
+                  timelockAddress: query.overrule_proposal_id.timelock_address,
+                  subdaoProposalId:
+                    query.overrule_proposal_id.subdao_proposal_id,
+                },
+              })
+            )
+            if (typeof overruleProposalId === 'number') {
+              return overruleProposalId
+            }
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdPreProposeSingleOverruleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).queryExtension(args)
+      },
+      ...options,
+    }),
 }
 
 export interface NeutronCwdPreProposeSingleOverruleReactQuery<

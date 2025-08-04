@@ -293,7 +293,7 @@ export class Instantiate2Action extends ActionBase<Instantiate2Data> {
         amount,
         decimals: (
           await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,

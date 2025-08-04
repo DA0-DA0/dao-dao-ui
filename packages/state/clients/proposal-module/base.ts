@@ -352,14 +352,14 @@ export abstract class ProposalModuleBase<
           height,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (
           !isFeatureSupportedByVersion(Feature.VoteDelegation, this.version)
         ) {
           return null
         }
 
-        const delegationModule = await this.queryClient.fetchQuery(
+        const delegationModule = await ctx.client.fetchQuery(
           this.getDelegationModuleQuery()
         )
 
@@ -367,8 +367,8 @@ export abstract class ProposalModuleBase<
           return null
         }
 
-        const registration = await this.queryClient.fetchQuery(
-          daoVoteDelegationQueries.registration(this.queryClient, {
+        const registration = await ctx.client.fetchQuery(
+          daoVoteDelegationQueries.registration({
             chainId: this.chainId,
             contractAddress: delegationModule,
             args: {

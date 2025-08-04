@@ -743,7 +743,7 @@ export const fetchGovParams = async (
 ): Promise<AllGovParams> => {
   const [supportsV1, client] = await Promise.all([
     queryClient.fetchQuery(
-      chainQueries.supportsV1GovModule(queryClient, {
+      chainQueries.supportsV1GovModule({
         chainId,
         require47: true,
       })
@@ -824,7 +824,7 @@ export const searchAndDecodeGovProposals = async (
 }> => {
   const [supportsV1Gov, { results, total }] = await Promise.all([
     queryClient.fetchQuery(
-      chainQueries.supportsV1GovModule(queryClient, {
+      chainQueries.supportsV1GovModule({
         chainId: options.chainId,
       })
     ),
@@ -885,7 +885,7 @@ export const fetchGovProposals = async (
 }> => {
   const indexerProposals = await queryClient
     .fetchQuery(
-      chainQueries.searchAndDecodeGovProposals(queryClient, {
+      chainQueries.searchAndDecodeGovProposals({
         chainId,
         status,
         offset,
@@ -902,7 +902,7 @@ export const fetchGovProposals = async (
   const [client, supportsV1Gov] = await Promise.all([
     cosmosProtoRpcClientRouter.connect(chainId),
     queryClient.fetchQuery(
-      chainQueries.supportsV1GovModule(queryClient, {
+      chainQueries.supportsV1GovModule({
         chainId,
       })
     ),
@@ -1048,7 +1048,7 @@ export const fetchGovProposal = async (
   }
 ): Promise<GovProposalWithDecodedContent> => {
   const supportsV1 = await queryClient.fetchQuery(
-    chainQueries.supportsV1GovModule(queryClient, {
+    chainQueries.supportsV1GovModule({
       chainId,
     })
   )
@@ -1060,7 +1060,7 @@ export const fetchGovProposal = async (
     data: string
   } | null = await queryClient
     .fetchQuery(
-      indexerQueries.queryGeneric(queryClient, {
+      indexerQueries.queryGeneric({
         chainId,
         formula: 'gov/proposal',
         args: {
@@ -1161,7 +1161,7 @@ export const fetchGovProposalTally = async (
   const [client, supportsV1] = await Promise.all([
     cosmosProtoRpcClientRouter.connect(chainId),
     queryClient.fetchQuery(
-      chainQueries.supportsV1GovModule(queryClient, {
+      chainQueries.supportsV1GovModule({
         chainId,
       })
     ),
@@ -1225,7 +1225,7 @@ export const fetchGovProposalVote = async (
   const [client, supportsV1] = await Promise.all([
     cosmosProtoRpcClientRouter.connect(chainId),
     queryClient.fetchQuery(
-      chainQueries.supportsV1GovModule(queryClient, {
+      chainQueries.supportsV1GovModule({
         chainId,
       })
     ),
@@ -1504,13 +1504,10 @@ export const chainQueries = {
    * Check whether or not the address is a chain module, optionally with a
    * specific name.
    */
-  isAddressModule: (
-    queryClient: QueryClient,
-    options: Parameters<typeof isAddressModule>[1]
-  ) =>
+  isAddressModule: (options: Parameters<typeof isAddressModule>[1]) =>
     queryOptions({
       queryKey: ['chain', 'isAddressModule', options],
-      queryFn: () => isAddressModule(queryClient, options),
+      queryFn: (ctx) => isAddressModule(ctx.client, options),
     }),
   /**
    * Fetch a block, optionally a specific height, or the latest block.
@@ -1533,26 +1530,20 @@ export const chainQueries = {
    * Fetch the timestamp for a block, optionally a specific height, or the
    * latest block.
    */
-  blockTimestamp: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchBlockTimestamp>[1]
-  ) =>
+  blockTimestamp: (options: Parameters<typeof fetchBlockTimestamp>[1]) =>
     queryOptions({
       queryKey: ['chain', 'blockTimestamp', options],
-      queryFn: () => fetchBlockTimestamp(queryClient, options),
+      queryFn: (ctx) => fetchBlockTimestamp(ctx.client, options),
     }),
   /**
    * Fetch the timestamp for a block, optionally a specific height, or the
    * latest block. Returns undefined if the block is not found.
    */
-  blockTimestampSafe: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchBlockTimestamp>[1]
-  ) =>
+  blockTimestampSafe: (options: Parameters<typeof fetchBlockTimestamp>[1]) =>
     queryOptions({
       queryKey: ['chain', 'blockTimestampSafe', options],
-      queryFn: () =>
-        fetchBlockTimestamp(queryClient, options).catch(() => undefined),
+      queryFn: (ctx) =>
+        fetchBlockTimestamp(ctx.client, options).catch(() => undefined),
     }),
   /**
    * Fetch the balance for a given address and denom.
@@ -1602,12 +1593,11 @@ export const chainQueries = {
    * Fetch native delegation info.
    */
   nativeDelegationInfo: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchNativeDelegationInfo>[1]
   ) =>
     queryOptions({
       queryKey: ['chain', 'nativeDelegationInfo', options],
-      queryFn: () => fetchNativeDelegationInfo(queryClient, options),
+      queryFn: (ctx) => fetchNativeDelegationInfo(ctx.client, options),
     }),
   /**
    * Fetch the unstaking duration in seconds for the native token.
@@ -1657,12 +1647,11 @@ export const chainQueries = {
    * Fetch whether or not a chain supports the v1 gov module.
    */
   supportsV1GovModule: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchChainSupportsV1GovModule>[1]
   ) =>
     queryOptions({
       queryKey: ['chain', 'supportsV1GovModule', options],
-      queryFn: () => fetchChainSupportsV1GovModule(queryClient, options),
+      queryFn: (ctx) => fetchChainSupportsV1GovModule(ctx.client, options),
     }),
   /**
    * Fetch whether or not a chain supports the ICA controller module.
@@ -1686,13 +1675,10 @@ export const chainQueries = {
   /**
    * Fetch governance module params.
    */
-  govParams: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovParams>[1]
-  ) =>
+  govParams: (options: Parameters<typeof fetchGovParams>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govParams', options],
-      queryFn: () => fetchGovParams(queryClient, options),
+      queryFn: (ctx) => fetchGovParams(ctx.client, options),
     }),
   /**
    * Search chain governance proposals.
@@ -1706,68 +1692,52 @@ export const chainQueries = {
    * Search chain governance proposals and decode their content.
    */
   searchAndDecodeGovProposals: (
-    queryClient: QueryClient,
     options: Parameters<typeof searchAndDecodeGovProposals>[1]
   ) =>
     queryOptions({
       queryKey: ['chain', 'searchAndDecodeGovProposals', options],
-      queryFn: () => searchAndDecodeGovProposals(queryClient, options),
+      queryFn: (ctx) => searchAndDecodeGovProposals(ctx.client, options),
     }),
   /**
    * Fetch the governance proposals for a chain, defaulting to those that are
    * currently open for voting.
    */
-  govProposals: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovProposals>[1]
-  ) =>
+  govProposals: (options: Parameters<typeof fetchGovProposals>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govProposals', options],
-      queryFn: () => fetchGovProposals(queryClient, options),
+      queryFn: (ctx) => fetchGovProposals(ctx.client, options),
     }),
   /**
    * Fetch a chain governance proposal.
    */
-  govProposal: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovProposal>[1]
-  ) =>
+  govProposal: (options: Parameters<typeof fetchGovProposal>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govProposal', options],
-      queryFn: () => fetchGovProposal(queryClient, options),
+      queryFn: (ctx) => fetchGovProposal(ctx.client, options),
     }),
   /**
    * Fetch the tally for a chain governance proposal.
    */
-  govProposalTally: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovProposalTally>[1]
-  ) =>
+  govProposalTally: (options: Parameters<typeof fetchGovProposalTally>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govProposalTally', options],
-      queryFn: () => fetchGovProposalTally(queryClient, options),
+      queryFn: (ctx) => fetchGovProposalTally(ctx.client, options),
     }),
   /**
    * Fetch a vote for a chain governance proposal.
    */
-  govProposalVote: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovProposalVote>[1]
-  ) =>
+  govProposalVote: (options: Parameters<typeof fetchGovProposalVote>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govProposalVote', options],
-      queryFn: () => fetchGovProposalVote(queryClient, options),
+      queryFn: (ctx) => fetchGovProposalVote(ctx.client, options),
     }),
   /**
    * Fetch paginated votes for a chain governance proposal.
    */
-  govProposalVotes: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchGovProposalVotes>[1]
-  ) =>
+  govProposalVotes: (options: Parameters<typeof fetchGovProposalVotes>[1]) =>
     queryOptions({
       queryKey: ['chain', 'govProposalVotes', options],
-      queryFn: () => fetchGovProposalVotes(queryClient, options),
+      queryFn: (ctx) => fetchGovProposalVotes(ctx.client, options),
     }),
   /**
    * Fetch chain registry assets for chain.

@@ -77,7 +77,7 @@ export class CwDao extends DaoBase {
     // Attempt immediate initialization if query is cached.
     this.setInfo(
       this.queryClient.getQueryData(
-        daoQueries.info(this.queryClient, {
+        daoQueries.info({
           chainId: this.options.chainId,
           coreAddress: this.options.coreAddress,
         }).queryKey
@@ -152,7 +152,7 @@ export class CwDao extends DaoBase {
         await p.time(
           'info',
           this.queryClient.fetchQuery(
-            daoQueries.info(this.queryClient, {
+            daoQueries.info({
               chainId: this.options.chainId,
               coreAddress: this.options.coreAddress,
             })
@@ -274,7 +274,7 @@ export class CwDao extends DaoBase {
       }
     }
 
-    return daoDaoCoreQueries.votingPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.votingPowerAtHeight({
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {
@@ -287,7 +287,7 @@ export class CwDao extends DaoBase {
   getTotalVotingPowerQuery(
     height?: number
   ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
-    return daoDaoCoreQueries.totalPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.totalPowerAtHeight({
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {

@@ -45,7 +45,7 @@ export const fetchContractInfo = async (
   try {
     return {
       info: await queryClient.fetchQuery(
-        indexerQueries.queryContract(queryClient, {
+        indexerQueries.queryContract({
           chainId,
           contractAddress: address,
           formula: 'info',
@@ -115,7 +115,7 @@ export const fetchContractSummary = async (
   const [{ info }, contract] = await Promise.all([
     queryClient
       .fetchQuery(
-        contractQueries.info(queryClient, {
+        contractQueries.info({
           chainId,
           address,
         })
@@ -209,7 +209,7 @@ export const fetchIsContract = async (
     const {
       info: { contract },
     } = await queryClient.fetchQuery(
-      contractQueries.info(queryClient, {
+      contractQueries.info({
         chainId,
         address,
       })
@@ -292,7 +292,7 @@ export const fetchContractInstantiationTime = async (
   try {
     return new Date(
       await queryClient.fetchQuery(
-        indexerQueries.queryContract(queryClient, {
+        indexerQueries.queryContract({
           chainId,
           contractAddress: address,
           formula: 'instantiatedAt',
@@ -452,7 +452,7 @@ export const listVestingContractsOwnedByAccount = async (
   contracts: ArrayOfVestingContract
 }> => {
   const vestingContracts = await queryClient.fetchQuery(
-    contractQueries.listContractsOwnedByAccount(queryClient, {
+    contractQueries.listContractsOwnedByAccount({
       chainId,
       address,
       key: 'cw-vesting',
@@ -465,7 +465,7 @@ export const listVestingContractsOwnedByAccount = async (
         contract,
         recipient: (
           await queryClient.fetchQuery(
-            cwVestingQueries.info(queryClient, {
+            cwVestingQueries.info({
               chainId,
               contractAddress: contract,
             })
@@ -487,38 +487,29 @@ export const contractQueries = {
   /**
    * Fetch contract info stored in state, which contains its name and version.
    */
-  info: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchContractInfo>[1]
-  ) =>
+  info: (options: Parameters<typeof fetchContractInfo>[1]) =>
     queryOptions({
       queryKey: ['contract', 'info', options],
-      queryFn: () => fetchContractInfo(queryClient, options),
+      queryFn: (ctx) => fetchContractInfo(ctx.client, options),
     }),
   /**
    * Fetch contract version.
    */
-  version: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchContractInfo>[1]
-  ) =>
+  version: (options: Parameters<typeof fetchContractInfo>[1]) =>
     queryOptions({
       queryKey: ['contract', 'version', options],
-      queryFn: () =>
-        fetchContractInfo(queryClient, options).then(({ info: { version } }) =>
+      queryFn: (ctx) =>
+        fetchContractInfo(ctx.client, options).then(({ info: { version } }) =>
           parseContractVersion(version)
         ),
     }),
   /**
    * Fetch contract summary.
    */
-  summary: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchContractSummary>[1]
-  ) =>
+  summary: (options: Parameters<typeof fetchContractSummary>[1]) =>
     queryOptions({
       queryKey: ['contract', 'summary', options],
-      queryFn: () => fetchContractSummary(queryClient, options),
+      queryFn: (ctx) => fetchContractSummary(ctx.client, options),
     }),
   /**
    * Fetch available queries.
@@ -539,22 +530,18 @@ export const contractQueries = {
   /**
    * Check if a contract is a specific contract by name.
    */
-  isContract: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchIsContract>[1]
-  ) =>
+  isContract: (options: Parameters<typeof fetchIsContract>[1]) =>
     queryOptions({
       queryKey: ['contract', 'isContract', options],
-      queryFn: () => fetchIsContract(queryClient, options),
+      queryFn: (ctx) => fetchIsContract(ctx.client, options),
     }),
   /**
    * Check if a contract is a DAO.
    */
   isDao: (
-    queryClient: QueryClient,
     options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       ...options,
       nameOrNames: DAO_CORE_CONTRACT_NAMES,
     }),
@@ -562,10 +549,9 @@ export const contractQueries = {
    * Check if a contract is a Polytone proxy.
    */
   isPolytoneProxy: (
-    queryClient: QueryClient,
     options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       ...options,
       nameOrNames: ContractName.PolytoneProxy,
     }),
@@ -573,10 +559,9 @@ export const contractQueries = {
    * Check if a contract is a Valence account.
    */
   isValenceAccount: (
-    queryClient: QueryClient,
     options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       ...options,
       nameOrNames: ContractName.ValenceAccount,
     }),
@@ -584,10 +569,9 @@ export const contractQueries = {
    * Check if a contract is a cw1-whitelist.
    */
   isCw1Whitelist: (
-    queryClient: QueryClient,
     options: Omit<Parameters<typeof fetchIsContract>[1], 'nameOrNames'>
   ) =>
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       ...options,
       nameOrNames: ContractName.Cw1Whitelist,
     }),
@@ -605,12 +589,11 @@ export const contractQueries = {
    * Fetch contract instantiation time.
    */
   instantiationTime: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchContractInstantiationTime>[1]
   ) =>
     queryOptions({
       queryKey: ['contract', 'instantiationTime', options],
-      queryFn: () => fetchContractInstantiationTime(queryClient, options),
+      queryFn: (ctx) => fetchContractInstantiationTime(ctx.client, options),
     }),
   /**
    * Fetch contract code info.
@@ -642,32 +625,28 @@ export const contractQueries = {
    * Generate the expected instantiate2 address.
    */
   instantiate2Address: (
-    queryClient: QueryClient,
     options: Parameters<typeof generateInstantiate2Address>[1]
   ) =>
     queryOptions({
       queryKey: ['contract', 'instantiate2Address', options],
-      queryFn: () => generateInstantiate2Address(queryClient, options),
+      queryFn: (ctx) => generateInstantiate2Address(ctx.client, options),
     }),
   /**
    * List all contracts owned by a given account.
    */
-  listContractsOwnedByAccount: (
-    queryClient: QueryClient,
-    {
-      chainId,
-      address,
-      key,
-    }: {
-      chainId: string
-      address: string
-      /**
-       * Optionally filter by an indexer code ID key.
-       */
-      key?: string
-    }
-  ) =>
-    indexerQueries.queryAccount<string[]>(queryClient, {
+  listContractsOwnedByAccount: ({
+    chainId,
+    address,
+    key,
+  }: {
+    chainId: string
+    address: string
+    /**
+     * Optionally filter by an indexer code ID key.
+     */
+    key?: string
+  }) =>
+    indexerQueries.queryAccount<string[]>({
       chainId,
       address,
       formula: 'contract/ownedBy',
@@ -680,11 +659,10 @@ export const contractQueries = {
    * List all vesting contracts owned by a given account.
    */
   listVestingContractsOwnedByAccount: (
-    queryClient: QueryClient,
     options: Parameters<typeof listVestingContractsOwnedByAccount>[1]
   ) =>
     queryOptions({
       queryKey: ['contract', 'listVestingContractsOwnedByAccount', options],
-      queryFn: () => listVestingContractsOwnedByAccount(queryClient, options),
+      queryFn: (ctx) => listVestingContractsOwnedByAccount(ctx.client, options),
     }),
 }

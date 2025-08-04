@@ -1,5 +1,4 @@
 import { fromBase64, fromUtf8, toUtf8 } from '@cosmjs/encoding'
-import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { waitForAll } from 'recoil'
 
@@ -76,7 +75,6 @@ import {
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
 ) => {
-  const queryClient = useQueryClient()
   const options = useActionOptions()
 
   const { watch, setValue } = useFormContext<ConfigureRebalancerData>()
@@ -90,7 +88,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
   const whitelists = useQueryLoadingDataWithError(
     rebalancer
-      ? valenceRebalancerExtraQueries.whitelistGenericTokens(queryClient, {
+      ? valenceRebalancerExtraQueries.whitelistGenericTokens({
           chainId,
           address: rebalancer,
         })
@@ -98,13 +96,10 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   )
   const serviceFee = useQueryLoadingDataWithError(
     rebalancer
-      ? valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
-          queryClient,
-          {
-            chainId,
-            address: rebalancer,
-          }
-        )
+      ? valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee({
+          chainId,
+          address: rebalancer,
+        })
       : undefined
   )
 
@@ -289,13 +284,10 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     }
 
     const whitelists = await this.options.queryClient.fetchQuery(
-      valenceRebalancerExtraQueries.whitelistGenericTokens(
-        this.options.queryClient,
-        {
-          chainId: this.valenceChainId,
-          address: rebalancer,
-        }
-      )
+      valenceRebalancerExtraQueries.whitelistGenericTokens({
+        chainId: this.valenceChainId,
+        address: rebalancer,
+      })
     )
 
     const rebalancerConfig =
@@ -305,7 +297,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     )
     const minBalanceToken = minBalanceTarget
       ? await this.options.queryClient.fetchQuery(
-          tokenQueries.info(this.options.queryClient, {
+          tokenQueries.info({
             chainId: this.valenceChainId,
             type: TokenType.Native,
             denomOrAddress: minBalanceTarget.denom,
@@ -413,7 +405,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
       : newValenceAccount.creating
         ? // Compute predicted valence account address if we're creating it.
           await this.options.queryClient.fetchQuery(
-            contractQueries.instantiate2Address(this.options.queryClient, {
+            contractQueries.instantiate2Address({
               chainId,
               creator: sender,
               codeId: ValenceAccount,
@@ -441,13 +433,10 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
       : undefined
 
     const whitelists = await this.options.queryClient.fetchQuery(
-      valenceRebalancerExtraQueries.whitelistGenericTokens(
-        this.options.queryClient,
-        {
-          chainId,
-          address: rebalancer,
-        }
-      )
+      valenceRebalancerExtraQueries.whitelistGenericTokens({
+        chainId,
+        address: rebalancer,
+      })
     )
 
     const msgs: UnifiedCosmosMsg[] = []
@@ -455,13 +444,10 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     // Add account creation message if valence account does not exist.
     if (!this.existingValenceAccount) {
       const serviceFee = await this.options.queryClient.fetchQuery(
-        valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
-          this.options.queryClient,
-          {
-            chainId,
-            address: rebalancer,
-          }
-        )
+        valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee({
+          chainId,
+          address: rebalancer,
+        })
       )
 
       const convertedFunds = (newValenceAccount.funds || []).map(
@@ -722,13 +708,10 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     }
 
     const whitelists = await this.options.queryClient.fetchQuery(
-      valenceRebalancerExtraQueries.whitelistGenericTokens(
-        this.options.queryClient,
-        {
-          chainId,
-          address: rebalancer,
-        }
-      )
+      valenceRebalancerExtraQueries.whitelistGenericTokens({
+        chainId,
+        address: rebalancer,
+      })
     )
 
     const kp = Number(data.pid?.p || -1)
@@ -744,7 +727,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
     const minBalanceTarget = data.targets.find(({ min_balance }) => min_balance)
     const minBalanceToken = minBalanceTarget
       ? await this.options.queryClient.fetchQuery(
-          tokenQueries.info(this.options.queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: minBalanceTarget.denom,
@@ -758,7 +741,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
             messages[0].decodedMessage.stargate.value as MsgInstantiateContract2
           ).funds.map(async ({ denom, amount }) => {
             const token = await this.options.queryClient.fetchQuery(
-              tokenQueries.info(this.options.queryClient, {
+              tokenQueries.info({
                 chainId,
                 type: TokenType.Native,
                 denomOrAddress: denom,

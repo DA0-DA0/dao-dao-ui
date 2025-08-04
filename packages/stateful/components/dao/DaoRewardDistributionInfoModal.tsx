@@ -40,7 +40,7 @@ export const DaoRewardDistributionInfoModal = (
   // Load individually so we can refresh it on its own.
   const loadingDistribution = useQueryLoadingDataWithError(
     _distribution
-      ? daoRewardsDistributorExtraQueries.distribution(queryClient, {
+      ? daoRewardsDistributorExtraQueries.distribution({
           chainId: dao.chainId,
           address: _distribution.address,
           id: _distribution.id,
@@ -103,7 +103,7 @@ export const DaoRewardDistributionInfoModal = (
         // Refetch indexer query depended on by contract query.
         queryClient
           .refetchQueries({
-            queryKey: indexerQueries.queryContract(queryClient, {
+            queryKey: indexerQueries.queryContract({
               chainId: dao.chainId,
               contractAddress: distribution.address,
               formula: 'daoRewardsDistributor/distribution',
@@ -127,14 +127,11 @@ export const DaoRewardDistributionInfoModal = (
           .then(() =>
             // Refetch distribution query that uses contract query.
             queryClient.refetchQueries({
-              queryKey: daoRewardsDistributorExtraQueries.distribution(
-                queryClient,
-                {
-                  chainId: dao.chainId,
-                  address: distribution.address,
-                  id: distribution.id,
-                }
-              ).queryKey,
+              queryKey: daoRewardsDistributorExtraQueries.distribution({
+                chainId: dao.chainId,
+                address: distribution.address,
+                id: distribution.id,
+              }).queryKey,
             })
           ),
         // Refetch contract query depended on by pending rewards query.
@@ -157,14 +154,11 @@ export const DaoRewardDistributionInfoModal = (
             // Refetch DAO pending rewards query that uses pending rewards
             // query.
             queryClient.refetchQueries({
-              queryKey: daoRewardsDistributorExtraQueries.pendingDaoRewards(
-                queryClient,
-                {
-                  chainId: dao.chainId,
-                  daoAddress: dao.coreAddress,
-                  recipient: address,
-                }
-              ).queryKey,
+              queryKey: daoRewardsDistributorExtraQueries.pendingDaoRewards({
+                chainId: dao.chainId,
+                daoAddress: dao.coreAddress,
+                recipient: address,
+              }).queryKey,
             })
           ),
         // Refetch rewards remaining query.

@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -137,24 +133,21 @@ export const daoPreProposeApproverQueryKeys = {
     ] as const,
 }
 export const daoPreProposeApproverQueries = {
-  proposalModule: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoPreProposeApproverProposalModuleQuery<TData>
-  ) =>
+  proposalModule: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverProposalModuleQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoPreProposeApproverQueryKeys.proposalModule(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeApprover/proposalModule',
@@ -172,17 +165,18 @@ export const daoPreProposeApproverQueries = {
       },
       ...options,
     }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoPreProposeApproverDaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverDaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoPreProposeApproverQueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeApprover/dao',
@@ -201,21 +195,18 @@ export const daoPreProposeApproverQueries = {
       ...options,
     }),
   info: contractQueries.info,
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoPreProposeApproverConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: daoPreProposeApproverQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeApprover/config',
@@ -233,26 +224,23 @@ export const daoPreProposeApproverQueries = {
       },
       ...options,
     }),
-  depositInfo: <TData = DepositInfoResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoPreProposeApproverDepositInfoQuery<TData>
-  ) =>
+  depositInfo: <TData = DepositInfoResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeApproverDepositInfoQuery<TData>) =>
     queryOptions<DepositInfoResponse, Error, TData>({
       queryKey: daoPreProposeApproverQueryKeys.depositInfo(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoPreProposeApprover/depositInfo',
@@ -313,28 +301,25 @@ export const daoPreProposeApproverQueries = {
       },
       ...options,
     }),
-  queryExtension: <TData = any>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoPreProposeApproverQueryExtensionQuery<TData>
-  ) =>
+  queryExtension: <TData = any>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeApproverQueryExtensionQuery<TData>) =>
     queryOptions<any, Error, TData>({
       queryKey: daoPreProposeApproverQueryKeys.queryExtension(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           const query = args.msg
           if ('pre_propose_approval_contract' in query) {
-            const preProposeApprovalContract = await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            const preProposeApprovalContract = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoPreProposeApprover/preProposeApprovalContract',
@@ -346,8 +331,8 @@ export const daoPreProposeApproverQueries = {
           } else if (
             'pre_propose_approval_id_for_approver_proposal_id' in query
           ) {
-            const proposalId = await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            const proposalId = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula:
@@ -363,8 +348,8 @@ export const daoPreProposeApproverQueries = {
           } else if (
             'approver_proposal_id_for_pre_propose_approval_id' in query
           ) {
-            const proposalId = await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            const proposalId = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula:

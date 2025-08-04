@@ -87,7 +87,7 @@ export const fetchProfileInfo = async (
   if (!pfpkProfile?.nft?.imageUrl) {
     const stargazeNameImage = await queryClient
       .fetchQuery(
-        profileQueries.stargazeNameImage(queryClient, {
+        profileQueries.stargazeNameImage({
           address: stargazeAddress,
         })
       )
@@ -244,10 +244,7 @@ export const profileQueries = {
   /**
    * Fetch unified profile.
    */
-  unified: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchProfileInfo>[1]
-  ) =>
+  unified: (options: Parameters<typeof fetchProfileInfo>[1]) =>
     queryOptions({
       queryKey: [
         {
@@ -261,7 +258,7 @@ export const profileQueries = {
           },
         },
       ],
-      queryFn: () => fetchProfileInfo(queryClient, options),
+      queryFn: (ctx) => fetchProfileInfo(ctx.client, options),
     }),
   /**
    * Fetch PFPK profile.
@@ -309,13 +306,10 @@ export const profileQueries = {
   /**
    * Fetch Stargaze name's image associated an address.
    */
-  stargazeNameImage: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchStargazeNameImage>[1]
-  ) =>
+  stargazeNameImage: (options: Parameters<typeof fetchStargazeNameImage>[1]) =>
     queryOptions({
       queryKey: ['profile', 'stargazeNameImage', options],
-      queryFn: () => fetchStargazeNameImage(queryClient, options),
+      queryFn: (ctx) => fetchStargazeNameImage(ctx.client, options),
     }),
   /**
    * Search for profiles by name prefix.

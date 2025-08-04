@@ -64,7 +64,7 @@ export const fetchNeutronVaultInfo = async (
     }
 > => {
   const isVirtual = await queryClient.fetchQuery(
-    neutronVaultExtraQueries.isVirtual(queryClient, {
+    neutronVaultExtraQueries.isVirtual({
       chainId,
       address,
     })
@@ -87,7 +87,7 @@ export const fetchNeutronVaultInfo = async (
   }
 
   const bondToken = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, {
+    tokenQueries.info({
       type: TokenType.Native,
       chainId,
       denomOrAddress: config.denom,
@@ -104,24 +104,18 @@ export const neutronVaultExtraQueries = {
   /**
    * Check whether or not this is a virtual vault.
    */
-  isVirtual: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchNeutronVaultIsVirtual>[1]
-  ) =>
+  isVirtual: (options: Parameters<typeof fetchNeutronVaultIsVirtual>[1]) =>
     queryOptions({
       queryKey: ['neutronVaultExtra', 'isVirtual', options],
-      queryFn: () => fetchNeutronVaultIsVirtual(queryClient, options),
+      queryFn: (ctx) => fetchNeutronVaultIsVirtual(ctx.client, options),
     }),
   /**
    * Determine if this vault is real or virtual, and retrieve the bond token if
    * it's real.
    */
-  info: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchNeutronVaultInfo>[1]
-  ) =>
+  info: (options: Parameters<typeof fetchNeutronVaultInfo>[1]) =>
     queryOptions({
       queryKey: ['neutronVaultExtra', 'info', options],
-      queryFn: () => fetchNeutronVaultInfo(queryClient, options),
+      queryFn: (ctx) => fetchNeutronVaultInfo(ctx.client, options),
     }),
 }

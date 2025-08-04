@@ -62,7 +62,7 @@ export const VestingPaymentCard = ({
   // Use info passed into props as fallback, since it came from the list query;
   // the individual query updates more frequently.
   const freshInfo = useQueryLoadingDataWithError(
-    cwVestingExtraQueries.info(queryClient, {
+    cwVestingExtraQueries.info({
       chainId,
       address: fallbackInfo.vestingContractAddress,
     })
@@ -111,7 +111,7 @@ export const VestingPaymentCard = ({
     })
     // Invalidate staking info.
     queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+      queryKey: chainQueries.nativeDelegationInfo({
         chainId,
         address: vestingContractAddress,
       }).queryKey,
@@ -133,7 +133,7 @@ export const VestingPaymentCard = ({
     })
     // Then info query.
     queryClient.invalidateQueries({
-      queryKey: cwVestingExtraQueries.info(queryClient, {
+      queryKey: cwVestingExtraQueries.info({
         chainId,
         address: vestingContractAddress,
       }).queryKey,

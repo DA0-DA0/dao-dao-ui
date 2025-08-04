@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +25,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   const { t } = useTranslation()
   const chain = useChain()
   const { asPath } = useRouter()
-  const queryClient = useQueryClient()
+
   const hasIndexer = chainIsIndexed(chain.chainId)
 
   // Refresh all proposals on proposal WebSocket messages.
@@ -34,14 +33,14 @@ export const GovProposalList = ({ className }: { className: string }) => {
   useOnCurrentDaoWebSocketMessage('proposal', refreshGovProposals)
 
   const openGovProposalsVotingPeriod = useQueryLoadingDataWithError(
-    chainQueries.govProposals(queryClient, {
+    chainQueries.govProposals({
       chainId: chain.chainId,
       status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
     })
   )
 
   const govProposalsDepositPeriod = useQueryLoadingDataWithError(
-    chainQueries.govProposals(queryClient, {
+    chainQueries.govProposals({
       chainId: chain.chainId,
       status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
     })
@@ -49,7 +48,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
 
   // Get max page by loading a single item and then getting the total.
   const loadingMaxPage = useQueryLoadingDataWithError(
-    chainQueries.govProposals(queryClient, {
+    chainQueries.govProposals({
       chainId: chain.chainId,
       limit: 1,
     })
@@ -61,7 +60,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
 
   const [page, setPage] = useState(1)
   const loadingPaginatedGovProposals = useQueryLoadingDataWithError(
-    chainQueries.govProposals(queryClient, {
+    chainQueries.govProposals({
       chainId: chain.chainId,
       offset: (page - 1) * PROPSALS_PER_PAGE,
       limit: PROPSALS_PER_PAGE,
@@ -166,7 +165,7 @@ export const GovProposalList = ({ className }: { className: string }) => {
   const showingSearchResults = hasIndexer && !!search && search.length > 0
   const searchedGovProposals = useQueryLoadingDataWithError(
     showingSearchResults
-      ? chainQueries.searchAndDecodeGovProposals(queryClient, {
+      ? chainQueries.searchAndDecodeGovProposals({
           chainId: chain.chainId,
           query: search,
           limit: 20,

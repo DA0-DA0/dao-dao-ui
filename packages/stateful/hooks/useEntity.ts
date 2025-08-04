@@ -1,5 +1,4 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { entityQueries } from '@dao-dao/state/query'
@@ -54,10 +53,9 @@ export const useEntity = (address: string): UseEntityReturn => {
     return currentChainId
   }, [address, currentBech32Prefix, currentChainId])
 
-  const queryClient = useQueryClient()
   const entity = useQueryLoadingData(
     address
-      ? entityQueries.info(queryClient, {
+      ? entityQueries.info({
           chainId,
           address,
         })

@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 
 import { tokenQueries } from '@dao-dao/state/query'
 import {
@@ -19,10 +19,8 @@ export const useQueryTokens = (
    */
   tokens?: GenericTokenSource[]
 ): LoadingDataWithError<GenericToken[]> => {
-  const queryClient = useQueryClient()
   return useQueries({
-    queries:
-      tokens?.map((token) => tokenQueries.info(queryClient, token)) || [],
+    queries: tokens?.map((token) => tokenQueries.info(token)) || [],
     combine: makeCombineQueryResultsIntoLoadingDataWithError(),
   })
 }

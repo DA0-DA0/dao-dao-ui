@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { contractQueries, daoQueries } from '@dao-dao/state'
 import { ActionBase, PlayPauseEmoji } from '@dao-dao/stateless'
 import { ChainId, UnifiedCosmosMsg } from '@dao-dao/types'
@@ -26,9 +24,8 @@ import { ManageSubDaoPauseComponent, ManageSubDaoPauseData } from './Component'
 const Component: ActionComponent<undefined, ManageSubDaoPauseData> = (
   props
 ) => {
-  const queryClient = useQueryClient()
   const neutronSubdaos = useQueryLoadingData(
-    daoQueries.listAllSubDaos(queryClient, {
+    daoQueries.listAllSubDaos({
       chainId: ChainId.NeutronMainnet,
       address: NEUTRON_GOVERNANCE_DAO,
     }),
@@ -131,7 +128,7 @@ export class ManageSubDaoPauseAction extends ActionBase<ManageSubDaoPauseData> {
           },
         })) &&
       (await this.options.queryClient.fetchQuery(
-        contractQueries.isContract(this.options.queryClient, {
+        contractQueries.isContract({
           chainId,
           address: decodedMessage.wasm.execute.contract_addr,
           nameOrNames: NEUTRON_SUBDAO_CORE_CONTRACT_NAMES,

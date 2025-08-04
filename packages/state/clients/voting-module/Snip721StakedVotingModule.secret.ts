@@ -146,16 +146,15 @@ export class SecretSnip721StakedVotingModule extends VotingModuleBase<SecretCwDa
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { nft_address: collectionAddress } =
-          await this.queryClient.fetchQuery(
-            secretDaoVotingSnip721StakedQueries.config({
-              chainId: this.chainId,
-              contractAddress: this.address,
-            })
-          )
+      queryFn: async (ctx) => {
+        const { nft_address: collectionAddress } = await ctx.client.fetchQuery(
+          secretDaoVotingSnip721StakedQueries.config({
+            chainId: this.chainId,
+            contractAddress: this.address,
+          })
+        )
 
-        const contractInfo = await this.queryClient.fetchQuery(
+        const contractInfo = await ctx.client.fetchQuery(
           cw721BaseQueries.contractInfo({
             chainId: this.chainId,
             contractAddress: collectionAddress,

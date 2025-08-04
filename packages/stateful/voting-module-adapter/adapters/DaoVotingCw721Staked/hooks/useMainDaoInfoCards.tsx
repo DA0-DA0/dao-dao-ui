@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { daoVotingCw721StakedExtraQueries } from '@dao-dao/state'
@@ -30,9 +29,8 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     collectionInfo: { symbol, totalSupply },
   } = useGovernanceCollectionInfo()
 
-  const queryClient = useQueryClient()
   const loadingMembers = useQueryLoadingDataWithError(
-    daoVotingCw721StakedExtraQueries.topStakers(queryClient, {
+    daoVotingCw721StakedExtraQueries.topStakers({
       chainId: votingModule.chainId,
       address: votingModule.address,
     })

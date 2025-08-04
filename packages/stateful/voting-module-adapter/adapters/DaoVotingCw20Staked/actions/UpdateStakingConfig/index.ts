@@ -44,14 +44,14 @@ export class UpdateStakingConfigAction extends ActionBase<UpdateStakingConfigDat
     }
 
     this.stakingContractAddress = await this.options.queryClient.fetchQuery(
-      daoVotingCw20StakedQueries.stakingContract(this.options.queryClient, {
+      daoVotingCw20StakedQueries.stakingContract({
         chainId: this.options.chain.chainId,
         contractAddress: this.options.context.dao.votingModule.address,
       })
     )
 
     const { unstaking_duration } = await this.options.queryClient.fetchQuery(
-      cw20StakeQueries.getConfig(this.options.queryClient, {
+      cw20StakeQueries.getConfig({
         chainId: this.options.chain.chainId,
         contractAddress: this.stakingContractAddress,
       })

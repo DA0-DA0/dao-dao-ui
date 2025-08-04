@@ -104,7 +104,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
         })
       ),
       this.options.queryClient.fetchQuery(
-        accountQueries.list(this.options.queryClient, {
+        accountQueries.list({
           chainId,
           address,
         })
@@ -199,7 +199,7 @@ export class AcceptSubDaoAction extends ActionBase<AcceptSubDaoData> {
 
     // Get SubDAO account on the same chain as we are.
     const subDaoAccounts = await this.options.queryClient.fetchQuery(
-      accountQueries.list(this.options.queryClient, {
+      accountQueries.list({
         chainId: messages[0].account.chainId,
         address: messages[0].decodedMessage.wasm.execute.contract_addr,
       })

@@ -1,4 +1,4 @@
-import { UndefinedInitialDataOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -153,13 +153,10 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   /**
    * Query options to fetch the DAO address.
    */
-  static getDaoAddressQuery(
-    _: QueryClient,
-    options: {
-      chainId: string
-      contractAddress: string
-    }
-  ) {
+  static getDaoAddressQuery(options: {
+    chainId: string
+    contractAddress: string
+  }) {
     return secretDaoProposalSingleQueries.dao(options)
   }
 
@@ -174,7 +171,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
 
     // Load contract info with version.
     const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info(this.queryClient, {
+      contractQueries.info({
         chainId: this.chainId,
         address: this.address,
       })
@@ -206,7 +203,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
 
       if (preProposeAddress) {
         this._prePropose = await this.queryClient.fetchQuery(
-          proposalQueries.preProposeModule(this.queryClient, {
+          proposalQueries.preProposeModule({
             chainId: this.chainId,
             address: preProposeAddress,
           })
@@ -537,15 +534,14 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
           address: this.address,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (this.prePropose) {
-          const { deposit_info: depositInfo } =
-            await this.queryClient.fetchQuery(
-              secretDaoPreProposeSingleQueries.config({
-                chainId: this.chainId,
-                contractAddress: this.prePropose.address,
-              })
-            )
+          const { deposit_info: depositInfo } = await ctx.client.fetchQuery(
+            secretDaoPreProposeSingleQueries.config({
+              chainId: this.chainId,
+              contractAddress: this.prePropose.address,
+            })
+          )
 
           return depositInfo
             ? {

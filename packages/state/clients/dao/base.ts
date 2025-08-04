@@ -269,7 +269,7 @@ export abstract class DaoBase implements IDaoBase {
    * Query options to fetch the TVL.
    */
   get tvlQuery(): UndefinedInitialDataOptions<AmountWithTimestamp> {
-    return daoQueries.tvl(this.queryClient, {
+    return daoQueries.tvl({
       chainId: this.chainId,
       coreAddress: this.coreAddress,
     })

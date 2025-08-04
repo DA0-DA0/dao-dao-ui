@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import uniqBy from 'lodash.uniqby'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
@@ -130,13 +130,13 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Following DAOs
   const { following } = useFollowingDaos()
-  const queryClient = useQueryClient()
+
   const followingDaoDropdownInfos = useQueries({
     queries:
       following.loading || following.errored
         ? []
         : following.data.map(({ chainId, coreAddress }) =>
-            daoQueries.daoDropdownInfo(queryClient, {
+            daoQueries.daoDropdownInfo({
               chainId,
               coreAddress,
             })

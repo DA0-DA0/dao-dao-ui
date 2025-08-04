@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ConfigResponse,
@@ -164,17 +160,18 @@ export const cwProposalSingleV1QueryKeys = {
     ] as const,
 }
 export const cwProposalSingleV1Queries = {
-  config: <TData = ConfigResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwProposalSingleV1ConfigQuery<TData>
-  ) =>
+  config: <TData = ConfigResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwProposalSingleV1ConfigQuery<TData>) =>
     queryOptions<ConfigResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoProposalSingle/config',
@@ -192,26 +189,23 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  proposal: <TData = ProposalResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwProposalSingleV1ProposalQuery<TData>
-  ) =>
+  proposal: <TData = ProposalResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwProposalSingleV1ProposalQuery<TData>) =>
     queryOptions<ProposalResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.proposal(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoProposalSingle/proposal',
@@ -232,27 +226,24 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  listProposals: <TData = ListProposalsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwProposalSingleV1ListProposalsQuery<TData>
-  ) =>
+  listProposals: <TData = ListProposalsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwProposalSingleV1ListProposalsQuery<TData>) =>
     queryOptions<ListProposalsResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.listProposals(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            proposals: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            proposals: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/listProposals',
@@ -275,27 +266,24 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  reverseProposals: <TData = ReverseProposalsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwProposalSingleV1ReverseProposalsQuery<TData>
-  ) =>
+  reverseProposals: <TData = ReverseProposalsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwProposalSingleV1ReverseProposalsQuery<TData>) =>
     queryOptions<ReverseProposalsResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.reverseProposals(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            proposals: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            proposals: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/reverseProposals',
@@ -318,24 +306,21 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  proposalCount: <TData = ProposalCountResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: CwProposalSingleV1ProposalCountQuery<TData>
-  ) =>
+  proposalCount: <TData = ProposalCountResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwProposalSingleV1ProposalCountQuery<TData>) =>
     queryOptions<ProposalCountResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.proposalCount(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoProposalSingle/proposalCount',
@@ -358,27 +343,24 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  vote: <TData = VoteResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwProposalSingleV1VoteQuery<TData>
-  ) =>
+  vote: <TData = VoteResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwProposalSingleV1VoteQuery<TData>) =>
     queryOptions<VoteResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.vote(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            vote: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            vote: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/vote',
@@ -401,27 +383,24 @@ export const cwProposalSingleV1Queries = {
       },
       ...options,
     }),
-  listVotes: <TData = ListVotesResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwProposalSingleV1ListVotesQuery<TData>
-  ) =>
+  listVotes: <TData = ListVotesResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwProposalSingleV1ListVotesQuery<TData>) =>
     queryOptions<ListVotesResponse, Error, TData>({
       queryKey: cwProposalSingleV1QueryKeys.listVotes(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            votes: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            votes: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/listVotes',

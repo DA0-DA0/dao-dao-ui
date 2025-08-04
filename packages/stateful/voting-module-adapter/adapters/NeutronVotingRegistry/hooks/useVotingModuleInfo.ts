@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { neutronVotingRegistryExtraQueries } from '@dao-dao/state'
 import { useVotingModule } from '@dao-dao/stateless'
 import { LoadingDataWithError, VotingVaultWithInfo } from '@dao-dao/types'
@@ -16,9 +14,8 @@ export type UseVotingModuleInfoReturn = {
 export const useVotingModuleInfo = (): UseVotingModuleInfoReturn => {
   const votingModule = useVotingModule()
 
-  const queryClient = useQueryClient()
   const loadingVaults = useQueryLoadingDataWithError(
-    neutronVotingRegistryExtraQueries.vaultsWithInfo(queryClient, {
+    neutronVotingRegistryExtraQueries.vaultsWithInfo({
       chainId: votingModule.chainId,
       address: votingModule.address,
     })

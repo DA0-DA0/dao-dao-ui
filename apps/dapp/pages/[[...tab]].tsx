@@ -59,7 +59,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
 
     // Get home page stats.
     queryClient.fetchQuery(
-      miscQueries.homePageStats(queryClient, {
+      miscQueries.homePageStats({
         chainId,
       })
     ),
@@ -69,9 +69,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       (featured) =>
         Promise.all(
           featured?.map((dao) =>
-            retry(5, () =>
-              queryClient.fetchQuery(daoQueries.info(queryClient, dao))
-            )
+            retry(5, () => queryClient.fetchQuery(daoQueries.info(dao)))
           ) || []
         )
     ),

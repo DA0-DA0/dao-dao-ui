@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -140,9 +140,8 @@ export const useManageProfile = ({
     loadAccount: true,
   })
 
-  const queryClient = useQueryClient()
   const profile = useQueryLoadingData(
-    profileQueries.unified(useQueryClient(), {
+    profileQueries.unified({
       chainId: walletChainId,
       address,
     }),
@@ -256,7 +255,7 @@ export const useManageProfile = ({
   )
   const otherChainWalletProfiles = useQueries({
     queries: otherConnectedChainWallets.map((chainWallet) =>
-      profileQueries.unified(queryClient, {
+      profileQueries.unified({
         chainId: chainWallet.chainId,
         address: chainWallet.address!,
       })

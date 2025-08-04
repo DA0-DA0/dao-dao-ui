@@ -924,7 +924,7 @@ export const InnerCreateDaoForm = ({
 
           const { info } = await queryClient
             .fetchQuery(
-              contractQueries.info(queryClient, {
+              contractQueries.info({
                 chainId,
                 address: coreAddress,
               })

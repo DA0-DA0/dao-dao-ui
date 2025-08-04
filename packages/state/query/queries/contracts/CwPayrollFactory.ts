@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ArrayOfVestingContract,
@@ -132,26 +128,23 @@ export const cwPayrollFactoryQueryKeys = {
     ] as const,
 }
 export const cwPayrollFactoryQueries = {
-  listVestingContracts: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsQuery<TData>
-  ) =>
+  listVestingContracts: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.listVestingContracts(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/listVestingContracts',
@@ -173,26 +166,23 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  listVestingContractsReverse: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsReverseQuery<TData>
-  ) =>
+  listVestingContractsReverse: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsReverseQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.listVestingContractsReverse(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/listVestingContractsReverse',
@@ -214,26 +204,23 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  listVestingContractsByInstantiator: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsByInstantiatorQuery<TData>
-  ) =>
+  listVestingContractsByInstantiator: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsByInstantiatorQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.listVestingContractsByInstantiator(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/listVestingContractsByInstantiator',
@@ -256,15 +243,12 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  listVestingContractsByInstantiatorReverse: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsByInstantiatorReverseQuery<TData>
-  ) =>
+  listVestingContractsByInstantiatorReverse: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsByInstantiatorReverseQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey:
         cwPayrollFactoryQueryKeys.listVestingContractsByInstantiatorReverse(
@@ -272,11 +256,11 @@ export const cwPayrollFactoryQueries = {
           contractAddress,
           args
         ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula:
@@ -300,26 +284,23 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  listVestingContractsByRecipient: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsByRecipientQuery<TData>
-  ) =>
+  listVestingContractsByRecipient: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsByRecipientQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.listVestingContractsByRecipient(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/listVestingContractsByRecipient',
@@ -342,15 +323,12 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  listVestingContractsByRecipientReverse: <TData = ArrayOfVestingContract>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: CwPayrollFactoryListVestingContractsByRecipientReverseQuery<TData>
-  ) =>
+  listVestingContractsByRecipientReverse: <TData = ArrayOfVestingContract>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwPayrollFactoryListVestingContractsByRecipientReverseQuery<TData>) =>
     queryOptions<ArrayOfVestingContract, Error, TData>({
       queryKey:
         cwPayrollFactoryQueryKeys.listVestingContractsByRecipientReverse(
@@ -358,11 +336,11 @@ export const cwPayrollFactoryQueries = {
           contractAddress,
           args
         ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula:
@@ -386,17 +364,18 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  ownership: <TData = OwnershipForAddr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwPayrollFactoryOwnershipQuery<TData>
-  ) =>
+  ownership: <TData = OwnershipForAddr>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwPayrollFactoryOwnershipQuery<TData>) =>
     queryOptions<OwnershipForAddr, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.ownership(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/ownership',
@@ -414,17 +393,18 @@ export const cwPayrollFactoryQueries = {
       },
       ...options,
     }),
-  codeId: <TData = Uint64>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwPayrollFactoryCodeIdQuery<TData>
-  ) =>
+  codeId: <TData = Uint64>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwPayrollFactoryCodeIdQuery<TData>) =>
     queryOptions<Uint64, Error, TData>({
       queryKey: cwPayrollFactoryQueryKeys.codeId(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cwPayrollFactory/codeId',

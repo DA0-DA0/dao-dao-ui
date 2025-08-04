@@ -40,7 +40,7 @@ export const fetchActionsWithOptions = async ({
   address: string
 }) => {
   const entity = await queryClient.fetchQuery(
-    entityQueries.info(queryClient, {
+    entityQueries.info({
       chainId,
       address,
     })
@@ -68,14 +68,14 @@ export const fetchActionsWithOptions = async ({
     const [profile, accounts] = await Promise.all([
       queryClient
         .fetchQuery(
-          profileQueries.unified(queryClient, {
+          profileQueries.unified({
             chainId,
             address,
           })
         )
         .catch(() => makeEmptyUnifiedProfile(chainId, address)),
       queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address,
         })

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState } from 'recoil'
@@ -113,9 +112,8 @@ export const ProposalList = ({
     deps: [dao],
   })
 
-  const queryClient = useQueryClient()
   const vetoableDaosLoading = useQueryLoadingDataWithError(
-    daoQueries.vetoableDaos(queryClient, {
+    daoQueries.vetoableDaos({
       chainId: dao.chainId,
       coreAddress: dao.coreAddress,
     })
@@ -123,7 +121,7 @@ export const ProposalList = ({
   const daosWithVetoableProposals = useQueryLoadingDataWithError(
     hideVetoable
       ? undefined
-      : daoQueries.daosWithDropdownVetoableProposalList(queryClient, {
+      : daoQueries.daosWithDropdownVetoableProposalList({
           chainId: dao.chainId,
           coreAddress: dao.coreAddress,
           daoPageMode: mode,

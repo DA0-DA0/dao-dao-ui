@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ActiveThresholdResponse,
@@ -164,17 +160,18 @@ export const daoVotingOnftStakedQueryKeys = {
     ] as const,
 }
 export const daoVotingOnftStakedQueries = {
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingOnftStakedConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingOnftStakedConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/config',
@@ -192,27 +189,24 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  nftClaims: <TData = NftClaimsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingOnftStakedNftClaimsQuery<TData>
-  ) =>
+  nftClaims: <TData = NftClaimsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingOnftStakedNftClaimsQuery<TData>) =>
     queryOptions<NftClaimsResponse, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.nftClaims(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            nft_claims: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            nft_claims: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoVotingOnftStaked/nftClaims',
@@ -234,17 +228,18 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  hooks: <TData = HooksResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingOnftStakedHooksQuery<TData>
-  ) =>
+  hooks: <TData = HooksResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingOnftStakedHooksQuery<TData>) =>
     queryOptions<HooksResponse, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.hooks(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/hooks',
@@ -262,26 +257,23 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  stakedNfts: <TData = ArrayOfString>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingOnftStakedStakedNftsQuery<TData>
-  ) =>
+  stakedNfts: <TData = ArrayOfString>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingOnftStakedStakedNftsQuery<TData>) =>
     queryOptions<ArrayOfString, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.stakedNfts(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/stakedNfts',
@@ -304,24 +296,21 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  activeThreshold: <TData = ActiveThresholdResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoVotingOnftStakedActiveThresholdQuery<TData>
-  ) =>
+  activeThreshold: <TData = ActiveThresholdResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingOnftStakedActiveThresholdQuery<TData>) =>
     queryOptions<ActiveThresholdResponse, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.activeThreshold(
         chainId,
         contractAddress
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/activeThreshold',
@@ -354,26 +343,23 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingOnftStakedVotingPowerAtHeightQuery<TData>
-  ) =>
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingOnftStakedVotingPowerAtHeightQuery<TData>) =>
     queryOptions<VotingPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.votingPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/votingPowerAtHeight',
@@ -398,26 +384,23 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingOnftStakedTotalPowerAtHeightQuery<TData>
-  ) =>
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingOnftStakedTotalPowerAtHeightQuery<TData>) =>
     queryOptions<TotalPowerAtHeightResponse, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.totalPowerAtHeight(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/totalPowerAtHeight',
@@ -440,17 +423,18 @@ export const daoVotingOnftStakedQueries = {
       },
       ...options,
     }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingOnftStakedDaoQuery<TData>
-  ) =>
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingOnftStakedDaoQuery<TData>) =>
     queryOptions<Addr, Error, TData>({
       queryKey: daoVotingOnftStakedQueryKeys.dao(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVotingOnftStaked/dao',

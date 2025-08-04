@@ -23,7 +23,7 @@ export const listAllVestingContracts = async (
 }> => {
   try {
     const list: ArrayOfVestingContract = await queryClient.fetchQuery(
-      indexerQueries.queryContract(queryClient, {
+      indexerQueries.queryContract({
         chainId,
         contractAddress: address,
         formula: 'cwPayrollFactory/listVestingContracts',
@@ -44,7 +44,7 @@ export const listAllVestingContracts = async (
   const limit = 30
   while (true) {
     const response = await queryClient.fetchQuery(
-      cwPayrollFactoryQueries.listVestingContracts(queryClient, {
+      cwPayrollFactoryQueries.listVestingContracts({
         chainId,
         contractAddress: address,
         args: {
@@ -77,11 +77,10 @@ export const cwPayrollFactoryExtraQueries = {
    * List all vesting contracts.
    */
   listAllVestingContracts: (
-    queryClient: QueryClient,
     options: Parameters<typeof listAllVestingContracts>[1]
   ) =>
     queryOptions({
       queryKey: ['cwPayrollFactoryExtra', 'listAllVestingContracts', options],
-      queryFn: () => listAllVestingContracts(queryClient, options),
+      queryFn: (ctx) => listAllVestingContracts(ctx.client, options),
     }),
 }

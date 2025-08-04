@@ -71,7 +71,7 @@ export const feedOpenProposalsSelector = selectorFamily<
           isConfiguredChainName(dao.chainId, dao.coreAddress)
             ? ([] as ProposalModuleWithInfo[])
             : queryClient.fetchQuery(
-                daoQueries.proposalModules(queryClient, {
+                daoQueries.proposalModules({
                   chainId: dao.chainId,
                   coreAddress: dao.coreAddress,
                 })

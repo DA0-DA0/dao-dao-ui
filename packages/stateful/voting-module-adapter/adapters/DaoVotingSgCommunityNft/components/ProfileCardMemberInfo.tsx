@@ -45,7 +45,7 @@ export const ProfileCardMemberInfo = ({
   const plausible = usePlausible<PlausibleEvents>()
 
   const loadingWalletHasNft = useQueryLoadingDataWithError({
-    ...daoVotingSgCommunityNftExtraQueries.walletHasNft(queryClient, {
+    ...daoVotingSgCommunityNftExtraQueries.walletHasNft({
       chainId: dao.chainId,
       votingModuleAddress: dao.votingModule.address,
       walletAddress,
@@ -53,7 +53,7 @@ export const ProfileCardMemberInfo = ({
     enabled: !!walletAddress,
   })
   const loadingWalletRegistered = useQueryLoadingDataWithError({
-    ...daoVotingSgCommunityNftQueries.registeredNft(queryClient, {
+    ...daoVotingSgCommunityNftQueries.registeredNft({
       chainId: dao.chainId,
       contractAddress: dao.votingModule.address,
       args: {
@@ -112,7 +112,7 @@ export const ProfileCardMemberInfo = ({
       // Refetch indexer query first.
       queryClient
         .refetchQueries({
-          queryKey: indexerQueries.queryContract(queryClient, {
+          queryKey: indexerQueries.queryContract({
             chainId: dao.chainId,
             contractAddress: dao.votingModule.address,
             formula: 'daoVotingSgCommunityNft/votingPowerAtHeight',
@@ -131,7 +131,7 @@ export const ProfileCardMemberInfo = ({
       // Invalidate indexer query first.
       queryClient
         .refetchQueries({
-          queryKey: indexerQueries.queryContract(queryClient, {
+          queryKey: indexerQueries.queryContract({
             chainId: dao.chainId,
             contractAddress: dao.votingModule.address,
             formula: 'daoVotingSgCommunityNft/totalPowerAtHeight',
@@ -144,7 +144,7 @@ export const ProfileCardMemberInfo = ({
         ),
 
       queryClient.refetchQueries({
-        queryKey: daoVotingSgCommunityNftExtraQueries.allVoters(queryClient, {
+        queryKey: daoVotingSgCommunityNftExtraQueries.allVoters({
           chainId: dao.chainId,
           address: dao.votingModule.address,
         }).queryKey,
@@ -153,7 +153,7 @@ export const ProfileCardMemberInfo = ({
       // Refetch indexer query first.
       queryClient
         .refetchQueries({
-          queryKey: indexerQueries.queryContract(queryClient, {
+          queryKey: indexerQueries.queryContract({
             chainId: dao.chainId,
             contractAddress: dao.votingModule.address,
             formula: 'daoVotingSgCommunityNft/registeredNft',
@@ -164,16 +164,13 @@ export const ProfileCardMemberInfo = ({
         })
         .finally(() =>
           queryClient.refetchQueries({
-            queryKey: daoVotingSgCommunityNftQueries.registeredNft(
-              queryClient,
-              {
-                chainId: dao.chainId,
-                contractAddress: dao.votingModule.address,
-                args: {
-                  address: walletAddress || '',
-                },
-              }
-            ).queryKey,
+            queryKey: daoVotingSgCommunityNftQueries.registeredNft({
+              chainId: dao.chainId,
+              contractAddress: dao.votingModule.address,
+              args: {
+                address: walletAddress || '',
+              },
+            }).queryKey,
           })
         ),
     ])
@@ -326,14 +323,11 @@ export const ProfileCardMemberInfo = ({
       })
       // query to check if wallet has NFT, depends on the above
       queryClient.invalidateQueries({
-        queryKey: daoVotingSgCommunityNftExtraQueries.walletHasNft(
-          queryClient,
-          {
-            chainId: dao.chainId,
-            votingModuleAddress: dao.votingModule.address,
-            walletAddress: walletAddress || '',
-          }
-        ).queryKey,
+        queryKey: daoVotingSgCommunityNftExtraQueries.walletHasNft({
+          chainId: dao.chainId,
+          votingModuleAddress: dao.votingModule.address,
+          walletAddress: walletAddress || '',
+        }).queryKey,
       })
 
       // If we've been polling for over 5 minutes, stop.

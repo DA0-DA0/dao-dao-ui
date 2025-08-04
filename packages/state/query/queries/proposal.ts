@@ -50,7 +50,7 @@ export const fetchPreProposeModule = async (
 ): Promise<PreProposeModule> => {
   const [{ info: contractInfo }, moduleConfig] = await Promise.all([
     queryClient.fetchQuery(
-      contractQueries.info(queryClient, {
+      contractQueries.info({
         chainId,
         address: address,
       })
@@ -58,7 +58,7 @@ export const fetchPreProposeModule = async (
     // All pre-propose modules share the same config.
     queryClient
       .fetchQuery(
-        daoPreProposeSingleQueries.config(queryClient, {
+        daoPreProposeSingleQueries.config({
           chainId,
           contractAddress: address,
         })
@@ -89,7 +89,7 @@ export const fetchPreProposeModule = async (
       // Try indexer first.
       try {
         approver = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId,
             contractAddress: address,
             formula: 'daoPreProposeApprovalSingle/approver',
@@ -117,7 +117,7 @@ export const fetchPreProposeModule = async (
       const approverContractName = (
         await queryClient
           .fetchQuery(
-            contractQueries.info(queryClient, {
+            contractQueries.info({
               chainId,
               address: approver,
             })
@@ -132,7 +132,7 @@ export const fetchPreProposeModule = async (
         // Try indexer first.
         try {
           approver = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+            indexerQueries.queryContract({
               chainId,
               contractAddress: preProposeApproverContract,
               formula: 'daoPreProposeApprover/dao',
@@ -167,7 +167,7 @@ export const fetchPreProposeModule = async (
       // Try indexer first.
       try {
         preProposeApprovalContract = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId,
             contractAddress: address,
             formula: 'daoPreProposeApprover/preProposeApprovalContract',
@@ -195,7 +195,7 @@ export const fetchPreProposeModule = async (
       // Try indexer first.
       try {
         approvalDao = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId,
             contractAddress: preProposeApprovalContract,
             formula: 'daoPreProposeApprovalSingle/dao',
@@ -229,7 +229,7 @@ export const fetchPreProposeModule = async (
       // Try indexer first.
       try {
         timelockAddress = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId,
             contractAddress: address,
             formula: 'neutron/cwdSubdaoPreProposeSingle/timelockAddress',
@@ -257,7 +257,7 @@ export const fetchPreProposeModule = async (
       // Try indexer first.
       try {
         config = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+          indexerQueries.queryContract({
             chainId,
             contractAddress: timelockAddress,
             formula: 'neutron/cwdSubdaoTimelockSingle/config',
@@ -408,7 +408,7 @@ const fetchApproverIdForPreProposeApprovalId = async (
     : // Get pre-propose proposal ID that was accepted to create this
       // proposal.
       await queryClient.fetchQuery(
-        daoPreProposeApprovalSingleQueries.queryExtension(queryClient, {
+        daoPreProposeApprovalSingleQueries.queryExtension({
           chainId,
           contractAddress: preProposeAddress,
           args: {
@@ -428,7 +428,7 @@ const fetchApproverIdForPreProposeApprovalId = async (
   }
 
   const approverProposalNumber = await queryClient.fetchQuery<number | null>(
-    daoPreProposeApproverQueries.queryExtension(queryClient, {
+    daoPreProposeApproverQueries.queryExtension({
       chainId,
       contractAddress: preProposeApproverContract,
       args: {
@@ -495,7 +495,7 @@ const fetchApprovedIdForPreProposeApproverId = async (
   await approvalDaoClient.init()
 
   const approvalProposalNumber = await queryClient.fetchQuery(
-    daoPreProposeApproverQueries.queryExtension(queryClient, {
+    daoPreProposeApproverQueries.queryExtension({
       chainId,
       contractAddress: preProposeAddress,
       args: {
@@ -530,7 +530,7 @@ const fetchApprovedIdForPreProposeApproverId = async (
   // Get completed pre-propose proposal ID so we can extract the created
   // proposal ID.
   const completedApprovalProposal = (await queryClient.fetchQuery(
-    daoPreProposeApprovalSingleQueries.queryExtension(queryClient, {
+    daoPreProposeApprovalSingleQueries.queryExtension({
       chainId,
       contractAddress: preProposeApprovalContract,
       args: {
@@ -576,19 +576,19 @@ const fetchNeutronTimelockOverrule = async (
   const [dao, proposalModuleAddress, overruleProposalId, timelockProposal] =
     await Promise.all([
       queryClient.fetchQuery(
-        neutronCwdPreProposeSingleOverruleQueries.dao(queryClient, {
+        neutronCwdPreProposeSingleOverruleQueries.dao({
           chainId,
           contractAddress: preProposeOverruleAddress,
         })
       ),
       queryClient.fetchQuery(
-        neutronCwdPreProposeSingleOverruleQueries.proposalModule(queryClient, {
+        neutronCwdPreProposeSingleOverruleQueries.proposalModule({
           chainId,
           contractAddress: preProposeOverruleAddress,
         })
       ),
       queryClient.fetchQuery(
-        neutronCwdPreProposeSingleOverruleQueries.queryExtension(queryClient, {
+        neutronCwdPreProposeSingleOverruleQueries.queryExtension({
           chainId,
           contractAddress: preProposeOverruleAddress,
           args: {
@@ -602,7 +602,7 @@ const fetchNeutronTimelockOverrule = async (
         })
       ),
       queryClient.fetchQuery(
-        neutronCwdSubdaoTimelockSingleQueries.proposal(queryClient, {
+        neutronCwdSubdaoTimelockSingleQueries.proposal({
           chainId,
           contractAddress: timelockAddress,
           args: {
@@ -620,7 +620,7 @@ const fetchNeutronTimelockOverrule = async (
   await daoClient.init()
 
   const overruleProposal = await queryClient.fetchQuery(
-    daoProposalSingleV2Queries.proposal(queryClient, {
+    daoProposalSingleV2Queries.proposal({
       chainId,
       contractAddress: proposalModuleAddress,
       args: {
@@ -650,13 +650,10 @@ export const proposalQueries = {
   /**
    * Fetch pre-propose module info.
    */
-  preProposeModule: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchPreProposeModule>[1]
-  ) =>
+  preProposeModule: (options: Parameters<typeof fetchPreProposeModule>[1]) =>
     queryOptions({
       queryKey: ['proposal', 'preProposeModule', options],
-      queryFn: () => fetchPreProposeModule(queryClient, options),
+      queryFn: (ctx) => fetchPreProposeModule(ctx.client, options),
     }),
   /**
    * Fetch proposal execution TX hash.
@@ -674,26 +671,24 @@ export const proposalQueries = {
    * automatically-created proposal's ID in the approver's DAO.
    */
   approverIdForPreProposeApprovalId: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchApproverIdForPreProposeApprovalId>[1]
   ) =>
     queryOptions({
       queryKey: ['proposal', 'approverIdForPreProposeApprovalId', options],
-      queryFn: () =>
-        fetchApproverIdForPreProposeApprovalId(queryClient, options),
+      queryFn: (ctx) =>
+        fetchApproverIdForPreProposeApprovalId(ctx.client, options),
     }),
   /**
    * Given an approver's proposal that approved a pre-propose approval proposal,
    * retrieve the approved (completed) pre-propose approval proposal ID.
    */
   approvedIdForPreProposeApproverId: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchApprovedIdForPreProposeApproverId>[1]
   ) =>
     queryOptions({
       queryKey: ['proposal', 'approvedIdForPreProposeApproverId', options],
-      queryFn: () =>
-        fetchApprovedIdForPreProposeApproverId(queryClient, options),
+      queryFn: (ctx) =>
+        fetchApprovedIdForPreProposeApproverId(ctx.client, options),
     }),
   /**
    * For the Neutron fork, retrieve the associated timelock and overrule
@@ -701,11 +696,10 @@ export const proposalQueries = {
    * pre-propose address, and the timelocked proposal ID.
    */
   neutronTimelockOverrule: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchNeutronTimelockOverrule>[1]
   ) =>
     queryOptions({
       queryKey: ['proposal', 'neutronTimelockOverrule', options],
-      queryFn: () => fetchNeutronTimelockOverrule(queryClient, options),
+      queryFn: (ctx) => fetchNeutronTimelockOverrule(ctx.client, options),
     }),
 }

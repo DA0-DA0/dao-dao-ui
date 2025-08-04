@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AllAccountsResponse,
@@ -150,18 +146,20 @@ export const cw20BaseQueryKeys = {
     ] as const,
 }
 export const cw20BaseQueries = {
-  balance: <TData = BalanceResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw20BaseBalanceQuery<TData>
-  ) =>
+  balance: <TData = BalanceResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20BaseBalanceQuery<TData>) =>
     queryOptions<BalanceResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.balance(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
           return {
-            balance: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            balance: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw20/balance',
@@ -183,17 +181,18 @@ export const cw20BaseQueries = {
       },
       ...options,
     }),
-  tokenInfo: <TData = TokenInfoResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20BaseTokenInfoQuery<TData>
-  ) =>
+  tokenInfo: <TData = TokenInfoResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20BaseTokenInfoQuery<TData>) =>
     queryOptions<TokenInfoResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.tokenInfo(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw20/tokenInfo',
@@ -211,17 +210,18 @@ export const cw20BaseQueries = {
       },
       ...options,
     }),
-  minter: <TData = MinterResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20BaseMinterQuery<TData>
-  ) =>
+  minter: <TData = MinterResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20BaseMinterQuery<TData>) =>
     queryOptions<MinterResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.minter(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw20/minter',
@@ -239,17 +239,19 @@ export const cw20BaseQueries = {
       },
       ...options,
     }),
-  allowance: <TData = AllowanceResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw20BaseAllowanceQuery<TData>
-  ) =>
+  allowance: <TData = AllowanceResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20BaseAllowanceQuery<TData>) =>
     queryOptions<AllowanceResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.allowance(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw20/allowance',
@@ -271,23 +273,20 @@ export const cw20BaseQueries = {
       },
       ...options,
     }),
-  allAllowances: <TData = AllAllowancesResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: Cw20BaseAllAllowancesQuery<TData>
-  ) =>
+  allAllowances: <TData = AllAllowancesResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20BaseAllAllowancesQuery<TData>) =>
     queryOptions<AllAllowancesResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.allAllowances(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
           return {
-            allowances: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            allowances: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw20/ownerAllowances',
@@ -334,18 +333,20 @@ export const cw20BaseQueries = {
         }),
       ...options,
     }),
-  allAccounts: <TData = AllAccountsResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw20BaseAllAccountsQuery<TData>
-  ) =>
+  allAccounts: <TData = AllAccountsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20BaseAllAccountsQuery<TData>) =>
     queryOptions<AllAccountsResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.allAccounts(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
           return {
-            accounts: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            accounts: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw20/allAccounts',
@@ -368,17 +369,18 @@ export const cw20BaseQueries = {
       },
       ...options,
     }),
-  marketingInfo: <TData = MarketingInfoResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20BaseMarketingInfoQuery<TData>
-  ) =>
+  marketingInfo: <TData = MarketingInfoResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20BaseMarketingInfoQuery<TData>) =>
     queryOptions<MarketingInfoResponse, Error, TData>({
       queryKey: cw20BaseQueryKeys.marketingInfo(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw20/marketingInfo',

@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 
 import { daoQueries } from '@dao-dao/state/query'
@@ -113,10 +113,10 @@ export const useFeed = (): FeedState => {
     }, [memoizedSources])
 
   // Get info for all DAOs found.
-  const queryClient = useQueryClient()
+
   const daoLazyCardProps = useQueries({
     queries: sourceDaosWithItems.map(({ chainId, coreAddress }) =>
-      daoQueries.lazyDaoCardProps(queryClient, {
+      daoQueries.lazyDaoCardProps({
         chainId,
         coreAddress,
       })

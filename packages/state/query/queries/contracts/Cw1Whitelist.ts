@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { AdminListResponse } from '@dao-dao/types/contracts/Cw1Whitelist'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -38,17 +34,18 @@ export const cw1WhitelistQueryKeys = {
     ] as const,
 }
 export const cw1WhitelistQueries = {
-  adminList: <TData = AdminListResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw1WhitelistAdminListQuery<TData>
-  ) =>
+  adminList: <TData = AdminListResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw1WhitelistAdminListQuery<TData>) =>
     queryOptions<AdminListResponse, Error, TData>({
       queryKey: cw1WhitelistQueryKeys.adminList(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         let indexerNonExistent = false
         try {
-          const adminList = await queryClient.fetchQuery(
-            indexerQueries.queryContract<AdminListResponse>(queryClient, {
+          const adminList = await ctx.client.fetchQuery(
+            indexerQueries.queryContract<AdminListResponse>({
               chainId,
               contractAddress,
               formula: 'cw1Whitelist/adminList',

@@ -207,7 +207,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ? (
               await queryClient
                 .fetchQuery(
-                  contractQueries.info(queryClient, {
+                  contractQueries.info({
                     chainId,
                     address: coreAddress,
                   })
@@ -229,7 +229,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ) {
             // If address is polytone proxy, redirect to DAO on native chain.
             const { remoteAddress } = await queryClient.fetchQuery(
-              polytoneQueries.reverseLookupProxy(queryClient, {
+              polytoneQueries.reverseLookupProxy({
                 chainId,
                 address: coreAddress,
               })

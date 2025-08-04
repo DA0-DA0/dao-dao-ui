@@ -39,14 +39,14 @@ export const fetchVestingPaymentInfo = async (
   ] = await Promise.all([
     queryClient
       .fetchQuery(
-        cwVestingQueries.info(queryClient, {
+        cwVestingQueries.info({
           chainId,
           contractAddress: address,
         })
       )
       .then(async (vest) => {
         const token = await queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: 'cw20' in vest.denom ? TokenType.Cw20 : TokenType.Native,
             denomOrAddress:
@@ -60,14 +60,14 @@ export const fetchVestingPaymentInfo = async (
         }
       }),
     queryClient.fetchQuery(
-      cwVestingQueries.vested(queryClient, {
+      cwVestingQueries.vested({
         chainId,
         contractAddress: address,
         args: {},
       })
     ),
     queryClient.fetchQuery(
-      cwVestingQueries.totalToVest(queryClient, {
+      cwVestingQueries.totalToVest({
         chainId,
         contractAddress: address,
       })
@@ -81,7 +81,7 @@ export const fetchVestingPaymentInfo = async (
     ),
     queryClient
       .fetchQuery(
-        cwVestingQueries.ownership(queryClient, {
+        cwVestingQueries.ownership({
           chainId,
           contractAddress: address,
         })
@@ -93,7 +93,7 @@ export const fetchVestingPaymentInfo = async (
 
         const cw1WhitelistAdmins = owner
           ? await queryClient.fetchQuery(
-              cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
+              cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
                 chainId,
                 address: owner,
               })
@@ -119,14 +119,14 @@ export const fetchVestingPaymentInfo = async (
     },
     // Promise.all([
     //   queryClient.fetchQuery(
-    //     cwVestingExtraQueries.stakeHistory(queryClient, {
+    //     cwVestingExtraQueries.stakeHistory( {
     //       chainId,
     //       contractAddress: address,
     //     })
     //   ),
     //   queryClient
     //     .fetchQuery(
-    //       cwVestingExtraQueries.unbondingDurationSeconds(queryClient, {
+    //       cwVestingExtraQueries.unbondingDurationSeconds( {
     //         chainId,
     //         address,
     //       })
@@ -149,7 +149,7 @@ export const fetchVestingPaymentInfo = async (
     //       uniqueValidators.map((validator) =>
     //         queryClient
     //           .fetchQuery(
-    //             indexerQueries.queryValidator(queryClient, {
+    //             indexerQueries.queryValidator( {
     //               chainId,
     //               validatorOperatorAddress: validator,
     //               formula: 'staking/slashes',
@@ -195,7 +195,7 @@ export const fetchVestingPaymentInfo = async (
     //   }
     // ),
     queryClient.fetchQuery(
-      chainQueries.nativeDelegationInfo(queryClient, {
+      chainQueries.nativeDelegationInfo({
         chainId,
         address,
       })
@@ -309,7 +309,7 @@ export const fetchVestingPaymentsOwnedBy = async (
   }
 ): Promise<string[]> => {
   const vestingPayments: string[] = await queryClient.fetchQuery(
-    indexerQueries.queryAccount(queryClient, {
+    indexerQueries.queryAccount({
       chainId,
       address,
       formula: 'vesting/ownerOf',
@@ -336,7 +336,7 @@ export const fetchVestingInfosOwnedBy = async (
   }
 ): Promise<VestingInfo[]> => {
   const vestingPayments = await queryClient.fetchQuery(
-    cwVestingExtraQueries.vestingPaymentsOwnedBy(queryClient, {
+    cwVestingExtraQueries.vestingPaymentsOwnedBy({
       chainId,
       address,
     })
@@ -346,7 +346,7 @@ export const fetchVestingInfosOwnedBy = async (
     await Promise.allSettled(
       vestingPayments.map((address) =>
         queryClient.fetchQuery(
-          cwVestingExtraQueries.info(queryClient, {
+          cwVestingExtraQueries.info({
             chainId,
             address,
           })
@@ -370,7 +370,7 @@ export const fetchVestingInfosForFactory = async (
   }
 ): Promise<VestingInfo[]> => {
   const { contracts } = await queryClient.fetchQuery(
-    cwPayrollFactoryExtraQueries.listAllVestingContracts(queryClient, {
+    cwPayrollFactoryExtraQueries.listAllVestingContracts({
       chainId,
       address,
     })
@@ -380,7 +380,7 @@ export const fetchVestingInfosForFactory = async (
     await Promise.allSettled(
       contracts.map(({ contract }) =>
         queryClient.fetchQuery(
-          cwVestingExtraQueries.info(queryClient, {
+          cwVestingExtraQueries.info({
             chainId,
             address: contract,
           })
@@ -394,28 +394,22 @@ export const cwVestingExtraQueries = {
   /**
    * Fetch info for a vesting payment.
    */
-  info: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchVestingPaymentInfo>[1]
-  ) =>
+  info: (options: Parameters<typeof fetchVestingPaymentInfo>[1]) =>
     queryOptions({
       queryKey: ['cwVestingExtra', 'vestingPaymentInfo', options],
-      queryFn: () => fetchVestingPaymentInfo(queryClient, options),
+      queryFn: (ctx) => fetchVestingPaymentInfo(ctx.client, options),
     }),
   /**
    * Fetch unbonding duration seconds configured for a vest.
    */
-  unbondingDurationSeconds: (
-    queryClient: QueryClient,
-    {
-      chainId,
-      address,
-    }: {
-      chainId: string
-      address: string
-    }
-  ) =>
-    indexerQueries.queryContract<number | null>(queryClient, {
+  unbondingDurationSeconds: ({
+    chainId,
+    address,
+  }: {
+    chainId: string
+    address: string
+  }) =>
+    indexerQueries.queryContract<number | null>({
       chainId,
       contractAddress: address,
       formula: 'cwVesting/unbondingDurationSeconds',
@@ -426,33 +420,30 @@ export const cwVestingExtraQueries = {
    * Fetch vesting payments owned by a given address.
    */
   vestingPaymentsOwnedBy: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchVestingPaymentsOwnedBy>[1]
   ) =>
     queryOptions({
       queryKey: ['cwVestingExtra', 'vestingPaymentsOwnedBy', options],
-      queryFn: () => fetchVestingPaymentsOwnedBy(queryClient, options),
+      queryFn: (ctx) => fetchVestingPaymentsOwnedBy(ctx.client, options),
     }),
   /**
    * Fetch vesting payment infos owned by a given address.
    */
   vestingInfosOwnedBy: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchVestingInfosOwnedBy>[1]
   ) =>
     queryOptions({
       queryKey: ['cwVestingExtra', 'vestingInfosOwnedBy', options],
-      queryFn: () => fetchVestingInfosOwnedBy(queryClient, options),
+      queryFn: (ctx) => fetchVestingInfosOwnedBy(ctx.client, options),
     }),
   /**
    * Fetch vesting payment infos created by a given factory.
    */
   vestingInfosForFactory: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchVestingInfosForFactory>[1]
   ) =>
     queryOptions({
       queryKey: ['cwVestingExtra', 'vestingInfosForFactory', options],
-      queryFn: () => fetchVestingInfosForFactory(queryClient, options),
+      queryFn: (ctx) => fetchVestingInfosForFactory(ctx.client, options),
     }),
 }

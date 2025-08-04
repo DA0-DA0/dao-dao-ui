@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +12,7 @@ export const LazyDaoCard = (props: LazyDaoCardProps) => {
   const { t } = useTranslation()
 
   const daoInfoQuery = useQuery(
-    daoQueries.info(useQueryClient(), {
+    daoQueries.info({
       chainId: props.info.chainId,
       coreAddress: props.info.coreAddress,
     })

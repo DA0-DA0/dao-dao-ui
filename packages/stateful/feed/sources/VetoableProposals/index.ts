@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -29,11 +28,10 @@ export const VetoableProposals: FeedSource<
 
     const { profile } = useProfile()
     const { following } = useFollowingDaos()
-    const queryClient = useQueryClient()
 
     const daosWithItemsLoadable = useQueryLoadingDataWithError(
       !profile.loading
-        ? feedVetoableProposalQueries.vetoableProposals(queryClient, {
+        ? feedVetoableProposalQueries.vetoableProposals({
             uuid: profile.data.uuid,
           })
         : undefined,

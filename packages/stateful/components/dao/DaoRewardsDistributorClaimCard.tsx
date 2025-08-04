@@ -26,7 +26,7 @@ export const DaoRewardsDistributorClaimCard = (
   const queryClient = useQueryClient()
   const rewards = useQueryLoadingDataWithError(
     address
-      ? daoRewardsDistributorExtraQueries.pendingDaoRewards(queryClient, {
+      ? daoRewardsDistributorExtraQueries.pendingDaoRewards({
           chainId: dao.chainId,
           daoAddress: dao.coreAddress,
           recipient: address,
@@ -95,14 +95,11 @@ export const DaoRewardsDistributorClaimCard = (
 
       // Refetch pending rewards query.
       await queryClient.refetchQueries({
-        queryKey: daoRewardsDistributorExtraQueries.pendingDaoRewards(
-          queryClient,
-          {
-            chainId: dao.chainId,
-            daoAddress: dao.coreAddress,
-            recipient: address,
-          }
-        ).queryKey,
+        queryKey: daoRewardsDistributorExtraQueries.pendingDaoRewards({
+          chainId: dao.chainId,
+          daoAddress: dao.coreAddress,
+          recipient: address,
+        }).queryKey,
       })
     } catch (error) {
       console.error(error)

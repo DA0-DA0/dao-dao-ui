@@ -54,7 +54,7 @@ export const fetchDaoRewardDistribution = async (
   }
 ): Promise<DaoRewardDistribution> => {
   const state = await queryClient.fetchQuery(
-    daoRewardsDistributorQueries.distribution(queryClient, {
+    daoRewardsDistributorQueries.distribution({
       chainId,
       contractAddress: address,
       args: {
@@ -64,7 +64,7 @@ export const fetchDaoRewardDistribution = async (
   )
 
   const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, {
+    tokenQueries.info({
       chainId,
       type: 'cw20' in state.denom ? TokenType.Cw20 : TokenType.Native,
       denomOrAddress:
@@ -97,7 +97,7 @@ export const fetchDaoRewardDistributions = async (
   try {
     states = (
       await queryClient.fetchQuery(
-        indexerQueries.queryContract(queryClient, {
+        indexerQueries.queryContract({
           chainId,
           contractAddress: address,
           formula: 'daoRewardsDistributor/distributions',
@@ -115,7 +115,7 @@ export const fetchDaoRewardDistributions = async (
     while (true) {
       const page = (
         await queryClient.fetchQuery(
-          daoRewardsDistributorQueries.distributions(queryClient, {
+          daoRewardsDistributorQueries.distributions({
             chainId,
             contractAddress: address,
             args: {
@@ -134,7 +134,7 @@ export const fetchDaoRewardDistributions = async (
       // query at the bottom of this function.
       for (const distribution of page) {
         queryClient.setQueryData(
-          daoRewardsDistributorQueries.distribution(queryClient, {
+          daoRewardsDistributorQueries.distribution({
             chainId,
             contractAddress: address,
             args: {
@@ -157,7 +157,7 @@ export const fetchDaoRewardDistributions = async (
   const distributions = await Promise.all(
     states.map(({ id }) =>
       queryClient.fetchQuery(
-        daoRewardsDistributorExtraQueries.distribution(queryClient, {
+        daoRewardsDistributorExtraQueries.distribution({
           chainId,
           address,
           id,
@@ -235,7 +235,7 @@ export const fetchAllDaoRewardDistributions = async (
   // Active distributors for a DAO.
   const distributors = (
     await queryClient.fetchQuery(
-      daoDaoCoreQueries.listAllItems(queryClient, {
+      daoDaoCoreQueries.listAllItems({
         chainId,
         contractAddress: daoAddress,
         args: {
@@ -250,7 +250,7 @@ export const fetchAllDaoRewardDistributions = async (
     await Promise.all(
       distributors.map((address) =>
         queryClient.fetchQuery(
-          daoRewardsDistributorExtraQueries.distributions(queryClient, {
+          daoRewardsDistributorExtraQueries.distributions({
             chainId,
             address,
           })
@@ -280,7 +280,7 @@ export const fetchPendingDaoRewards = async (
   // Active distributors for a DAO.
   const distributors = (
     await queryClient.fetchQuery(
-      daoDaoCoreQueries.listAllItems(queryClient, {
+      daoDaoCoreQueries.listAllItems({
         chainId,
         contractAddress: daoAddress,
         args: {
@@ -297,20 +297,17 @@ export const fetchPendingDaoRewards = async (
         async (address): Promise<PendingDaoRewards['distributions']> => {
           const [distributions, { pending_rewards }] = await Promise.all([
             queryClient.fetchQuery(
-              daoRewardsDistributorExtraQueries.distributions(queryClient, {
+              daoRewardsDistributorExtraQueries.distributions({
                 chainId,
                 address,
               })
             ),
             queryClient.fetchQuery(
-              daoRewardsDistributorExtraQueries.listAllPendingRewards(
-                queryClient,
-                {
-                  chainId,
-                  address,
-                  recipient,
-                }
-              )
+              daoRewardsDistributorExtraQueries.listAllPendingRewards({
+                chainId,
+                address,
+                recipient,
+              })
             ),
           ])
 
@@ -341,14 +338,12 @@ export const fetchPendingDaoRewards = async (
           usdPrice = 0,
           timestamp = new Date(),
         } = await queryClient
-          .fetchQuery(
-            tokenQueries.usdPrice(queryClient, deserializeTokenSource(source))
-          )
+          .fetchQuery(tokenQueries.usdPrice(deserializeTokenSource(source)))
           // If failed to load price, just load token info with no price.
           .catch(
             async (): Promise<GenericTokenWithUsdPrice> => ({
               token: await queryClient.fetchQuery(
-                tokenQueries.info(queryClient, deserializeTokenSource(source))
+                tokenQueries.info(deserializeTokenSource(source))
               ),
             })
           )
@@ -396,7 +391,7 @@ export const fetchV250DistributionRecoveryInfo = async (
 ): Promise<V250RewardDistributorRecoveryInfo> => {
   const daoItems = Object.fromEntries(
     await queryClient.fetchQuery(
-      daoDaoCoreQueries.listAllItems(queryClient, {
+      daoDaoCoreQueries.listAllItems({
         chainId,
         contractAddress: daoAddress,
       })
@@ -407,7 +402,7 @@ export const fetchV250DistributionRecoveryInfo = async (
     await Promise.all(
       getDaoRewardDistributors(daoItems).map(async ({ id, address }) => {
         const { info } = await queryClient.fetchQuery(
-          contractQueries.info(queryClient, {
+          contractQueries.info({
             chainId,
             address,
           })
@@ -435,7 +430,7 @@ export const fetchV250DistributionRecoveryInfo = async (
   ] = await Promise.all([
     queryClient
       .fetchQuery(
-        daoQueries.listMembers(queryClient, {
+        daoQueries.listMembers({
           chainId,
           address: daoAddress,
         })
@@ -452,7 +447,7 @@ export const fetchV250DistributionRecoveryInfo = async (
                 accounted_for_rewards_puvp: Record<string, string>
               }
             >
-          >(queryClient, {
+          >({
             chainId,
             contractAddress: address,
             formula: 'map',
@@ -495,14 +490,11 @@ export const fetchV250DistributionRecoveryInfo = async (
             address: recipient,
             pending: (
               await queryClient.fetchQuery(
-                daoRewardsDistributorExtraQueries.listAllPendingRewards(
-                  queryClient,
-                  {
-                    chainId,
-                    address: distributor.address,
-                    recipient,
-                  }
-                )
+                daoRewardsDistributorExtraQueries.listAllPendingRewards({
+                  chainId,
+                  address: distributor.address,
+                  recipient,
+                })
               )
             ).pending_rewards,
           }))
@@ -513,7 +505,7 @@ export const fetchV250DistributionRecoveryInfo = async (
 
       const distributions = await queryClient
         .fetchQuery(
-          daoRewardsDistributorExtraQueries.distributions(queryClient, {
+          daoRewardsDistributorExtraQueries.distributions({
             chainId,
             address: distributor.address,
           })
@@ -578,7 +570,7 @@ export const fetchV250DistributionRecoveryInfo = async (
           .map(async (info): Promise<TokenWithV250RecoveryInfo> => {
             const balance = await queryClient
               .fetchQuery(
-                tokenQueries.balance(queryClient, {
+                tokenQueries.balance({
                   chainId,
                   type: info.token.type,
                   denomOrAddress: info.token.denomOrAddress,
@@ -677,30 +669,23 @@ export const daoRewardsDistributorExtraQueries = {
   /**
    * Fetch a reward distribution.
    */
-  distribution: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoRewardDistribution>[1]
-  ) =>
+  distribution: (options: Parameters<typeof fetchDaoRewardDistribution>[1]) =>
     queryOptions({
       queryKey: ['daoRewardsDistributorExtra', 'distribution', options],
-      queryFn: () => fetchDaoRewardDistribution(queryClient, options),
+      queryFn: (ctx) => fetchDaoRewardDistribution(ctx.client, options),
     }),
   /**
    * Fetch all DAO reward distributions.
    */
-  distributions: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoRewardDistributions>[1]
-  ) =>
+  distributions: (options: Parameters<typeof fetchDaoRewardDistributions>[1]) =>
     queryOptions({
       queryKey: ['daoRewardsDistributorExtra', 'distributions', options],
-      queryFn: () => fetchDaoRewardDistributions(queryClient, options),
+      queryFn: (ctx) => fetchDaoRewardDistributions(ctx.client, options),
     }),
   /**
    * List all pending rewards.
    */
   listAllPendingRewards: (
-    queryClient: QueryClient,
     options: Parameters<typeof listAllDaoRewardDistributorPendingRewards>[1]
   ) =>
     queryOptions({
@@ -709,36 +694,31 @@ export const daoRewardsDistributorExtraQueries = {
         'listAllPendingRewards',
         options,
       ],
-      queryFn: () =>
-        listAllDaoRewardDistributorPendingRewards(queryClient, options),
+      queryFn: (ctx) =>
+        listAllDaoRewardDistributorPendingRewards(ctx.client, options),
     }),
   /**
    * Fetch all DAO reward distributions.
    */
   allDistributions: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchAllDaoRewardDistributions>[1]
   ) =>
     queryOptions({
       queryKey: ['daoRewardsDistributorExtra', 'allDistributions', options],
-      queryFn: () => fetchAllDaoRewardDistributions(queryClient, options),
+      queryFn: (ctx) => fetchAllDaoRewardDistributions(ctx.client, options),
     }),
   /**
    * Fetch all DAO reward distributions and pending rewards for an account.
    */
-  pendingDaoRewards: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchPendingDaoRewards>[1]
-  ) =>
+  pendingDaoRewards: (options: Parameters<typeof fetchPendingDaoRewards>[1]) =>
     queryOptions({
       queryKey: ['daoRewardsDistributorExtra', 'pendingDaoRewards', options],
-      queryFn: () => fetchPendingDaoRewards(queryClient, options),
+      queryFn: (ctx) => fetchPendingDaoRewards(ctx.client, options),
     }),
   /**
    * Fetch v2.5.0 distributions recovery information.
    */
   v250DistributionRecoveryInfo: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchV250DistributionRecoveryInfo>[1]
   ) =>
     queryOptions({
@@ -747,6 +727,6 @@ export const daoRewardsDistributorExtraQueries = {
         'v250DistributionRecoveryInfo',
         options,
       ],
-      queryFn: () => fetchV250DistributionRecoveryInfo(queryClient, options),
+      queryFn: (ctx) => fetchV250DistributionRecoveryInfo(ctx.client, options),
     }),
 }

@@ -308,7 +308,7 @@ export const Complete = ({
       // Reload survey list on success and also individual survey.
       await Promise.all([
         queryClient.refetchQueries({
-          queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+          queryKey: retroactiveCompensationQueries.listSurveys({
             daoAddress: dao.coreAddress,
           }).queryKey,
         }),

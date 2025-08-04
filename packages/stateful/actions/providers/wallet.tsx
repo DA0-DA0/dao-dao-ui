@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { accountQueries } from '@dao-dao/state/query'
 import { ErrorPage, Loader } from '@dao-dao/stateless'
 import { ActionContextType, WalletActionsProviderProps } from '@dao-dao/types'
@@ -25,10 +23,9 @@ export const WalletActionsProvider = ({
 
   const { profile } = useProfile({ address })
 
-  const queryClient = useQueryClient()
   const accounts = useQueryLoadingDataWithError(
     address
-      ? accountQueries.list(queryClient, {
+      ? accountQueries.list({
           chainId,
           address,
         })

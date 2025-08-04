@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { NullableString } from '@dao-dao/types/contracts/PolytoneNote'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -38,25 +34,22 @@ export const polytoneNoteQueryKeys = {
     ] as const,
 }
 export const polytoneNoteQueries = {
-  remoteAddress: <TData = NullableString>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: PolytoneNoteRemoteAddressQuery<TData>
-  ) =>
+  remoteAddress: <TData = NullableString>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: PolytoneNoteRemoteAddressQuery<TData>) =>
     queryOptions<NullableString, Error, TData>({
       queryKey: polytoneNoteQueryKeys.remoteAddress(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract<NullableString>(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract<NullableString>({
               chainId,
               contractAddress,
               formula: 'polytone/note/remoteAddress',

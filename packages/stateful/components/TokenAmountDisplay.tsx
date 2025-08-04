@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { HugeDecimal } from '@dao-dao/math'
 import { tokenQueries } from '@dao-dao/state/query'
 import {
@@ -22,13 +20,12 @@ export const TokenAmountDisplay = ({
   ...props
 }: StatefulTokenAmountDisplayProps) => {
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
 
   const loadingGenericToken = useQueryLoadingData<
     GenericToken,
     GenericToken | undefined
   >(
-    tokenQueries.info(queryClient, {
+    tokenQueries.info({
       type: TokenType.Native,
       denomOrAddress: denom,
       chainId,

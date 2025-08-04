@@ -78,7 +78,7 @@ export const fetchAccountList = async (
   }
 
   const isDao = await queryClient.fetchQuery(
-    contractQueries.isDao(queryClient, {
+    contractQueries.isDao({
       chainId,
       address,
     })
@@ -87,17 +87,17 @@ export const fetchAccountList = async (
   // isDao will cache the contract info, so these two will be immediate.
   const [isPolytoneProxy, isValenceAccount] = await Promise.all([
     queryClient.fetchQuery(
-      contractQueries.isPolytoneProxy(queryClient, { chainId, address })
+      contractQueries.isPolytoneProxy({ chainId, address })
     ),
     queryClient.fetchQuery(
-      contractQueries.isValenceAccount(queryClient, { chainId, address })
+      contractQueries.isValenceAccount({ chainId, address })
     ),
   ])
 
   const mainAccount: Account = isValenceAccount
     ? // If this is a valence account, get its config.
       await queryClient.fetchQuery(
-        accountQueries.valence(queryClient, {
+        accountQueries.valence({
           chainId,
           address,
         })
@@ -112,9 +112,7 @@ export const fetchAccountList = async (
     mainAccount.type !== AccountType.Polytone
       ? p.time(
           'polytone_proxies',
-          queryClient.fetchQuery(
-            polytoneQueries.proxies(queryClient, { chainId, address })
-          )
+          queryClient.fetchQuery(polytoneQueries.proxies({ chainId, address }))
         )
       : ({} as PolytoneProxies),
     // If this is a DAO, get its registered ICAs (which is a chain the DAO has
@@ -123,7 +121,7 @@ export const fetchAccountList = async (
       ? p.time(
           'registered_icas',
           queryClient.fetchQuery(
-            daoDaoCoreQueries.listAllItems(queryClient, {
+            daoDaoCoreQueries.listAllItems({
               chainId,
               contractAddress: address,
               args: {
@@ -164,7 +162,7 @@ export const fetchAccountList = async (
         p.time(
           `remote_ica_address_${destChainId}`,
           queryClient.fetchQuery(
-            accountQueries.remoteIcaAddress(queryClient, {
+            accountQueries.remoteIcaAddress({
               srcChainId: mainAccount.chainId,
               address: mainAccount.address,
               destChainId,
@@ -197,7 +195,7 @@ export const fetchAccountList = async (
             p.time(
               `valence_account_${address}`,
               queryClient.fetchQuery(
-                accountQueries.valenceAccounts(queryClient, {
+                accountQueries.valenceAccounts({
                   address,
                   chainId,
                 })
@@ -365,7 +363,7 @@ export const fetchCw3MultisigAccount = async (
   }
 ): Promise<Cw3MultisigAccount> => {
   const isCw3Multisig = await queryClient.fetchQuery(
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       chainId,
       address,
       nameOrNames: [
@@ -388,7 +386,6 @@ export const fetchCw3MultisigAccount = async (
     ),
     queryClient.fetchQuery(
       cw3FlexMultisigQueries.listAllVoters({
-        queryClient,
         chainId,
         contractAddress: address,
       })
@@ -463,7 +460,7 @@ export const fetchMultisigAccount = async (
       })
     ),
     queryClient.fetchQuery(
-      accountQueries.cw3Multisig(queryClient, {
+      accountQueries.cw3Multisig({
         chainId,
         address,
       })
@@ -528,7 +525,7 @@ export const fetchValenceAccount = async (
     await Promise.all(
       uniqueDenoms.map((denom) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -583,7 +580,7 @@ export const fetchValenceAccounts = async (
   }
 ): Promise<ValenceAccount[]> => {
   const addresses = await queryClient.fetchQuery(
-    indexerQueries.queryAccount(queryClient, {
+    indexerQueries.queryAccount({
       chainId,
       address,
       formula: 'valence/accounts',
@@ -597,7 +594,7 @@ export const fetchValenceAccounts = async (
   return Promise.all(
     addresses.map((address) =>
       queryClient.fetchQuery(
-        accountQueries.valence(queryClient, {
+        accountQueries.valence({
           chainId,
           address,
         })
@@ -620,7 +617,7 @@ export const fetchCw1WhitelistAccount = async (
   }
 ): Promise<Cw1WhitelistAccount> => {
   const admins = await queryClient.fetchQuery(
-    cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
+    cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
       chainId,
       address,
     })
@@ -644,25 +641,19 @@ export const accountQueries = {
   /**
    * Fetch the list of accounts associated with the specified address.
    */
-  list: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchAccountList>[1]
-  ) =>
+  list: (options: Parameters<typeof fetchAccountList>[1]) =>
     queryOptions({
       queryKey: ['account', 'list', options],
-      queryFn: () => fetchAccountList(queryClient, options),
+      queryFn: (ctx) => fetchAccountList(ctx.client, options),
     }),
   /**
    * Fetch ICA address on host (`destChainId`) controlled by `address` on
    * controller (`srcChainId`).
    */
-  remoteIcaAddress: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchRemoteIcaAddress>[1]
-  ) =>
+  remoteIcaAddress: (options: Parameters<typeof fetchRemoteIcaAddress>[1]) =>
     queryOptions({
       queryKey: ['account', 'remoteIcaAddress', options],
-      queryFn: () => fetchRemoteIcaAddress(queryClient, options),
+      queryFn: (ctx) => fetchRemoteIcaAddress(ctx.client, options),
     }),
   /**
    * Fetch the details of a cryptographic multisig account.
@@ -677,56 +668,41 @@ export const accountQueries = {
   /**
    * Fetch the details of a cw3-fixed or cw3-flex multisig account.
    */
-  cw3Multisig: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchCw3MultisigAccount>[1]
-  ) =>
+  cw3Multisig: (options: Parameters<typeof fetchCw3MultisigAccount>[1]) =>
     queryOptions({
       queryKey: ['account', 'cw3Multisig', options],
-      queryFn: () => fetchCw3MultisigAccount(queryClient, options),
+      queryFn: (ctx) => fetchCw3MultisigAccount(ctx.client, options),
     }),
   /**
    * Fetch the details of any type of multisig.
    */
-  multisig: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchMultisigAccount>[1]
-  ) =>
+  multisig: (options: Parameters<typeof fetchMultisigAccount>[1]) =>
     queryOptions({
       queryKey: ['account', 'multisig', options],
-      queryFn: () => fetchMultisigAccount(queryClient, options),
+      queryFn: (ctx) => fetchMultisigAccount(ctx.client, options),
     }),
   /**
    * Fetch a Valence account.
    */
-  valence: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchValenceAccount>[1]
-  ) =>
+  valence: (options: Parameters<typeof fetchValenceAccount>[1]) =>
     queryOptions({
       queryKey: ['account', 'valence', options],
-      queryFn: () => fetchValenceAccount(queryClient, options),
+      queryFn: (ctx) => fetchValenceAccount(ctx.client, options),
     }),
   /**
    * Fetch the Valence accounts owned by a given address.
    */
-  valenceAccounts: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchValenceAccounts>[1]
-  ) =>
+  valenceAccounts: (options: Parameters<typeof fetchValenceAccounts>[1]) =>
     queryOptions({
       queryKey: ['account', 'valenceAccounts', options],
-      queryFn: () => fetchValenceAccounts(queryClient, options),
+      queryFn: (ctx) => fetchValenceAccounts(ctx.client, options),
     }),
   /**
    * Fetch a cw1-whitelist account.
    */
-  cw1Whitelist: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchCw1WhitelistAccount>[1]
-  ) =>
+  cw1Whitelist: (options: Parameters<typeof fetchCw1WhitelistAccount>[1]) =>
     queryOptions({
       queryKey: ['account', 'cw1Whitelist', options],
-      queryFn: () => fetchCw1WhitelistAccount(queryClient, options),
+      queryFn: (ctx) => fetchCw1WhitelistAccount(ctx.client, options),
     }),
 }

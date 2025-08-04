@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -48,12 +48,11 @@ export const MintNftRenderer = ({
     })
   )
 
-  const queryClient = useQueryClient()
   const first100Cards = useQueries({
     queries:
       allTokensLoadable.state === 'hasValue'
         ? allTokensLoadable.contents.slice(0, 100).map((tokenId) =>
-            nftQueries.cardInfo(queryClient, {
+            nftQueries.cardInfo({
               collection: nftCollection,
               chainId,
               tokenId,

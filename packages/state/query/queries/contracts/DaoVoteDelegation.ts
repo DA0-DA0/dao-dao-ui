@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ArrayOfAddr,
@@ -151,26 +147,23 @@ export const daoVoteDelegationQueryKeys = {
 }
 export const daoVoteDelegationQueries = {
   info: contractQueries.info,
-  registration: <TData = RegistrationResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationRegistrationQuery<TData>
-  ) =>
+  registration: <TData = RegistrationResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationRegistrationQuery<TData>) =>
     queryOptions<RegistrationResponse, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.registration(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/registration',
@@ -192,26 +185,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  delegates: <TData = DelegatesResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationDelegatesQuery<TData>
-  ) =>
+  delegates: <TData = DelegatesResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationDelegatesQuery<TData>) =>
     queryOptions<DelegatesResponse, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.delegates(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/delegates',
@@ -233,26 +223,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  delegations: <TData = DelegationsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationDelegationsQuery<TData>
-  ) =>
+  delegations: <TData = DelegationsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationDelegationsQuery<TData>) =>
     queryOptions<DelegationsResponse, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.delegations(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/delegations',
@@ -276,26 +263,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  unvotedDelegatedVotingPower: <TData = UnvotedDelegatedVotingPowerResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationUnvotedDelegatedVotingPowerQuery<TData>
-  ) =>
+  unvotedDelegatedVotingPower: <TData = UnvotedDelegatedVotingPowerResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationUnvotedDelegatedVotingPowerQuery<TData>) =>
     queryOptions<UnvotedDelegatedVotingPowerResponse, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.unvotedDelegatedVotingPower(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/unvotedDelegatedVotingPower',
@@ -319,26 +303,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  proposalModules: <TData = ArrayOfAddr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationProposalModulesQuery<TData>
-  ) =>
+  proposalModules: <TData = ArrayOfAddr>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationProposalModulesQuery<TData>) =>
     queryOptions<ArrayOfAddr, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.proposalModules(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/proposalModules',
@@ -360,26 +341,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  votingPowerHookCallers: <TData = ArrayOfAddr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationVotingPowerHookCallersQuery<TData>
-  ) =>
+  votingPowerHookCallers: <TData = ArrayOfAddr>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationVotingPowerHookCallersQuery<TData>) =>
     queryOptions<ArrayOfAddr, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.votingPowerHookCallers(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/votingPowerHookCallers',
@@ -401,17 +379,18 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVoteDelegationConfigQuery<TData>
-  ) =>
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVoteDelegationConfigQuery<TData>) =>
     queryOptions<Config, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.config(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/config',
@@ -429,26 +408,23 @@ export const daoVoteDelegationQueries = {
       },
       ...options,
     }),
-  votingPowerCap: <TData = VotingPowerCapResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVoteDelegationVotingPowerCapQuery<TData>
-  ) =>
+  votingPowerCap: <TData = VotingPowerCapResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVoteDelegationVotingPowerCapQuery<TData>) =>
     queryOptions<VotingPowerCapResponse, Error, TData>({
       queryKey: daoVoteDelegationQueryKeys.votingPowerCap(
         chainId,
         contractAddress,
         args
       ),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'daoVoteDelegation/votingPowerCap',

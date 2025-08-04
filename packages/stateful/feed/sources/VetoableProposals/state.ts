@@ -53,13 +53,13 @@ export const fetchFeedVetoableProposals = async (
       Promise.all([
         dao,
         queryClient.fetchQuery(
-          daoDaoCoreQueries.config(queryClient, {
+          daoDaoCoreQueries.config({
             chainId: dao.chainId,
             contractAddress: dao.coreAddress,
           })
         ),
         queryClient.fetchQuery(
-          daoQueries.daosWithDropdownVetoableProposalList(queryClient, {
+          daoQueries.daosWithDropdownVetoableProposalList({
             chainId: dao.chainId,
             coreAddress: dao.coreAddress,
             // Inbox only exists in the dApp.
@@ -102,11 +102,10 @@ export const feedVetoableProposalQueries = {
    * Fetch vetoable proposals as feed items.
    */
   vetoableProposals: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchFeedVetoableProposals>[1]
   ) =>
     queryOptions({
       queryKey: ['feed', 'vetoableProposals', options],
-      queryFn: () => fetchFeedVetoableProposals(queryClient, options),
+      queryFn: (ctx) => fetchFeedVetoableProposals(ctx.client, options),
     }),
 }

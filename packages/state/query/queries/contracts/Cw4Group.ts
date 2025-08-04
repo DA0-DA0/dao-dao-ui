@@ -4,11 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import {
-  QueryClient,
-  UseQueryOptions,
-  queryOptions,
-} from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AdminResponse,
@@ -98,18 +94,19 @@ export const cw4GroupQueryKeys = {
     ] as const,
 }
 export const cw4GroupQueries = {
-  admin: <TData = AdminResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw4GroupAdminQuery<TData>
-  ) =>
+  admin: <TData = AdminResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw4GroupAdminQuery<TData>) =>
     queryOptions<AdminResponse, Error, TData>({
       queryKey: cw4GroupQueryKeys.admin(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            admin: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            admin: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw4Group/admin',
@@ -128,18 +125,19 @@ export const cw4GroupQueries = {
       },
       ...options,
     }),
-  totalWeight: <TData = TotalWeightResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw4GroupTotalWeightQuery<TData>
-  ) =>
+  totalWeight: <TData = TotalWeightResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw4GroupTotalWeightQuery<TData>) =>
     queryOptions<TotalWeightResponse, Error, TData>({
       queryKey: cw4GroupQueryKeys.totalWeight(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            weight: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            weight: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw4Group/totalWeight',
@@ -158,17 +156,19 @@ export const cw4GroupQueries = {
       },
       ...options,
     }),
-  listMembers: <TData = ListMembersResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw4GroupListMembersQuery<TData>
-  ) =>
+  listMembers: <TData = ListMembersResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw4GroupListMembersQuery<TData>) =>
     queryOptions<ListMembersResponse, Error, TData>({
       queryKey: cw4GroupQueryKeys.listMembers(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw4Group/listMembers',
@@ -190,18 +190,20 @@ export const cw4GroupQueries = {
       },
       ...options,
     }),
-  member: <TData = MemberResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw4GroupMemberQuery<TData>
-  ) =>
+  member: <TData = MemberResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw4GroupMemberQuery<TData>) =>
     queryOptions<MemberResponse, Error, TData>({
       queryKey: cw4GroupQueryKeys.member(chainId, contractAddress, args),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
           return {
-            weight: await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
+            weight: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'cw4Group/member',
@@ -227,17 +229,18 @@ export const cw4GroupQueries = {
       },
       ...options,
     }),
-  hooks: <TData = HooksResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw4GroupHooksQuery<TData>
-  ) =>
+  hooks: <TData = HooksResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw4GroupHooksQuery<TData>) =>
     queryOptions<HooksResponse, Error, TData>({
       queryKey: cw4GroupQueryKeys.hooks(chainId, contractAddress),
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
               formula: 'cw4Group/hooks',
