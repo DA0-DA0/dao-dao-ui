@@ -1,4 +1,8 @@
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  UseQueryOptions,
+  queryOptions,
+} from '@tanstack/react-query'
 
 import { SenderInfo } from '@dao-dao/types/contracts/PolytoneVoice'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -42,48 +46,49 @@ export const polytoneVoiceQueries = {
       args,
       options,
     }: PolytoneVoiceSenderInfoForProxyQuery<TData>
-  ): UseQueryOptions<SenderInfo, Error, TData> => ({
-    queryKey: polytoneVoiceQueryKeys.senderInfoForProxy(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      let indexerNonExistent = false
-      try {
-        const senderInfo = await queryClient.fetchQuery(
-          indexerQueries.queryContract<SenderInfo>(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'polytone/voice/senderInfoForProxy',
-            args: {
-              address: args.proxy,
-            },
-          })
-        )
-        if (senderInfo) {
-          return senderInfo
-        } else {
-          indexerNonExistent = true
+  ) =>
+    queryOptions<SenderInfo, Error, TData>({
+      queryKey: polytoneVoiceQueryKeys.senderInfoForProxy(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        let indexerNonExistent = false
+        try {
+          const senderInfo = await queryClient.fetchQuery(
+            indexerQueries.queryContract<SenderInfo>(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'polytone/voice/senderInfoForProxy',
+              args: {
+                address: args.proxy,
+              },
+            })
+          )
+          if (senderInfo) {
+            return senderInfo
+          } else {
+            indexerNonExistent = true
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // Contract throws error if instantiator not found, so we should too if
-      // the indexer query succeeds but the instantiator is not found.
-      if (indexerNonExistent) {
-        throw new Error('Sender info not found')
-      }
+        // Contract throws error if instantiator not found, so we should too if
+        // the indexer query succeeds but the instantiator is not found.
+        if (indexerNonExistent) {
+          throw new Error('Sender info not found')
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new PolytoneVoiceQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).senderInfoForProxy(args)
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new PolytoneVoiceQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).senderInfoForProxy(args)
+      },
+      ...options,
+    }),
 }
 export interface PolytoneVoiceReactQuery<TResponse, TData = TResponse> {
   chainId: string

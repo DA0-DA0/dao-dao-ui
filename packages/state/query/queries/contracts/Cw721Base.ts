@@ -9,7 +9,7 @@
  * contracts and people modify them heavily, so we can't reliably index them.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AllNftInfoResponseForEmpty,
@@ -220,292 +220,254 @@ export const cw721BaseQueries = {
     contractAddress,
     args,
     options,
-  }: Cw721BaseOwnerOfQuery<TData>): UseQueryOptions<
-    OwnerOfResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.ownerOf(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).ownerOf({
-        includeExpired: args.includeExpired,
-        tokenId: args.tokenId,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseOwnerOfQuery<TData>) =>
+    queryOptions<OwnerOfResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.ownerOf(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).ownerOf({
+          includeExpired: args.includeExpired,
+          tokenId: args.tokenId,
+        })
+      },
+      ...options,
+    }),
   approval: <TData = ApprovalResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseApprovalQuery<TData>): UseQueryOptions<
-    ApprovalResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.approval(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).approval({
-        includeExpired: args.includeExpired,
-        spender: args.spender,
-        tokenId: args.tokenId,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseApprovalQuery<TData>) =>
+    queryOptions<ApprovalResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.approval(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).approval({
+          includeExpired: args.includeExpired,
+          spender: args.spender,
+          tokenId: args.tokenId,
+        })
+      },
+      ...options,
+    }),
   approvals: <TData = ApprovalsResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseApprovalsQuery<TData>): UseQueryOptions<
-    ApprovalsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.approvals(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).approvals({
-        includeExpired: args.includeExpired,
-        tokenId: args.tokenId,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseApprovalsQuery<TData>) =>
+    queryOptions<ApprovalsResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.approvals(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).approvals({
+          includeExpired: args.includeExpired,
+          tokenId: args.tokenId,
+        })
+      },
+      ...options,
+    }),
   operator: <TData = OperatorResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseOperatorQuery<TData>): UseQueryOptions<
-    OperatorResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.operator(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).operator({
-        includeExpired: args.includeExpired,
-        operator: args.operator,
-        owner: args.owner,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseOperatorQuery<TData>) =>
+    queryOptions<OperatorResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.operator(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).operator({
+          includeExpired: args.includeExpired,
+          operator: args.operator,
+          owner: args.owner,
+        })
+      },
+      ...options,
+    }),
   allOperators: <TData = OperatorsResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseAllOperatorsQuery<TData>): UseQueryOptions<
-    OperatorsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.allOperators(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).allOperators({
-        includeExpired: args.includeExpired,
-        limit: args.limit,
-        owner: args.owner,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseAllOperatorsQuery<TData>) =>
+    queryOptions<OperatorsResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.allOperators(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).allOperators({
+          includeExpired: args.includeExpired,
+          limit: args.limit,
+          owner: args.owner,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   numTokens: <TData = NumTokensResponse>({
     chainId,
     contractAddress,
     options,
-  }: Cw721BaseNumTokensQuery<TData>): UseQueryOptions<
-    NumTokensResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.numTokens(chainId, contractAddress),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).numTokens()
-    },
-    ...options,
-  }),
+  }: Cw721BaseNumTokensQuery<TData>) =>
+    queryOptions<NumTokensResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.numTokens(chainId, contractAddress),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).numTokens()
+      },
+      ...options,
+    }),
   contractInfo: <TData = ContractInfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: Cw721BaseContractInfoQuery<TData>): UseQueryOptions<
-    ContractInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.contractInfo(chainId, contractAddress),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).contractInfo()
-    },
-    ...options,
-  }),
+  }: Cw721BaseContractInfoQuery<TData>) =>
+    queryOptions<ContractInfoResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.contractInfo(chainId, contractAddress),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).contractInfo()
+      },
+      ...options,
+    }),
   nftInfo: <TData = NftInfoResponseForEmpty>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseNftInfoQuery<TData>): UseQueryOptions<
-    NftInfoResponseForEmpty,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.nftInfo(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).nftInfo({
-        tokenId: args.tokenId,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseNftInfoQuery<TData>) =>
+    queryOptions<NftInfoResponseForEmpty, Error, TData>({
+      queryKey: cw721BaseQueryKeys.nftInfo(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).nftInfo({
+          tokenId: args.tokenId,
+        })
+      },
+      ...options,
+    }),
   allNftInfo: <TData = AllNftInfoResponseForEmpty>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseAllNftInfoQuery<TData>): UseQueryOptions<
-    AllNftInfoResponseForEmpty,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.allNftInfo(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).allNftInfo({
-        includeExpired: args.includeExpired,
-        tokenId: args.tokenId,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseAllNftInfoQuery<TData>) =>
+    queryOptions<AllNftInfoResponseForEmpty, Error, TData>({
+      queryKey: cw721BaseQueryKeys.allNftInfo(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).allNftInfo({
+          includeExpired: args.includeExpired,
+          tokenId: args.tokenId,
+        })
+      },
+      ...options,
+    }),
   tokens: <TData = TokensResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseTokensQuery<TData>): UseQueryOptions<
-    TokensResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.tokens(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).tokens({
-        limit: args.limit,
-        owner: args.owner,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseTokensQuery<TData>) =>
+    queryOptions<TokensResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.tokens(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).tokens({
+          limit: args.limit,
+          owner: args.owner,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   allTokens: <TData = TokensResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseAllTokensQuery<TData>): UseQueryOptions<
-    TokensResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.allTokens(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).allTokens({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseAllTokensQuery<TData>) =>
+    queryOptions<TokensResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.allTokens(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).allTokens({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   minter: <TData = MinterResponse>({
     chainId,
     contractAddress,
     options,
-  }: Cw721BaseMinterQuery<TData>): UseQueryOptions<
-    MinterResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.minter(chainId, contractAddress),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).minter()
-    },
-    ...options,
-  }),
+  }: Cw721BaseMinterQuery<TData>) =>
+    queryOptions<MinterResponse, Error, TData>({
+      queryKey: cw721BaseQueryKeys.minter(chainId, contractAddress),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).minter()
+      },
+      ...options,
+    }),
   extension: <TData = Null>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw721BaseExtensionQuery<TData>): UseQueryOptions<Null, Error, TData> => ({
-    queryKey: cw721BaseQueryKeys.extension(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).extension({
-        msg: args.msg,
-      })
-    },
-    ...options,
-  }),
+  }: Cw721BaseExtensionQuery<TData>) =>
+    queryOptions<Null, Error, TData>({
+      queryKey: cw721BaseQueryKeys.extension(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).extension({
+          msg: args.msg,
+        })
+      },
+      ...options,
+    }),
   ownership: <TData = OwnershipForString>({
     chainId,
     contractAddress,
     options,
-  }: Cw721BaseOwnershipQuery<TData>): UseQueryOptions<
-    OwnershipForString,
-    Error,
-    TData
-  > => ({
-    queryKey: cw721BaseQueryKeys.ownership(chainId, contractAddress),
-    queryFn: async () => {
-      return new Cw721BaseQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).ownership()
-    },
-    ...options,
-  }),
+  }: Cw721BaseOwnershipQuery<TData>) =>
+    queryOptions<OwnershipForString, Error, TData>({
+      queryKey: cw721BaseQueryKeys.ownership(chainId, contractAddress),
+      queryFn: async () => {
+        return new Cw721BaseQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).ownership()
+      },
+      ...options,
+    }),
 }
 export interface Cw721BaseReactQuery<TResponse, TData = TResponse> {
   chainId: string

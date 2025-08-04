@@ -1,4 +1,4 @@
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, QueryClient } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -451,7 +451,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
     return secretDaoProposalSingleQueries.proposal({
       chainId: this.chainId,
       contractAddress: this.address,
@@ -473,7 +473,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
+  }): UndefinedInitialDataOptions<VoteResponse> {
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalSingleQueries.getVote({
       chainId: this.chainId,
@@ -513,21 +513,21 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     return secretDaoProposalSingleQueries.proposalCount({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
     return secretDaoProposalSingleQueries.config({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'secretSingleChoiceProposalModule',
@@ -575,7 +575,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
     throw new Error('Delegation module not supported')

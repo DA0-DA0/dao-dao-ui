@@ -1,6 +1,6 @@
 import {
   QueryClient,
-  UseQueryOptions,
+  UnusedSkipTokenOptions,
   queryOptions,
 } from '@tanstack/react-query'
 
@@ -271,7 +271,7 @@ export const profileQueries = {
      * Redirects address queries to bech32 hash queries.
      */
     options: { address: string } | { bech32Hash: string }
-  ): UseQueryOptions<
+  ): UnusedSkipTokenOptions<
     PfpkProfile,
     Error,
     PfpkProfile,

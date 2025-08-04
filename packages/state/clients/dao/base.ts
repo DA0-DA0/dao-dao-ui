@@ -1,4 +1,4 @@
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { QueryClient, UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   Account,
@@ -205,7 +205,7 @@ export abstract class DaoBase implements IDaoBase {
   abstract getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse>
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse>
 
   /**
    * Fetch the voting power for a given address. Optionally specify a block
@@ -225,7 +225,7 @@ export abstract class DaoBase implements IDaoBase {
    */
   abstract getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse>
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse>
 
   /**
    * Fetch the total voting power. Optional specify a block height. If
@@ -268,7 +268,7 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Query options to fetch the TVL.
    */
-  get tvlQuery(): FetchQueryOptions<AmountWithTimestamp> {
+  get tvlQuery(): UndefinedInitialDataOptions<AmountWithTimestamp> {
     return daoQueries.tvl(this.queryClient, {
       chainId: this.chainId,
       coreAddress: this.coreAddress,

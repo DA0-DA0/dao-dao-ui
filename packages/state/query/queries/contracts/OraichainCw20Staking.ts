@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -150,227 +150,200 @@ export const oraichainCw20StakingQueries = {
     chainId,
     contractAddress,
     options,
-  }: OraichainCw20StakingConfigQuery<TData>): UseQueryOptions<
-    ConfigResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingConfigQuery<TData>) =>
+    queryOptions<ConfigResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.config(chainId, contractAddress),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
   poolInfo: <TData = PoolInfoResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingPoolInfoQuery<TData>): UseQueryOptions<
-    PoolInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.poolInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).poolInfo({
-        stakingToken: args.stakingToken,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingPoolInfoQuery<TData>) =>
+    queryOptions<PoolInfoResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.poolInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).poolInfo({
+          stakingToken: args.stakingToken,
+        })
+      },
+      ...options,
+    }),
   rewardsPerSec: <TData = RewardsPerSecResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingRewardsPerSecQuery<TData>): UseQueryOptions<
-    RewardsPerSecResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.rewardsPerSec(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).rewardsPerSec({
-        stakingToken: args.stakingToken,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingRewardsPerSecQuery<TData>) =>
+    queryOptions<RewardsPerSecResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.rewardsPerSec(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).rewardsPerSec({
+          stakingToken: args.stakingToken,
+        })
+      },
+      ...options,
+    }),
   rewardInfo: <TData = RewardInfoResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingRewardInfoQuery<TData>): UseQueryOptions<
-    RewardInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.rewardInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).rewardInfo({
-        stakerAddr: args.stakerAddr,
-        stakingToken: args.stakingToken,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingRewardInfoQuery<TData>) =>
+    queryOptions<RewardInfoResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.rewardInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).rewardInfo({
+          stakerAddr: args.stakerAddr,
+          stakingToken: args.stakingToken,
+        })
+      },
+      ...options,
+    }),
   rewardInfos: <TData = ArrayOfRewardInfoResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingRewardInfosQuery<TData>): UseQueryOptions<
-    ArrayOfRewardInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.rewardInfos(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).rewardInfos({
-        limit: args.limit,
-        order: args.order,
-        stakingToken: args.stakingToken,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingRewardInfosQuery<TData>) =>
+    queryOptions<ArrayOfRewardInfoResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.rewardInfos(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).rewardInfos({
+          limit: args.limit,
+          order: args.order,
+          stakingToken: args.stakingToken,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   getPoolsInformation: <TData = ArrayOfQueryPoolInfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: OraichainCw20StakingGetPoolsInformationQuery<TData>): UseQueryOptions<
-    ArrayOfQueryPoolInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.getPoolsInformation(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: OraichainCw20StakingGetPoolsInformationQuery<TData>) =>
+    queryOptions<ArrayOfQueryPoolInfoResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.getPoolsInformation(
+        chainId,
         contractAddress
-      ).getPoolsInformation()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getPoolsInformation()
+      },
+      ...options,
+    }),
   lockInfos: <TData = LockInfosResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingLockInfosQuery<TData>): UseQueryOptions<
-    LockInfosResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.lockInfos(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).lockInfos({
-        limit: args.limit,
-        order: args.order,
-        stakerAddr: args.stakerAddr,
-        stakingToken: args.stakingToken,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingLockInfosQuery<TData>) =>
+    queryOptions<LockInfosResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.lockInfos(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).lockInfos({
+          limit: args.limit,
+          order: args.order,
+          stakerAddr: args.stakerAddr,
+          stakingToken: args.stakingToken,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   stakedBalanceAtHeight: <TData = StakedBalanceAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingStakedBalanceAtHeightQuery<TData>): UseQueryOptions<
-    StakedBalanceAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.stakedBalanceAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedBalanceAtHeight({
-        address: args.address,
-        assetKey: args.assetKey,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingStakedBalanceAtHeightQuery<TData>) =>
+    queryOptions<StakedBalanceAtHeightResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.stakedBalanceAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedBalanceAtHeight({
+          address: args.address,
+          assetKey: args.assetKey,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   totalStakedAtHeight: <TData = TotalStakedAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: OraichainCw20StakingTotalStakedAtHeightQuery<TData>): UseQueryOptions<
-    TotalStakedAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: oraichainCw20StakingQueryKeys.totalStakedAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new OraichainCw20StakingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalStakedAtHeight({
-        assetKey: args.assetKey,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: OraichainCw20StakingTotalStakedAtHeightQuery<TData>) =>
+    queryOptions<TotalStakedAtHeightResponse, Error, TData>({
+      queryKey: oraichainCw20StakingQueryKeys.totalStakedAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new OraichainCw20StakingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalStakedAtHeight({
+          assetKey: args.assetKey,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
 }
 export interface OraichainCw20StakingReactQuery<TResponse, TData = TResponse> {
   chainId: string

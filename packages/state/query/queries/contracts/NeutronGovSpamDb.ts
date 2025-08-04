@@ -1,4 +1,4 @@
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
@@ -36,22 +36,19 @@ export const neutronGovSpamDbQueries = {
     chainId,
     contractAddress,
     options,
-  }: NeutronGovSpamDbListQuery<TData>): UseQueryOptions<
-    NeutronGovSpamDbListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronGovSpamDbQueryKeys.list(chainId, contractAddress),
-    queryFn: async () => {
-      const client = await getCosmWasmClientForChainId(chainId)
-      const list: NeutronGovSpamDbListResponse =
-        await client.queryContractSmart(contractAddress, {
-          list: {},
-        })
-      return list
-    },
-    ...options,
-  }),
+  }: NeutronGovSpamDbListQuery<TData>) =>
+    queryOptions<NeutronGovSpamDbListResponse, Error, TData>({
+      queryKey: neutronGovSpamDbQueryKeys.list(chainId, contractAddress),
+      queryFn: async () => {
+        const client = await getCosmWasmClientForChainId(chainId)
+        const list: NeutronGovSpamDbListResponse =
+          await client.queryContractSmart(contractAddress, {
+            list: {},
+          })
+        return list
+      },
+      ...options,
+    }),
 }
 export interface NeutronGovSpamDbReactQuery<TResponse, TData = TResponse> {
   chainId: string

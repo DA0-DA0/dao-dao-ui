@@ -1,4 +1,8 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import {
   Coin,
@@ -138,7 +142,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -159,7 +163,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return daoVotingCw721StakedQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.chainId,
       contractAddress: this.address,
@@ -169,7 +173,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     })
   }
 
-  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+  getGovernanceTokenQuery = (): UnusedSkipTokenOptions<GenericToken> => {
     return {
       queryKey: [
         'cw721StakedVotingModule',

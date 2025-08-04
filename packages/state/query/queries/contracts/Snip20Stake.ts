@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ClaimsResponse,
@@ -150,188 +150,169 @@ export const snip20StakeQueries = {
     contractAddress,
     args,
     options,
-  }: Snip20StakeStakedBalanceAtHeightQuery<TData>): UseQueryOptions<
-    StakedBalanceAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.stakedBalanceAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedBalanceAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: Snip20StakeStakedBalanceAtHeightQuery<TData>) =>
+    queryOptions<StakedBalanceAtHeightResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.stakedBalanceAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedBalanceAtHeight({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   totalStakedAtHeight: <TData = TotalStakedAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Snip20StakeTotalStakedAtHeightQuery<TData>): UseQueryOptions<
-    TotalStakedAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.totalStakedAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalStakedAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: Snip20StakeTotalStakedAtHeightQuery<TData>) =>
+    queryOptions<TotalStakedAtHeightResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.totalStakedAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalStakedAtHeight({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   stakedValue: <TData = StakedValueResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Snip20StakeStakedValueQuery<TData>): UseQueryOptions<
-    StakedValueResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.stakedValue(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedValue({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
+  }: Snip20StakeStakedValueQuery<TData>) =>
+    queryOptions<StakedValueResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.stakedValue(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedValue({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
   totalValue: <TData = TotalValueResponse>({
     chainId,
     contractAddress,
     options,
-  }: Snip20StakeTotalValueQuery<TData>): UseQueryOptions<
-    TotalValueResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.totalValue(chainId, contractAddress),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalValue()
-    },
-    ...options,
-  }),
+  }: Snip20StakeTotalValueQuery<TData>) =>
+    queryOptions<TotalValueResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.totalValue(chainId, contractAddress),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalValue()
+      },
+      ...options,
+    }),
   getConfig: <TData = Config>({
     chainId,
     contractAddress,
     options,
-  }: Snip20StakeGetConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.getConfig(chainId, contractAddress),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getConfig()
-    },
-    ...options,
-  }),
+  }: Snip20StakeGetConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: snip20StakeQueryKeys.getConfig(chainId, contractAddress),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getConfig()
+      },
+      ...options,
+    }),
   claims: <TData = ClaimsResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Snip20StakeClaimsQuery<TData>): UseQueryOptions<
-    ClaimsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.claims(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).claims({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
+  }: Snip20StakeClaimsQuery<TData>) =>
+    queryOptions<ClaimsResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.claims(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).claims({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
   getHooks: <TData = GetHooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: Snip20StakeGetHooksQuery<TData>): UseQueryOptions<
-    GetHooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.getHooks(chainId, contractAddress),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getHooks()
-    },
-    ...options,
-  }),
+  }: Snip20StakeGetHooksQuery<TData>) =>
+    queryOptions<GetHooksResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.getHooks(chainId, contractAddress),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getHooks()
+      },
+      ...options,
+    }),
   listStakers: <TData = ListStakersResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Snip20StakeListStakersQuery<TData>): UseQueryOptions<
-    ListStakersResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.listStakers(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listStakers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: Snip20StakeListStakersQuery<TData>) =>
+    queryOptions<ListStakersResponse, Error, TData>({
+      queryKey: snip20StakeQueryKeys.listStakers(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listStakers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   ownership: <TData = OwnershipForAddr>({
     chainId,
     contractAddress,
     options,
-  }: Snip20StakeOwnershipQuery<TData>): UseQueryOptions<
-    OwnershipForAddr,
-    Error,
-    TData
-  > => ({
-    queryKey: snip20StakeQueryKeys.ownership(chainId, contractAddress),
-    queryFn: async () => {
-      return new Snip20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).ownership()
-    },
-    ...options,
-  }),
+  }: Snip20StakeOwnershipQuery<TData>) =>
+    queryOptions<OwnershipForAddr, Error, TData>({
+      queryKey: snip20StakeQueryKeys.ownership(chainId, contractAddress),
+      queryFn: async () => {
+        return new Snip20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).ownership()
+      },
+      ...options,
+    }),
 }
 export interface Snip20StakeReactQuery<TResponse, TData = TResponse> {
   chainId: string

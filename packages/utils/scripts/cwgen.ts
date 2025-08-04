@@ -137,7 +137,12 @@ codegen({
       )
       content = content.replace(
         'import { UseQueryOptions',
-        'import { QueryClient, UseQueryOptions'
+        'import { QueryClient, UseQueryOptions, queryOptions'
+      )
+      // replace UseQueryOptions with in queryOptions helper
+      content = content.replace(
+        /\): UseQueryOptions<([^>]+)> => \(\{/gm,
+        ') => queryOptions<$1>({'
       )
       // remove hooks
       content = content.replace(/\nexport function use.+\n[^;]+;\n\}/gm, '')

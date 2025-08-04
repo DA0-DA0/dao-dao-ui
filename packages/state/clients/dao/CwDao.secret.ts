@@ -1,5 +1,5 @@
 import { ChainWalletContext } from '@cosmos-kit/core'
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 import { nanoid } from 'nanoid'
 
 import {
@@ -244,7 +244,7 @@ export class SecretCwDao extends CwDao {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address nor permit, return query in loading state.
     const permit = address && this.getExistingPermit(address)
     if (!permit) {
@@ -287,7 +287,7 @@ export class SecretCwDao extends CwDao {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return secretDaoDaoCoreQueries.totalPowerAtHeight({
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,

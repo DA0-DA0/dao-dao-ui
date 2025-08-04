@@ -4,7 +4,11 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  UseQueryOptions,
+  queryOptions,
+} from '@tanstack/react-query'
 
 import {
   AllAccountsResponse,
@@ -149,120 +153,124 @@ export const cw20BaseQueries = {
   balance: <TData = BalanceResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseBalanceQuery<TData>
-  ): UseQueryOptions<BalanceResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.balance(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return {
-          balance: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20/balance',
-              args,
-            })
-          ),
+  ) =>
+    queryOptions<BalanceResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.balance(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return {
+            balance: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw20/balance',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).balance({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).balance({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
   tokenInfo: <TData = TokenInfoResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseTokenInfoQuery<TData>
-  ): UseQueryOptions<TokenInfoResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.tokenInfo(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20/tokenInfo',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<TokenInfoResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.tokenInfo(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'cw20/tokenInfo',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).tokenInfo()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).tokenInfo()
+      },
+      ...options,
+    }),
   minter: <TData = MinterResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseMinterQuery<TData>
-  ): UseQueryOptions<MinterResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.minter(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20/minter',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<MinterResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.minter(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'cw20/minter',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).minter()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).minter()
+      },
+      ...options,
+    }),
   allowance: <TData = AllowanceResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseAllowanceQuery<TData>
-  ): UseQueryOptions<AllowanceResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allowance(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20/allowance',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<AllowanceResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.allowance(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'cw20/allowance',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).allowance({
-        owner: args.owner,
-        spender: args.spender,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).allowance({
+          owner: args.owner,
+          spender: args.spender,
+        })
+      },
+      ...options,
+    }),
   allAllowances: <TData = AllAllowancesResponse>(
     queryClient: QueryClient,
     {
@@ -271,140 +279,137 @@ export const cw20BaseQueries = {
       args,
       options,
     }: Cw20BaseAllAllowancesQuery<TData>
-  ): UseQueryOptions<AllAllowancesResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allAllowances(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return {
-          allowances: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20/ownerAllowances',
-              args,
-            })
-          ),
+  ) =>
+    queryOptions<AllAllowancesResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.allAllowances(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return {
+            allowances: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw20/ownerAllowances',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).allAllowances({
-        limit: args.limit,
-        owner: args.owner,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).allAllowances({
+          limit: args.limit,
+          owner: args.owner,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   allSpenderAllowances: <TData = AllSpenderAllowancesResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: Cw20BaseAllSpenderAllowancesQuery<TData>): UseQueryOptions<
-    AllSpenderAllowancesResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw20BaseQueryKeys.allSpenderAllowances(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).allSpenderAllowances({
-        limit: args.limit,
-        spender: args.spender,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: Cw20BaseAllSpenderAllowancesQuery<TData>) =>
+    queryOptions<AllSpenderAllowancesResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.allSpenderAllowances(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).allSpenderAllowances({
+          limit: args.limit,
+          spender: args.spender,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   allAccounts: <TData = AllAccountsResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw20BaseAllAccountsQuery<TData>
-  ): UseQueryOptions<AllAccountsResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.allAccounts(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return {
-          accounts: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20/allAccounts',
-              args,
-            })
-          ),
+  ) =>
+    queryOptions<AllAccountsResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.allAccounts(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return {
+            accounts: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw20/allAccounts',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).allAccounts({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).allAccounts({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   marketingInfo: <TData = MarketingInfoResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw20BaseMarketingInfoQuery<TData>
-  ): UseQueryOptions<MarketingInfoResponse, Error, TData> => ({
-    queryKey: cw20BaseQueryKeys.marketingInfo(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20/marketingInfo',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<MarketingInfoResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.marketingInfo(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'cw20/marketingInfo',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to direct contract query
-      return new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).marketingInfo()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to direct contract query
+        return new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).marketingInfo()
+      },
+      ...options,
+    }),
   downloadLogo: <TData = DownloadLogoResponse>({
     chainId,
     contractAddress,
     options,
-  }: Cw20BaseDownloadLogoQuery<TData>): UseQueryOptions<
-    DownloadLogoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: cw20BaseQueryKeys.downloadLogo(chainId, contractAddress),
-    queryFn: async () =>
-      new Cw20BaseQueryClient(
-        await cosmWasmClientRouter.connect(chainId),
-        contractAddress
-      ).downloadLogo(),
-    ...options,
-  }),
+  }: Cw20BaseDownloadLogoQuery<TData>) =>
+    queryOptions<DownloadLogoResponse, Error, TData>({
+      queryKey: cw20BaseQueryKeys.downloadLogo(chainId, contractAddress),
+      queryFn: async () =>
+        new Cw20BaseQueryClient(
+          await cosmWasmClientRouter.connect(chainId),
+          contractAddress
+        ).downloadLogo(),
+      ...options,
+    }),
 }
 export interface Cw20BaseReactQuery<TResponse, TData = TResponse> {
   chainId: string

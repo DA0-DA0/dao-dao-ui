@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
@@ -26,7 +26,7 @@ export class SgCommunityNftVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -50,7 +50,7 @@ export class SgCommunityNftVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return daoVotingSgCommunityNftQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.chainId,
       contractAddress: this.address,

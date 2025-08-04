@@ -1,4 +1,8 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import {
   GenericToken,
@@ -73,7 +77,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address nor permit, return query in loading state.
     const permit = address && this.dao.getExistingPermit(address)
     if (!permit) {
@@ -118,7 +122,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingTokenStakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
@@ -128,7 +132,7 @@ export class SecretTokenStakedVotingModule extends VotingModuleBase<SecretCwDao>
     })
   }
 
-  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+  getGovernanceTokenQuery = (): UnusedSkipTokenOptions<GenericToken> => {
     return {
       queryKey: [
         'secretTokenStakedVotingModule',

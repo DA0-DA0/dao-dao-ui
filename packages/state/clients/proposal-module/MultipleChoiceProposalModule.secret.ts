@@ -1,4 +1,4 @@
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { QueryClient, UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -420,7 +420,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
     return secretDaoProposalMultipleQueries.proposal({
       chainId: this.chainId,
       contractAddress: this.address,
@@ -444,7 +444,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
+  }): UndefinedInitialDataOptions<VoteResponse> {
     // If no voter nor permit, return query in loading state.
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalMultipleQueries.getVote({
@@ -485,28 +485,28 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     return secretDaoProposalMultipleQueries.proposalCount({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDaoAddressQuery(): FetchQueryOptions<string> {
+  getDaoAddressQuery(): UndefinedInitialDataOptions<string> {
     return secretDaoProposalMultipleQueries.dao({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
     return secretDaoProposalMultipleQueries.config({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'secretMultipleChoiceProposalModule',
@@ -554,7 +554,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
     throw new Error('Delegation module not supported')

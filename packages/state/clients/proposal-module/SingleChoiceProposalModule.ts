@@ -1,5 +1,5 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, QueryClient } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
@@ -542,7 +542,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
     return daoProposalSingleV2Queries.proposal(this.queryClient, {
       chainId: this.chainId,
       contractAddress: this.address,
@@ -556,7 +556,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<SingleChoiceApprovalProposal> {
+  }): UndefinedInitialDataOptions<SingleChoiceApprovalProposal> {
     if (!this.prePropose) {
       throw new Error('Pre-propose module not found')
     }
@@ -583,7 +583,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
+  }): UndefinedInitialDataOptions<VoteResponse> {
     const query =
       this.version === ContractVersion.V1
         ? cwProposalSingleV1Queries.vote
@@ -615,7 +615,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     const query =
       this.version === ContractVersion.V1
         ? cwProposalSingleV1Queries.proposalCount
@@ -627,14 +627,14 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
     return daoProposalSingleV2Queries.config(this.queryClient, {
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'singleChoiceProposalModule',
@@ -693,7 +693,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
     return daoProposalSingleV2Queries.delegationModule(this.queryClient, {
@@ -708,7 +708,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
+  }): UndefinedInitialDataOptions<UnvotedDelegatedVotingPower> {
     return {
       queryKey: [
         'singleChoiceProposalModule',

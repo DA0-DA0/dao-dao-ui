@@ -4,7 +4,11 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  UseQueryOptions,
+  queryOptions,
+} from '@tanstack/react-query'
 
 import { IndexerDumpState } from '@dao-dao/types'
 import {
@@ -303,241 +307,242 @@ export const daoDaoCoreQueries = {
   admin: <TData = Addr>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreAdminQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.admin(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/admin',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).admin()
-    },
-    ...options,
-  }),
-  adminNomination: <TData = AdminNominationResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoDaoCoreAdminNominationQuery<TData>
-  ): UseQueryOptions<AdminNominationResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.adminNomination(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          nomination: await queryClient.fetchQuery(
+  ) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.admin(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
             indexerQueries.queryContract(queryClient, {
               chainId,
               contractAddress,
-              formula: 'daoCore/adminNomination',
+              formula: 'daoCore/admin',
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).adminNomination()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).admin()
+      },
+      ...options,
+    }),
+  adminNomination: <TData = AdminNominationResponse>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, options }: DaoDaoCoreAdminNominationQuery<TData>
+  ) =>
+    queryOptions<AdminNominationResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.adminNomination(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            nomination: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'daoCore/adminNomination',
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).adminNomination()
+      },
+      ...options,
+    }),
   config: <TData = Config>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.config(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/config',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
   cw20Balances: <TData = Cw20BalancesResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoDaoCoreCw20BalancesQuery<TData>): UseQueryOptions<
-    Cw20BalancesResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.cw20Balances(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw20Balances({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: DaoDaoCoreCw20BalancesQuery<TData>) =>
+    queryOptions<Cw20BalancesResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.cw20Balances(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw20Balances({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   cw20TokenList: <TData = ArrayOfAddr>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoDaoCoreCw20TokenListQuery<TData>): UseQueryOptions<
-    ArrayOfAddr,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.cw20TokenList(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw20TokenList({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: DaoDaoCoreCw20TokenListQuery<TData>) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.cw20TokenList(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw20TokenList({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   cw721TokenList: <TData = ArrayOfAddr>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoDaoCoreCw721TokenListQuery<TData>): UseQueryOptions<
-    ArrayOfAddr,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.cw721TokenList(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw721TokenList({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: DaoDaoCoreCw721TokenListQuery<TData>) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.cw721TokenList(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw721TokenList({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   dumpState: <TData = DumpStateResponse | IndexerDumpState>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreDumpStateQuery<TData>
-  ): UseQueryOptions<DumpStateResponse | IndexerDumpState, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        const state = await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/dumpState',
-          })
-        )
-        if (state) {
-          return state
+  ) =>
+    queryOptions<DumpStateResponse | IndexerDumpState, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          const state = await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/dumpState',
+            })
+          )
+          if (state) {
+            return state
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dumpState()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dumpState()
+      },
+      ...options,
+    }),
   getItem: <TData = GetItemResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: DaoDaoCoreGetItemQuery<TData>
-  ): UseQueryOptions<GetItemResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          item:
-            (await queryClient.fetchQuery(
-              indexerQueries.queryContract(queryClient, {
-                chainId,
-                contractAddress,
-                formula: 'daoCore/getItem',
-                args,
-              })
-            )) || null,
+  ) =>
+    queryOptions<GetItemResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            item:
+              (await queryClient.fetchQuery(
+                indexerQueries.queryContract(queryClient, {
+                  chainId,
+                  contractAddress,
+                  formula: 'daoCore/getItem',
+                  args,
+                })
+              )) || null,
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getItem({
-        key: args.key,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getItem({
+          key: args.key,
+        })
+      },
+      ...options,
+    }),
   listItems: <TData = ListItemsResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoDaoCoreListItemsQuery<TData>): UseQueryOptions<
-    ListItemsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.listItems(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listItems({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: DaoDaoCoreListItemsQuery<TData>) =>
+    queryOptions<ListItemsResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.listItems(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listItems({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   listAllItems: <TData = ListItemsResponse>(
     queryClient: QueryClient,
     {
@@ -546,71 +551,76 @@ export const daoDaoCoreQueries = {
       args,
       options,
     }: DaoDaoCoreListAllItemsQuery<TData>
-  ): UseQueryOptions<ListItemsResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.listAllItems(chainId, contractAddress, args),
-    queryFn: async () => {
-      let items: ListItemsResponse | undefined
+  ) =>
+    queryOptions<ListItemsResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.listAllItems(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        let items: ListItemsResponse | undefined
 
-      try {
-        const indexerItems = await queryClient.fetchQuery(
-          indexerQueries.queryContract<ListItemsResponse>(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/listItems',
-            ttl: 1,
-          })
-        )
-        if (indexerItems) {
-          items = indexerItems
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      if (!items) {
-        items = []
-        const limit = 30
-        while (true) {
-          const page = await queryClient.fetchQuery(
-            daoDaoCoreQueries.listItems({
+        try {
+          const indexerItems = await queryClient.fetchQuery(
+            indexerQueries.queryContract<ListItemsResponse>(queryClient, {
               chainId,
               contractAddress,
-              args: {
-                limit,
-                startAfter: items.length
-                  ? items[items.length - 1]?.[0]
-                  : undefined,
-              },
+              formula: 'daoCore/listItems',
+              ttl: 1,
             })
           )
-          if (!page.length) {
-            break
+          if (indexerItems) {
+            items = indexerItems
           }
+        } catch (error) {
+          console.error(error)
+        }
 
-          items.push(...page)
+        // If indexer query fails, fallback to contract query.
+        if (!items) {
+          items = []
+          const limit = 30
+          while (true) {
+            const page = await queryClient.fetchQuery(
+              daoDaoCoreQueries.listItems({
+                chainId,
+                contractAddress,
+                args: {
+                  limit,
+                  startAfter: items.length
+                    ? items[items.length - 1]?.[0]
+                    : undefined,
+                },
+              })
+            )
+            if (!page.length) {
+              break
+            }
 
-          // If we have less than the limit of items, we've exhausted them.
-          if (page.length < limit) {
-            break
+            items.push(...page)
+
+            // If we have less than the limit of items, we've exhausted them.
+            if (page.length < limit) {
+              break
+            }
           }
         }
-      }
 
-      // If we have a prefix, filter out items that don't start with it, and
-      // then remove the prefix from each key.
-      if (args?.prefix) {
-        items = items.flatMap(([key, value]) =>
-          key.startsWith(args.prefix!)
-            ? [[key.substring(args.prefix!.length), value]]
-            : []
-        )
-      }
+        // If we have a prefix, filter out items that don't start with it, and
+        // then remove the prefix from each key.
+        if (args?.prefix) {
+          items = items.flatMap(([key, value]) =>
+            key.startsWith(args.prefix!)
+              ? [[key.substring(args.prefix!.length), value]]
+              : []
+          )
+        }
 
-      return items
-    },
-    ...options,
-  }),
+        return items
+      },
+      ...options,
+    }),
   info: contractQueries.info,
   proposalModules: <TData = ArrayOfProposalModule>(
     queryClient: QueryClient,
@@ -620,39 +630,40 @@ export const daoDaoCoreQueries = {
       args,
       options,
     }: DaoDaoCoreProposalModulesQuery<TData>
-  ): UseQueryOptions<ArrayOfProposalModule, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.proposalModules(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/proposalModules',
-            args,
-            ttl: 1,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<ArrayOfProposalModule, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.proposalModules(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/proposalModules',
+              args,
+              ttl: 1,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalModules({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModules({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   activeProposalModules: <TData = ArrayOfProposalModule>(
     queryClient: QueryClient,
     {
@@ -661,160 +672,161 @@ export const daoDaoCoreQueries = {
       args,
       options,
     }: DaoDaoCoreActiveProposalModulesQuery<TData>
-  ): UseQueryOptions<ArrayOfProposalModule, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.activeProposalModules(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/activeProposalModules',
-            args,
-            ttl: 1,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<ArrayOfProposalModule, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.activeProposalModules(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/activeProposalModules',
+              args,
+              ttl: 1,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).activeProposalModules({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).activeProposalModules({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   proposalModuleCount: <TData = ProposalModuleCountResponse>({
     chainId,
     contractAddress,
     options,
-  }: DaoDaoCoreProposalModuleCountQuery<TData>): UseQueryOptions<
-    ProposalModuleCountResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.proposalModuleCount(chainId, contractAddress),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: DaoDaoCoreProposalModuleCountQuery<TData>) =>
+    queryOptions<ProposalModuleCountResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.proposalModuleCount(
+        chainId,
         contractAddress
-      ).proposalModuleCount()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModuleCount()
+      },
+      ...options,
+    }),
   pauseInfo: <TData = PauseInfoResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCorePauseInfoQuery<TData>
-  ): UseQueryOptions<PauseInfoResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/pauseInfo',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<PauseInfoResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/pauseInfo',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).pauseInfo()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).pauseInfo()
+      },
+      ...options,
+    }),
   votingModule: <TData = Addr>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreVotingModuleQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/votingModule',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/votingModule',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingModule()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingModule()
+      },
+      ...options,
+    }),
   listSubDaos: <TData = ArrayOfSubDao>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoDaoCoreListSubDaosQuery<TData>): UseQueryOptions<
-    ArrayOfSubDao,
-    Error,
-    TData
-  > => ({
-    queryKey: daoDaoCoreQueryKeys.listSubDaos(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listSubDaos({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: DaoDaoCoreListSubDaosQuery<TData>) =>
+    queryOptions<ArrayOfSubDao, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.listSubDaos(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listSubDaos({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   daoURI: <TData = DaoURIResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreDaoURIQuery<TData>
-  ): UseQueryOptions<DaoURIResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/daoUri',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<DaoURIResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/daoUri',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).daoURI()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).daoURI()
+      },
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
     queryClient: QueryClient,
     {
@@ -823,41 +835,42 @@ export const daoDaoCoreQueries = {
       args,
       options,
     }: DaoDaoCoreVotingPowerAtHeightQuery<TData>
-  ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/votingPowerAtHeight',
-            args: {
-              address: args.address,
-              height: args.height,
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/votingPowerAtHeight',
+              args: {
+                address: args.address,
+                height: args.height,
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
     queryClient: QueryClient,
     {
@@ -866,66 +879,68 @@ export const daoDaoCoreQueries = {
       args,
       options,
     }: DaoDaoCoreTotalPowerAtHeightQuery<TData>
-  ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/totalPowerAtHeight',
-            args: {
-              height: args.height,
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/totalPowerAtHeight',
+              args: {
+                height: args.height,
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   initialActions: <TData = ArrayOfCosmosMsgForEmpty>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoDaoCoreInitialActionsQuery<TData>
-  ): UseQueryOptions<ArrayOfCosmosMsgForEmpty, Error, TData> => ({
-    queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoCore/initialActions',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<ArrayOfCosmosMsgForEmpty, Error, TData>({
+      queryKey: daoDaoCoreQueryKeys.initialActions(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoCore/initialActions',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).initialActions()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).initialActions()
+      },
+      ...options,
+    }),
 }
 export interface DaoDaoCoreReactQuery<TResponse, TData = TResponse> {
   chainId: string

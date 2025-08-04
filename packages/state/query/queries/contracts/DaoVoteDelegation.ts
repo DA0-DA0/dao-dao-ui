@@ -4,7 +4,11 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  UseQueryOptions,
+  queryOptions,
+} from '@tanstack/react-query'
 
 import {
   ArrayOfAddr,
@@ -155,38 +159,39 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationRegistrationQuery<TData>
-  ): UseQueryOptions<RegistrationResponse, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.registration(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/registration',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<RegistrationResponse, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.registration(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/registration',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).registration({
-        delegate: args.delegate,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).registration({
+          delegate: args.delegate,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   delegates: <TData = DelegatesResponse>(
     queryClient: QueryClient,
     {
@@ -195,38 +200,39 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationDelegatesQuery<TData>
-  ): UseQueryOptions<DelegatesResponse, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.delegates(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/delegates',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<DelegatesResponse, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.delegates(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/delegates',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).delegates({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).delegates({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   delegations: <TData = DelegationsResponse>(
     queryClient: QueryClient,
     {
@@ -235,40 +241,41 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationDelegationsQuery<TData>
-  ): UseQueryOptions<DelegationsResponse, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.delegations(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/delegations',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<DelegationsResponse, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.delegations(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/delegations',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).delegations({
-        delegator: args.delegator,
-        height: args.height,
-        limit: args.limit,
-        offset: args.offset,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).delegations({
+          delegator: args.delegator,
+          height: args.height,
+          limit: args.limit,
+          offset: args.offset,
+        })
+      },
+      ...options,
+    }),
   unvotedDelegatedVotingPower: <TData = UnvotedDelegatedVotingPowerResponse>(
     queryClient: QueryClient,
     {
@@ -277,40 +284,41 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationUnvotedDelegatedVotingPowerQuery<TData>
-  ): UseQueryOptions<UnvotedDelegatedVotingPowerResponse, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.unvotedDelegatedVotingPower(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/unvotedDelegatedVotingPower',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<UnvotedDelegatedVotingPowerResponse, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.unvotedDelegatedVotingPower(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/unvotedDelegatedVotingPower',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).unvotedDelegatedVotingPower({
-        delegate: args.delegate,
-        height: args.height,
-        proposalId: args.proposalId,
-        proposalModule: args.proposalModule,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).unvotedDelegatedVotingPower({
+          delegate: args.delegate,
+          height: args.height,
+          proposalId: args.proposalId,
+          proposalModule: args.proposalModule,
+        })
+      },
+      ...options,
+    }),
   proposalModules: <TData = ArrayOfAddr>(
     queryClient: QueryClient,
     {
@@ -319,38 +327,39 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationProposalModulesQuery<TData>
-  ): UseQueryOptions<ArrayOfAddr, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.proposalModules(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/proposalModules',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.proposalModules(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/proposalModules',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalModules({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModules({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   votingPowerHookCallers: <TData = ArrayOfAddr>(
     queryClient: QueryClient,
     {
@@ -359,65 +368,67 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationVotingPowerHookCallersQuery<TData>
-  ): UseQueryOptions<ArrayOfAddr, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.votingPowerHookCallers(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/votingPowerHookCallers',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.votingPowerHookCallers(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/votingPowerHookCallers',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerHookCallers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerHookCallers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   config: <TData = Config>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: DaoVoteDelegationConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.config(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/config',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
   votingPowerCap: <TData = VotingPowerCapResponse>(
     queryClient: QueryClient,
     {
@@ -426,37 +437,38 @@ export const daoVoteDelegationQueries = {
       args,
       options,
     }: DaoVoteDelegationVotingPowerCapQuery<TData>
-  ): UseQueryOptions<VotingPowerCapResponse, Error, TData> => ({
-    queryKey: daoVoteDelegationQueryKeys.votingPowerCap(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVoteDelegation/votingPowerCap',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<VotingPowerCapResponse, Error, TData>({
+      queryKey: daoVoteDelegationQueryKeys.votingPowerCap(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'daoVoteDelegation/votingPowerCap',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVoteDelegationQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerCap({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVoteDelegationQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerCap({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
 }
 export interface DaoVoteDelegationReactQuery<TResponse, TData = TResponse> {
   chainId: string

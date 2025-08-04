@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -278,405 +278,355 @@ export const secretDaoDaoCoreQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreAdminQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.admin(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).admin(),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreAdminQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.admin(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).admin(),
+      ...options,
+    }),
   adminNomination: <TData = AdminNominationResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreAdminNominationQuery<TData>): UseQueryOptions<
-    AdminNominationResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.adminNomination(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoDaoCoreAdminNominationQuery<TData>) =>
+    queryOptions<AdminNominationResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.adminNomination(
+        chainId,
         contractAddress
-      ).adminNomination(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).adminNomination(),
+      ...options,
+    }),
   config: <TData = Config>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.config(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config(),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.config(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   cw20Balances: <TData = ArrayOfSnip20BalanceResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreCw20BalancesQuery<TData>): UseQueryOptions<
-    ArrayOfSnip20BalanceResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw20Balances(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw20Balances({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreCw20BalancesQuery<TData>) =>
+    queryOptions<ArrayOfSnip20BalanceResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.cw20Balances(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw20Balances({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   cw20TokenList: <TData = ArrayOfAddr>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreCw20TokenListQuery<TData>): UseQueryOptions<
-    ArrayOfAddr,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw20TokenList(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw20TokenList({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreCw20TokenListQuery<TData>) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.cw20TokenList(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw20TokenList({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   cw721TokenList: <TData = ArrayOfAddr>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreCw721TokenListQuery<TData>): UseQueryOptions<
-    ArrayOfAddr,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.cw721TokenList(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).cw721TokenList({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreCw721TokenListQuery<TData>) =>
+    queryOptions<ArrayOfAddr, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.cw721TokenList(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).cw721TokenList({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   dumpState: <TData = DumpStateResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreDumpStateQuery<TData>): UseQueryOptions<
-    DumpStateResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dumpState(),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreDumpStateQuery<TData>) =>
+    queryOptions<DumpStateResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.dumpState(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dumpState(),
+      ...options,
+    }),
   getItem: <TData = GetItemResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreGetItemQuery<TData>): UseQueryOptions<
-    GetItemResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.getItem(chainId, contractAddress, args),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getItem({
-        key: args.key,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreGetItemQuery<TData>) =>
+    queryOptions<GetItemResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.getItem(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getItem({
+          key: args.key,
+        }),
+      ...options,
+    }),
   listItems: <TData = ArrayOfTupleOfStringAndString>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreListItemsQuery<TData>): UseQueryOptions<
-    ArrayOfTupleOfStringAndString,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.listItems(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listItems({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreListItemsQuery<TData>) =>
+    queryOptions<ArrayOfTupleOfStringAndString, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.listItems(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listItems({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   info: <TData = InfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreInfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.info(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).info(),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreInfoQuery<TData>) =>
+    queryOptions<InfoResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.info(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info(),
+      ...options,
+    }),
   proposalModules: <TData = ArrayOfProposalModule>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreProposalModulesQuery<TData>): UseQueryOptions<
-    ArrayOfProposalModule,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.proposalModules(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalModules({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreProposalModulesQuery<TData>) =>
+    queryOptions<ArrayOfProposalModule, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.proposalModules(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModules({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   activeProposalModules: <TData = ArrayOfProposalModule>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreActiveProposalModulesQuery<TData>): UseQueryOptions<
-    ArrayOfProposalModule,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.activeProposalModules(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).activeProposalModules({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreActiveProposalModulesQuery<TData>) =>
+    queryOptions<ArrayOfProposalModule, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.activeProposalModules(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).activeProposalModules({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   proposalModuleCount: <TData = ProposalModuleCountResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreProposalModuleCountQuery<TData>): UseQueryOptions<
-    ProposalModuleCountResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.proposalModuleCount(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoDaoCoreProposalModuleCountQuery<TData>) =>
+    queryOptions<ProposalModuleCountResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.proposalModuleCount(
+        chainId,
         contractAddress
-      ).proposalModuleCount(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModuleCount(),
+      ...options,
+    }),
   pauseInfo: <TData = PauseInfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCorePauseInfoQuery<TData>): UseQueryOptions<
-    PauseInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).pauseInfo(),
-    ...options,
-  }),
+  }: SecretDaoDaoCorePauseInfoQuery<TData>) =>
+    queryOptions<PauseInfoResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.pauseInfo(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).pauseInfo(),
+      ...options,
+    }),
   votingModule: <TData = VotingModuleInfo>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreVotingModuleQuery<TData>): UseQueryOptions<
-    VotingModuleInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.votingModule(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoDaoCoreVotingModuleQuery<TData>) =>
+    queryOptions<VotingModuleInfo, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.votingModule(
+        chainId,
         contractAddress
-      ).votingModule(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingModule(),
+      ...options,
+    }),
   listSubDaos: <TData = ArrayOfSubDao>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreListSubDaosQuery<TData>): UseQueryOptions<
-    ArrayOfSubDao,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.listSubDaos(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listSubDaos({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreListSubDaosQuery<TData>) =>
+    queryOptions<ArrayOfSubDao, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.listSubDaos(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listSubDaos({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   daoURI: <TData = DaoURIResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoDaoCoreDaoURIQuery<TData>): UseQueryOptions<
-    DaoURIResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).daoURI(),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreDaoURIQuery<TData>) =>
+    queryOptions<DaoURIResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.daoURI(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).daoURI(),
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreVotingPowerAtHeightQuery<TData>): UseQueryOptions<
-    VotingPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        auth: args.auth,
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreVotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          auth: args.auth,
+          height: args.height,
+        }),
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoDaoCoreTotalPowerAtHeightQuery<TData>): UseQueryOptions<
-    TotalPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoDaoCoreQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoDaoCoreQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoDaoCoreTotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoDaoCoreQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoDaoCoreQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        }),
+      ...options,
+    }),
 }
 export interface SecretDaoDaoCoreReactQuery<TResponse, TData = TResponse> {
   chainId: string

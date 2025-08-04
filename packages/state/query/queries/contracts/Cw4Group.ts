@@ -4,7 +4,11 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  UseQueryOptions,
+  queryOptions,
+} from '@tanstack/react-query'
 
 import {
   AdminResponse,
@@ -97,155 +101,160 @@ export const cw4GroupQueries = {
   admin: <TData = AdminResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw4GroupAdminQuery<TData>
-  ): UseQueryOptions<AdminResponse, Error, TData> => ({
-    queryKey: cw4GroupQueryKeys.admin(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          admin: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw4Group/admin',
-            })
-          ),
+  ) =>
+    queryOptions<AdminResponse, Error, TData>({
+      queryKey: cw4GroupQueryKeys.admin(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            admin: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw4Group/admin',
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).admin()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new Cw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).admin()
+      },
+      ...options,
+    }),
   totalWeight: <TData = TotalWeightResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw4GroupTotalWeightQuery<TData>
-  ): UseQueryOptions<TotalWeightResponse, Error, TData> => ({
-    queryKey: cw4GroupQueryKeys.totalWeight(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          weight: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw4Group/totalWeight',
-            })
-          ),
+  ) =>
+    queryOptions<TotalWeightResponse, Error, TData>({
+      queryKey: cw4GroupQueryKeys.totalWeight(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            weight: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw4Group/totalWeight',
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalWeight()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new Cw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalWeight()
+      },
+      ...options,
+    }),
   listMembers: <TData = ListMembersResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, args, options }: Cw4GroupListMembersQuery<TData>
-  ): UseQueryOptions<ListMembersResponse, Error, TData> => ({
-    queryKey: cw4GroupQueryKeys.listMembers(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw4Group/listMembers',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listMembers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  member: <TData = MemberResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw4GroupMemberQuery<TData>
-  ): UseQueryOptions<MemberResponse, Error, TData> => ({
-    queryKey: cw4GroupQueryKeys.member(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          weight: await queryClient.fetchQuery(
+  ) =>
+    queryOptions<ListMembersResponse, Error, TData>({
+      queryKey: cw4GroupQueryKeys.listMembers(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
             indexerQueries.queryContract(queryClient, {
               chainId,
               contractAddress,
-              formula: 'cw4Group/member',
-              args: {
-                address: args.addr,
-                height: args.atHeight,
-              },
+              formula: 'cw4Group/listMembers',
+              args,
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).member({
-        addr: args.addr,
-        atHeight: args.atHeight,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new Cw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listMembers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  member: <TData = MemberResponse>(
+    queryClient: QueryClient,
+    { chainId, contractAddress, args, options }: Cw4GroupMemberQuery<TData>
+  ) =>
+    queryOptions<MemberResponse, Error, TData>({
+      queryKey: cw4GroupQueryKeys.member(chainId, contractAddress, args),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            weight: await queryClient.fetchQuery(
+              indexerQueries.queryContract(queryClient, {
+                chainId,
+                contractAddress,
+                formula: 'cw4Group/member',
+                args: {
+                  address: args.addr,
+                  height: args.atHeight,
+                },
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).member({
+          addr: args.addr,
+          atHeight: args.atHeight,
+        })
+      },
+      ...options,
+    }),
   hooks: <TData = HooksResponse>(
     queryClient: QueryClient,
     { chainId, contractAddress, options }: Cw4GroupHooksQuery<TData>
-  ): UseQueryOptions<HooksResponse, Error, TData> => ({
-    queryKey: cw4GroupQueryKeys.hooks(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw4Group/hooks',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: cw4GroupQueryKeys.hooks(chainId, contractAddress),
+      queryFn: async () => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await queryClient.fetchQuery(
+            indexerQueries.queryContract(queryClient, {
+              chainId,
+              contractAddress,
+              formula: 'cw4Group/hooks',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).hooks()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new Cw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).hooks()
+      },
+      ...options,
+    }),
 }
 export interface Cw4GroupReactQuery<TResponse, TData = TResponse> {
   chainId: string

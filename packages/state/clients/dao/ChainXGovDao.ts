@@ -1,6 +1,6 @@
 import {
-  FetchQueryOptions,
   QueryClient,
+  UndefinedInitialDataOptions,
   skipToken,
 } from '@tanstack/react-query'
 
@@ -79,7 +79,7 @@ export class ChainXGovDao extends DaoBase {
 
   getVotingPowerQuery(
     address?: string
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -94,7 +94,7 @@ export class ChainXGovDao extends DaoBase {
     })
   }
 
-  getTotalVotingPowerQuery(): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  getTotalVotingPowerQuery(): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return daoQueries.chainTotalPower(this.queryClient, {
       chainId: this.options.chainId,
     })

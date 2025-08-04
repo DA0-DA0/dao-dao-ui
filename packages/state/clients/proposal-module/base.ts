@@ -1,5 +1,5 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { QueryClient, UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -223,7 +223,7 @@ export abstract class ProposalModuleBase<
    */
   abstract getProposalQuery(options: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse>
+  }): UndefinedInitialDataOptions<ProposalResponse>
 
   /**
    * Fetch a proposal.
@@ -240,7 +240,7 @@ export abstract class ProposalModuleBase<
    */
   getApprovalProposalQuery(_options: {
     proposalId: number
-  }): FetchQueryOptions<ApprovalProposal> {
+  }): UndefinedInitialDataOptions<ApprovalProposal> {
     throw new Error('Not implemented')
   }
 
@@ -263,7 +263,7 @@ export abstract class ProposalModuleBase<
   abstract getVoteQuery(options: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse>
+  }): UndefinedInitialDataOptions<VoteResponse>
 
   /**
    * Fetch the vote on a proposal by a given address. If the address has not
@@ -277,7 +277,7 @@ export abstract class ProposalModuleBase<
   /**
    * Query options to fetch the total number of proposals.
    */
-  abstract getProposalCountQuery(): FetchQueryOptions<number>
+  abstract getProposalCountQuery(): UndefinedInitialDataOptions<number>
 
   /**
    * Fetch the total number of proposals.
@@ -294,7 +294,7 @@ export abstract class ProposalModuleBase<
    * Query options to fetch the config.
    */
   abstract getConfigQuery(): Pick<
-    FetchQueryOptions<Config>,
+    UndefinedInitialDataOptions<Config>,
     'queryKey' | 'queryFn'
   >
 
@@ -302,7 +302,7 @@ export abstract class ProposalModuleBase<
    * Query options to fetch configured deposit info, if any.
    */
   abstract getDepositInfoQuery(): Pick<
-    FetchQueryOptions<CheckedDepositInfo | null>,
+    UndefinedInitialDataOptions<CheckedDepositInfo | null>,
     'queryKey' | 'queryFn'
   >
 
@@ -315,7 +315,7 @@ export abstract class ProposalModuleBase<
    * Query options to fetch the delegation module address, or null if none.
    */
   abstract getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   >
 
@@ -326,7 +326,7 @@ export abstract class ProposalModuleBase<
   getUnvotedDelegatedVotingPowerQuery(_options: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
+  }): UndefinedInitialDataOptions<UnvotedDelegatedVotingPower> {
     throw new Error('Not implemented')
   }
 
@@ -340,7 +340,7 @@ export abstract class ProposalModuleBase<
   }: {
     delegate: string
     height?: number
-  }): FetchQueryOptions<RegistrationResponse | null> {
+  }): UndefinedInitialDataOptions<RegistrationResponse | null> {
     return {
       queryKey: [
         'proposalModule',

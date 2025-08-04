@@ -1,4 +1,8 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import { GenericToken, ModuleInstantiateInfo, TokenType } from '@dao-dao/types'
 import {
@@ -66,7 +70,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -87,7 +91,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return daoVotingOnftStakedQueries.totalPowerAtHeight(this.queryClient, {
       chainId: this.chainId,
       contractAddress: this.address,
@@ -97,7 +101,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     })
   }
 
-  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+  getGovernanceTokenQuery = (): UnusedSkipTokenOptions<GenericToken> => {
     return {
       queryKey: [
         'onftStakedVotingModule',

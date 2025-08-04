@@ -1,8 +1,4 @@
-import {
-  FetchQueryOptions,
-  QueryClient,
-  queryOptions,
-} from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import {
@@ -1307,63 +1303,66 @@ export const daoQueries = {
   /**
    * Fetch a DAO's TVL.
    */
-  tvl: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoTvl>[1]
-  ): FetchQueryOptions<AmountWithTimestamp> => ({
-    queryKey: ['dao', 'tvl', options],
-    queryFn: () => fetchDaoTvl(queryClient, options),
-  }),
+  tvl: (queryClient: QueryClient, options: Parameters<typeof fetchDaoTvl>[1]) =>
+    queryOptions<AmountWithTimestamp>({
+      queryKey: ['dao', 'tvl', options],
+      queryFn: () => fetchDaoTvl(queryClient, options),
+    }),
   /**
    * Fetch chain DAO voting power-shaped response.
    */
   chainVotingPower: (
     queryClient: QueryClient,
     options: Parameters<typeof fetchChainVotingPower>[1]
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> => ({
-    queryKey: ['dao', 'chainVotingPower', options],
-    queryFn: () => fetchChainVotingPower(queryClient, options),
-  }),
+  ) =>
+    queryOptions<VotingPowerAtHeightResponse>({
+      queryKey: ['dao', 'chainVotingPower', options],
+      queryFn: () => fetchChainVotingPower(queryClient, options),
+    }),
   /**
    * Fetch chain DAO total power-shaped response.
    */
   chainTotalPower: (
     queryClient: QueryClient,
     options: Parameters<typeof fetchChainTotalPower>[1]
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> => ({
-    queryKey: ['dao', 'chainTotalPower', options],
-    queryFn: () => fetchChainTotalPower(queryClient, options),
-  }),
+  ) =>
+    queryOptions<TotalPowerAtHeightResponse>({
+      queryKey: ['dao', 'chainTotalPower', options],
+      queryFn: () => fetchChainTotalPower(queryClient, options),
+    }),
   /**
    * List all SubDAOs for a DAO.
    */
   listAllSubDaos: (
     queryClient: QueryClient,
     options: Parameters<typeof listAllSubDaos>[1]
-  ): FetchQueryOptions<SubDaoWithChainId[]> => ({
-    queryKey: ['dao', 'listAllSubDaos', options],
-    queryFn: () => listAllSubDaos(queryClient, options),
-  }),
+  ) =>
+    queryOptions<SubDaoWithChainId[]>({
+      queryKey: ['dao', 'listAllSubDaos', options],
+      queryFn: () => listAllSubDaos(queryClient, options),
+    }),
   /**
    * List all DAOs a wallet is the admin of.
    */
   listWalletAdminOfDaos: (
     queryClient: QueryClient,
     options: Parameters<typeof listWalletAdminOfDaos>[1]
-  ): FetchQueryOptions<string[]> => ({
-    queryKey: ['dao', 'listWalletAdminOfDaos', options],
-    queryFn: () => listWalletAdminOfDaos(queryClient, options),
-  }),
+  ) =>
+    queryOptions<string[]>({
+      queryKey: ['dao', 'listWalletAdminOfDaos', options],
+      queryFn: () => listWalletAdminOfDaos(queryClient, options),
+    }),
   /**
    * List all potential SubDAOs of the DAO.
    */
   listPotentialSubDaos: (
     queryClient: QueryClient,
     options: Parameters<typeof listPotentialSubDaos>[1]
-  ): FetchQueryOptions<string[]> => ({
-    queryKey: ['dao', 'listPotentialSubDaos', options],
-    queryFn: () => listPotentialSubDaos(queryClient, options),
-  }),
+  ) =>
+    queryOptions<string[]>({
+      queryKey: ['dao', 'listPotentialSubDaos', options],
+      queryFn: () => listPotentialSubDaos(queryClient, options),
+    }),
   /**
    * List all potential approval DAOs.
    */
