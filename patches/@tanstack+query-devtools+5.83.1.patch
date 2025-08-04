@@ -1,0 +1,48 @@
+diff --git a/node_modules/@tanstack/query-devtools/build/.DS_Store b/node_modules/@tanstack/query-devtools/build/.DS_Store
+new file mode 100644
+index 0000000..8070def
+Binary files /dev/null and b/node_modules/@tanstack/query-devtools/build/.DS_Store differ
+diff --git a/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js b/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
+index 71d7560..9db7cb3 100644
+--- a/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
++++ b/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
+@@ -2590,7 +2590,7 @@ function getQueryStatusColor({
+   observerCount,
+   isStale
+ }) {
+-  return queryState.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
++  return queryState?.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState?.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
+ }
+ function getMutationStatusColor({
+   status,
+diff --git a/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js b/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
+index 6167ae7..0dd4d87 100644
+--- a/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
++++ b/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
+@@ -2589,7 +2589,7 @@ function getQueryStatusColor({
+   observerCount,
+   isStale
+ }) {
+-  return queryState.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
++  return queryState?.fetchStatus === "fetching" ? "blue" : !observerCount ? "gray" : queryState?.fetchStatus === "paused" ? "purple" : isStale ? "yellow" : "green";
+ }
+ function getMutationStatusColor({
+   status,
+diff --git a/node_modules/@tanstack/query-devtools/src/utils.tsx b/node_modules/@tanstack/query-devtools/src/utils.tsx
+index 9a826cd..a8dd24b 100644
+--- a/node_modules/@tanstack/query-devtools/src/utils.tsx
++++ b/node_modules/@tanstack/query-devtools/src/utils.tsx
+@@ -35,11 +35,11 @@ export function getQueryStatusColor({
+   observerCount: number
+   isStale: boolean
+ }) {
+-  return queryState.fetchStatus === 'fetching'
++  return queryState?.fetchStatus === 'fetching'
+     ? 'blue'
+     : !observerCount
+       ? 'gray'
+-      : queryState.fetchStatus === 'paused'
++      : queryState?.fetchStatus === 'paused'
+         ? 'purple'
+         : isStale
+           ? 'yellow'
