@@ -1,13 +1,10 @@
-import {
-  QueryClient,
-  UndefinedInitialDataOptions,
-  skipToken,
-} from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import {
   AnyChain,
   DaoInfo,
   IProposalModuleBase,
+  IQueryClient,
   IVotingModuleBase,
   InstantiateInfo,
   ModuleInstantiateInfo,
@@ -66,7 +63,7 @@ export class CwDao extends DaoBase {
   protected _votingModule: IVotingModuleBase | undefined
 
   constructor(
-    queryClient: QueryClient,
+    queryClient: IQueryClient,
     protected readonly options: {
       chainId: string
       coreAddress: string

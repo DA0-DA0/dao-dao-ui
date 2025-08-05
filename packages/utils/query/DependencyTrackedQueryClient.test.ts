@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { DependencyTrackedQueryClient } from './DependencyTrackedQueryClient'
 
-const key = (key: string) => [key]
+const hash = (key: string) => key
 
 describe('DependencyTrackedQueryClient', () => {
   let client: DependencyTrackedQueryClient
@@ -12,126 +12,210 @@ describe('DependencyTrackedQueryClient', () => {
     // A -> B -> C
     //      \--> D -> E
     //           \--> F
-    client.trackDependency(key('A'), key('B'))
-    client.trackDependency(key('B'), key('C'))
-    client.trackDependency(key('B'), key('D'))
-    client.trackDependency(key('D'), key('E'))
-    client.trackDependency(key('D'), key('F'))
+    client.trackDependency(hash('A'), hash('B'))
+    client.trackDependency(hash('B'), hash('C'))
+    client.trackDependency(hash('B'), hash('D'))
+    client.trackDependency(hash('D'), hash('E'))
+    client.trackDependency(hash('D'), hash('F'))
 
     // G -> B
-    client.trackDependency(key('G'), key('B'))
+    client.trackDependency(hash('G'), hash('B'))
   })
 
   it('returns the correct dependency levels', () => {
-    expect(client.getDependencyLevels(key('A'))).toEqual([
+    expect(client.getDependencyLevels(hash('A'))).toEqual([
       // Level 0 (no dependencies)
-      [key('C'), key('E'), key('F')],
+      [hash('C'), hash('E'), hash('F')],
       // Level 1 (all dependencies are in level 0)
-      [key('D')],
+      [hash('D')],
       // Level 2
-      [key('B')],
+      [hash('B')],
       // Level 3 (self)
-      [key('A')],
+      [hash('A')],
     ])
 
-    expect(client.getDependencyLevels(key('G'))).toEqual([
+    expect(client.getDependencyLevels(hash('G'))).toEqual([
       // Level 0 (no dependencies)
-      [key('C'), key('E'), key('F')],
+      [hash('C'), hash('E'), hash('F')],
       // Level 1 (all dependencies are in level 0)
-      [key('D')],
+      [hash('D')],
       // Level 2
-      [key('B')],
+      [hash('B')],
       // Level 3 (self)
-      [key('G')],
+      [hash('G')],
     ])
 
-    expect(client.getDependencyLevels(key('B'))).toEqual([
+    expect(client.getDependencyLevels(hash('B'))).toEqual([
       // Level 0 (no dependencies)
-      [key('C'), key('E'), key('F')],
+      [hash('C'), hash('E'), hash('F')],
       // Level 1 (all dependencies are in level 0)
-      [key('D')],
+      [hash('D')],
       // Level 2 (self)
-      [key('B')],
+      [hash('B')],
     ])
 
-    expect(client.getDependencyLevels(key('C'))).toEqual([
+    expect(client.getDependencyLevels(hash('C'))).toEqual([
       // No dependencies
       // Level 0 (self)
-      [key('C')],
+      [hash('C')],
     ])
 
-    expect(client.getDependencyLevels(key('D'))).toEqual([
+    expect(client.getDependencyLevels(hash('D'))).toEqual([
       // Level 0 (no dependencies)
-      [key('E'), key('F')],
+      [hash('E'), hash('F')],
       // Level 1 (self)
-      [key('D')],
+      [hash('D')],
     ])
 
-    expect(client.getDependencyLevels(key('E'))).toEqual([
+    expect(client.getDependencyLevels(hash('E'))).toEqual([
       // No dependencies
       // Level 0 (self)
-      [key('E')],
+      [hash('E')],
     ])
 
-    expect(client.getDependencyLevels(key('F'))).toEqual([
+    expect(client.getDependencyLevels(hash('F'))).toEqual([
       // No dependencies
       // Level 0 (self)
-      [key('F')],
+      [hash('F')],
     ])
   })
 
   it('returns the correct consumer distances', () => {
-    expect(client.getConsumerDistances(key('A'))).toEqual([
+    expect(client.getConsumerDistances(hash('A'))).toEqual([
       // Distance 0 (self)
-      [key('A')],
+      [hash('A')],
       // No consumers
     ])
 
-    expect(client.getConsumerDistances(key('B'))).toEqual([
+    expect(client.getConsumerDistances(hash('B'))).toEqual([
       // Distance 0 (self)
-      [key('B')],
+      [hash('B')],
       // Distance 1 (direct consumers)
-      [key('A'), key('G')],
+      [hash('A'), hash('G')],
     ])
 
-    expect(client.getConsumerDistances(key('C'))).toEqual([
+    expect(client.getConsumerDistances(hash('C'))).toEqual([
       // Distance 0 (self)
-      [key('C')],
+      [hash('C')],
       // Distance 1 (direct consumers)
-      [key('B')],
+      [hash('B')],
       // Distance 2
-      [key('A'), key('G')],
+      [hash('A'), hash('G')],
     ])
 
-    expect(client.getConsumerDistances(key('D'))).toEqual([
+    expect(client.getConsumerDistances(hash('D'))).toEqual([
       // Distance 0 (self)
-      [key('D')],
+      [hash('D')],
       // Distance 1 (direct consumers)
-      [key('B')],
+      [hash('B')],
       // Distance 2
-      [key('A'), key('G')],
+      [hash('A'), hash('G')],
     ])
 
-    expect(client.getConsumerDistances(key('E'))).toEqual([
+    expect(client.getConsumerDistances(hash('E'))).toEqual([
       // Distance 0 (self)
-      [key('E')],
+      [hash('E')],
       // Distance 1 (direct consumers)
-      [key('D')],
+      [hash('D')],
       // Distance 2
-      [key('B')],
+      [hash('B')],
       // Distance 3
-      [key('A'), key('G')],
+      [hash('A'), hash('G')],
     ])
 
-    expect(client.getConsumerDistances(key('F'))).toEqual([
+    expect(client.getConsumerDistances(hash('F'))).toEqual([
       // Distance 0 (self)
-      [key('F')],
+      [hash('F')],
       // Distance 1 (direct consumers)
-      [key('D')],
+      [hash('D')],
       // Distance 2
-      [key('B')],
+      [hash('B')],
       // Distance 3
-      [key('A'), key('G')],
+      [hash('A'), hash('G')],
+    ])
+  })
+
+  it('dehydrates and rehydrates the dependency graph', () => {
+    const dehydrated = client.dehydrate()
+    const rehydrated = new DependencyTrackedQueryClient(undefined, dehydrated)
+
+    expect(rehydrated.getDependencyLevels(hash('A'))).toEqual(
+      client.getDependencyLevels(hash('A'))
+    )
+
+    expect(rehydrated.getConsumerDistances(hash('A'))).toEqual(
+      client.getConsumerDistances(hash('A'))
+    )
+
+    expect(rehydrated.getDependencyLevels(hash('G'))).toEqual(
+      client.getDependencyLevels(hash('G'))
+    )
+
+    expect(rehydrated.getConsumerDistances(hash('G'))).toEqual(
+      client.getConsumerDistances(hash('G'))
+    )
+  })
+
+  it('seamlessly handles cycles', () => {
+    const client = new DependencyTrackedQueryClient()
+
+    // A -> B -> C -> A
+    client.trackDependency(hash('A'), hash('B'))
+    client.trackDependency(hash('B'), hash('C'))
+    client.trackDependency(hash('C'), hash('A'))
+
+    expect(client.getDependencyLevels(hash('A'))).toEqual([
+      // Level 0 (no non-cyclical dependencies)
+      [hash('C')],
+      // Level 1
+      [hash('B')],
+      // Level 2 (self)
+      [hash('A')],
+    ])
+
+    expect(client.getConsumerDistances(hash('A'))).toEqual([
+      // Distance 0 (self)
+      [hash('A')],
+      // Distance 1 (direct consumers)
+      [hash('C')],
+      // Distance 2
+      [hash('B')],
+    ])
+
+    expect(client.getDependencyLevels(hash('B'))).toEqual([
+      // Level 0 (no non-cyclical dependencies)
+      [hash('A')],
+      // Level 2
+      [hash('C')],
+      // Level 3 (self)
+      [hash('B')],
+    ])
+
+    expect(client.getConsumerDistances(hash('B'))).toEqual([
+      // Distance 0 (self)
+      [hash('B')],
+      // Distance 1 (direct consumers)
+      [hash('A')],
+      // Distance 2
+      [hash('C')],
+    ])
+
+    expect(client.getDependencyLevels(hash('C'))).toEqual([
+      // Level 0 (no non-cyclical dependencies)
+      [hash('B')],
+      // Level 1
+      [hash('A')],
+      // Level 2 (self)
+      [hash('C')],
+    ])
+
+    expect(client.getConsumerDistances(hash('C'))).toEqual([
+      // Distance 0 (self)
+      [hash('C')],
+      // Distance 1 (direct consumers)
+      [hash('B')],
+      // Distance 2
+      [hash('A')],
     ])
   })
 })

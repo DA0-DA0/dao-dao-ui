@@ -38,7 +38,12 @@ export const useAutoRefreshData = () => {
           .isCaughtUp({ chainId: '' })
           // Remove the final parameter in the key (options) so we match the
           // query key for all chains.
-          .queryKey.slice(0, -1)
+          .queryKey.slice(0, -1),
+        {
+          // Don't refetch every single indexer query as that would be
+          // expensive.
+          bubbleUp: false,
+        }
       )
 
       queryClient.refetch(

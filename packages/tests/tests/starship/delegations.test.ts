@@ -118,7 +118,7 @@ describe('delegations', () => {
 
     expect(coreAddress).toBeDefined()
 
-    const dao = new CwDao(suite.queryClient.queryClient, {
+    const dao = new CwDao(suite.queryClient, {
       chainId: suite.chainId,
       coreAddress,
     })
@@ -247,7 +247,7 @@ describe('delegations', () => {
         dao,
         accounts: [...dao.accounts],
       },
-      queryClient: suite.queryClient.queryClient,
+      queryClient: suite.queryClient,
     })
     await manageModulesAction.init()
     const msgs = await manageModulesAction.encode({
@@ -513,7 +513,7 @@ describe('delegations', () => {
 
     expect(coreAddress).toBeDefined()
 
-    const dao = new CwDao(suite.queryClient.queryClient, {
+    const dao = new CwDao(suite.queryClient, {
       chainId: suite.chainId,
       coreAddress,
     })
@@ -657,7 +657,7 @@ describe('delegations', () => {
         dao,
         accounts: [...dao.accounts],
       },
-      queryClient: suite.queryClient.queryClient,
+      queryClient: suite.queryClient,
     })
     await manageModulesAction.init()
     const msgs = await manageModulesAction.encode({

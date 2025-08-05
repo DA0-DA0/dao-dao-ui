@@ -1,6 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
-
-import { IProposalModuleBase } from '@dao-dao/types'
+import { IProposalModuleBase, IQueryClient } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
 
 import { contractQueries } from '../../query'
@@ -17,7 +15,7 @@ export const getProposalModuleType = async ({
   chainId,
   address,
 }: {
-  queryClient: QueryClient
+  queryClient: IQueryClient
   chainId: string
   address: string
 }) => {
@@ -53,7 +51,7 @@ export const getProposalModule = async ({
   chainId,
   address,
 }: {
-  queryClient: QueryClient
+  queryClient: IQueryClient
   chainId: string
   address: string
 }): Promise<IProposalModuleBase> => {

@@ -1,6 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
-
-import { IDaoBase } from '@dao-dao/types'
+import { IDaoBase, IQueryClient } from '@dao-dao/types'
 import {
   getSupportedChainConfig,
   isConfiguredChainName,
@@ -20,7 +18,7 @@ export const getDao = ({
   chainId,
   coreAddress,
 }: {
-  queryClient: QueryClient
+  queryClient: IQueryClient
   chainId: string
   coreAddress: string
 }): IDaoBase => {

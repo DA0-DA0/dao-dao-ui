@@ -11,11 +11,11 @@ import {
   Expiration,
   FeedSourceDaoWithItems,
   FeedSourceItem,
+  IQueryClient,
   ProfileChain,
 } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
-  DependencyTrackedQueryClient,
   FollowingDaosKvpkClient,
   getDaoProposalPath,
   isConfiguredChainName,
@@ -27,9 +27,7 @@ import { OpenProposalsProposalLineProps } from './types'
  * Fetch open proposals as feed items.
  */
 export const fetchFeedOpenProposals = async (
-  // TODO(kvpk): should this be a normal query client? or somehow pass the
-  // dependency tracker one around everywhere...
-  queryClient: DependencyTrackedQueryClient,
+  queryClient: IQueryClient,
   {
     uuid,
     profileAddresses,
@@ -247,12 +245,9 @@ export const feedOpenProposalsQueries = {
   /**
    * Fetch open proposals as feed items.
    */
-  openProposals: (
-    queryClient: DependencyTrackedQueryClient,
-    options: Parameters<typeof fetchFeedOpenProposals>[1]
-  ) =>
+  openProposals: (options: Parameters<typeof fetchFeedOpenProposals>[1]) =>
     queryOptions({
       queryKey: ['feed', 'openProposals', options],
-      queryFn: () => fetchFeedOpenProposals(queryClient, options),
+      queryFn: (ctx) => fetchFeedOpenProposals(ctx.client, options),
     }),
 }

@@ -24,13 +24,13 @@ import {
   DaoDaoIndexerAllStats,
   DaoInfo,
   DaoSource,
+  DehydratedStateWithDependencies,
   LazyDaoCardProps,
   LoadingData,
   LoadingDataWithError,
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 import {
-  DehydratedStateWithDependencies,
   SITE_TITLE,
   SITE_URL,
   getFallbackImage,

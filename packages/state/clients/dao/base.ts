@@ -1,4 +1,4 @@
-import { QueryClient, UndefinedInitialDataOptions } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   Account,
@@ -12,6 +12,7 @@ import {
   Feature,
   IDaoBase,
   IProposalModuleBase,
+  IQueryClient,
   IVotingModuleBase,
   ModuleId,
 } from '@dao-dao/types'
@@ -28,7 +29,7 @@ import {
 import { daoQueries } from '../../query'
 
 export abstract class DaoBase implements IDaoBase {
-  constructor(protected readonly queryClient: QueryClient) {}
+  constructor(protected readonly queryClient: IQueryClient) {}
 
   /**
    * Initialize the client. This only matters for some functions, depending on

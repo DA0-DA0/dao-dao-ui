@@ -1,5 +1,4 @@
 import {
-  QueryClient,
   UndefinedInitialDataOptions,
   UnusedSkipTokenOptions,
 } from '@tanstack/react-query'
@@ -9,6 +8,7 @@ import {
   ContractVersionInfo,
   GenericToken,
   IDaoBase,
+  IQueryClient,
   IVotingModuleBase,
 } from '@dao-dao/types'
 import {
@@ -26,7 +26,7 @@ export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>
   static contractNames: readonly string[]
 
   constructor(
-    protected readonly queryClient: QueryClient,
+    protected readonly queryClient: IQueryClient,
     public readonly dao: Dao,
     public readonly address: string,
     protected readonly info: ContractVersionInfo

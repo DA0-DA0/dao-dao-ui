@@ -3,8 +3,8 @@ import { constSelector } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  Cw1WhitelistSelectors,
   DaoProposalMultipleSelectors,
+  cw1WhitelistExtraQueries,
   genericTokenSelector,
 } from '@dao-dao/state'
 import {
@@ -23,6 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useProposalModuleAdapterCommonContext } from '../../../react/context'
 import { useProcessQ } from '../common'
 
@@ -67,14 +68,19 @@ export const useProposalDaoInfoCards = (): DaoInfoCard[] => {
   // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
   // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
   // undefined.
-  const vetoerCw1WhitelistAdmins = useCachedLoadingWithError(
+  const vetoerCw1WhitelistAdmins = useQueryLoadingDataWithError<
+    string[] | null
+  >(
     config.loading
       ? undefined
       : config.errored || !('veto' in config.data) || !config.data.veto
-        ? constSelector(undefined)
-        : Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+        ? {
+            queryKey: ['null'],
+            queryFn: () => null,
+          }
+        : cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
             chainId: proposalModule.chainId,
-            contractAddress: config.data.veto.vetoer,
+            address: config.data.veto.vetoer,
           })
   )
 

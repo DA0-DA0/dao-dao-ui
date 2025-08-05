@@ -90,7 +90,7 @@ describe('simple', () => {
 
     expect(coreAddress).toBeDefined()
 
-    const dao = new CwDao(suite.queryClient.queryClient, {
+    const dao = new CwDao(suite.queryClient, {
       chainId: suite.chainId,
       coreAddress,
     })
@@ -200,7 +200,7 @@ describe('simple', () => {
 
     expect(coreAddress).toBeDefined()
 
-    const dao = new CwDao(suite.queryClient.queryClient, {
+    const dao = new CwDao(suite.queryClient, {
       chainId: suite.chainId,
       coreAddress,
     })

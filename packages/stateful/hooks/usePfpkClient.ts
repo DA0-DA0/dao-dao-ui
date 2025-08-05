@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -42,7 +41,7 @@ export const usePfpkClientOptions = ({
   chainId,
 }: UsePfpkClientOptions = {}) => {
   const { t } = useTranslation()
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const {
     chain: currentChain,
     chainWallet: currentChainWallet,
@@ -99,20 +98,13 @@ export const usePfpkClientOptions = ({
 
         return offlineSignerAmino
       },
-      // Refresh query state when profile is updated.
-      onProfileUpdated: async ({ chain: { chainId }, address }) => {
-        await queryClient.refetchQueries(
+      // Refresh query when profile is updated.
+      onProfileUpdated: ({ address }) =>
+        queryClient.refetch(
           profileQueries.pfpk({
             address,
           })
-        )
-        await queryClient.refetchQueries(
-          profileQueries.unified({
-            chainId,
-            address,
-          })
-        )
-      },
+        ),
     }),
     // Reset when wallet changes since they may have switched chains/accounts.
     [

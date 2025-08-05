@@ -1,14 +1,15 @@
 import { DataObject, Send, WarningRounded } from '@mui/icons-material'
+import { useQueries } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValueLoadable, waitForAll } from 'recoil'
+import { useRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  Cw1WhitelistSelectors,
   contractQueries,
+  cw1WhitelistExtraQueries,
   initialActionsVerifiedAtom,
 } from '@dao-dao/state'
 import {
@@ -26,7 +27,11 @@ import {
   PreProposeModuleType,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
-import { formatDate, formatPercentOf100 } from '@dao-dao/utils'
+import {
+  formatDate,
+  formatPercentOf100,
+  makeCombineQueryResultsIntoLoadingDataWithError,
+} from '@dao-dao/utils'
 
 import {
   useDaoGovernanceToken,
@@ -130,23 +135,23 @@ const InnerMainDaoInfoCards = () => {
   // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
   // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
   // undefined.
-  const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
-    waitForAll(
-      allVetoers.map((vetoer) =>
-        Cw1WhitelistSelectors.adminsIfCw1Whitelist({
-          chainId,
-          contractAddress: vetoer,
-        })
-      )
-    )
-  )
+  const cw1WhitelistAdminsLoading = useQueries({
+    queries: allVetoers.map((address) =>
+      cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
+        chainId,
+        address,
+      })
+    ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError(),
+  })
 
   // If a vetoer is a cw1-whitelist contract, replace it with its admins.
   const flattenedVetoers = uniq(
     allVetoers.flatMap((vetoer, index) =>
-      cw1WhitelistAdminsLoadable.state === 'hasValue' &&
-      cw1WhitelistAdminsLoadable.contents[index]?.length
-        ? (cw1WhitelistAdminsLoadable.contents[index] as string[])
+      !cw1WhitelistAdminsLoading.loading &&
+      !cw1WhitelistAdminsLoading.errored &&
+      cw1WhitelistAdminsLoading.data[index]?.length
+        ? (cw1WhitelistAdminsLoading.data[index] as string[])
         : [vetoer]
     )
   )

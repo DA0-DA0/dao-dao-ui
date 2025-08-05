@@ -5,7 +5,6 @@ import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
   VetoableProposalsProps,
-  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
@@ -29,11 +28,10 @@ export const VetoableProposals: FeedSource<
 
     const { connected, profile } = useProfile()
     const { following } = useFollowingDaos()
-    const queryClient = useDependencyTrackedQueryClient()
 
     const daosWithItems = useQueryLoadingDataWithError(
       !profile.loading
-        ? feedVetoableProposalsQueries.vetoableProposals(queryClient, {
+        ? feedVetoableProposalsQueries.vetoableProposals({
             uuid: profile.data.uuid,
           })
         : undefined,

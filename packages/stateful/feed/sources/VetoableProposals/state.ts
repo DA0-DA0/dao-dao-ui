@@ -5,13 +5,10 @@ import { VetoableProposalsProps } from '@dao-dao/stateless'
 import {
   DaoPageMode,
   FeedSourceDaoWithItems,
+  IQueryClient,
   StatefulProposalLineProps,
 } from '@dao-dao/types'
-import {
-  DependencyTrackedQueryClient,
-  FollowingDaosKvpkClient,
-  isConfiguredChainName,
-} from '@dao-dao/utils'
+import { FollowingDaosKvpkClient, isConfiguredChainName } from '@dao-dao/utils'
 
 import { LinkWrapper, ProposalLine } from '../../../components'
 
@@ -19,9 +16,7 @@ import { LinkWrapper, ProposalLine } from '../../../components'
  * Fetch vetoable proposals as feed items.
  */
 export const fetchFeedVetoableProposals = async (
-  // TODO(kvpk): should this be a normal query client? or somehow pass the
-  // dependency tracker one around everywhere...
-  queryClient: DependencyTrackedQueryClient,
+  queryClient: IQueryClient,
   {
     uuid,
   }: {
@@ -105,11 +100,10 @@ export const feedVetoableProposalsQueries = {
    * Fetch vetoable proposals as feed items.
    */
   vetoableProposals: (
-    queryClient: DependencyTrackedQueryClient,
     options: Parameters<typeof fetchFeedVetoableProposals>[1]
   ) =>
     queryOptions({
       queryKey: ['feed', 'vetoableProposals', options],
-      queryFn: () => fetchFeedVetoableProposals(queryClient, options),
+      queryFn: (ctx) => fetchFeedVetoableProposals(ctx.client, options),
     }),
 }

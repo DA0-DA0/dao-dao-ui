@@ -46,8 +46,8 @@ export class FollowingDaosKvpkClient extends KvpkClient {
   listFollowingDaosQuery(options: { uuid: string }) {
     return queryOptions({
       queryKey: ['followingDaosKvpk', 'list', options],
-      queryFn: () =>
-        this.queryClient
+      queryFn: (ctx) =>
+        ctx.client
           .fetchQuery(
             this.listQuery({
               uuid: options.uuid,
@@ -79,6 +79,6 @@ export class FollowingDaosKvpkClient extends KvpkClient {
    * Refresh the following DAOs for a wallet.
    */
   async refreshQueries(options: { uuid: string }): Promise<void> {
-    await this.queryClient.refetch(this.listFollowingDaosQuery(options))
+    await this.queryClient.refetchQueries(this.listFollowingDaosQuery(options))
   }
 }

@@ -7,10 +7,8 @@ import {
   DependencyTrackedQueryClientContext,
   useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
-import {
-  DehydratedStateWithDependencies,
-  makeDependencyTrackedQueryClient,
-} from '@dao-dao/utils'
+import { DehydratedStateWithDependencies } from '@dao-dao/types'
+import { makeDependencyTrackedQueryClient } from '@dao-dao/utils'
 
 export type StateProviderProps = {
   /**

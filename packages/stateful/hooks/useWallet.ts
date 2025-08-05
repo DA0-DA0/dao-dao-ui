@@ -276,7 +276,7 @@ export const useWallet = ({
         return await SecretSigningCosmWasmClient.secretConnectWithSigner(
           getRpcForChainId(chain.chainId),
           signer,
-          makeGetSignerOptions(queryClient.queryClient)(chain.chainName),
+          makeGetSignerOptions(queryClient)(chain.chainName),
           {
             url: getLcdForChainId(chain.chainId),
             chainId: chain.chainId,
@@ -314,7 +314,7 @@ export const useWallet = ({
           SigningCosmWasmClient.connectWithSigner(
             getRpcForChainId(chain.chainId, attempt - 1),
             signer,
-            makeGetSignerOptions(queryClient.queryClient)(chain.chainName)
+            makeGetSignerOptions(queryClient)(chain.chainName)
           )
         )
       }

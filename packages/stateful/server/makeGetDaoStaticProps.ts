@@ -1,5 +1,4 @@
 import { fromBase64 } from '@cosmjs/encoding'
-import { QueryClient } from '@tanstack/react-query'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -19,6 +18,7 @@ import {
   GovProposalVersion,
   GovProposalWithDecodedContent,
   IDaoBase,
+  IQueryClient,
   ProposalV1,
   ProposalV1Beta1,
 } from '@dao-dao/types'
@@ -62,7 +62,7 @@ interface GetDaoStaticPropsMakerOptions {
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
-    queryClient: QueryClient
+    queryClient: IQueryClient
     chain: AnyChain
     dao: IDaoBase
   }) =>
@@ -95,8 +95,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
 
-    const client = makeDependencyTrackedQueryClient()
-    const queryClient = client.queryClient
+    const queryClient = makeDependencyTrackedQueryClient()
 
     const getForChainId = async (
       chainId: string
@@ -154,7 +153,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description,
           accentColor,
           info: dao.info,
-          dehydratedQueryClientState: client.dehydrate(),
+          dehydratedQueryClientState: queryClient.dehydrate(),
           ...additionalProps,
         }
 
@@ -194,7 +193,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               ...i18nProps,
               title: 'DAO not found',
               description: '',
-              dehydratedQueryClientState: client.dehydrate(),
+              dehydratedQueryClientState: queryClient.dehydrate(),
             },
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
@@ -248,7 +247,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                 ...i18nProps,
                 title: 'Not a DAO contract',
                 description: '',
-                dehydratedQueryClientState: client.dehydrate(),
+                dehydratedQueryClientState: queryClient.dehydrate(),
               },
               // Regenerate the page at most once per second. Serves cached copy
               // and refreshes in background.
@@ -265,7 +264,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.500'),
             description: '',
-            dehydratedQueryClientState: client.dehydrate(),
+            dehydratedQueryClientState: queryClient.dehydrate(),
             // Report to Sentry.
             error: processError(error, {
               tags: {
@@ -307,7 +306,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.daoNotFound'),
             description: err instanceof Error ? err.message : `${err}`,
-            dehydratedQueryClientState: client.dehydrate(),
+            dehydratedQueryClientState: queryClient.dehydrate(),
           },
         }
       }

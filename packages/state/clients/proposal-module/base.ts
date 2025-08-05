@@ -1,5 +1,5 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
-import { QueryClient, UndefinedInitialDataOptions } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -9,6 +9,7 @@ import {
   Feature,
   IDaoBase,
   IProposalModuleBase,
+  IQueryClient,
   PreProposeModule,
   UnvotedDelegatedVotingPower,
 } from '@dao-dao/types'
@@ -77,7 +78,7 @@ export abstract class ProposalModuleBase<
     /**
      * Query client.
      */
-    protected readonly queryClient: QueryClient,
+    protected readonly queryClient: IQueryClient,
     /**
      * DAO this module belongs to.
      */

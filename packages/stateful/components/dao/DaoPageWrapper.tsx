@@ -11,11 +11,12 @@ import {
   useAppContext,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { CommonProposalInfo, DaoInfo } from '@dao-dao/types'
 import {
+  CommonProposalInfo,
+  DaoInfo,
   DehydratedStateWithDependencies,
-  transformIpfsUrlToHttpsIfNecessary,
-} from '@dao-dao/utils'
+} from '@dao-dao/types'
+import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { makeDaoContext, makeGenericContext } from '../../command'
 import { PageHeaderContent } from '../PageHeaderContent'

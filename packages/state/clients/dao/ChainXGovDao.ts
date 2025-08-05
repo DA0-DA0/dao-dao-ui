@@ -1,10 +1,6 @@
-import {
-  QueryClient,
-  UndefinedInitialDataOptions,
-  skipToken,
-} from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
-import { AnyChain, DaoInfo } from '@dao-dao/types'
+import { AnyChain, DaoInfo, IQueryClient } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -21,7 +17,7 @@ export class ChainXGovDao extends DaoBase {
   protected _info: DaoInfo | undefined
 
   constructor(
-    queryClient: QueryClient,
+    queryClient: IQueryClient,
     protected readonly options: {
       chainId: string
     }

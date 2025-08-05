@@ -1,5 +1,3 @@
-import { QueryClient } from '@tanstack/react-query'
-
 import {
   IDaoBase,
   IProposalModuleAdapterCommon,
@@ -7,6 +5,7 @@ import {
   IProposalModuleBase,
   IProposalModuleCommonContext,
   IProposalModuleContext,
+  IQueryClient,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { extractProposalInfo } from '@dao-dao/utils'
@@ -78,7 +77,7 @@ export const matchAndLoadAdapter = ({
   proposalId,
   queryClient,
 }: {
-  queryClient: QueryClient
+  queryClient: IQueryClient
   dao: IDaoBase
   proposalId: string
 }): IProposalModuleContext => {

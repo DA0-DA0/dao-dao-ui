@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query'
 import uniqBy from 'lodash.uniqby'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -61,16 +61,15 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
     }),
   })
 
-  // TODO(kvpk): check the performance of this
-  const walletDaos = useMemo((): LoadingDataWithError<LazyDaoCardProps[]> => {
-    if (lazyMemberOf.loading || lazyFollowing.loading) {
+  const getWalletDaos = (): LoadingDataWithError<LazyDaoCardProps[]> => {
+    if (lazyMemberOf.loading && lazyFollowing.loading) {
       return {
         loading: true,
         errored: false,
       }
     }
 
-    if (lazyMemberOf.errored || lazyFollowing.errored) {
+    if (lazyMemberOf.errored && lazyFollowing.errored) {
       const error =
         'error' in lazyMemberOf
           ? lazyMemberOf.error
@@ -116,7 +115,8 @@ export const WalletDaos = ({ address }: StatefulWalletDaosProps) => {
         }))
         .sort((a, b) => a.info.name.localeCompare(b.info.name)),
     }
-  }, [lazyFollowing, lazyMemberOf])
+  }
+  const walletDaos = getWalletDaos()
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
   const openSearch = useCallback(

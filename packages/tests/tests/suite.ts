@@ -314,7 +314,7 @@ export class TestSuite {
     const faucetSigningClient = await SigningCosmWasmClient.connectWithSigner(
       rpcEndpoint,
       faucetSigner,
-      makeGetSignerOptions(suite.queryClient.queryClient)(chain.chainName)
+      makeGetSignerOptions(suite.queryClient)(chain.chainName)
     )
 
     await suite.queryClient.prefetchQuery(
@@ -448,7 +448,7 @@ export class TestSuite {
         signingClient = await SigningCosmWasmClient.connectWithSigner(
           this.rpcEndpoint,
           signer,
-          makeGetSignerOptions(this.queryClient.queryClient)(this.chainName)
+          makeGetSignerOptions(this.queryClient)(this.chainName)
         )
       }
       return signingClient

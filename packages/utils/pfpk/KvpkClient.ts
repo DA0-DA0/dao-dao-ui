@@ -1,9 +1,7 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
-import { IQueryClient } from '@dao-dao/types'
-
-import { KVPK_API_HOSTNAME } from '../../constants'
-import { PfpkClient, PfpkClientOptions } from '../PfpkClient'
+import { KVPK_API_HOSTNAME } from '../constants'
+import { PfpkClient, PfpkClientOptions } from './PfpkClient'
 
 export type KvpkClientOptions = Omit<
   PfpkClientOptions,
@@ -12,11 +10,11 @@ export type KvpkClientOptions = Omit<
   /**
    * The query client to use for the KVPK client.
    */
-  queryClient: IQueryClient
+  queryClient: QueryClient
   /**
    * The hostname of the KVPK server, to use for the token audience.
    *
-   * Defaults to KVPK_API_HOSTNAME constant.
+   * Defaults to KVPK_API_HOSTNAME environment variable.
    */
   hostname?: string
   /**
@@ -29,7 +27,7 @@ export class KvpkClient extends PfpkClient {
   /**
    * The query client.
    */
-  public queryClient: IQueryClient
+  public queryClient: QueryClient
 
   /**
    * The hostname of the KVPK service.
@@ -60,12 +58,7 @@ export class KvpkClient extends PfpkClient {
       flattenData: true,
     })
 
-    // Use dependency tracker if available, since it can invalidate/refetch
-    // better.
-    this.queryClient =
-      'dependencyTracker' in queryClient && queryClient.dependencyTracker
-        ? (queryClient as QueryClient).dependencyTracker!
-        : queryClient
+    this.queryClient = queryClient
     this.hostname = hostname
     this.keyPrefix = keyPrefix
   }
@@ -73,7 +66,7 @@ export class KvpkClient extends PfpkClient {
   /**
    * Get the full key for a given key.
    */
-  protected getKey(key: string) {
+  private getKey(key: string) {
     return (this.keyPrefix ?? '') + key
   }
 
@@ -102,9 +95,11 @@ export class KvpkClient extends PfpkClient {
       token: await this.getKvpkAdminToken(chainId),
     })
 
-    // Invalidate list queries for the current UUID and key prefix.
+    // Invalidate list queries for the current UUID and current key prefix.
     const uuid = await this.fetchProfileUuid(chainId)
-    await this.queryClient.invalidateQueries(this.listQuery({ uuid }))
+    await this.queryClient.invalidateQueries({
+      queryKey: ['kvpk', 'list', { uuid, keyPrefix: this.keyPrefix }],
+    })
 
     return fullKey
   }
@@ -186,15 +181,14 @@ export class KvpkClient extends PfpkClient {
    * A query to list all keys with a prefix, stripping the prefix from the key.
    */
   listQuery(options: { uuid: string; prefix?: string }) {
-    const fullPrefix = this.getKey(options.prefix ?? '')
     return queryOptions({
-      queryKey: ['kvpk', 'list', { ...options, fullPrefix }],
+      queryKey: ['kvpk', 'list', { ...options, keyPrefix: this.keyPrefix }],
       queryFn: () =>
         options.uuid
           ? this.list(options).then(({ items }) =>
-              fullPrefix.length
+              options.prefix
                 ? items.map(({ key, value }) => ({
-                    key: key.slice(fullPrefix.length),
+                    key: key.slice(options.prefix!.length),
                     value,
                   }))
                 : items

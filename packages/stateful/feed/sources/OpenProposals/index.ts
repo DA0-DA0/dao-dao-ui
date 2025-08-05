@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
-import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
@@ -30,11 +29,10 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
 
     const { connected, profile, chains } = useProfile()
     const { following } = useFollowingDaos()
-    const queryClient = useDependencyTrackedQueryClient()
 
     const daosWithItems = useQueryLoadingDataWithError(
       !profile.loading && !chains.loading
-        ? feedOpenProposalsQueries.openProposals(queryClient, {
+        ? feedOpenProposalsQueries.openProposals({
             uuid: profile.data.uuid,
             profileAddresses: chains.data.map(({ chainId, address }) => ({
               chainId,
