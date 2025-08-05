@@ -47,11 +47,11 @@ export const makeValidateValidatorAddress =
     isValidValidatorAddress(v, bech32Prefix) || 'Invalid address'
 
 export const validateUrl = (v: string | undefined) =>
-  (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
+  (v && isValidUrl(v, ['https'])) || 'Invalid image URL: must start with https.'
 
 export const validateUrlWithIpfs = (v: string | undefined) =>
   !v ||
-  isValidUrl(v, true) ||
+  isValidUrl(v, ['https', 'ipfs']) ||
   'Invalid image URL: must start with https or ipfs.'
 
 export const makeValidateTokenFactoryDenom =

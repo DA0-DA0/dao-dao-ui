@@ -1,9 +1,9 @@
-export const isValidUrl = (url: string, allowIpfs = false) => {
+export const isValidUrl = (url: string, allowedProtocols?: string[]) => {
   let u
   try {
     u = new URL(url)
   } catch (_) {
     return false
   }
-  return u.protocol === 'https:' || (allowIpfs && u.protocol === 'ipfs:')
+  return !allowedProtocols || allowedProtocols.includes(u.protocol)
 }

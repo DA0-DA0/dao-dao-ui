@@ -186,14 +186,14 @@ export const fetchTokenInfo = async (
       if (metaData) {
         // try to load image from metadata url, otherwise using fallback
         let imageUrl
-        if (metaData.uri && isValidUrl(metaData.uri, true)) {
+        if (metaData.uri && isValidUrl(metaData.uri)) {
           try {
             const res = await fetch(
               transformIpfsUrlToHttpsIfNecessary(metaData.uri)
             )
             if (res.ok) {
               const { image } = await res.json()
-              if (image && isValidUrl(image, true)) {
+              if (image && isValidUrl(image)) {
                 imageUrl = image
               }
             }

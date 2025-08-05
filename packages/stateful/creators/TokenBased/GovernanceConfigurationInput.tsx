@@ -356,11 +356,9 @@ export const GovernanceConfigurationInput = ({
   useEffect(() => {
     if (
       !imageUrl ||
-      !isValidUrl(imageUrl, true) ||
+      !isValidUrl(imageUrl) ||
       // if metadata URL set and valid, make sure it's for the right image
-      (metadataUrl &&
-        isValidUrl(imageUrl, true) &&
-        metadataUrlImageUrl === imageUrl)
+      (metadataUrl && isValidUrl(imageUrl) && metadataUrlImageUrl === imageUrl)
     ) {
       return
     }

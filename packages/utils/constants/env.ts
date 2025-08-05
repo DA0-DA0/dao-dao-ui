@@ -1,5 +1,7 @@
 // Constants derived from environment variables.
 
+import { isValidUrl } from '../isValidUrl'
+
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -39,7 +41,9 @@ export const STARGAZE_NAMES_CONTRACT = process.env
 
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
-export const PFPK_API_HOSTNAME = new URL(PFPK_API_BASE).hostname
+export const PFPK_API_HOSTNAME = isValidUrl(PFPK_API_BASE)
+  ? new URL(PFPK_API_BASE).hostname
+  : ''
 
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
@@ -64,7 +68,9 @@ export const INBOX_API_BASE = process.env.NEXT_PUBLIC_INBOX_API_BASE as string
 
 // KVPK API (https://github.com/DA0-DA0/kvpk)
 export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
-export const KVPK_API_HOSTNAME = new URL(KVPK_API_BASE).hostname
+export const KVPK_API_HOSTNAME = isValidUrl(KVPK_API_BASE)
+  ? new URL(KVPK_API_BASE).hostname
+  : ''
 
 // Single DAO Mode
 export const SINGLE_DAO_MODE =
