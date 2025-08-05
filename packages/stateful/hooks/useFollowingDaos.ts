@@ -72,15 +72,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
           await addChains.go([dao.chainId])
         }
 
-        const serializedDaoSource = serializeDaoSource(dao)
-
-        await followingDaosKvpkClient.set({
-          key: serializedDaoSource,
-          value: 1,
-          // Use DAO chain ID for following state to ensure we use the same
-          // chain ID when following and unfollowing the DAO.
-          chainId: dao.chainId,
-        })
+        await followingDaosKvpkClient.followDao(dao)
 
         return true
       } catch (err) {
@@ -108,12 +100,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       setUpdating(true)
 
       try {
-        const serializedDaoSource = serializeDaoSource(dao)
-
-        await followingDaosKvpkClient.delete({
-          key: serializedDaoSource,
-          chainId: dao.chainId,
-        })
+        await followingDaosKvpkClient.unfollowDao(dao)
 
         return true
       } catch (err) {

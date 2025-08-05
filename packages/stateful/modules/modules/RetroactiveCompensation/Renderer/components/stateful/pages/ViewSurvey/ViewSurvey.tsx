@@ -1,5 +1,4 @@
 import { DeleteRounded } from '@mui/icons-material'
-import { useQueryClient } from '@tanstack/react-query'
 import { ComponentType, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +10,7 @@ import {
   Tooltip,
   useDao,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import { ImmutableRef, ModuleId } from '@dao-dao/types'
@@ -33,6 +33,7 @@ import { ViewSurveyPageProps } from './types'
 export const ViewSurvey = () => {
   const dao = useDao()
   const { daoSubpathComponents } = useDaoNavHelpers()
+  const queryClient = useDependencyTrackedQueryClient()
 
   const { hexPublicKey } = useWallet({
     loadAccount: true,
@@ -40,7 +41,6 @@ export const ViewSurvey = () => {
 
   const uuid = daoSubpathComponents[2]
 
-  const queryClient = useQueryClient()
   const loadingSurvey = useQueryLoadingDataWithError(
     retroactiveCompensationQueries.survey({
       daoAddress: dao.coreAddress,
@@ -51,12 +51,12 @@ export const ViewSurvey = () => {
 
   // Memoize callback.
   const refreshRef = useUpdatingRef(() =>
-    queryClient.refetchQueries({
-      queryKey: retroactiveCompensationQueries.survey({
+    queryClient.refetch(
+      retroactiveCompensationQueries.survey({
         daoAddress: dao.coreAddress,
         uuid,
-      }).queryKey,
-    })
+      })
+    )
   )
 
   return (
@@ -85,7 +85,7 @@ export const InnerViewSurvey = ({
   const { isWalletConnected, hexPublicKey } = useWallet({
     loadAccount: true,
   })
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
 
   // Voting power at time of survey creation, which determines what access level
   // this wallet has.
@@ -106,11 +106,11 @@ export const InnerViewSurvey = ({
       toast.success(t('success.compensationCycleDeleted'))
 
       // Reload survey list.
-      await queryClient.refetchQueries({
-        queryKey: retroactiveCompensationQueries.listSurveys({
+      await queryClient.refetch(
+        retroactiveCompensationQueries.listSurveys({
           daoAddress: dao.coreAddress,
-        }).queryKey,
-      })
+        })
+      )
 
       router.replace(
         getDaoPath(dao.coreAddress, ModuleId.RetroactiveCompensation),

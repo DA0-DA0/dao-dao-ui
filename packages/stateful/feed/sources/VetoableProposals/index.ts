@@ -5,6 +5,7 @@ import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   VetoableProposals as Renderer,
   VetoableProposalsProps,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
@@ -15,7 +16,7 @@ import {
   useProfile,
   useQueryLoadingDataWithError,
 } from '../../../hooks'
-import { feedVetoableProposalQueries } from './state'
+import { feedVetoableProposalsQueries } from './state'
 
 export const VetoableProposals: FeedSource<
   VetoableProposalsProps<StatefulProposalLineProps>
@@ -26,12 +27,13 @@ export const VetoableProposals: FeedSource<
     const setRefresh = useSetRecoilState(refreshProposalsIdAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const { profile } = useProfile()
+    const { connected, profile } = useProfile()
     const { following } = useFollowingDaos()
+    const queryClient = useDependencyTrackedQueryClient()
 
-    const daosWithItemsLoadable = useQueryLoadingDataWithError(
+    const daosWithItems = useQueryLoadingDataWithError(
       !profile.loading
-        ? feedVetoableProposalQueries.vetoableProposals({
+        ? feedVetoableProposalsQueries.vetoableProposals(queryClient, {
             uuid: profile.data.uuid,
           })
         : undefined,
@@ -64,13 +66,12 @@ export const VetoableProposals: FeedSource<
     )
 
     return {
-      loading: daosWithItemsLoadable.loading,
-      refreshing:
-        !daosWithItemsLoadable.loading && !!daosWithItemsLoadable.updating,
+      loading: daosWithItems.loading && connected,
+      refreshing: !daosWithItems.loading && !!daosWithItems.updating,
       daosWithItems:
-        daosWithItemsLoadable.loading || daosWithItemsLoadable.errored
+        daosWithItems.loading || daosWithItems.errored
           ? []
-          : daosWithItemsLoadable.data,
+          : daosWithItems.data,
       refresh,
     }
   },

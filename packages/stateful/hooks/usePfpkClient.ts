@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { profileQueries } from '@dao-dao/state'
+import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import {
   FollowingDaosKvpkClient,
   KvpkClient,
@@ -176,7 +177,7 @@ export const useKvpkClient = ({
   keyPrefix,
   ...options
 }: UseKvpkClientOptions = {}) => {
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
 
   const client = useMemo(
@@ -212,7 +213,7 @@ export type UseFollowingDaosKvpkClientOptions = Omit<
 export const useFollowingDaosKvpkClient = (
   options?: UseFollowingDaosKvpkClientOptions
 ) => {
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
 
   const client = useMemo(

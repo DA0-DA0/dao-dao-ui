@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -12,6 +11,7 @@ import {
   useChain,
   useDao,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import { ModuleId, TokenType } from '@dao-dao/types'
 
@@ -61,7 +61,7 @@ export const CreateSurvey = () => {
     []
   )
 
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const postRequest = usePfpkClientPost()
 
   const [loading, setLoading] = useState(false)
@@ -145,11 +145,11 @@ export const CreateSurvey = () => {
         toast.success(t('success.compensationCycleCreated'))
 
         // Reload survey list.
-        await queryClient.refetchQueries({
-          queryKey: retroactiveCompensationQueries.listSurveys({
+        await queryClient.refetch(
+          retroactiveCompensationQueries.listSurveys({
             daoAddress: coreAddress,
-          }).queryKey,
-        })
+          })
+        )
 
         // Navigate to survey.
         router.push(

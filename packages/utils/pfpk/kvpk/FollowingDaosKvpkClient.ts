@@ -1,8 +1,10 @@
 import { queryOptions } from '@tanstack/react-query'
 
+import { DaoSource } from '@dao-dao/types'
+
 import { maybeGetChainForChainId } from '../../chain'
 import { FOLLOWING_DAOS_PREFIX, MAINNET } from '../../constants'
-import { deserializeDaoSource } from '../../dao'
+import { deserializeDaoSource, serializeDaoSource } from '../../dao'
 import { KvpkClient, KvpkClientOptions } from './KvpkClient'
 
 export type FollowingDaosKvpkClientOptions = Omit<
@@ -16,6 +18,25 @@ export class FollowingDaosKvpkClient extends KvpkClient {
       ...options,
       defaultSignatureType: 'Update Followed DAOs',
       keyPrefix: FOLLOWING_DAOS_PREFIX,
+    })
+  }
+
+  async followDao(dao: DaoSource) {
+    await this.set({
+      key: serializeDaoSource(dao),
+      value: 1,
+      // Use DAO chain ID for following state to ensure we use the same chain ID
+      // when following and unfollowing the DAO.
+      chainId: dao.chainId,
+    })
+  }
+
+  async unfollowDao(dao: DaoSource) {
+    await this.delete({
+      key: serializeDaoSource(dao),
+      // Use DAO chain ID for following state to ensure we use the same chain ID
+      // when following and unfollowing the DAO.
+      chainId: dao.chainId,
     })
   }
 
@@ -48,9 +69,16 @@ export class FollowingDaosKvpkClient extends KvpkClient {
   }
 
   /**
+   * List all following DAOs for a wallet.
+   */
+  listFollowingDaos(options: { uuid: string }) {
+    return this.queryClient.fetchQuery(this.listFollowingDaosQuery(options))
+  }
+
+  /**
    * Refresh the following DAOs for a wallet.
    */
   async refreshQueries(options: { uuid: string }): Promise<void> {
-    // TODO(kvpk): auto dependency tracker
+    await this.queryClient.refetch(this.listFollowingDaosQuery(options))
   }
 }

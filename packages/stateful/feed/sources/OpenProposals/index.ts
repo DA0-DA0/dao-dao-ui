@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
-import { constSelector, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
@@ -10,10 +10,11 @@ import {
   useFollowingDaos,
   useOnWebSocketMessage,
   useProfile,
+  useQueryLoadingDataWithError,
   useRefreshGovProposals,
 } from '../../../hooks'
 import { OpenProposalsProposalLine } from './OpenProposalsProposalLineProps'
-import { feedOpenProposalsSelector } from './state'
+import { feedOpenProposalsQueries } from './state'
 import { OpenProposalsProposalLineProps } from './types'
 
 export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
@@ -27,23 +28,21 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
       setRefreshOpenProposals((id) => id + 1)
     }, [refreshGovProposals, setRefreshOpenProposals])
 
-    const { profile, chains } = useProfile()
-
-    const daosWithItemsLoadable = useCachedLoadable(
-      profile.loading || chains.loading
-        ? undefined
-        : profile.data.uuid
-          ? feedOpenProposalsSelector({
-              uuid: profile.data.uuid,
-              profileAddresses: chains.data.map(({ chainId, address }) => ({
-                chainId,
-                address,
-              })),
-            })
-          : constSelector([])
-    )
-
+    const { connected, profile, chains } = useProfile()
     const { following } = useFollowingDaos()
+    const queryClient = useDependencyTrackedQueryClient()
+
+    const daosWithItems = useQueryLoadingDataWithError(
+      !profile.loading && !chains.loading
+        ? feedOpenProposalsQueries.openProposals(queryClient, {
+            uuid: profile.data.uuid,
+            profileAddresses: chains.data.map(({ chainId, address }) => ({
+              chainId,
+              address,
+            })),
+          })
+        : undefined
+    )
 
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
@@ -61,14 +60,12 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
     )
 
     return {
-      loading: daosWithItemsLoadable.state === 'loading',
-      refreshing:
-        daosWithItemsLoadable.state === 'hasValue' &&
-        daosWithItemsLoadable.updating,
+      loading: daosWithItems.loading && connected,
+      refreshing: !daosWithItems.loading && !!daosWithItems.updating,
       daosWithItems:
-        daosWithItemsLoadable.state === 'hasValue'
-          ? daosWithItemsLoadable.contents
-          : [],
+        daosWithItems.loading || daosWithItems.errored
+          ? []
+          : daosWithItems.data,
       refresh,
     }
   },

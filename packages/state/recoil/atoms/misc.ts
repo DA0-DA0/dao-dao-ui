@@ -1,7 +1,7 @@
-import { QueryClient } from '@tanstack/react-query'
 import { atom } from 'recoil'
 
 import { PageHeaderProps, QuerierForm, Web3AuthPrompt } from '@dao-dao/types'
+import { DependencyTrackedQueryClient } from '@dao-dao/utils'
 
 import { localStorageEffectJSON } from '../effects'
 
@@ -66,7 +66,7 @@ export const pageHeaderPropsAtom = atom<PageHeaderProps>({
 
 // Store query client in Recoil atom so it's accessible from Recoil selectors
 // while we migrate from Recoil to React Query.
-export const queryClientAtom = atom<QueryClient>({
+export const queryClientAtom = atom<DependencyTrackedQueryClient>({
   key: 'queryClient',
 })
 

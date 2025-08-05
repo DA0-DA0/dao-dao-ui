@@ -1,4 +1,4 @@
-import { DehydratedState, useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -30,6 +30,7 @@ import {
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 import {
+  DehydratedStateWithDependencies,
   SITE_TITLE,
   SITE_URL,
   getFallbackImage,
@@ -65,7 +66,7 @@ export type StatefulHomeProps = {
    * Dehydrated react query state used by the server to preload data. This is
    * accessed in the _app.tsx file.
    */
-  reactQueryDehydratedState?: DehydratedState
+  dehydratedQueryClientState?: DehydratedStateWithDependencies
 }
 
 export const Home: NextPage<StatefulHomeProps> = ({

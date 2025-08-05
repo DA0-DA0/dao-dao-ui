@@ -7,7 +7,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +21,7 @@ import {
   ChainProvider,
   TokenCard as StatelessTokenCard,
   useCachedLoading,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -79,21 +79,20 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       owner: props.owner.address,
     })
   )
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const refreshNativeTokenStakingInfo = useCallback(() => {
-    // Invalidate validators.
-    queryClient.invalidateQueries({
-      queryKey: ['chain', 'validator', { chainId: props.token.chainId }],
-    })
-    // Then native delegation info.
-    queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo({
-        chainId: props.token.chainId,
-        address: props.owner.address,
-      }).queryKey,
-    })
-    // Then token card lazy info.
-    setRefreshTokenCardLazyInfo((id) => id + 1)
+    // Invalidate native delegation info.
+    queryClient
+      .invalidate(
+        chainQueries.nativeDelegationInfo({
+          chainId: props.token.chainId,
+          address: props.owner.address,
+        })
+      )
+      .finally(() =>
+        // Then refresh token card lazy info.
+        setRefreshTokenCardLazyInfo((id) => id + 1)
+      )
   }, [
     props.owner.address,
     props.token.chainId,

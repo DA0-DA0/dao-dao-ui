@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { queryOptions } from '@tanstack/react-query'
 
 import { daoDaoCoreQueries, daoQueries } from '@dao-dao/state'
 import { VetoableProposalsProps } from '@dao-dao/stateless'
@@ -7,7 +7,11 @@ import {
   FeedSourceDaoWithItems,
   StatefulProposalLineProps,
 } from '@dao-dao/types'
-import { FollowingDaosKvpkClient, isConfiguredChainName } from '@dao-dao/utils'
+import {
+  DependencyTrackedQueryClient,
+  FollowingDaosKvpkClient,
+  isConfiguredChainName,
+} from '@dao-dao/utils'
 
 import { LinkWrapper, ProposalLine } from '../../../components'
 
@@ -15,7 +19,9 @@ import { LinkWrapper, ProposalLine } from '../../../components'
  * Fetch vetoable proposals as feed items.
  */
 export const fetchFeedVetoableProposals = async (
-  queryClient: QueryClient,
+  // TODO(kvpk): should this be a normal query client? or somehow pass the
+  // dependency tracker one around everywhere...
+  queryClient: DependencyTrackedQueryClient,
   {
     uuid,
   }: {
@@ -31,13 +37,10 @@ export const fetchFeedVetoableProposals = async (
     queryClient,
   })
 
-  // TODO(kvpk): refresh this when following DAOs change.
   const following = (
-    await queryClient.fetchQuery(
-      followingDaosKvpkClient.listFollowingDaosQuery({
-        uuid,
-      })
-    )
+    await followingDaosKvpkClient.listFollowingDaos({
+      uuid,
+    })
   )
     // A chain's x/gov module cannot have vetoable proposals.
     .filter(
@@ -97,15 +100,16 @@ export const fetchFeedVetoableProposals = async (
   )
 }
 
-export const feedVetoableProposalQueries = {
+export const feedVetoableProposalsQueries = {
   /**
    * Fetch vetoable proposals as feed items.
    */
   vetoableProposals: (
+    queryClient: DependencyTrackedQueryClient,
     options: Parameters<typeof fetchFeedVetoableProposals>[1]
   ) =>
     queryOptions({
       queryKey: ['feed', 'vetoableProposals', options],
-      queryFn: (ctx) => fetchFeedVetoableProposals(ctx.client, options),
+      queryFn: () => fetchFeedVetoableProposals(queryClient, options),
     }),
 }

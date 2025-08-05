@@ -8,9 +8,7 @@ import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTrans
 import {
   ChainXGovDao,
   contractQueries,
-  dehydrateSerializable,
   getDao,
-  makeReactQueryClient,
   polytoneQueries,
   queryIndexer,
 } from '@dao-dao/state'
@@ -39,6 +37,7 @@ import {
   getConfiguredGovChainByName,
   getDaoPath,
   isErrorWithSubstring,
+  makeDependencyTrackedQueryClient,
   processError,
 } from '@dao-dao/utils'
 
@@ -96,7 +95,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
 
-    const queryClient = makeReactQueryClient()
+    const client = makeDependencyTrackedQueryClient()
+    const queryClient = client.queryClient
 
     const getForChainId = async (
       chainId: string
@@ -154,7 +154,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description,
           accentColor,
           info: dao.info,
-          reactQueryDehydratedState: dehydrateSerializable(queryClient),
+          dehydratedQueryClientState: client.dehydrate(),
           ...additionalProps,
         }
 
@@ -194,7 +194,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               ...i18nProps,
               title: 'DAO not found',
               description: '',
-              reactQueryDehydratedState: dehydrateSerializable(queryClient),
+              dehydratedQueryClientState: client.dehydrate(),
             },
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
@@ -248,7 +248,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                 ...i18nProps,
                 title: 'Not a DAO contract',
                 description: '',
-                reactQueryDehydratedState: dehydrateSerializable(queryClient),
+                dehydratedQueryClientState: client.dehydrate(),
               },
               // Regenerate the page at most once per second. Serves cached copy
               // and refreshes in background.
@@ -265,7 +265,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.500'),
             description: '',
-            reactQueryDehydratedState: dehydrateSerializable(queryClient),
+            dehydratedQueryClientState: client.dehydrate(),
             // Report to Sentry.
             error: processError(error, {
               tags: {
@@ -307,7 +307,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.daoNotFound'),
             description: err instanceof Error ? err.message : `${err}`,
-            reactQueryDehydratedState: dehydrateSerializable(queryClient),
+            dehydratedQueryClientState: client.dehydrate(),
           },
         }
       }

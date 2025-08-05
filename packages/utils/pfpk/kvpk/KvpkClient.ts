@@ -1,6 +1,7 @@
-import { QueryClient, queryOptions } from '@tanstack/react-query'
+import { queryOptions } from '@tanstack/react-query'
 
 import { KVPK_API_HOSTNAME } from '../../constants'
+import { DependencyTrackedQueryClient } from '../../query'
 import { PfpkClient, PfpkClientOptions } from '../PfpkClient'
 
 export type KvpkClientOptions = Omit<
@@ -10,7 +11,7 @@ export type KvpkClientOptions = Omit<
   /**
    * The query client to use for the KVPK client.
    */
-  queryClient: QueryClient
+  queryClient: DependencyTrackedQueryClient
   /**
    * The hostname of the KVPK server, to use for the token audience.
    *
@@ -27,7 +28,7 @@ export class KvpkClient extends PfpkClient {
   /**
    * The query client.
    */
-  public queryClient: QueryClient
+  public queryClient: DependencyTrackedQueryClient
 
   /**
    * The hostname of the KVPK service.
@@ -95,11 +96,9 @@ export class KvpkClient extends PfpkClient {
       token: await this.getKvpkAdminToken(chainId),
     })
 
-    // Invalidate list queries for the current UUID and current key prefix.
+    // Invalidate list queries for the current UUID and key prefix.
     const uuid = await this.fetchProfileUuid(chainId)
-    await this.queryClient.invalidateQueries({
-      queryKey: ['kvpk', 'list', { uuid, keyPrefix: this.keyPrefix }],
-    })
+    await this.queryClient.invalidate(this.listQuery({ uuid }))
 
     return fullKey
   }
@@ -193,8 +192,7 @@ export class KvpkClient extends PfpkClient {
                   }))
                 : items
             )
-          : // TODO(kvpk): if empty UUID, no profile so no keys. is this good enough?
-            [],
+          : [],
     })
   }
 }

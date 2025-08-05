@@ -130,7 +130,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Following DAOs
   const { following } = useFollowingDaos()
-
   const followingDaoDropdownInfos = useQueries({
     queries:
       following.loading || following.errored

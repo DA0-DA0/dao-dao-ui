@@ -20,7 +20,7 @@ export const daoClientSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     async ({ get }) => {
-      const queryClient = get(queryClientAtom)
+      const { queryClient } = get(queryClientAtom)
       const dao = getDao({
         queryClient,
         chainId,

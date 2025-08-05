@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +10,7 @@ import {
   useChain,
   useDao,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import {
   SingleChoiceNewProposalData,
@@ -61,7 +61,7 @@ export const Complete = ({
   const { chainId, bech32Prefix } = useChain()
   const { address: walletAddress = '' } = useWallet()
   const postRequest = usePfpkClientPost()
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
 
   const publishProposal = useDaoProposalSinglePublishProposal()
 
@@ -307,11 +307,11 @@ export const Complete = ({
 
       // Reload survey list on success and also individual survey.
       await Promise.all([
-        queryClient.refetchQueries({
-          queryKey: retroactiveCompensationQueries.listSurveys({
+        queryClient.refetch(
+          retroactiveCompensationQueries.listSurveys({
             daoAddress: dao.coreAddress,
-          }).queryKey,
-        }),
+          })
+        ),
         refreshRef.current(),
       ])
 

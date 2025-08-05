@@ -1,12 +1,16 @@
-import {
-  DehydratedState,
-  QueryClientProvider,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode, useEffect, useMemo } from 'react'
 import { MutableSnapshot, RecoilRoot, useSetRecoilState } from 'recoil'
 
-import { makeReactQueryClient, queryClientAtom } from '@dao-dao/state'
+import { queryClientAtom } from '@dao-dao/state'
+import {
+  DependencyTrackedQueryClientContext,
+  useDependencyTrackedQueryClient,
+} from '@dao-dao/stateless'
+import {
+  DehydratedStateWithDependencies,
+  makeDependencyTrackedQueryClient,
+} from '@dao-dao/utils'
 
 export type StateProviderProps = {
   /**
@@ -17,7 +21,7 @@ export type StateProviderProps = {
    * Optional dehyrated state from a react-query client instance on the server
    * to initialize data.
    */
-  dehyratedState?: DehydratedState
+  dehydratedState?: DehydratedStateWithDependencies
   /**
    * Optional RecoilRoot state initializer.
    */
@@ -30,35 +34,37 @@ export type StateProviderProps = {
  */
 export const StateProvider = ({
   children,
-  dehyratedState,
+  dehydratedState,
   recoilStateInitializer,
 }: StateProviderProps) => {
   const client = useMemo(
-    () => makeReactQueryClient(dehyratedState),
-    [dehyratedState]
+    () => makeDependencyTrackedQueryClient(dehydratedState),
+    [dehydratedState]
   )
 
   return (
-    <QueryClientProvider client={client}>
-      <RecoilRoot
-        initializeState={(snapshot) => {
-          // Give query client to Recoil so selectors can access queries.
-          snapshot.set(queryClientAtom, client)
+    <DependencyTrackedQueryClientContext.Provider value={client}>
+      <QueryClientProvider client={client.queryClient}>
+        <RecoilRoot
+          initializeState={(snapshot) => {
+            // Give query client to Recoil so selectors can access queries.
+            snapshot.set(queryClientAtom, client)
 
-          // Call the recoil root state initializer if provided.
-          recoilStateInitializer?.(snapshot)
-        }}
-      >
-        <InnerStateProvider>{children}</InnerStateProvider>
-      </RecoilRoot>
+            // Call the recoil root state initializer if provided.
+            recoilStateInitializer?.(snapshot)
+          }}
+        >
+          <InnerStateProvider>{children}</InnerStateProvider>
+        </RecoilRoot>
 
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-    </QueryClientProvider>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      </QueryClientProvider>
+    </DependencyTrackedQueryClientContext.Provider>
   )
 }
 
 const InnerStateProvider = ({ children }: { children: ReactNode }) => {
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const setQueryClient = useSetRecoilState(queryClientAtom)
   // Update Recoil atom when the query client changes.
   useEffect(() => {
