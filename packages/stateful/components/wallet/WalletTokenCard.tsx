@@ -31,7 +31,6 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  HIDDEN_BALANCE_PREFIX,
   getActionBuilderPrefillPath,
   getNativeTokenForChainId,
   getSupportedChainConfig,
@@ -41,7 +40,7 @@ import {
 
 import {
   useAwaitNextBlock,
-  useKvpkClient,
+  useHiddenBalancesKvpkClient,
   useProfile,
   useQueryLoadingDataWithError,
   useWallet,
@@ -100,13 +99,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     setRefreshTokenCardLazyInfo,
   ])
 
-  const { isWalletConnected, client: hiddenBalancesKvpkClient } = useKvpkClient(
-    {
-      defaultSignatureType: 'Hidden Balances',
+  const { isWalletConnected, client: hiddenBalancesKvpkClient } =
+    useHiddenBalancesKvpkClient({
       chainId: props.token.chainId,
-      keyPrefix: HIDDEN_BALANCE_PREFIX,
-    }
-  )
+    })
 
   const hiddenBalances = useQueryLoadingDataWithError(
     !profile.loading
@@ -129,13 +125,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
     setSavingHidden(true)
     try {
-      // Delete the key if hidden is false.
-      const value = hidden ? 1 : null
-
-      await hiddenBalancesKvpkClient.set({
-        key: props.token.denomOrAddress,
-        value,
-      })
+      if (hidden) {
+        await hiddenBalancesKvpkClient.hide(props.token.denomOrAddress)
+      } else {
+        await hiddenBalancesKvpkClient.unhide(props.token.denomOrAddress)
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

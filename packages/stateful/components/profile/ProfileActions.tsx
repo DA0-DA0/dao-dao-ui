@@ -22,7 +22,6 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  ME_SAVED_TX_PREFIX,
   decodeJsonFromBase64,
   objectMatchesStructure,
   processError,
@@ -30,9 +29,9 @@ import {
 
 import { useActionEncodeContext } from '../../actions'
 import {
-  useKvpkClient,
   useProfile,
   useQueryLoadingDataWithError,
+  useTransactionSavesKvpkClient,
   useWallet,
 } from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -141,10 +140,7 @@ export const ProfileActions = ({
   )
 
   const { isWalletConnected, client: transactionSavesKvpkClient } =
-    useKvpkClient({
-      defaultSignatureType: 'Transaction Saves',
-      keyPrefix: ME_SAVED_TX_PREFIX,
-    })
+    useTransactionSavesKvpkClient()
 
   const savesLoading = useQueryLoadingDataWithError(
     !profile.loading

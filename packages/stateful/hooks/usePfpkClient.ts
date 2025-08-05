@@ -5,9 +5,11 @@ import { profileQueries } from '@dao-dao/state'
 import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import {
   FollowingDaosKvpkClient,
+  HiddenBalancesKvpkClient,
   KvpkClient,
   PfpkClient,
   PfpkClientOptions,
+  TransactionSavesKvpkClient,
   getChainForChainId,
 } from '@dao-dao/utils'
 
@@ -211,6 +213,76 @@ export const useFollowingDaosKvpkClient = (
   const client = useMemo(
     () =>
       new FollowingDaosKvpkClient({
+        ...pfpkClientOptions,
+        queryClient,
+      }),
+    [pfpkClientOptions, queryClient]
+  )
+
+  // Tear down the client when it changes or the component unmounts.
+  useEffect(() => {
+    return () => client.teardown()
+  }, [client])
+
+  return {
+    isWalletConnected,
+    client,
+  }
+}
+
+export type UseHiddenBalancesKvpkClientOptions = Omit<
+  UseKvpkClientOptions,
+  'defaultSignatureType' | 'keyPrefix'
+>
+
+/**
+ * Hook that sets up a `HiddenBalancesKvpkClient` with the currently connected
+ * wallet.
+ */
+export const useHiddenBalancesKvpkClient = (
+  options?: UseHiddenBalancesKvpkClientOptions
+) => {
+  const queryClient = useDependencyTrackedQueryClient()
+  const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
+
+  const client = useMemo(
+    () =>
+      new HiddenBalancesKvpkClient({
+        ...pfpkClientOptions,
+        queryClient,
+      }),
+    [pfpkClientOptions, queryClient]
+  )
+
+  // Tear down the client when it changes or the component unmounts.
+  useEffect(() => {
+    return () => client.teardown()
+  }, [client])
+
+  return {
+    isWalletConnected,
+    client,
+  }
+}
+
+export type UseTransactionSavesKvpkClientOptions = Omit<
+  UseKvpkClientOptions,
+  'defaultSignatureType' | 'keyPrefix'
+>
+
+/**
+ * Hook that sets up a `TransactionSavesKvpkClient` with the currently connected
+ * wallet.
+ */
+export const useTransactionSavesKvpkClient = (
+  options?: UseTransactionSavesKvpkClientOptions
+) => {
+  const queryClient = useDependencyTrackedQueryClient()
+  const { isWalletConnected, pfpkClientOptions } = usePfpkClientOptions(options)
+
+  const client = useMemo(
+    () =>
+      new TransactionSavesKvpkClient({
         ...pfpkClientOptions,
         queryClient,
       }),

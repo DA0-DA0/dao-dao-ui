@@ -10,13 +10,12 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, StatefulProfileWalletProps } from '@dao-dao/types'
 import {
-  HIDDEN_BALANCE_PREFIX,
   getActionBuilderPrefillPath,
   makeCombineQueryResultsIntoLoadingDataWithError,
 } from '@dao-dao/utils'
 
 import {
-  useKvpkClient,
+  useHiddenBalancesKvpkClient,
   useProfile,
   useQueryLoadingDataWithError,
 } from '../../hooks'
@@ -34,9 +33,7 @@ export const ProfileWallet = ({ address }: StatefulProfileWalletProps = {}) => {
   const { profile, chains } = useProfile({
     address,
   })
-  const { client: hiddenBalancesKvpkClient } = useKvpkClient({
-    keyPrefix: HIDDEN_BALANCE_PREFIX,
-  })
+  const { client: hiddenBalancesKvpkClient } = useHiddenBalancesKvpkClient()
 
   const accounts = useQueries({
     queries:
