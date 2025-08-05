@@ -1,0 +1,42 @@
+diff --git a/node_modules/@tanstack/query-core/build/modern/query.cjs b/node_modules/@tanstack/query-core/build/modern/query.cjs
+index 678c417..60d9899 100644
+--- a/node_modules/@tanstack/query-core/build/modern/query.cjs
++++ b/node_modules/@tanstack/query-core/build/modern/query.cjs
+@@ -209,8 +209,15 @@ var Query = class extends import_removable.Removable {
+     const fetchFn = () => {
+       const queryFn = (0, import_utils.ensureQueryFn)(this.options, fetchOptions);
+       const createQueryFnContext = () => {
++        const client =
++          this.#client.dependencyTracker
++            ? this.#client.dependencyTracker.wrapQueryClient(
++              this.#client,
++              this.queryKey
++            )
++            : this.#client
+         const queryFnContext2 = {
+-          client: this.#client,
++          client,
+           queryKey: this.queryKey,
+           meta: this.meta
+         };
+diff --git a/node_modules/@tanstack/query-core/build/modern/query.js b/node_modules/@tanstack/query-core/build/modern/query.js
+index 5df0185..ee624a3 100644
+--- a/node_modules/@tanstack/query-core/build/modern/query.js
++++ b/node_modules/@tanstack/query-core/build/modern/query.js
+@@ -192,8 +192,15 @@ var Query = class extends Removable {
+     const fetchFn = () => {
+       const queryFn = ensureQueryFn(this.options, fetchOptions);
+       const createQueryFnContext = () => {
++        const client =
++          this.#client.dependencyTracker
++            ? this.#client.dependencyTracker.wrapQueryClient(
++              this.#client,
++              this.queryKey
++            )
++            : this.#client
+         const queryFnContext2 = {
+-          client: this.#client,
++          client,
+           queryKey: this.queryKey,
+           meta: this.meta
+         };

@@ -15,6 +15,13 @@ import {
   hydrate,
 } from '@tanstack/react-query'
 
+// Add dependency tracker to the query client.
+declare module '@tanstack/react-query' {
+  interface QueryClient {
+    dependencyTracker?: DependencyTrackedQueryClient
+  }
+}
+
 export type IQueryClient = Pick<
   QueryClient,
   'fetchQuery' | 'prefetchQuery' | 'getQueryData'
@@ -77,16 +84,14 @@ export class DependencyTrackedQueryClient implements IQueryClient {
     config?: QueryClientConfig,
     dehydrated?: DehydratedStateWithDependencies
   ) {
-    const queryClient = new QueryClient(config)
+    this.queryClient = new QueryClient(config)
+    this.queryClient.dependencyTracker = this
 
     // Rehydrate the client and dependency graph if provided.
     if (dehydrated) {
-      hydrate(queryClient, dehydrated)
+      hydrate(this.queryClient, dehydrated)
       this.graph = this.rehydrate(dehydrated.dependencyGraph)
     }
-
-    // Wrap the query client in a proxy that tracks dependencies.
-    this.queryClient = this.wrapQueryClient(queryClient)
   }
 
   /**
@@ -149,12 +154,16 @@ export class DependencyTrackedQueryClient implements IQueryClient {
    */
   wrapQueryClient(
     queryClient: QueryClient,
-    fromQueryKey?: QueryKey
+    fromQueryKey: QueryKey
   ): QueryClient {
     const proxy = new Proxy(queryClient, {
-      get: (target, prop, receiver) => {
+      get: (target, prop) => {
+        if (prop === 'isWrappedInTracker') {
+          return true
+        }
+
         const value =
-          'prop' in target ? target[prop as keyof typeof target] : undefined
+          prop in target ? target[prop as keyof typeof target] : undefined
 
         if (
           typeof value === 'function' &&
@@ -172,21 +181,15 @@ export class DependencyTrackedQueryClient implements IQueryClient {
                   )[0].queryKey
                 : (args as Parameters<QueryClient['getQueryData']>)[0]
 
-            // If we have a current query key, track the dependency.
-            if (fromQueryKey) {
-              this.trackDependency(fromQueryKey, toQueryKey)
-            }
+            // Track the dependency.
+            this.trackDependency(fromQueryKey, toQueryKey)
 
-            // Create a wrapped query client that tracks nested dependencies
-            // for the new query.
-            const wrappedQueryClient = this.wrapQueryClient(target, toQueryKey)
-
-            // Call the original method on the wrapped query client.
-            return Reflect.apply(value, wrappedQueryClient, args)
+            // Call the original method on the query client itself.
+            return Reflect.apply(value, target, args)
           }
         }
 
-        return Reflect.get(target, prop, receiver)
+        return Reflect.get(target, prop, target)
       },
     })
 
@@ -231,7 +234,8 @@ export class DependencyTrackedQueryClient implements IQueryClient {
 
   /**
    * Get the full dependency chain for a query, in order of execution (depth
-   * first search). This is the order in which queries should be invalidated.
+   * first search), including the specified query. This is the order in which
+   * queries should be invalidated.
    * @param rootQueryKey - The query key to get the dependency chain for.
    * @returns The dependency chain for the query.
    */
@@ -267,8 +271,71 @@ export class DependencyTrackedQueryClient implements IQueryClient {
   }
 
   /**
-   * Get the full consumer chain for a query, in order of execution. This is the
-   * order in which queries should be invalidated/refetched.
+   * Get the dependencies grouped by levels for a query, including the specified
+   * query. This is the order in which queries should be invalidated, where
+   * queries at the same level can run in parallel.
+   *
+   * The level of a query is one more than the maximum level of its
+   * dependencies. A query at level 0 has no dependencies.
+   *
+   * @param rootQueryKey - The query key to get the dependency levels for.
+   * @returns The dependency levels for the query.
+   */
+  getDependencyLevels(rootQueryKey: QueryKey): QueryKey[][] {
+    const visited = new Set<string>()
+    const levels: Map<string, number> = new Map()
+
+    const calculateLevel = (key: QueryKey): number => {
+      const keyStr = this.getKeyString(key)
+
+      // Prevent cycles (should be impossible since each execution is already
+      // finite).
+      if (visited.has(keyStr)) {
+        return levels.get(keyStr) ?? 0
+      }
+      visited.add(keyStr)
+
+      // If no dependencies, this is level 0.
+      const deps = this.getDependencies(key)
+      if (deps.length === 0) {
+        levels.set(keyStr, 0)
+        return 0
+      }
+
+      // Calculate the level for each dependency.
+      const maxDepLevel = Math.max(...deps.map(calculateLevel))
+
+      // Set the level for the current query.
+      const level = maxDepLevel + 1
+      levels.set(keyStr, level)
+
+      return level
+    }
+
+    // Calculate the level for the root query.
+    calculateLevel(rootQueryKey)
+
+    // Group by level.
+    const groupedQueries: Map<number, QueryKey[]> = new Map()
+    for (const [keyStr, level] of levels.entries()) {
+      if (!groupedQueries.has(level)) {
+        groupedQueries.set(level, [])
+      }
+      groupedQueries.get(level)!.push(this.getKeyFromStr(keyStr))
+    }
+
+    // Sort by level, ascending.
+    const sortedLevels = Array.from(groupedQueries.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([_, keys]) => keys)
+
+    return sortedLevels
+  }
+
+  /**
+   * Get the full consumer chain for a query, in order of execution, including
+   * the specified query. This is the order in which queries should be
+   * invalidated/refetched.
    * @param leafQueryKey - The query key to get the consumer chain for.
    * @returns The consumer chain for the query.
    */
@@ -304,6 +371,59 @@ export class DependencyTrackedQueryClient implements IQueryClient {
   }
 
   /**
+   * Get the consumers grouped by distance for a query, including the specified
+   * query. This is the order in which queries should be invalidated, where
+   * queries at the same distance can run in parallel. Queries at distance 1 are
+   * the direct consumers of the original query.
+   *
+   * @param leafQueryKey - The query key to get the consumer distances for.
+   * @returns The consumer distances for the query.
+   */
+  getConsumerDistances(leafQueryKey: QueryKey): QueryKey[][] {
+    const visited = new Set<string>()
+    const distances: Map<string, number> = new Map()
+
+    const calculateDistance = (key: QueryKey, currentDistance: number = 0) => {
+      const keyStr = this.getKeyString(key)
+
+      // If we've already seen this, skip since it already exists at a lower
+      // distance.
+      if (visited.has(keyStr)) {
+        return
+      }
+      visited.add(keyStr)
+
+      // Set the distance for the current query.
+      distances.set(keyStr, currentDistance)
+
+      // Process all consumers at the next level.
+      const consumers = this.getConsumers(key)
+      for (const consumer of consumers) {
+        calculateDistance(consumer, currentDistance + 1)
+      }
+    }
+
+    // Start from the leaf.
+    calculateDistance(leafQueryKey)
+
+    // Group by distance.
+    const groupedQueries: Map<number, QueryKey[]> = new Map()
+    for (const [keyStr, distance] of distances.entries()) {
+      if (!groupedQueries.has(distance)) {
+        groupedQueries.set(distance, [])
+      }
+      groupedQueries.get(distance)!.push(this.getKeyFromStr(keyStr))
+    }
+
+    // Sort by distance, ascending.
+    const sortedDistances = Array.from(groupedQueries.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([_, keys]) => keys)
+
+    return sortedDistances
+  }
+
+  /**
    * Refetch a query and all its dependencies.
    * @param queryKey - The query key or filters to refetch.
    * @param options - The refetch options.
@@ -325,40 +445,50 @@ export class DependencyTrackedQueryClient implements IQueryClient {
     } = {}
   ): Promise<void> {
     const queryKey = 'queryKey' in filter ? filter.queryKey : filter
-    const dependencyChain = this.getDependencyChain(queryKey)
+    const dependencyTree = this.getDependencyLevels(queryKey)
 
     console.log(
-      `Refetching dependencies of ${this.getKeyString(queryKey)}:`,
-      dependencyChain.map((k) => this.getKeyString(k))
+      `Refetching dependency tree of ${this.getKeyString(queryKey)}:`,
+      dependencyTree
     )
 
-    // Refetch in dependency order
-    for (const key of dependencyChain) {
-      await this.queryClient.refetchQueries(
-        {
-          queryKey: key,
-          exact: true,
-        },
-        options
+    // Refetch in grouped dependency order.
+    for (const keys of dependencyTree) {
+      await Promise.all(
+        keys.map((key) =>
+          this.queryClient.refetchQueries(
+            {
+              queryKey: key,
+              exact: true,
+            },
+            options
+          )
+        )
       )
     }
 
     if (bubbleUp) {
-      const consumerChain = this.getConsumerChain(queryKey)
+      // Get the consumer tree, excluding the initial query since it's already
+      // been refetched as the last item in the dependency chain above.
+      const consumerTree = this.getConsumerDistances(queryKey).slice(1)
 
       console.log(
         `Bubbling refetch up to consumers of ${this.getKeyString(queryKey)}:`,
-        consumerChain.map((k) => this.getKeyString(k))
+        consumerTree.map((k) => this.getKeyString(k))
       )
 
       // Refetch the consumers of the query bottom up.
-      for (const key of consumerChain) {
-        await this.queryClient.refetchQueries(
-          {
-            queryKey: key,
-            exact: true,
-          },
-          options
+      for (const keys of consumerTree) {
+        await Promise.all(
+          keys.map((key) =>
+            this.queryClient.refetchQueries(
+              {
+                queryKey: key,
+                exact: true,
+              },
+              options
+            )
+          )
         )
       }
     }
@@ -387,40 +517,52 @@ export class DependencyTrackedQueryClient implements IQueryClient {
     } = {}
   ): Promise<void> {
     const queryKey = 'queryKey' in filter ? filter.queryKey : filter
-    const dependencyChain = this.getDependencyChain(queryKey)
+    const dependencyTree = this.getDependencyLevels(queryKey)
 
     console.log(
       `Invalidating dependencies of ${this.getKeyString(queryKey)}:`,
-      dependencyChain.map((k) => this.getKeyString(k))
+      dependencyTree
     )
 
-    // Invalidate in dependency order
-    for (const key of dependencyChain) {
-      await this.queryClient.invalidateQueries(
-        {
-          queryKey: key,
-          exact: true,
-        },
-        options
+    // Invalidate in grouped dependency order.
+    for (const keys of dependencyTree) {
+      await Promise.all(
+        keys.map((key) =>
+          this.queryClient.invalidateQueries(
+            {
+              queryKey: key,
+              exact: true,
+            },
+            options
+          )
+        )
       )
     }
 
     if (bubbleUp) {
-      const consumerChain = this.getConsumerChain(queryKey)
+      // Get the consumer tree, excluding the initial query since it's already
+      // been invalidated as the last item in the dependency tree above.
+      const consumerTree = this.getConsumerDistances(queryKey).slice(1)
 
       console.log(
-        `Bubbling invalidate up to consumers of ${this.getKeyString(queryKey)}:`,
-        consumerChain.map((k) => this.getKeyString(k))
+        `Bubbling invalidate up to consumers of ${this.getKeyString(
+          queryKey
+        )}:`,
+        consumerTree.map((k) => this.getKeyString(k))
       )
 
       // Invalidate the consumers of the query bottom up.
-      for (const key of consumerChain) {
-        await this.queryClient.invalidateQueries(
-          {
-            queryKey: key,
-            exact: true,
-          },
-          options
+      for (const keys of consumerTree) {
+        await Promise.all(
+          keys.map((key) =>
+            this.queryClient.invalidateQueries(
+              {
+                queryKey: key,
+                exact: true,
+              },
+              options
+            )
+          )
         )
       }
     }
