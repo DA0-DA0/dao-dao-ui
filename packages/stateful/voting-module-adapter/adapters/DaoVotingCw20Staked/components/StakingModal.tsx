@@ -27,7 +27,11 @@ import {
   PlausibleEvents,
   StakingMode,
 } from '@dao-dao/types'
-import { encodeJsonToBase64, processError } from '@dao-dao/utils'
+import {
+  MISCONFIGURED_DAOS,
+  encodeJsonToBase64,
+  processError,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -171,6 +175,19 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
+          // Prevent staking to misconfigured DAOs.
+          if (
+            MISCONFIGURED_DAOS.some(
+              (misconfiguredDao) =>
+                misconfiguredDao.chainId === votingModule.dao.chainId &&
+                misconfiguredDao.coreAddress === votingModule.dao.coreAddress
+            )
+          ) {
+            throw new Error(
+              'This DAO is misconfigured and cannot be staked to. Please find and stake with the correct DAO.'
+            )
+          }
+
           await doCw20SendAndExecute({
             amount: amount.toString(),
             contract: stakingContractToExecute,

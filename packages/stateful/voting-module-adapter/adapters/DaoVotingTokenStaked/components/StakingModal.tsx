@@ -16,7 +16,11 @@ import {
   PlausibleEvents,
   StakingMode,
 } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  MISCONFIGURED_DAOS,
+  processError,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -102,6 +106,19 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
+          // Prevent staking to misconfigured DAOs.
+          if (
+            MISCONFIGURED_DAOS.some(
+              (misconfiguredDao) =>
+                misconfiguredDao.chainId === votingModule.dao.chainId &&
+                misconfiguredDao.coreAddress === votingModule.dao.coreAddress
+            )
+          ) {
+            throw new Error(
+              'This DAO is misconfigured and cannot be staked to. Please find and stake with the correct DAO.'
+            )
+          }
+
           await doStake(
             CHAIN_GAS_MULTIPLIER,
             undefined,

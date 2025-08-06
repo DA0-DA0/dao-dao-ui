@@ -18,6 +18,7 @@ import { MsgExecuteContract } from '@dao-dao/types/protobuf/codegen/cosmwasm/was
 import { MsgTransferONFT } from '@dao-dao/types/protobuf/codegen/OmniFlix/onft/v1beta1/tx'
 import {
   CHAIN_GAS_MULTIPLIER,
+  MISCONFIGURED_DAOS,
   executeSmartContract,
   getNftKey,
   processError,
@@ -108,6 +109,19 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
+          // Prevent staking to misconfigured DAOs.
+          if (
+            MISCONFIGURED_DAOS.some(
+              (misconfiguredDao) =>
+                misconfiguredDao.chainId === dao.chainId &&
+                misconfiguredDao.coreAddress === dao.coreAddress
+            )
+          ) {
+            throw new Error(
+              'This DAO is misconfigured and cannot be staked to. Please find and stake with the correct DAO.'
+            )
+          }
+
           await (
             await getSigningClient()
           ).signAndBroadcast(

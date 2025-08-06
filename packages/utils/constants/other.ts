@@ -1,5 +1,7 @@
 // Constants NOT derived from environment variables.
 
+import { ChainId } from '@dao-dao/types'
+
 export const SITE_IMAGE = '/social.jpg'
 export const SITE_TITLE = 'DAO DAO'
 export const DEFAULT_SITE_DESCRIPTION =
@@ -217,22 +219,6 @@ export const SECRET_GAS = {
 }
 
 /**
- * DAO addresses to manually hide from search.
- *
- * A DAO can hide itself from search by setting the `hideFromSearch` storage
- * item. Sometimes a DAO is created with a misconfigured module (typically a
- * voting module with a nonexistent token) that bricks it immediately,
- * preventing anyone from being able to join and submit a proposal to hide it
- * from search. On request, we manually add these addresses to the hidden list
- * so users do not confuse the real DAO for a bricked one with the same name
- * when searching for it.
- */
-export const DAOS_HIDDEN_FROM_SEARCH = [
-  // Lion DAO
-  'terra1a9ur9jyvg9kqfsl6euqdkv02v2klqnppzv4jpw93xzp5tr0xhkvschdnm5',
-]
-
-/**
  * Separator used between proposal description and additional metadata JSON
  * stored at the end of the description field.
  */
@@ -251,3 +237,44 @@ export const EMPTY_PUB_KEY = new Uint8Array([
   0x02,
   ...[...new Array(32)].map(() => 0),
 ])
+
+/**
+ * Misconfigured DAOs that should not show up in search and show a warning on
+ * the DAO page, potentially with a redirect to the correct DAO.
+ */
+export const MISCONFIGURED_DAOS: {
+  chainId: string
+  coreAddress: string
+  redirectDao?: string
+}[] = [
+  // Lion DAO
+  {
+    chainId: ChainId.TerraMainnet,
+    coreAddress:
+      'terra1a9ur9jyvg9kqfsl6euqdkv02v2klqnppzv4jpw93xzp5tr0xhkvschdnm5',
+  },
+  // Liquidy DAO
+  {
+    chainId: ChainId.ThorchainMainnet,
+    coreAddress:
+      'thor1adumh9aj7urearxd0ezujaue4agclltu2y45qr2z4yazveqkvygqwmlgp6',
+    redirectDao:
+      'thor1l2fyshlx6kngng08hs88jdgs3tvu0e3ny5aemfp3tuuu0ma2gklqkqydna',
+  },
+]
+
+/**
+ * DAO addresses to manually hide from search.
+ *
+ * A DAO can hide itself from search by setting the `hideFromSearch` storage
+ * item. Sometimes a DAO is created with a misconfigured module (typically a
+ * voting module with a nonexistent token) that bricks it immediately,
+ * preventing anyone from being able to join and submit a proposal to hide it
+ * from search. On request, we manually add these addresses to the hidden list
+ * so users do not confuse the real DAO for a bricked one with the same name
+ * when searching for it.
+ */
+export const DAOS_HIDDEN_FROM_SEARCH = [
+  // Add misconfigured DAOs.
+  ...MISCONFIGURED_DAOS.map((dao) => dao.coreAddress),
+]

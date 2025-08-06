@@ -1120,6 +1120,8 @@
     "daoCreationProcessExplanation": "Creating your DAO has never been this easy:",
     "daoCreationRequiresChainGovProp": "{{chain}} requires that your DAO is created through a chain governance proposal. Click Continue to open the proposal creation page.",
     "daoInfoWillRefresh": "DAO information may take up to {{seconds}} seconds to update on all pages once proposal is executed.",
+    "daoMisconfigured": "This DAO is misconfigured and should not be used.",
+    "daoMisconfigured_redirect": "This DAO is misconfigured and should not be used. Click here to go to the correct DAO.",
     "daoNameAZ": "DAO name (A → Z)",
     "daoNameZA": "DAO name (Z → A)",
     "daoNotAdminProposalNotExecutable": "Your DAO is not the admin of this contract. The proposal will not be executable while this is the case.",

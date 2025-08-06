@@ -21,7 +21,7 @@ import {
   PlausibleEvents,
   StakingMode,
 } from '@dao-dao/types'
-import { getNftKey, processError } from '@dao-dao/utils'
+import { MISCONFIGURED_DAOS, getNftKey, processError } from '@dao-dao/utils'
 
 import { NftSelectionModal, SuspenseLoader } from '../../../../components'
 import {
@@ -114,6 +114,19 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
+          // Prevent staking to misconfigured DAOs.
+          if (
+            MISCONFIGURED_DAOS.some(
+              (misconfiguredDao) =>
+                misconfiguredDao.chainId === votingModule.dao.chainId &&
+                misconfiguredDao.coreAddress === votingModule.dao.coreAddress
+            )
+          ) {
+            throw new Error(
+              'This DAO is misconfigured and cannot be staked to. Please find and stake with the correct DAO.'
+            )
+          }
+
           await doStakeMultiple({
             contract: stakingContractAddress,
             msg: btoa('{"stake": {}}'),

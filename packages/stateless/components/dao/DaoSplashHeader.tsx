@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoSplashHeaderProps } from '@dao-dao/types'
 import {
+  MISCONFIGURED_DAOS,
   UNDO_PAGE_PADDING_TOP_CLASSES,
   formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useDaoNavHelpers } from '../../hooks'
 import { DaoHeader } from './DaoHeader'
 
 export const DaoSplashHeader = ({
@@ -20,6 +22,7 @@ export const DaoSplashHeader = ({
   initialActionsVerified,
 }: DaoSplashHeaderProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useDaoNavHelpers()
 
   // Show warning if the DAO is inactive and has an active threshold.
   const showInactiveWarning = !dao.info.isActive && !!dao.info.activeThreshold
@@ -39,11 +42,20 @@ export const DaoSplashHeader = ({
   const showParentDaoNotAdminWarning =
     !!dao.info.parentDao && dao.info.contractAdmin === dao.coreAddress
 
+  // Show warning and potentially redirect to correct DAO if DAO is
+  // misconfigured and should not be used.
+  const misconfiguredDao = MISCONFIGURED_DAOS.find(
+    (misconfiguredDao) =>
+      misconfiguredDao.chainId === dao.chainId &&
+      misconfiguredDao.coreAddress === dao.coreAddress
+  )
+
   const warningVisible =
     showInactiveWarning ||
     showInitialActionsNotVerifiedWarning ||
     showSubDaoNotRecognizedWarning ||
-    showParentDaoNotAdminWarning
+    showParentDaoNotAdminWarning ||
+    !!misconfiguredDao
 
   return (
     <>
@@ -57,9 +69,35 @@ export const DaoSplashHeader = ({
             UNDO_PAGE_PADDING_TOP_CLASSES
           )}
         >
+          {/* Show DAO redirect for misconfigured Thorchain Liquidy DAO. */}
+          {misconfiguredDao && (
+            <ButtonLink
+              center
+              className="bg-background-interactive-warning"
+              contentContainerClassName="p-3 !gap-4 md:!gap-3 text-center"
+              href={
+                misconfiguredDao.redirectDao
+                  ? getDaoPath(misconfiguredDao.redirectDao)
+                  : undefined
+              }
+              size="none"
+              variant="none"
+            >
+              <WarningRounded className="text-icon-interactive-warning !h-14 !w-14 md:!h-10 md:!w-10" />
+
+              <p className="text-text-interactive-warning-body">
+                {t('info.daoMisconfigured', {
+                  context: misconfiguredDao.redirectDao
+                    ? 'redirect'
+                    : undefined,
+                })}
+              </p>
+            </ButtonLink>
+          )}
+
           {showInactiveWarning && (
-            <div className="flex flex-row items-center justify-center gap-3 rounded-md bg-background-interactive-warning p-3 md:gap-2">
-              <WarningRounded className="!h-10 !w-10 text-icon-interactive-warning md:!h-6 md:!w-6" />
+            <div className="bg-background-interactive-warning flex flex-row items-center justify-center gap-3 rounded-md p-3 md:gap-2">
+              <WarningRounded className="text-icon-interactive-warning !h-10 !w-10 md:!h-6 md:!w-6" />
 
               <p className="text-text-interactive-warning-body">
                 {t('error.daoIsInactive', {
@@ -84,8 +122,8 @@ export const DaoSplashHeader = ({
           )}
 
           {showInitialActionsNotVerifiedWarning && (
-            <div className="flex flex-row items-center justify-center gap-3 rounded-md bg-background-interactive-warning p-3 md:gap-2">
-              <WarningRounded className="!h-10 !w-10 text-icon-interactive-warning md:!h-6 md:!w-6" />
+            <div className="bg-background-interactive-warning flex flex-row items-center justify-center gap-3 rounded-md p-3 md:gap-2">
+              <WarningRounded className="text-icon-interactive-warning !h-10 !w-10 md:!h-6 md:!w-6" />
 
               <p className="text-text-interactive-warning-body">
                 {t('error.initialActionsNotVerified')}
@@ -102,7 +140,7 @@ export const DaoSplashHeader = ({
               size="none"
               variant="none"
             >
-              <WarningRounded className="!h-14 !w-14 text-icon-interactive-warning md:!h-10 md:!w-10" />
+              <WarningRounded className="text-icon-interactive-warning !h-14 !w-14 md:!h-10 md:!w-10" />
 
               <p className="text-text-interactive-warning-body">
                 {t('info.subDaoNotYetRecognized', {
@@ -128,7 +166,7 @@ export const DaoSplashHeader = ({
               size="none"
               variant="none"
             >
-              <WarningRounded className="!h-14 !w-14 text-icon-interactive-warning md:!h-10 md:!w-10" />
+              <WarningRounded className="text-icon-interactive-warning !h-14 !w-14 md:!h-10 md:!w-10" />
 
               <p className="text-text-interactive-warning-body">
                 {t('info.parentDaoNotAdmin', {
