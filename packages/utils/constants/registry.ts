@@ -140,6 +140,42 @@ const thorchainMainnetChainRegistryAssets = assets.find(
   (a) => a.chain_name === thorchainMainnetChainRegistry.chain_name
 )!
 thorchainMainnetChainRegistryAssets.assets.push({
+  description:
+    'Ethereum is a decentralized blockchain platform for running smart contracts and dApps, with Ether (ETH) as its native cryptocurrency, enabling a versatile ecosystem beyond just digital currency.',
+  extended_description:
+    "Ethereum, symbolized as ETH, is a groundbreaking cryptocurrency and blockchain platform introduced in 2015 by a team led by Vitalik Buterin. Unlike Bitcoin, which primarily serves as a digital currency, Ethereum is designed to be a decentralized platform for running smart contracts and decentralized applications (dApps). These smart contracts are self-executing contracts with the terms directly written into code, enabling trustless and automated transactions without intermediaries. Ethereum's blockchain can host a wide variety of applications, from financial services to gaming, making it a versatile and powerful tool in the world of blockchain technology.\n\nOne of the most notable features of Ethereum is its native cryptocurrency, Ether (ETH), which is used to pay for transaction fees and computational services on the network. Ethereum has also been the backbone for the explosive growth of decentralized finance (DeFi), which seeks to recreate traditional financial systems with blockchain-based alternatives. Additionally, Ethereum is undergoing a significant upgrade known as Ethereum 2.0, which aims to improve scalability, security, and energy efficiency through a shift from proof-of-work (PoW) to proof-of-stake (PoS) consensus mechanisms. This transition is expected to enhance the network's performance and reduce its environmental impact, further solidifying Ethereum's position as a leading platform in the blockchain ecosystem.",
+  denom_units: [
+    {
+      denom: 'eth-eth',
+      exponent: 0,
+    },
+    {
+      denom: 'eth',
+      exponent: 8,
+      aliases: ['ether'],
+    },
+  ],
+  type_asset: 'unknown',
+  base: 'eth-eth',
+  name: 'Ether',
+  display: 'eth',
+  symbol: 'ETH',
+  logo_URIs: {
+    png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png',
+    svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.svg',
+  },
+  coingecko_id: 'ethereum',
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.svg',
+      theme: {
+        primary_color_hex: '#303030',
+      },
+    },
+  ],
+})
+thorchainMainnetChainRegistryAssets.assets.push({
   denom_units: [
     {
       denom: 'eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
@@ -147,13 +183,13 @@ thorchainMainnetChainRegistryAssets.assets.push({
       aliases: ['uusdc'],
     },
     {
-      denom: 'USDC',
+      denom: 'usdc',
       exponent: 8,
     },
   ],
   base: 'eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   name: 'USDC',
-  display: 'USDC',
+  display: 'usdc',
   symbol: 'USDC',
   logo_URIs: {
     png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.png',
