@@ -221,6 +221,8 @@ export const fetchIsContract = async (
   } catch (err) {
     if (
       isInvalidContractError(err) ||
+      // Injective errors with "invalid wire type" for some reason.
+      isErrorWithSubstring(err, 'invalid wire type') ||
       // On Secret Network, just return false, since there are weird failures
       // for failed contract queries.
       isSecretNetwork(chainId)
