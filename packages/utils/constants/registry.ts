@@ -142,7 +142,7 @@ const thorchainMainnetChainRegistryAssets = assets.find(
 thorchainMainnetChainRegistryAssets.assets.push({
   denom_units: [
     {
-      denom: 'eth.usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      denom: 'eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       exponent: 0,
       aliases: ['uusdc'],
     },
@@ -151,7 +151,7 @@ thorchainMainnetChainRegistryAssets.assets.push({
       exponent: 8,
     },
   ],
-  base: 'eth.usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  base: 'eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   name: 'USDC',
   display: 'USDC',
   symbol: 'USDC',
