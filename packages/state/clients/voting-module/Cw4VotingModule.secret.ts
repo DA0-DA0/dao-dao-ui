@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import { SecretModuleInstantiateInfo } from '@dao-dao/types'
 import {
@@ -80,7 +80,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address nor permit, return query in loading state.
     const permit = address && this.dao.getExistingPermit(address)
     if (!permit) {
@@ -125,7 +125,7 @@ export class SecretCw4VotingModule extends VotingModuleBase<SecretCwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return secretDaoVotingCw4Queries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,

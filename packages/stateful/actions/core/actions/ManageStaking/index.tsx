@@ -1,5 +1,4 @@
 import { parseCoins } from '@cosmjs/amino'
-import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -103,10 +102,9 @@ const InnerComponent: ActionComponent = (props) => {
 
   const address = getChainAddressForActionOptions(options, chainId)
 
-  const queryClient = useQueryClient()
   const loadingNativeDelegationInfo = useQueryLoadingData(
     address
-      ? chainQueries.nativeDelegationInfo(queryClient, {
+      ? chainQueries.nativeDelegationInfo({
           chainId,
           address,
         })
@@ -299,7 +297,7 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
       (this.options.address &&
         (
           await this.options.queryClient.fetchQuery(
-            chainQueries.nativeDelegationInfo(this.options.queryClient, {
+            chainQueries.nativeDelegationInfo({
               chainId: this.options.chain.chainId,
               address: this.options.address,
             })

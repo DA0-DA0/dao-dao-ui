@@ -1,6 +1,5 @@
 import {
   Loadable,
-  atomFamily,
   noWait,
   selectorFamily,
   waitForAll,
@@ -9,41 +8,25 @@ import {
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  AccountTxSave,
   AccountType,
-  ContractVersionInfo,
   GenericTokenBalance,
-  LazyDaoCardProps,
   LazyNftCardInfo,
   TokenCardInfo,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { Config as DaoDaoCoreConfig } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
-  HIDDEN_BALANCE_PREFIX,
-  INACTIVE_DAO_NAMES,
-  KVPK_API_BASE,
-  ME_SAVED_TX_PREFIX,
-  getFallbackImage,
   getNativeTokenForChainId,
   loadableToLoadingData,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
-import {
-  refreshHiddenBalancesAtom,
-  refreshSavedTxsAtom,
-  refreshWalletBalancesIdAtom,
-} from '../atoms'
+import { refreshWalletBalancesIdAtom } from '../atoms'
 import { accountsSelector } from './account'
 import { nativeBalancesSelector, nativeDelegatedBalanceSelector } from './chain'
 import { isContractSelector } from './contract'
 import { votingModuleSelector } from './contracts/DaoDaoCore'
 import * as DaoVotingTokenStaked from './contracts/DaoVotingTokenStaked'
-import { lazyDaoCardPropsSelector } from './dao'
-import { followingDaosSelector } from './following'
 import { queryAccountIndexerSelector } from './indexer'
 import {
   walletLazyNftCardInfosSelector,
@@ -159,131 +142,6 @@ export const walletTokenDaoStakedDenomsSelector = selectorFamily<
 
       // Convert the Set back into an array to return
       return [...uniqueDenoms]
-    },
-})
-
-// This doesn't update right away due to Cloudflare KV Store latency, so this
-// serves to keep track of all successful updates for the current session. This
-// will be reset on page refresh. Set this right away so the UI can update
-// immediately even if the API takes up to a minute or two. Though likely it
-// only takes 10 seconds or so.
-//
-// Takes wallet public key as a parameter.
-export const temporarySavedTxsAtom = atomFamily<
-  Record<string, AccountTxSave | null>,
-  string
->({
-  key: 'temporarySavedTxs',
-  default: {},
-})
-
-// Takes wallet public key as a parameter.
-export const savedTxsSelector = selectorFamily<AccountTxSave[], string>({
-  key: 'savedTxs',
-  get:
-    (walletPublicKey) =>
-    async ({ get }) => {
-      get(refreshSavedTxsAtom)
-
-      const temporary = get(temporarySavedTxsAtom(walletPublicKey))
-
-      const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${ME_SAVED_TX_PREFIX}`
-      )
-
-      if (response.ok) {
-        const { items } = (await response.json()) as {
-          items: {
-            key: string
-            value: AccountTxSave
-          }[]
-        }
-
-        const savedItems = Object.entries(temporary)
-        // Add any items that are in the KV store but not in the temporary map.
-        items.forEach(({ key, value }) => {
-          if (!(key in temporary)) {
-            savedItems.push([key, value])
-          }
-        })
-
-        const saves = savedItems
-          .map(([, value]) => value)
-          // If the save is null, it came from the temporary map and means it
-          // was deleted, so we need to remove it from the list.
-          .filter((save): save is AccountTxSave => !!save)
-          .sort((a, b) => a.name.localeCompare(b.name))
-
-        return saves
-      } else {
-        throw new Error(
-          `Failed to fetch tx saves: ${response.status}/${
-            response.statusText
-          } ${await response.text().catch(() => '')}`.trim()
-        )
-      }
-    },
-})
-
-// This doesn't update right away due to Cloudflare KV Store latency, so this
-// serves to keep track of all successful updates for the current session. This
-// will be reset on page refresh. Set this right away so the UI can update
-// immediately even if the API takes up to a minute or two. Though likely it
-// only takes 10 seconds or so.
-//
-// Takes wallet public key as a parameter.
-export const temporaryHiddenBalancesAtom = atomFamily<
-  Record<string, number | null>,
-  string
->({
-  key: 'temporaryHiddenBalances',
-  default: {},
-})
-
-// Takes wallet public key as a parameter. Return list of token denomOrAddress
-// fields that are hidden.
-export const hiddenBalancesSelector = selectorFamily<string[], string>({
-  key: 'hiddenBalances',
-  get:
-    (walletPublicKey) =>
-    async ({ get }) => {
-      get(refreshHiddenBalancesAtom)
-
-      const temporary = get(temporaryHiddenBalancesAtom(walletPublicKey))
-
-      const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${HIDDEN_BALANCE_PREFIX}`
-      )
-
-      if (response.ok) {
-        const { items } = (await response.json()) as {
-          items: {
-            key: string
-            value: number | null
-          }[]
-        }
-
-        const hiddenBalances = Object.entries(temporary)
-        // Add any items that are in the KV store but not in the temporary map.
-        items.forEach(({ key, value }) => {
-          if (!(key in temporary)) {
-            hiddenBalances.push([key, value])
-          }
-        })
-
-        const hidden = hiddenBalances
-          .filter(([, value]) => value !== null)
-          // Remove prefix so it's just the token's denomOrAddress.
-          .map(([key]) => key.replace(HIDDEN_BALANCE_PREFIX, ''))
-
-        return hidden
-      } else {
-        throw new Error(
-          `Failed to fetch hidden balances: ${response.status}/${
-            response.statusText
-          } ${await response.text().catch(() => '')}`.trim()
-        )
-      }
     },
 })
 
@@ -488,73 +346,5 @@ export const allWalletNftsSelector = selectorFamily<
       ).flat()
 
       return [...nativeNfts, ...nativeStakedNfts]
-    },
-})
-
-// Get lazy card info for DAOs this wallet is a member of.
-export const lazyWalletDaosSelector = selectorFamily<
-  LazyDaoCardProps[],
-  WithChainId<{ address: string }>
->({
-  key: 'lazyWalletDaos',
-  get:
-    ({ chainId, address }) =>
-    ({ get }) => {
-      const daos: {
-        dao: string
-        info: ContractVersionInfo
-        config: DaoDaoCoreConfig
-        proposalCount: number
-      }[] = get(
-        queryAccountIndexerSelector({
-          chainId,
-          walletAddress: address,
-          formula: 'daos/memberOf',
-          noFallback: true,
-        })
-      )
-      if (!daos || !Array.isArray(daos)) {
-        return []
-      }
-
-      const lazyDaoCards = daos.map(
-        ({ dao, info, config, proposalCount }): LazyDaoCardProps => ({
-          info: {
-            chainId,
-            coreAddress: dao,
-            coreVersion: parseContractVersion(info.version),
-            name: config.name,
-            description: config.description,
-            imageUrl: config.image_url || getFallbackImage(dao),
-          },
-          isInactive:
-            INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
-        })
-      )
-
-      return lazyDaoCards
-    },
-})
-
-// Get lazy card info for DAOs this wallet is following.
-export const lazyWalletFollowingDaosSelector = selectorFamily<
-  LazyDaoCardProps[],
-  { walletPublicKey: string }
->({
-  key: 'lazyWalletFollowingDaos',
-  get:
-    ({ walletPublicKey }) =>
-    ({ get }) => {
-      const daos = get(
-        followingDaosSelector({
-          walletPublicKey,
-        })
-      )
-
-      return daos.length > 0
-        ? get(
-            waitForAny(daos.map((dao) => lazyDaoCardPropsSelector(dao)))
-          ).flatMap((loadable) => loadable.valueMaybe() || [])
-        : []
     },
 })

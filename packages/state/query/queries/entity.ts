@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { Entity, EntityType } from '@dao-dao/types'
 import {
@@ -66,7 +66,7 @@ export const fetchEntityInfo = async (
     // Attempt to load DAO.
     queryClient
       .fetchQuery(
-        contractQueries.isDao(queryClient, {
+        contractQueries.isDao({
           chainId,
           address,
         })
@@ -74,7 +74,7 @@ export const fetchEntityInfo = async (
       .then((isDao) =>
         isDao
           ? queryClient.fetchQuery(
-              daoQueries.info(queryClient, {
+              daoQueries.info({
                 chainId,
                 coreAddress: address,
               })
@@ -85,7 +85,7 @@ export const fetchEntityInfo = async (
     // Attempt to load polytone proxy.
     queryClient
       .fetchQuery(
-        contractQueries.isPolytoneProxy(queryClient, {
+        contractQueries.isPolytoneProxy({
           chainId,
           address,
         })
@@ -96,7 +96,7 @@ export const fetchEntityInfo = async (
         }
 
         const controller = await queryClient.fetchQuery(
-          polytoneQueries.reverseLookupProxy(queryClient, {
+          polytoneQueries.reverseLookupProxy({
             chainId,
             address,
           })
@@ -104,7 +104,7 @@ export const fetchEntityInfo = async (
 
         return {
           ...(await queryClient.fetchQuery(
-            entityQueries.info(queryClient, {
+            entityQueries.info({
               chainId: controller.chainId,
               address: controller.remoteAddress,
             })
@@ -119,7 +119,7 @@ export const fetchEntityInfo = async (
     // Attempt to load wallet profile.
     isValidWalletAddress(address, bech32Prefix)
       ? queryClient.fetchQuery(
-          profileQueries.unified(queryClient, {
+          profileQueries.unified({
             chainId,
             address,
           })
@@ -128,7 +128,7 @@ export const fetchEntityInfo = async (
     // Attempt to load cw1-whitelist admins.
     queryClient
       .fetchQuery(
-        cw1WhitelistExtraQueries.adminsIfCw1Whitelist(queryClient, {
+        cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
           chainId,
           address,
         })
@@ -150,7 +150,7 @@ export const fetchEntityInfo = async (
                   imageUrl: getFallbackImage(admin),
                 }
               : queryClient.fetchQuery(
-                  entityQueries.info(queryClient, {
+                  entityQueries.info({
                     chainId,
                     address: admin,
                     // Add address to ignore list to prevent infinite loops.
@@ -173,7 +173,7 @@ export const fetchEntityInfo = async (
         Promise.all(
           config.members.map((member) =>
             queryClient.fetchQuery(
-              entityQueries.info(queryClient, {
+              entityQueries.info({
                 chainId,
                 address: member.address,
                 // Add address to ignore list to prevent infinite loops.
@@ -232,15 +232,9 @@ export const entityQueries = {
   /**
    * Fetch entity.
    */
-  info: (
-    queryClient: QueryClient,
-    // If undefined, query will be disabled.
-    options?: Parameters<typeof fetchEntityInfo>[1]
-  ) =>
+  info: (options: Parameters<typeof fetchEntityInfo>[1]) =>
     queryOptions({
       queryKey: ['entity', 'info', options],
-      queryFn: options
-        ? () => fetchEntityInfo(queryClient, options)
-        : skipToken,
+      queryFn: (ctx) => fetchEntityInfo(ctx.client, options),
     }),
 }

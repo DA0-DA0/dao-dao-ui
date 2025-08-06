@@ -8,7 +8,6 @@ import {
 import { stringToPath as stringToHdPath } from '@cosmjs/crypto'
 import { DirectSecp256k1HdWallet, coins } from '@cosmjs/proto-signing'
 import { GasPrice, calculateFee } from '@cosmjs/stargate'
-import { QueryClient } from '@tanstack/react-query'
 import dotenv from 'dotenv'
 import jsYaml from 'js-yaml'
 import lockfile from 'proper-lockfile'
@@ -29,13 +28,13 @@ import {
   SingleChoiceProposalModule,
   chainQueries,
   makeGetSignerOptions,
-  makeReactQueryClient,
 } from '@dao-dao/state'
 import { AnyChain, ContractVersion, UnifiedCosmosMsg } from '@dao-dao/types'
 import { MsgSend } from '@dao-dao/types/protobuf/codegen/cosmos/bank/v1beta1/tx'
 import { TxRaw } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   CHAIN_GAS_MULTIPLIER,
+  DependencyTrackedQueryClient,
   _addChain,
   _addSupportedChain,
   batch,
@@ -46,6 +45,7 @@ import {
   getRpcForChainId,
   instantiateSmartContract,
   isErrorWithSubstring,
+  makeDependencyTrackedQueryClient,
 } from '@dao-dao/utils'
 
 const SUITE_LOCK_PATH = path.join(__dirname, 'suite.ts')
@@ -84,7 +84,7 @@ export type TestSuiteSigner = {
 }
 
 export class TestSuite {
-  public readonly queryClient: QueryClient
+  public readonly queryClient: DependencyTrackedQueryClient
   public readonly codeIdConfig: CodeIdConfig
 
   /**
@@ -127,7 +127,7 @@ export class TestSuite {
      */
     public readonly contractVersion: ContractVersion
   ) {
-    this.queryClient = makeReactQueryClient(undefined, {
+    this.queryClient = makeDependencyTrackedQueryClient(undefined, {
       queries: {
         // Disable caching so all queries are fresh.
         gcTime: 0,
@@ -320,11 +320,9 @@ export class TestSuite {
     await suite.queryClient.prefetchQuery(
       chainQueries.dynamicGasPrice({ chainId })
     )
-    // Start the dynamic gas price timer, refreshing every 10 seconds.
+    // Start the dynamic gas price timer, refreshing every 3 seconds.
     suite.dynamicGasPriceInterval = setInterval(() => {
-      suite.queryClient.refetchQueries(
-        chainQueries.dynamicGasPrice({ chainId })
-      )
+      suite.queryClient.refetch(chainQueries.dynamicGasPrice({ chainId }))
     }, 3_000)
 
     return suite

@@ -24,7 +24,7 @@ export const fetchDaoVotingCw721StakedTopStakers = async (
   }[]
 > =>
   (await queryClient.fetchQuery(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId,
       contractAddress: address,
       formula: 'daoVotingCw721Staked/topStakers',
@@ -50,7 +50,7 @@ export const fetchDaoVotingCw721StakedStaker = (
   }
 ): Promise<string | null> =>
   queryClient.fetchQuery(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId,
       contractAddress: address,
       formula: 'daoVotingCw721Staked/staker',
@@ -66,23 +66,20 @@ export const daoVotingCw721StakedExtraQueries = {
    * Fetch cw721-staked voting module top stakers.
    */
   topStakers: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchDaoVotingCw721StakedTopStakers>[1]
   ) =>
     queryOptions({
       queryKey: ['daoVotingCw721StakedExtra', 'topStakers', options],
-      queryFn: () => fetchDaoVotingCw721StakedTopStakers(queryClient, options),
+      queryFn: (ctx) =>
+        fetchDaoVotingCw721StakedTopStakers(ctx.client, options),
     }),
   /**
    * Fetch staker for given NFT in cw721-staked voting module. Returns null if
    * not staked.
    */
-  staker: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoVotingCw721StakedStaker>[1]
-  ) =>
+  staker: (options: Parameters<typeof fetchDaoVotingCw721StakedStaker>[1]) =>
     queryOptions({
       queryKey: ['daoVotingCw721StakedExtra', 'staker', options],
-      queryFn: () => fetchDaoVotingCw721StakedStaker(queryClient, options),
+      queryFn: (ctx) => fetchDaoVotingCw721StakedStaker(ctx.client, options),
     }),
 }

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 
 import { getProposalModule } from '@dao-dao/state/clients'
@@ -40,17 +39,13 @@ const Component: ActionComponent<undefined, ExecuteProposalData> = (props) => {
     (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
   )
 
-  const queryClient = useQueryClient()
   const selectedDaoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
-      queryClient,
-      chainId && coreAddress && isValidBech32Address(coreAddress)
-        ? {
-            chainId,
-            coreAddress,
-          }
-        : undefined
-    )
+    chainId && coreAddress && isValidBech32Address(coreAddress)
+      ? daoQueries.info({
+          chainId,
+          coreAddress,
+        })
+      : undefined
   )
 
   return (

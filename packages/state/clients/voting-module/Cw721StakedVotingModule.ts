@@ -1,4 +1,8 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import {
   Coin,
@@ -138,7 +142,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -147,7 +151,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingCw721StakedQueries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingCw721StakedQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -159,8 +163,8 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw721StakedQueries.totalPowerAtHeight(this.queryClient, {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoVotingCw721StakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -169,7 +173,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
     })
   }
 
-  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+  getGovernanceTokenQuery = (): UnusedSkipTokenOptions<GenericToken> => {
     return {
       queryKey: [
         'cw721StakedVotingModule',
@@ -179,16 +183,15 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { nft_address: collectionAddress } =
-          await this.queryClient.fetchQuery(
-            daoVotingCw721StakedQueries.config(this.queryClient, {
-              chainId: this.chainId,
-              contractAddress: this.address,
-            })
-          )
+      queryFn: async (ctx) => {
+        const { nft_address: collectionAddress } = await ctx.client.fetchQuery(
+          daoVotingCw721StakedQueries.config({
+            chainId: this.chainId,
+            contractAddress: this.address,
+          })
+        )
 
-        const contractInfo = await this.queryClient.fetchQuery(
+        const contractInfo = await ctx.client.fetchQuery(
           cw721BaseQueries.contractInfo({
             chainId: this.chainId,
             contractAddress: collectionAddress,
@@ -218,7 +221,7 @@ export class Cw721StakedVotingModule extends VotingModuleBase<CwDao> {
   async getHooks(): Promise<string[]> {
     return (
       await this.queryClient.fetchQuery(
-        daoVotingCw721StakedQueries.hooks(this.queryClient, {
+        daoVotingCw721StakedQueries.hooks({
           chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })

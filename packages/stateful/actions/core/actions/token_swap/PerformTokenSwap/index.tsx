@@ -213,7 +213,7 @@ export class PerformTokenSwapAction extends ActionBase<PerformTokenSwapData> {
         },
       }) &&
         (await this.options.queryClient.fetchQuery(
-          contractQueries.isContract(this.options.queryClient, {
+          contractQueries.isContract({
             chainId,
             address: decodedMessage.wasm.execute.contract_addr,
             nameOrNames: ContractName.CwTokenSwap,
@@ -243,7 +243,7 @@ export class PerformTokenSwapAction extends ActionBase<PerformTokenSwapData> {
             true
           ) &&
         (await this.options.queryClient.fetchQuery(
-          contractQueries.isContract(this.options.queryClient, {
+          contractQueries.isContract({
             chainId,
             address: decodedMessage.wasm.execute.msg.send.contract,
             nameOrNames: ContractName.CwTokenSwap,

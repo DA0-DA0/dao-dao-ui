@@ -1,10 +1,6 @@
-import {
-  FetchQueryOptions,
-  QueryClient,
-  skipToken,
-} from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
-import { AnyChain, DaoInfo } from '@dao-dao/types'
+import { AnyChain, DaoInfo, IQueryClient } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -21,7 +17,7 @@ export class ChainXGovDao extends DaoBase {
   protected _info: DaoInfo | undefined
 
   constructor(
-    queryClient: QueryClient,
+    queryClient: IQueryClient,
     protected readonly options: {
       chainId: string
     }
@@ -30,7 +26,7 @@ export class ChainXGovDao extends DaoBase {
 
     // Attempt immediate initialization if query is cached.
     this._info = this.queryClient.getQueryData(
-      daoQueries.info(this.queryClient, {
+      daoQueries.info({
         chainId: this.options.chainId,
         coreAddress: mustGetConfiguredChainConfig(this.options.chainId).name,
       }).queryKey
@@ -43,7 +39,7 @@ export class ChainXGovDao extends DaoBase {
     }
 
     this._info = await this.queryClient.fetchQuery(
-      daoQueries.info(this.queryClient, {
+      daoQueries.info({
         chainId: this.options.chainId,
         coreAddress: mustGetConfiguredChainConfig(this.options.chainId).name,
       })
@@ -79,7 +75,7 @@ export class ChainXGovDao extends DaoBase {
 
   getVotingPowerQuery(
     address?: string
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -88,14 +84,14 @@ export class ChainXGovDao extends DaoBase {
       }
     }
 
-    return daoQueries.chainVotingPower(this.queryClient, {
+    return daoQueries.chainVotingPower({
       chainId: this.options.chainId,
       address,
     })
   }
 
-  getTotalVotingPowerQuery(): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoQueries.chainTotalPower(this.queryClient, {
+  getTotalVotingPowerQuery(): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoQueries.chainTotalPower({
       chainId: this.options.chainId,
     })
   }
@@ -104,7 +100,7 @@ export class ChainXGovDao extends DaoBase {
     // Get proposal count by loading one proposal and getting the total.
     return (
       await this.queryClient.fetchQuery(
-        chainQueries.govProposals(this.queryClient, {
+        chainQueries.govProposals({
           chainId: this.options.chainId,
           limit: 1,
         })

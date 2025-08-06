@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -121,234 +121,226 @@ export const daoVotingNativeStakedQueryKeys = {
     ] as const,
 }
 export const daoVotingNativeStakedQueries = {
-  getConfig: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoVotingNativeStakedGetConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.getConfig(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVotingNativeStaked/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  getConfig: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingNativeStakedGetConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.getConfig(
+        chainId,
         contractAddress
-      ).getConfig()
-    },
-    ...options,
-  }),
-  claims: <TData = ClaimsResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingNativeStakedClaimsQuery<TData>
-  ): UseQueryOptions<ClaimsResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.claims(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          claims: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoVotingNativeStaked/claims',
-              args,
+              formula: 'daoVotingNativeStaked/config',
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).claims({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
-  listStakers: <TData = ListStakersResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingNativeStakedListStakersQuery<TData>
-  ): UseQueryOptions<ListStakersResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.listStakers(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          stakers: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getConfig()
+      },
+      ...options,
+    }),
+  claims: <TData = ClaimsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingNativeStakedClaimsQuery<TData>) =>
+    queryOptions<ClaimsResponse, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.claims(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            claims: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoVotingNativeStaked/claims',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).claims({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
+  listStakers: <TData = ListStakersResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingNativeStakedListStakersQuery<TData>) =>
+    queryOptions<ListStakersResponse, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.listStakers(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            stakers: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoVotingNativeStaked/listStakers',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listStakers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingNativeStakedVotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoVotingNativeStaked/listStakers',
-              args,
+              formula: 'daoVotingNativeStaked/votingPowerAtHeight',
+              args: {
+                address: args.address,
+                height: args.height,
+              },
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listStakers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingNativeStakedVotingPowerAtHeightQuery<TData>
-  ): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVotingNativeStaked/votingPowerAtHeight',
-            args: {
-              address: args.address,
-              height: args.height,
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoVotingNativeStakedTotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoVotingNativeStaked/totalPowerAtHeight',
+              args: {
+                height: args.height,
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
-  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoVotingNativeStakedTotalPowerAtHeightQuery<TData>
-  ): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVotingNativeStaked/totalPowerAtHeight',
-            args: {
-              height: args.height,
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoVotingNativeStakedDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoVotingNativeStakedQueryKeys.dao(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoVotingNativeStaked/dao',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoVotingNativeStakedDaoQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoVotingNativeStakedQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoVotingNativeStaked/dao',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoVotingNativeStakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoVotingNativeStakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
   info: contractQueries.info,
 }
 export interface DaoVotingNativeStakedReactQuery<TResponse, TData = TResponse> {

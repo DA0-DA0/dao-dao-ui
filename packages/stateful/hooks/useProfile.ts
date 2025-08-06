@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { profileQueries } from '@dao-dao/state'
 import { LoadingData, ProfileChain, UnifiedProfile } from '@dao-dao/types'
 import {
@@ -107,7 +105,7 @@ export const useProfile = ({
   const profileAddress = address || currentAddress
 
   const profile = useQueryLoadingData(
-    profileQueries.unified(useQueryClient(), {
+    profileQueries.unified({
       chainId: walletChainId,
       address: profileAddress,
     }),

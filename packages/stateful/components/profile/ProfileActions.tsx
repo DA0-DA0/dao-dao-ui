@@ -7,16 +7,10 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import {
-  meTransactionAtom,
-  refreshSavedTxsAtom,
-  savedTxsSelector,
-  temporarySavedTxsAtom,
-} from '@dao-dao/state'
+import { meTransactionAtom } from '@dao-dao/state'
 import {
   ProfileActionsProps,
   ProfileActions as StatelessProfileActions,
-  useCachedLoading,
   useChain,
   useHoldingKey,
   useUpdatingRef,
@@ -28,15 +22,18 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  KVPK_API_BASE,
-  ME_SAVED_TX_PREFIX,
   decodeJsonFromBase64,
   objectMatchesStructure,
   processError,
 } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../actions'
-import { useCfWorkerAuthPostRequest, useWallet } from '../../hooks'
+import {
+  useProfile,
+  useQueryLoadingDataWithError,
+  useTransactionSavesKvpkClient,
+  useWallet,
+} from '../../hooks'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { WalletChainSwitcher } from '../wallet'
 
@@ -47,12 +44,12 @@ export const ProfileActions = ({
 
   const {
     address: walletAddress = '',
-    hexPublicKey,
     getSigningClient,
     chain,
   } = useWallet({
     loadAccount: true,
   })
+  const { profile } = useProfile()
 
   const meTransactionSave = useRecoilValue(meTransactionAtom(chain.chainId))
   // Only set defaults once to prevent unnecessary useForm re-renders.
@@ -142,26 +139,22 @@ export const ProfileActions = ({
     [chain.chainId, getSigningClient, holdingAltForDirectSign, t, walletAddress]
   )
 
-  const { ready: txSavesReady, postRequest: postTxSavesRequest } =
-    useCfWorkerAuthPostRequest(KVPK_API_BASE, 'Transaction Saves')
+  const { isWalletConnected, client: transactionSavesKvpkClient } =
+    useTransactionSavesKvpkClient()
 
-  const setRefreshSaves = useSetRecoilState(refreshSavedTxsAtom)
-  const refreshSaves = useCallback(
-    () => setRefreshSaves((id) => id + 1),
-    [setRefreshSaves]
-  )
-
-  const setTemporarySaves = useSetRecoilState(
-    temporarySavedTxsAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
-  )
-  const savesLoading = useCachedLoading(
-    !hexPublicKey.loading ? savedTxsSelector(hexPublicKey.data) : undefined,
-    []
+  const savesLoading = useQueryLoadingDataWithError(
+    !profile.loading
+      ? transactionSavesKvpkClient.listQuery({ uuid: profile.data.uuid })
+      : undefined,
+    (data) =>
+      data
+        .map(({ value }) => value as AccountTxSave)
+        .sort((a, b) => a.name.localeCompare(b.name))
   )
   const [saving, setSaving] = useState(false)
 
   const save = async (save: AccountTxSave) => {
-    if (!txSavesReady) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return false
     }
@@ -177,17 +170,10 @@ export const ProfileActions = ({
         )
       )
 
-      const key = ME_SAVED_TX_PREFIX + nameHash
-      await postTxSavesRequest('/set', {
-        key,
+      await transactionSavesKvpkClient.set({
+        key: nameHash,
         value: save,
       })
-
-      setTemporarySaves((prev) => ({
-        ...prev,
-        [key]: save,
-      }))
-      refreshSaves()
 
       return true
     } catch (err) {
@@ -199,8 +185,9 @@ export const ProfileActions = ({
 
     return false
   }
+
   const deleteSave = async (save: AccountTxSave) => {
-    if (!txSavesReady) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return false
     }
@@ -215,17 +202,9 @@ export const ProfileActions = ({
         )
       )
 
-      const key = ME_SAVED_TX_PREFIX + nameHash
-      await postTxSavesRequest('/set', {
-        key,
-        value: null,
+      await transactionSavesKvpkClient.delete({
+        key: nameHash,
       })
-
-      setTemporarySaves((prev) => ({
-        ...prev,
-        [key]: null,
-      }))
-      refreshSaves()
 
       return true
     } catch (err) {

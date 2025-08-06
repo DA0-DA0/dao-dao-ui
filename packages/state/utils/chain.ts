@@ -1,8 +1,7 @@
 import { Chain } from '@chain-registry/types'
 import { SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate'
-import { QueryClient } from '@tanstack/react-query'
 
-import { getAminoTypes, getTypesRegistry } from '@dao-dao/types'
+import { IQueryClient, getAminoTypes, getTypesRegistry } from '@dao-dao/types'
 import { getChainForChainName } from '@dao-dao/utils'
 
 import { DynamicGasPrice } from './DynamicGasPrice'
@@ -12,7 +11,7 @@ import { DynamicGasPrice } from './DynamicGasPrice'
  * signature is defined by cosmos-kit.
  */
 export const makeGetSignerOptions =
-  (queryClient: QueryClient) =>
+  (queryClient: IQueryClient) =>
   (chainOrName: Chain | string): SigningCosmWasmClientOptions => {
     const chain =
       typeof chainOrName === 'string'

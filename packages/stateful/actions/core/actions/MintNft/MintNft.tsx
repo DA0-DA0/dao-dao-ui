@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
@@ -26,7 +25,6 @@ export const MintNft: ActionComponent = (props) => {
     chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch } = useFormContext()
-  const queryClient = useQueryClient()
 
   const {
     chainId,
@@ -41,7 +39,7 @@ export const MintNft: ActionComponent = (props) => {
     props.isCreating
       ? undefined
       : // If viewing, get info from token URI.
-        nftQueries.cardInfoMaybeFromUri(queryClient, {
+        nftQueries.cardInfoMaybeFromUri({
           collection: collectionAddress,
           tokenId: mintMsg.token_id,
           tokenUri: mintMsg.token_uri,

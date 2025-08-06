@@ -20,7 +20,7 @@ export const fetchValidatedTokenfactoryIssuerContract = async (
   }
 ): Promise<string | null> => {
   const { denom } = await queryClient.fetchQuery(
-    daoVotingTokenStakedQueries.denom(queryClient, {
+    daoVotingTokenStakedQueries.denom({
       chainId,
       contractAddress: address,
     })
@@ -31,7 +31,7 @@ export const fetchValidatedTokenfactoryIssuerContract = async (
   }
 
   const tokenContract = await queryClient.fetchQuery(
-    daoVotingTokenStakedQueries.tokenContract(queryClient, {
+    daoVotingTokenStakedQueries.tokenContract({
       chainId,
       contractAddress: address,
     })
@@ -42,7 +42,7 @@ export const fetchValidatedTokenfactoryIssuerContract = async (
   }
 
   const isTfIssuer = await queryClient.fetchQuery(
-    contractQueries.isContract(queryClient, {
+    contractQueries.isContract({
       chainId,
       address: tokenContract,
       nameOrNames: ContractName.CwTokenfactoryIssuer,
@@ -62,7 +62,6 @@ export const daoVotingTokenStakedExtraQueries = {
    * uses a token factory denom and uses a cw-tokenfactory-issuer contract.
    */
   validatedTokenfactoryIssuerContract: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchValidatedTokenfactoryIssuerContract>[1]
   ) =>
     queryOptions({
@@ -71,7 +70,7 @@ export const daoVotingTokenStakedExtraQueries = {
         'validatedTokenfactoryIssuerContract',
         options,
       ],
-      queryFn: () =>
-        fetchValidatedTokenfactoryIssuerContract(queryClient, options),
+      queryFn: (ctx) =>
+        fetchValidatedTokenfactoryIssuerContract(ctx.client, options),
     }),
 }

@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { daoQueries } from '@dao-dao/state/query'
 import {
   SubDaosTab as StatelessSubDaosTab,
@@ -19,9 +17,8 @@ export const SubDaosTab = () => {
 
   const { isMember = false } = useMembership()
 
-  const queryClient = useQueryClient()
   const subDaos = useQueryLoadingDataWithError({
-    ...daoQueries.subDaoInfos(queryClient, {
+    ...daoQueries.subDaoInfos({
       chainId,
       coreAddress,
     }),

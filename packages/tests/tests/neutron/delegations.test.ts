@@ -256,6 +256,7 @@ describe('delegations', () => {
       values: {
         address: delegationAddress,
       },
+      extra: {},
     })
 
     await suite.createAndExecuteSingleChoiceProposal(
@@ -281,7 +282,7 @@ describe('delegations', () => {
 
     // Check that the delegations are registered.
     let { delegates } = await suite.queryClient.fetchQuery(
-      daoVoteDelegationQueries.delegates(suite.queryClient, {
+      daoVoteDelegationQueries.delegates({
         chainId: suite.chainId,
         contractAddress: delegationAddress,
         args: {
@@ -335,7 +336,7 @@ describe('delegations', () => {
     // Check that the voting power is distributed correctly.
     delegates = (
       await suite.queryClient.fetchQuery(
-        daoVoteDelegationQueries.delegates(suite.queryClient, {
+        daoVoteDelegationQueries.delegates({
           chainId: suite.chainId,
           contractAddress: delegationAddress,
           args: {
@@ -665,6 +666,7 @@ describe('delegations', () => {
       values: {
         address: delegationAddress,
       },
+      extra: {},
     })
 
     await suite.createAndExecuteSingleChoiceProposal(
@@ -696,7 +698,7 @@ describe('delegations', () => {
 
     // Check that the delegations are registered.
     let { delegates } = await suite.queryClient.fetchQuery(
-      daoVoteDelegationQueries.delegates(suite.queryClient, {
+      daoVoteDelegationQueries.delegates({
         chainId: suite.chainId,
         contractAddress: delegationAddress,
         args: {
@@ -757,7 +759,7 @@ describe('delegations', () => {
     // Check that the voting power is distributed correctly.
     delegates = (
       await suite.queryClient.fetchQuery(
-        daoVoteDelegationQueries.delegates(suite.queryClient, {
+        daoVoteDelegationQueries.delegates({
           chainId: suite.chainId,
           contractAddress: delegationAddress,
           args: {
@@ -790,7 +792,7 @@ describe('delegations', () => {
     // Check that the voting power is updated correctly.
     delegates = (
       await suite.queryClient.fetchQuery(
-        daoVoteDelegationQueries.delegates(suite.queryClient, {
+        daoVoteDelegationQueries.delegates({
           chainId: suite.chainId,
           contractAddress: delegationAddress,
           args: {
@@ -835,19 +837,16 @@ describe('delegations', () => {
     let unvotedDelegateVotingPowers = await Promise.all(
       delegates.map(async ({ delegate }) => {
         const { effective, total } = await suite.queryClient.fetchQuery(
-          daoVoteDelegationQueries.unvotedDelegatedVotingPower(
-            suite.queryClient,
-            {
-              chainId: suite.chainId,
-              contractAddress: delegationAddress,
-              args: {
-                delegate,
-                height: proposal.start_height,
-                proposalModule: proposalModule.address,
-                proposalId: proposalNumber,
-              },
-            }
-          )
+          daoVoteDelegationQueries.unvotedDelegatedVotingPower({
+            chainId: suite.chainId,
+            contractAddress: delegationAddress,
+            args: {
+              delegate,
+              height: proposal.start_height,
+              proposalModule: proposalModule.address,
+              proposalId: proposalNumber,
+            },
+          })
         )
 
         return {
@@ -933,19 +932,16 @@ describe('delegations', () => {
     unvotedDelegateVotingPowers = await Promise.all(
       delegates.map(async ({ delegate }) => {
         const { effective, total } = await suite.queryClient.fetchQuery(
-          daoVoteDelegationQueries.unvotedDelegatedVotingPower(
-            suite.queryClient,
-            {
-              chainId: suite.chainId,
-              contractAddress: delegationAddress,
-              args: {
-                delegate,
-                height: proposal.start_height,
-                proposalModule: proposalModule.address,
-                proposalId: proposalNumber,
-              },
-            }
-          )
+          daoVoteDelegationQueries.unvotedDelegatedVotingPower({
+            chainId: suite.chainId,
+            contractAddress: delegationAddress,
+            args: {
+              delegate,
+              height: proposal.start_height,
+              proposalModule: proposalModule.address,
+              proposalId: proposalNumber,
+            },
+          })
         )
 
         return {

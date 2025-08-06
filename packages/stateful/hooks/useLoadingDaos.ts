@@ -1,29 +1,31 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
-import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
+import { useQueries } from '@tanstack/react-query'
 
 import { daoQueries } from '@dao-dao/state/query'
-import { followingDaosSelector } from '@dao-dao/state/recoil'
 import {
   DaoInfo,
   DaoSource,
+  LazyDaoCardProps,
   LoadingData,
+  LoadingDataWithError,
   StatefulDaoCardProps,
 } from '@dao-dao/types'
-import { makeCombineQueryResultsIntoLoadingData } from '@dao-dao/utils'
+import {
+  makeCombineQueryResultsIntoLoadingData,
+  makeCombineQueryResultsIntoLoadingDataWithError,
+} from '@dao-dao/utils'
 
 import { useQueryLoadingData } from './query/useQueryLoadingData'
-import { useProfile } from './useProfile'
+import { useFollowingDaos } from './useFollowingDaos'
 
 export const useLoadingDaos = (
   daos: LoadingData<DaoSource[]>,
   alphabetize = false
 ): LoadingData<DaoInfo[]> => {
-  const queryClient = useQueryClient()
   return useQueries({
     queries: daos.loading
       ? []
       : daos.data.map(({ chainId, coreAddress }) =>
-          daoQueries.info(queryClient, {
+          daoQueries.info({
             chainId,
             coreAddress,
           })
@@ -31,6 +33,37 @@ export const useLoadingDaos = (
     combine: makeCombineQueryResultsIntoLoadingData<DaoInfo>({
       transform: (infos) =>
         infos.sort((a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)),
+    }),
+  })
+}
+
+/**
+ * Load lazy DAO card props.
+ */
+export const useLoadingLazyDaos = (
+  daos: LoadingData<DaoSource[]> | LoadingDataWithError<DaoSource[]>,
+  alphabetize = false
+): LoadingDataWithError<LazyDaoCardProps[]> => {
+  return useQueries({
+    queries:
+      daos.loading || ('errored' in daos && daos.errored)
+        ? []
+        : daos.data.map(({ chainId, coreAddress }) =>
+            daoQueries.lazyDaoCardProps({
+              chainId,
+              coreAddress,
+            })
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      // If DAOs are loading, show loading until all are loaded. If DAOs
+      // errored, do not show loading.
+      loadIfNone: daos.loading,
+      firstLoad: 'one',
+      errorIf: 'all',
+      transform: (infos) =>
+        infos.sort((a, b) =>
+          alphabetize ? a.info.name.localeCompare(b.info.name) : 0
+        ),
     }),
   })
 }
@@ -77,29 +110,17 @@ export const useLoadingFollowingDaos = (
   // all chains.
   chainId?: string
 ): LoadingData<DaoInfo[]> => {
-  const { uniquePublicKeys } = useProfile()
-
-  const followingDaosLoading = useRecoilValueLoadable(
-    !uniquePublicKeys.loading
-      ? waitForAll(
-          uniquePublicKeys.data.map(({ publicKey }) =>
-            followingDaosSelector({
-              walletPublicKey: publicKey,
-            })
-          )
-        )
-      : constSelector([])
-  )
+  const { following } = useFollowingDaos()
 
   return useLoadingDaos(
-    followingDaosLoading.state === 'loading'
+    following.loading
       ? { loading: true }
-      : followingDaosLoading.state === 'hasError'
+      : following.errored
         ? { loading: false, data: [] }
         : {
             loading: false,
-            data: followingDaosLoading.contents.flatMap((following) =>
-              following.filter((f) => !chainId || f.chainId === chainId)
+            data: following.data.filter(
+              (f) => !chainId || f.chainId === chainId
             ),
           },
     // Alphabetize.

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -78,19 +77,15 @@ const InnerComponentWrapper: ActionComponent<
     options: { address },
   } = props
   const { chainId, bech32Prefix } = useChain()
-  const queryClient = useQueryClient()
 
   const validAddress = !!address && isValidBech32Address(address, bech32Prefix)
   const isDao = useQueryLoadingData(
-    contractQueries.isDao(
-      queryClient,
-      validAddress
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    ),
+    validAddress
+      ? contractQueries.isDao({
+          chainId,
+          address,
+        })
+      : undefined,
     false
   )
 

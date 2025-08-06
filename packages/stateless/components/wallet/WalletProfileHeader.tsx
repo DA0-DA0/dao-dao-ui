@@ -22,7 +22,7 @@ export const WalletProfileHeader = ({
     editable &&
     profile &&
     !profile.loading &&
-    profile.data.nonce >= 0 &&
+    !!profile.data.uuid &&
     !mergeProfileType
 
   const imageUrl =
@@ -46,7 +46,7 @@ export const WalletProfileHeader = ({
         entity.data.type !== EntityType.Dao &&
         profile &&
         !profile.loading &&
-        profile.data.nonce > -1 &&
+        !!profile.data.uuid &&
         mergeProfileType && (
           <StatusCard
             className="max-w-xs mb-4 text-left"

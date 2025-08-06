@@ -22,7 +22,7 @@ export const processMessage: MessageProcessor = async ({
 }) => {
   const accounts = sender
     ? await queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address: sender,
         })
@@ -47,7 +47,7 @@ export const processMessage: MessageProcessor = async ({
       // Get proxy on destination chain.
       const proxy = sender
         ? await queryClient.fetchQuery(
-            polytoneNoteQueries.remoteAddress(queryClient, {
+            polytoneNoteQueries.remoteAddress({
               chainId,
               contractAddress: decodedPolytone.polytoneConnection.note,
               args: {
@@ -103,7 +103,7 @@ export const processMessage: MessageProcessor = async ({
       // Get remote ICA on destination chain.
       const remoteIcaAddress = sender
         ? await queryClient.fetchQuery(
-            accountQueries.remoteIcaAddress(queryClient, {
+            accountQueries.remoteIcaAddress({
               srcChainId: chainId,
               address: sender,
               destChainId: decodedIca.chainId,
@@ -162,7 +162,7 @@ export const processMessage: MessageProcessor = async ({
       ) ||
       // If not found, fetch the account.
       (await queryClient.fetchQuery(
-        accountQueries.cw1Whitelist(queryClient, {
+        accountQueries.cw1Whitelist({
           chainId,
           address: decodedCw1Whitelist.address,
         })

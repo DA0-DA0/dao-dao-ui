@@ -1,14 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  chainQueries,
-  cwVestingExtraQueries,
-  cwVestingQueryKeys,
-} from '@dao-dao/state/query'
+import { cwVestingExtraQueries } from '@dao-dao/state/query'
 import {
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
@@ -17,6 +12,7 @@ import {
   StakingModal,
   useCachedLoadable,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -60,7 +56,7 @@ export const VestingStakingModal = ({
 }: VestingStakingModalProps) => {
   const { t } = useTranslation()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
 
   const validatorsLoadable = useCachedLoadable(
     validatorsSelector({
@@ -225,39 +221,12 @@ export const VestingStakingModal = ({
         // Wait a block for balances to update.
         await awaitNextBlock()
 
-        // Invalidate validators.
-        queryClient.invalidateQueries({
-          queryKey: ['chain', 'validator', { chainId }],
-        })
-        // Invalidate staking info.
-        queryClient.invalidateQueries({
-          queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+        await queryClient.invalidate(
+          cwVestingExtraQueries.info({
             chainId,
             address: vestingContractAddress,
-          }).queryKey,
-        })
-        // Invalidate vesting indexer queries.
-        queryClient.invalidateQueries({
-          queryKey: [
-            'indexer',
-            'query',
-            {
-              chainId,
-              address: vestingContractAddress,
-            },
-          ],
-        })
-        // Then invalidate contract queries that depend on indexer queries.
-        queryClient.invalidateQueries({
-          queryKey: cwVestingQueryKeys.address(chainId, vestingContractAddress),
-        })
-        // Then info query.
-        queryClient.invalidateQueries({
-          queryKey: cwVestingExtraQueries.info(queryClient, {
-            chainId,
-            address: vestingContractAddress,
-          }).queryKey,
-        })
+          })
+        )
 
         toast.success(
           mode === StakingMode.Stake

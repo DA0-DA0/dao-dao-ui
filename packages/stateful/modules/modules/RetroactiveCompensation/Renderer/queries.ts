@@ -101,12 +101,9 @@ export const retroactiveCompensationQueries = {
   /**
    * List surveys.
    */
-  listSurveys: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listSurveys>[1]
-  ) =>
+  listSurveys: (options: Parameters<typeof listSurveys>[1]) =>
     queryOptions({
       queryKey: ['retroactiveCompensation', 'listSurveys', options],
-      queryFn: () => listSurveys(queryClient, options),
+      queryFn: (ctx) => listSurveys(ctx.client, options),
     }),
 }

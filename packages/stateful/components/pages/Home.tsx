@@ -1,8 +1,4 @@
-import {
-  DehydratedState,
-  useInfiniteQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -28,6 +24,7 @@ import {
   DaoDaoIndexerAllStats,
   DaoInfo,
   DaoSource,
+  DehydratedStateWithDependencies,
   LazyDaoCardProps,
   LoadingData,
   LoadingDataWithError,
@@ -69,7 +66,7 @@ export type StatefulHomeProps = {
    * Dehydrated react query state used by the server to preload data. This is
    * accessed in the _app.tsx file.
    */
-  reactQueryDehydratedState?: DehydratedState
+  dehydratedQueryClientState?: DehydratedStateWithDependencies
 }
 
 export const Home: NextPage<StatefulHomeProps> = ({
@@ -242,9 +239,8 @@ export const Home: NextPage<StatefulHomeProps> = ({
             ),
           }
 
-  const queryClient = useQueryClient()
   const freshStats = useQueryLoadingDataWithError(
-    miscQueries.homePageStats(queryClient, {
+    miscQueries.homePageStats({
       chainId,
     })
   )

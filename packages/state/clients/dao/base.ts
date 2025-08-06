@@ -1,4 +1,4 @@
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   Account,
@@ -12,6 +12,7 @@ import {
   Feature,
   IDaoBase,
   IProposalModuleBase,
+  IQueryClient,
   IVotingModuleBase,
   ModuleId,
 } from '@dao-dao/types'
@@ -28,7 +29,7 @@ import {
 import { daoQueries } from '../../query'
 
 export abstract class DaoBase implements IDaoBase {
-  constructor(protected readonly queryClient: QueryClient) {}
+  constructor(protected readonly queryClient: IQueryClient) {}
 
   /**
    * Initialize the client. This only matters for some functions, depending on
@@ -205,7 +206,7 @@ export abstract class DaoBase implements IDaoBase {
   abstract getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse>
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse>
 
   /**
    * Fetch the voting power for a given address. Optionally specify a block
@@ -225,7 +226,7 @@ export abstract class DaoBase implements IDaoBase {
    */
   abstract getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse>
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse>
 
   /**
    * Fetch the total voting power. Optional specify a block height. If
@@ -268,8 +269,8 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Query options to fetch the TVL.
    */
-  get tvlQuery(): FetchQueryOptions<AmountWithTimestamp> {
-    return daoQueries.tvl(this.queryClient, {
+  get tvlQuery(): UndefinedInitialDataOptions<AmountWithTimestamp> {
+    return daoQueries.tvl({
       chainId: this.chainId,
       coreAddress: this.coreAddress,
     })

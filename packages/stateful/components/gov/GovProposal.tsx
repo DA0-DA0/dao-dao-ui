@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { Dispatch, SetStateAction, useCallback, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -164,10 +163,10 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
 
 export const GovProposal = ({ proposalInfo }: DaoProposalProps) => {
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
+
   const proposalLoading = useQueryLoadingDataWithError(
     proposalInfo
-      ? chainQueries.govProposal(queryClient, {
+      ? chainQueries.govProposal({
           chainId,
           proposalId: Number(proposalInfo.id),
         })

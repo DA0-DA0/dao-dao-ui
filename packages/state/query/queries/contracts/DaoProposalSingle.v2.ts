@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -207,446 +207,429 @@ export const daoProposalSingleV2QueryKeys = {
     ] as const,
 }
 export const daoProposalSingleV2Queries = {
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoProposalSingleV2ConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
-  delegationModule: <TData = Addr | null>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoProposalSingleV2DelegationModuleQuery<TData>
-  ): UseQueryOptions<Addr | null, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.delegationModule(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/delegationModule',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).delegationModule()
-    },
-    ...options,
-  }),
-  proposal: <TData = ProposalResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoProposalSingleV2ProposalQuery<TData>
-  ): UseQueryOptions<ProposalResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposal(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/proposal',
-            args: {
-              id: args.proposalId,
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposal({
-        proposalId: args.proposalId,
-      })
-    },
-    ...options,
-  }),
-  listProposals: <TData = ProposalListResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoProposalSingleV2ListProposalsQuery<TData>
-  ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.listProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          proposals: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2ConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.config(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoProposalSingle/listProposals',
-              args,
+              formula: 'daoProposalSingle/config',
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
+  delegationModule: <TData = Addr | null>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2DelegationModuleQuery<TData>) =>
+    queryOptions<Addr | null, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.delegationModule(
+        chainId,
         contractAddress
-      ).listProposals({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  reverseProposals: <TData = ProposalListResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoProposalSingleV2ReverseProposalsQuery<TData>
-  ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.reverseProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          proposals: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoProposalSingle/reverseProposals',
-              args,
+              formula: 'daoProposalSingle/delegationModule',
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).reverseProposals({
-        limit: args.limit,
-        startBefore: args.startBefore,
-      })
-    },
-    ...options,
-  }),
-  getVote: <TData = VoteResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoProposalSingleV2GetVoteQuery<TData>
-  ): UseQueryOptions<VoteResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.getVote(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          vote: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).delegationModule()
+      },
+      ...options,
+    }),
+  proposal: <TData = ProposalResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoProposalSingleV2ProposalQuery<TData>) =>
+    queryOptions<ProposalResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.proposal(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoProposalSingle/vote',
-              args,
+              formula: 'daoProposalSingle/proposal',
+              args: {
+                id: args.proposalId,
+              },
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposal({
+          proposalId: args.proposalId,
+        })
+      },
+      ...options,
+    }),
+  listProposals: <TData = ProposalListResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoProposalSingleV2ListProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.listProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            proposals: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoProposalSingle/listProposals',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listProposals({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  reverseProposals: <TData = ProposalListResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoProposalSingleV2ReverseProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.reverseProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            proposals: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoProposalSingle/reverseProposals',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).reverseProposals({
+          limit: args.limit,
+          startBefore: args.startBefore,
+        })
+      },
+      ...options,
+    }),
+  getVote: <TData = VoteResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoProposalSingleV2GetVoteQuery<TData>) =>
+    queryOptions<VoteResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.getVote(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            vote: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoProposalSingle/vote',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getVote({
+          proposalId: args.proposalId,
+          voter: args.voter,
+        })
+      },
+      ...options,
+    }),
+  listVotes: <TData = VoteListResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoProposalSingleV2ListVotesQuery<TData>) =>
+    queryOptions<VoteListResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.listVotes(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            votes: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoProposalSingle/listVotes',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listVotes({
+          limit: args.limit,
+          proposalId: args.proposalId,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  proposalCount: <TData = number>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2ProposalCountQuery<TData>) =>
+    queryOptions<number, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.proposalCount(
+        chainId,
         contractAddress
-      ).getVote({
-        proposalId: args.proposalId,
-        voter: args.voter,
-      })
-    },
-    ...options,
-  }),
-  listVotes: <TData = VoteListResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoProposalSingleV2ListVotesQuery<TData>
-  ): UseQueryOptions<VoteListResponse, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.listVotes(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          votes: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'daoProposalSingle/listVotes',
-              args,
+              formula: 'daoProposalSingle/proposalCount',
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCount()
+      },
+      ...options,
+    }),
+  proposalCreationPolicy: <TData = ProposalCreationPolicy>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2ProposalCreationPolicyQuery<TData>) =>
+    queryOptions<ProposalCreationPolicy, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.proposalCreationPolicy(
+        chainId,
         contractAddress
-      ).listVotes({
-        limit: args.limit,
-        proposalId: args.proposalId,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  proposalCount: <TData = number>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoProposalSingleV2ProposalCountQuery<TData>
-  ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposalCount(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/proposalCount',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoProposalSingle/creationPolicy',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalCount()
-    },
-    ...options,
-  }),
-  proposalCreationPolicy: <TData = ProposalCreationPolicy>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoProposalSingleV2ProposalCreationPolicyQuery<TData>
-  ): UseQueryOptions<ProposalCreationPolicy, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposalCreationPolicy(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/creationPolicy',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalCreationPolicy()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCreationPolicy()
+      },
+      ...options,
+    }),
   proposalHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: DaoProposalSingleV2ProposalHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoProposalSingleV2QueryKeys.proposalHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: DaoProposalSingleV2ProposalHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.proposalHooks(
+        chainId,
         contractAddress
-      ).proposalHooks()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalHooks()
+      },
+      ...options,
+    }),
   voteHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: DaoProposalSingleV2VoteHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoProposalSingleV2QueryKeys.voteHooks(chainId, contractAddress),
-    queryFn: async () => {
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: DaoProposalSingleV2VoteHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.voteHooks(
+        chainId,
         contractAddress
-      ).voteHooks()
-    },
-    ...options,
-  }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoProposalSingleV2DaoQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.dao(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/dao',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+      ),
+      queryFn: async () => {
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).voteHooks()
+      },
+      ...options,
+    }),
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2DaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.dao(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoProposalSingle/dao',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
   info: contractQueries.info,
-  nextProposalId: <TData = number>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoProposalSingleV2NextProposalIdQuery<TData>
-  ): UseQueryOptions<number, Error, TData> => ({
-    queryKey: daoProposalSingleV2QueryKeys.nextProposalId(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoProposalSingle/nextProposalId',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoProposalSingleV2QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  nextProposalId: <TData = number>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoProposalSingleV2NextProposalIdQuery<TData>) =>
+    queryOptions<number, Error, TData>({
+      queryKey: daoProposalSingleV2QueryKeys.nextProposalId(
+        chainId,
         contractAddress
-      ).nextProposalId()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoProposalSingle/nextProposalId',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoProposalSingleV2QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).nextProposalId()
+      },
+      ...options,
+    }),
 }
 export interface DaoProposalSingleV2ReactQuery<TResponse, TData = TResponse> {
   chainId: string

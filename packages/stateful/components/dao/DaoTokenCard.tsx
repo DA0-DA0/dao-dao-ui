@@ -3,7 +3,6 @@ import {
   ArchiveRounded,
   PaidRounded,
 } from '@mui/icons-material'
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -20,6 +19,7 @@ import {
   useCachedLoading,
   useDao,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import {
   AccountType,
@@ -81,21 +81,20 @@ export const DaoTokenCard = ({
       owner: owner.address,
     })
   )
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const refreshNativeTokenStakingInfo = useCallback(() => {
-    // Invalidate validators.
-    queryClient.invalidateQueries({
-      queryKey: ['chain', 'validator', { chainId: owner.chainId }],
-    })
-    // Then native delegation info.
-    queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
-        chainId: owner.chainId,
-        address: owner.address,
-      }).queryKey,
-    })
-    // Then token card lazy info.
-    setRefreshTokenCardLazyInfo((id) => id + 1)
+    // Invalidate native delegation info.
+    queryClient
+      .invalidate(
+        chainQueries.nativeDelegationInfo({
+          chainId: owner.chainId,
+          address: owner.address,
+        })
+      )
+      .finally(() =>
+        // Then refresh token card lazy info.
+        setRefreshTokenCardLazyInfo((id) => id + 1)
+      )
   }, [owner.address, owner.chainId, queryClient, setRefreshTokenCardLazyInfo])
 
   const lazyStakes = lazyInfo.loading

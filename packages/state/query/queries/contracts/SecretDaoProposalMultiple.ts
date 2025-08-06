@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -238,281 +238,248 @@ export const secretDaoProposalMultipleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.config(
+        chainId,
         contractAddress
-      ).config(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   proposal: <TData = ProposalResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalMultipleProposalQuery<TData>): UseQueryOptions<
-    ProposalResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposal(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposal({
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalMultipleProposalQuery<TData>) =>
+    queryOptions<ProposalResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.proposal(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposal({
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   listProposals: <TData = ProposalListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalMultipleListProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.listProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listProposals({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalMultipleListProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.listProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listProposals({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   reverseProposals: <TData = ProposalListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalMultipleReverseProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.reverseProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).reverseProposals({
-        limit: args.limit,
-        startBefore: args.startBefore,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalMultipleReverseProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.reverseProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).reverseProposals({
+          limit: args.limit,
+          startBefore: args.startBefore,
+        }),
+      ...options,
+    }),
   getVote: <TData = VoteResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalMultipleGetVoteQuery<TData>): UseQueryOptions<
-    VoteResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.getVote(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getVote({
-        auth: args.auth,
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalMultipleGetVoteQuery<TData>) =>
+    queryOptions<VoteResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.getVote(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getVote({
+          auth: args.auth,
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   listVotes: <TData = VoteListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalMultipleListVotesQuery<TData>): UseQueryOptions<
-    VoteListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.listVotes(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listVotes({
-        limit: args.limit,
-        proposalId: args.proposalId,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalMultipleListVotesQuery<TData>) =>
+    queryOptions<VoteListResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.listVotes(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listVotes({
+          limit: args.limit,
+          proposalId: args.proposalId,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   proposalCount: <TData = number>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleProposalCountQuery<TData>): UseQueryOptions<
-    number,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposalCount(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleProposalCountQuery<TData>) =>
+    queryOptions<number, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.proposalCount(
+        chainId,
         contractAddress
-      ).proposalCount(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCount(),
+      ...options,
+    }),
   proposalCreationPolicy: <TData = ProposalCreationPolicy>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleProposalCreationPolicyQuery<TData>): UseQueryOptions<
-    ProposalCreationPolicy,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposalCreationPolicy(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleProposalCreationPolicyQuery<TData>) =>
+    queryOptions<ProposalCreationPolicy, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.proposalCreationPolicy(
+        chainId,
         contractAddress
-      ).proposalCreationPolicy(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCreationPolicy(),
+      ...options,
+    }),
   proposalHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleProposalHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.proposalHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleProposalHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.proposalHooks(
+        chainId,
         contractAddress
-      ).proposalHooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalHooks(),
+      ...options,
+    }),
   voteHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleVoteHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.voteHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleVoteHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.voteHooks(
+        chainId,
         contractAddress
-      ).voteHooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).voteHooks(),
+      ...options,
+    }),
   dao: <TData = Addr>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleDaoQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.dao(
+        chainId,
         contractAddress
-      ).dao(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   info: <TData = InfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleInfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.info(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleInfoQuery<TData>) =>
+    queryOptions<InfoResponse, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.info(
+        chainId,
         contractAddress
-      ).info(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info(),
+      ...options,
+    }),
   nextProposalId: <TData = Uint64>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalMultipleNextProposalIdQuery<TData>): UseQueryOptions<
-    Uint64,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalMultipleQueryKeys.nextProposalId(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalMultipleNextProposalIdQuery<TData>) =>
+    queryOptions<Uint64, Error, TData>({
+      queryKey: secretDaoProposalMultipleQueryKeys.nextProposalId(
+        chainId,
         contractAddress
-      ).nextProposalId(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).nextProposalId(),
+      ...options,
+    }),
 }
 export interface SecretDaoProposalMultipleReactQuery<
   TResponse,

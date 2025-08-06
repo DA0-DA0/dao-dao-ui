@@ -43,7 +43,7 @@ export const Querier = () => {
   )
   const contractSummary = useQueryLoadingDataWithError(
     validContractAddress
-      ? contractQueries.summary(queryClient, {
+      ? contractQueries.summary({
           chainId,
           address: contractAddress,
         })

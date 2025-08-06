@@ -332,7 +332,7 @@ export class AuthzGrantRevokeAction extends ActionBase<AuthzGrantRevokeData> {
       const tokens = await Promise.all(
         funds?.map(({ denom }) =>
           this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,

@@ -1,4 +1,3 @@
-import { DehydratedState } from '@tanstack/react-query'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
@@ -12,7 +11,11 @@ import {
   useAppContext,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { CommonProposalInfo, DaoInfo } from '@dao-dao/types'
+import {
+  CommonProposalInfo,
+  DaoInfo,
+  DehydratedStateWithDependencies,
+} from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { makeDaoContext, makeGenericContext } from '../../command'
@@ -28,7 +31,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   info?: DaoInfo
   error?: string
   setIcon?: (icon: string | undefined) => void
-  reactQueryDehydratedState?: DehydratedState
+  dehydratedQueryClientState?: DehydratedStateWithDependencies
 }>
 
 export type DaoProposalProps = DaoPageWrapperProps & {

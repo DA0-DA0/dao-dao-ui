@@ -29,7 +29,7 @@ export const listAllDelegates = async (
   try {
     delegates = (
       await queryClient.fetchQuery(
-        indexerQueries.queryContract<DelegatesResponse>(queryClient, {
+        indexerQueries.queryContract<DelegatesResponse>({
           chainId,
           contractAddress: address,
           formula: 'daoVoteDelegation/delegates',
@@ -47,7 +47,7 @@ export const listAllDelegates = async (
     while (true) {
       const page = (
         await queryClient.fetchQuery(
-          daoVoteDelegationQueries.delegates(queryClient, {
+          daoVoteDelegationQueries.delegates({
             chainId,
             contractAddress: address,
             args: {
@@ -74,7 +74,7 @@ export const listAllDelegates = async (
   const delegatesWithEntities = await Promise.all(
     delegates.map(async (delegate): Promise<DelegateWithEntity> => {
       const entity = await queryClient.fetchQuery(
-        entityQueries.info(queryClient, {
+        entityQueries.info({
           chainId,
           address: delegate.delegate,
         })
@@ -109,7 +109,7 @@ export const listAllDelegations = async (
   try {
     delegations = (
       await queryClient.fetchQuery(
-        indexerQueries.queryContract<DelegationsResponse>(queryClient, {
+        indexerQueries.queryContract<DelegationsResponse>({
           chainId,
           contractAddress: address,
           formula: 'daoVoteDelegation/delegations',
@@ -130,7 +130,7 @@ export const listAllDelegations = async (
     while (true) {
       const page = (
         await queryClient.fetchQuery(
-          daoVoteDelegationQueries.delegations(queryClient, {
+          daoVoteDelegationQueries.delegations({
             chainId,
             contractAddress: address,
             args: {
@@ -158,7 +158,7 @@ export const listAllDelegations = async (
   const delegationsWithEntities = await Promise.all(
     delegations.map(async (delegation): Promise<DelegationWithEntity> => {
       const entity = await queryClient.fetchQuery(
-        entityQueries.info(queryClient, {
+        entityQueries.info({
           chainId,
           address: delegation.delegate,
         })
@@ -178,23 +178,17 @@ export const delegationsQueries = {
   /**
    * List all delegates.
    */
-  listAllDelegates: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listAllDelegates>[1]
-  ) =>
+  listAllDelegates: (options: Parameters<typeof listAllDelegates>[1]) =>
     queryOptions({
       queryKey: ['delegations', 'listAllDelegates', options],
-      queryFn: () => listAllDelegates(queryClient, options),
+      queryFn: (ctx) => listAllDelegates(ctx.client, options),
     }),
   /**
    * List all delegations.
    */
-  listAllDelegations: (
-    queryClient: QueryClient,
-    options: Parameters<typeof listAllDelegations>[1]
-  ) =>
+  listAllDelegations: (options: Parameters<typeof listAllDelegations>[1]) =>
     queryOptions({
       queryKey: ['delegations', 'listAllDelegations', options],
-      queryFn: () => listAllDelegations(queryClient, options),
+      queryFn: (ctx) => listAllDelegations(ctx.client, options),
     }),
 }

@@ -19,7 +19,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { usePfpkClient } from './usePfpkClient'
 import { useWallet } from './useWallet'
 
 export const useInboxApi = (): InboxApi => {
@@ -34,10 +34,10 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const [updating, setUpdating] = useState(false)
-  const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    INBOX_API_BASE,
-    'Inbox'
-  )
+  const { isWalletConnected, pfpkClient } = usePfpkClient({
+    apiUrl: INBOX_API_BASE,
+    defaultSignatureType: 'Inbox',
+  })
 
   const [config, setConfig] = useState<InboxConfig>()
 
@@ -86,7 +86,7 @@ export const useInboxApi = (): InboxApi => {
         id: string
       }[]
     ) => {
-      if (!ready) {
+      if (!isWalletConnected) {
         toast.error(t('error.logInToContinue'))
         return false
       }
@@ -107,14 +107,14 @@ export const useInboxApi = (): InboxApi => {
         )
 
         for (const [chainId, ids] of Object.entries(idsToClear)) {
-          await postRequest(
-            '/clear',
-            {
+          await pfpkClient.signAndSend({
+            endpoint: '/clear',
+            type: 'Clear Inbox Items',
+            data: {
               ids,
             },
-            'Clear Inbox Items',
-            chainId
-          )
+            chainId,
+          })
         }
 
         setTemporary((prev) => [...prev, ...items.flatMap(({ id }) => id)])
@@ -129,7 +129,7 @@ export const useInboxApi = (): InboxApi => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, setTemporary, t, updating]
+    [isWalletConnected, pfpkClient, setTemporary, t, updating]
   )
 
   const updateConfig = useCallback(
@@ -137,7 +137,7 @@ export const useInboxApi = (): InboxApi => {
       data: InboxUpdateConfig,
       signatureType = 'Save Notification Settings'
     ) => {
-      if (!ready) {
+      if (!isWalletConnected) {
         toast.error(t('error.logInToContinue'))
         return false
       }
@@ -163,15 +163,16 @@ export const useInboxApi = (): InboxApi => {
               }
             : undefined)
 
-        const config = await postRequest<InboxConfig>(
-          '/config',
-          {
-            ...data,
-            ...(push && { push }),
-          },
-          signatureType
+        setConfig(
+          await pfpkClient.signAndSend<InboxConfig>({
+            endpoint: '/config',
+            type: signatureType,
+            data: {
+              ...data,
+              ...(push && { push }),
+            },
+          })
         )
-        setConfig(config)
 
         return true
       } catch (err) {
@@ -183,7 +184,7 @@ export const useInboxApi = (): InboxApi => {
         setUpdating(false)
       }
     },
-    [postRequest, pushSubscription, pushUpdating, ready, t, updating]
+    [isWalletConnected, pfpkClient, pushSubscription, pushUpdating, t, updating]
   )
 
   const loadConfig = useCallback(
@@ -330,7 +331,7 @@ export const useInboxApi = (): InboxApi => {
   )
 
   return {
-    ready,
+    isWalletConnected,
     updating,
     clear,
     loadConfig,

@@ -1,4 +1,3 @@
-import { QueryClient } from '@tanstack/react-query'
 import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -34,6 +33,7 @@ import {
   ProposalExecutionMetadata,
   ProposalTimestampInfo,
 } from './proposal'
+import { IQueryClient } from './query'
 
 export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
   // Fields
@@ -161,7 +161,7 @@ export type IProposalModuleAdapterOptions = {
   /**
    * The query client.
    */
-  queryClient: QueryClient
+  queryClient: IQueryClient
   /**
    * The DAO's native chain.
    */

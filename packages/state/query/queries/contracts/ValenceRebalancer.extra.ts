@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { GenericToken, GenericTokenBalance, TokenType } from '@dao-dao/types'
 
@@ -32,7 +32,7 @@ export const fetchValenceRebalancerWhitelistGenericTokens = async (
     Promise.all(
       whitelists.base_denom_whitelist.map(({ denom }) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -43,7 +43,7 @@ export const fetchValenceRebalancerWhitelistGenericTokens = async (
     Promise.all(
       whitelists.denom_whitelist.map((denom) =>
         queryClient.fetchQuery(
-          tokenQueries.info(queryClient, {
+          tokenQueries.info({
             chainId,
             type: TokenType.Native,
             denomOrAddress: denom,
@@ -86,7 +86,7 @@ export const fetchValenceRebalancerRegistrationServiceFee = async (
   const token =
     serviceFee &&
     (await queryClient.fetchQuery(
-      tokenQueries.info(queryClient, {
+      tokenQueries.info({
         chainId,
         type: TokenType.Native,
         denomOrAddress: serviceFee.denom,
@@ -107,22 +107,18 @@ export const valenceRebalancerExtraQueries = {
    * Get the generic tokens for the whitelisted tokens in the rebalancer.
    */
   whitelistGenericTokens: (
-    queryClient: QueryClient,
-    options?: Parameters<typeof fetchValenceRebalancerWhitelistGenericTokens>[1]
+    options: Parameters<typeof fetchValenceRebalancerWhitelistGenericTokens>[1]
   ) =>
     queryOptions({
       queryKey: ['valenceRebalancerExtra', 'whitelistGenericTokens', options],
-      queryFn: options
-        ? () =>
-            fetchValenceRebalancerWhitelistGenericTokens(queryClient, options)
-        : skipToken,
+      queryFn: (ctx) =>
+        fetchValenceRebalancerWhitelistGenericTokens(ctx.client, options),
     }),
   /**
    * Get the rebalancer registration service fee.
    */
   rebalancerRegistrationServiceFee: (
-    queryClient: QueryClient,
-    options?: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
+    options: Parameters<typeof fetchValenceRebalancerRegistrationServiceFee>[1]
   ) =>
     queryOptions({
       queryKey: [
@@ -130,9 +126,7 @@ export const valenceRebalancerExtraQueries = {
         'rebalancerRegistrationServiceFee',
         options,
       ],
-      queryFn: options
-        ? () =>
-            fetchValenceRebalancerRegistrationServiceFee(queryClient, options)
-        : skipToken,
+      queryFn: (ctx) =>
+        fetchValenceRebalancerRegistrationServiceFee(ctx.client, options),
     }),
 }

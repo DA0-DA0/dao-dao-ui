@@ -1,293 +1,253 @@
-import {
-  constSelector,
-  selectorFamily,
-  waitForAll,
-  waitForAny,
-  waitForNone,
-} from 'recoil'
+import { queryOptions } from '@tanstack/react-query'
 
 import {
-  DaoDaoCoreSelectors,
-  govProposalVoteSelector,
-  govProposalsSelector,
-  openProposalsSelector,
-} from '@dao-dao/state/recoil'
+  chainQueries,
+  daoDaoCoreQueries,
+  daoQueries,
+  indexerQueries,
+} from '@dao-dao/state/query'
 import {
   DaoPageMode,
+  Expiration,
   FeedSourceDaoWithItems,
   FeedSourceItem,
+  IQueryClient,
   ProfileChain,
 } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
+  FollowingDaosKvpkClient,
   getDaoProposalPath,
   isConfiguredChainName,
-  serializeDaoSource,
 } from '@dao-dao/utils'
 
-import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 import { OpenProposalsProposalLineProps } from './types'
 
-export const feedOpenProposalsSelector = selectorFamily<
-  FeedSourceDaoWithItems<OpenProposalsProposalLineProps>[],
+/**
+ * Fetch open proposals as feed items.
+ */
+export const fetchFeedOpenProposals = async (
+  queryClient: IQueryClient,
   {
+    uuid,
+    profileAddresses,
+  }: {
     /**
-     * The hex public keys to load from.
+     * The UUID to load from.
      */
-    publicKeys: string[]
+    uuid: string
     /**
      * The profile's addresses on each chain.
      */
     profileAddresses: Pick<ProfileChain, 'chainId' | 'address'>[]
   }
->({
-  key: 'feedOpenProposals',
-  get:
-    ({ publicKeys, profileAddresses }) =>
-    ({ get }) => {
-      // Map profile chain ID to address.
-      const profileChainAddressMap: Record<string, string | undefined> =
-        Object.fromEntries(
-          profileAddresses.map(({ chainId, address }) => [chainId, address])
-        )
+): Promise<FeedSourceDaoWithItems<OpenProposalsProposalLineProps>[]> => {
+  // Map profile chain ID to address.
+  const profileChainAddressMap: Record<string, string | undefined> =
+    Object.fromEntries(
+      profileAddresses.map(({ chainId, address }) => [chainId, address])
+    )
 
-      // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = get(
-        waitForAny(
-          publicKeys.map((walletPublicKey) =>
-            followingDaosWithProposalModulesSelector({
-              walletPublicKey,
+  const followingDaosKvpkClient = new FollowingDaosKvpkClient({
+    queryClient,
+  })
+
+  const following = await followingDaosKvpkClient.listFollowingDaos({
+    uuid,
+  })
+
+  if (following.length === 0) {
+    return []
+  }
+
+  const followingDaosWithProposals = await Promise.all(
+    following
+      .filter((dao) => !isConfiguredChainName(dao.chainId, dao.coreAddress))
+      .map(async (dao) => {
+        const profileAddress = profileChainAddressMap[dao.chainId]
+        return {
+          dao,
+          proposalModules: await queryClient.fetchQuery(
+            daoQueries.proposalModules({
+              chainId: dao.chainId,
+              coreAddress: dao.coreAddress,
             })
-          )
-        )
-      ).flatMap((l) => l.valueMaybe() || [])
-
-      // Native chain governance DAOs.
-
-      const followedChainGovWithOpenProposalsSelector =
-        followingDaosWithProposalModules.flatMap(({ chainId, coreAddress }) =>
-          isConfiguredChainName(chainId, coreAddress)
-            ? {
-                chainId,
-                coreAddress,
-                profileAddress: profileChainAddressMap[chainId],
-                selector: govProposalsSelector({
-                  chainId,
-                  status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
-                }),
-              }
-            : []
-        )
-      const openGovProposals =
-        followedChainGovWithOpenProposalsSelector.length > 0
-          ? get(
-              waitForAny(
-                followedChainGovWithOpenProposalsSelector.map(
-                  ({ selector }) => selector
-                )
+          ),
+          openProposals: await Promise.all(
+            (
+              await queryClient.fetchQuery(
+                indexerQueries.queryContract<
+                  | {
+                      proposalModuleAddress: string
+                      proposals: {
+                        id: number
+                        proposal: {
+                          start_height: number
+                          expiration: Expiration
+                        }
+                        voted?: boolean
+                      }[]
+                    }[]
+                  | null
+                >({
+                  chainId: dao.chainId,
+                  contractAddress: dao.coreAddress,
+                  formula: 'daoCore/openProposals',
+                  args: { address: profileAddress },
+                  noFallback: true,
+                })
               )
-            )
-          : []
-      const openGovProposalVotes = get(
-        waitForNone(
-          followedChainGovWithOpenProposalsSelector.map(
-            ({ chainId, profileAddress }, index) =>
-              waitForNone(
-                openGovProposals[index].valueMaybe()?.proposals.map(({ id }) =>
-                  profileAddress
-                    ? govProposalVoteSelector({
-                        chainId,
-                        proposalId: Number(id),
-                        voter: profileAddress,
-                      })
-                    : constSelector([])
-                ) || []
-              )
-          )
-        )
-      )
-
-      // DAO DAO DAOs.
-
-      const followedDaosWithOpenProposalsSelector =
-        followingDaosWithProposalModules.flatMap(
-          ({ chainId, coreAddress, proposalModules }) =>
-            !isConfiguredChainName(chainId, coreAddress)
-              ? {
-                  chainId,
-                  coreAddress,
-                  proposalModules,
-                  selector: openProposalsSelector({
-                    chainId,
-                    coreAddress,
-                    address: profileChainAddressMap[chainId],
-                  }),
-                }
-              : []
-        )
-      const openDaoProposals = get(
-        waitForAll(
-          followedDaosWithOpenProposalsSelector.map(({ selector }) => selector)
-        )
-      )
-      // Get DAO voting power at each open proposal height.
-      const daosWithVotingPowerAtHeightsSelectors =
-        followedDaosWithOpenProposalsSelector.flatMap(
-          ({ chainId, coreAddress }, index) =>
-            openDaoProposals[index].flatMap(({ proposals }) =>
-              proposals.map(({ proposal: { start_height } }) => {
-                const address = profileChainAddressMap[chainId]
-                return {
-                  chainId,
-                  coreAddress,
-                  height: start_height,
-                  selector: address
-                    ? DaoDaoCoreSelectors.votingPowerAtHeightSelector({
-                        chainId,
-                        contractAddress: coreAddress,
-                        params: [
-                          {
-                            address,
-                            height: start_height,
+            )?.map(async ({ proposalModuleAddress, proposals }) => ({
+              proposalModuleAddress,
+              proposals: await Promise.all(
+                proposals.map(async (proposal) => ({
+                  ...proposal,
+                  votingPower: profileAddress
+                    ? await queryClient.fetchQuery(
+                        daoDaoCoreQueries.votingPowerAtHeight({
+                          chainId: dao.chainId,
+                          contractAddress: dao.coreAddress,
+                          args: {
+                            address: profileAddress,
+                            height: proposal.proposal.start_height,
                           },
-                        ],
-                      })
+                        })
+                      )
                     : undefined,
-                }
-              })
-            ) || []
-        )
-      const votingPowerValues = get(
-        waitForNone(
-          daosWithVotingPowerAtHeightsSelectors.map(
-            ({ selector }) => selector || constSelector(undefined)
-          )
-        )
-      )
-      // Map DAO and height to whether or not the wallet has voting power. If
-      // undefined, could not load voting power.
-      const hasVotingPowerForDaoAtHeight =
-        daosWithVotingPowerAtHeightsSelectors.reduce(
-          (acc, { chainId, coreAddress, height }, index) => {
-            const votingPower = votingPowerValues[index].valueMaybe()
+                }))
+              ),
+            })) ?? []
+          ),
+        }
+      })
+  )
 
-            return {
-              ...acc,
-              [`${serializeDaoSource({
-                chainId,
-                coreAddress,
-              })}:${height}`]: votingPower && votingPower.power !== '0',
-            }
-          },
-          {} as Record<string, boolean | undefined>
-        )
+  // Native chain governance DAOs.
+  const followingChainGovDaosWithProposals = await Promise.all(
+    following
+      .filter((dao) => isConfiguredChainName(dao.chainId, dao.coreAddress))
+      .map(async (dao) => {
+        const profileAddress = profileChainAddressMap[dao.chainId]
+        return {
+          dao,
+          proposals: await Promise.all(
+            (
+              await queryClient.fetchQuery(
+                chainQueries.govProposals({
+                  chainId: dao.chainId,
+                  status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
+                })
+              )
+            ).proposals.map(async (proposal) => ({
+              proposal,
+              votes: profileAddress
+                ? await queryClient.fetchQuery(
+                    chainQueries.govProposalVote({
+                      chainId: dao.chainId,
+                      proposalId: Number(proposal.id),
+                      voter: profileAddress,
+                    })
+                  )
+                : undefined,
+            }))
+          ),
+        }
+      })
+  )
 
-      return [
-        // Add followed chain governance DAOs.
-        ...followedChainGovWithOpenProposalsSelector.map(
-          (
-            { chainId, coreAddress },
-            index
-          ): FeedSourceDaoWithItems<OpenProposalsProposalLineProps> => {
-            const proposals =
-              openGovProposals[index].valueMaybe()?.proposals || []
-            const proposalVotes = openGovProposalVotes[index].valueMaybe() || []
-
-            const items = proposals.flatMap(
-              (
+  return [
+    // Add followed chain governance DAOs first.
+    ...followingChainGovDaosWithProposals.map(
+      ({
+        dao,
+        proposals,
+      }): FeedSourceDaoWithItems<OpenProposalsProposalLineProps> => ({
+        ...dao,
+        items: proposals.map(
+          ({
+            proposal,
+            votes,
+          }): FeedSourceItem<OpenProposalsProposalLineProps> => ({
+            props: {
+              type: 'gov',
+              props: {
+                proposalId: proposal.id.toString(),
                 proposal,
-                index
-              ): FeedSourceItem<OpenProposalsProposalLineProps> | [] => {
-                const votes = proposalVotes[index]?.valueMaybe()
-
-                return {
+              },
+            },
+            pending: votes?.length === 0,
+            order: (
+              proposal.proposal.votingEndTime ||
+              proposal.proposal.votingStartTime ||
+              proposal.proposal.submitTime
+            )?.getTime(),
+          })
+        ),
+      })
+    ),
+    // Add DAO DAO DAOs.
+    ...followingDaosWithProposals.map(
+      ({
+        dao,
+        proposalModules,
+        openProposals,
+      }): FeedSourceDaoWithItems<OpenProposalsProposalLineProps> => ({
+        ...dao,
+        items: proposalModules.flatMap(
+          (proposalModule) =>
+            openProposals
+              .find(
+                ({ proposalModuleAddress }) =>
+                  proposalModuleAddress === proposalModule.address
+              )
+              ?.proposals.map(
+                ({
+                  id,
+                  proposal: { expiration },
+                  voted,
+                  votingPower,
+                }): FeedSourceItem<OpenProposalsProposalLineProps> => ({
                   props: {
-                    type: 'gov',
+                    type: 'dao',
                     props: {
-                      proposalId: proposal.id.toString(),
-                      proposal,
+                      ...dao,
+                      proposalId: `${proposalModule.prefix}${id}`,
+                      proposalViewUrl: getDaoProposalPath(
+                        DaoPageMode.Dapp,
+                        dao.coreAddress,
+                        `${proposalModule.prefix}${id}`
+                      ),
                     },
                   },
-                  // If successfully loaded votes and there are none, mark as
-                  // pending. If failed to load, don't mark as pending.
-                  pending: !!votes && votes.length === 0,
-                  order: (
-                    proposal.proposal.votingEndTime ||
-                    proposal.proposal.votingStartTime ||
-                    proposal.proposal.submitTime
-                  )?.getTime(),
-                }
-              }
-            )
-
-            return {
-              chainId,
-              coreAddress,
-              items,
-            }
-          }
+                  pending:
+                    // If successfully checked for vote and found nothing,
+                    // and wallet had voting power, mark as pending. If
+                    // failed to check vote or load voting power, don't
+                    // mark as pending.
+                    voted === false &&
+                    !!votingPower &&
+                    votingPower.power !== '0',
+                  order:
+                    'at_time' in expiration
+                      ? Number(expiration.at_time)
+                      : 'at_height' in expiration
+                        ? Number(expiration.at_height)
+                        : undefined,
+                })
+              ) ?? []
         ),
-        // Add DAO DAO DAOs by matching up a DAO.
-        ...followedDaosWithOpenProposalsSelector.flatMap(
-          (
-            { chainId, coreAddress, proposalModules },
-            index
-          ): FeedSourceDaoWithItems<OpenProposalsProposalLineProps> | [] => {
-            const proposalModulesWithOpenProposals = openDaoProposals[index]
+      })
+    ),
+  ]
+}
 
-            return {
-              chainId,
-              coreAddress,
-              items: proposalModules.flatMap(
-                (proposalModule) =>
-                  proposalModulesWithOpenProposals
-                    .find(
-                      ({ proposalModuleAddress }) =>
-                        proposalModuleAddress === proposalModule.address
-                    )
-                    ?.proposals.map(
-                      ({
-                        id,
-                        proposal: { expiration, start_height },
-                        voted,
-                      }): FeedSourceItem<OpenProposalsProposalLineProps> => ({
-                        props: {
-                          type: 'dao',
-                          props: {
-                            chainId,
-                            coreAddress,
-                            proposalId: `${proposalModule.prefix}${id}`,
-                            proposalViewUrl: getDaoProposalPath(
-                              DaoPageMode.Dapp,
-                              coreAddress,
-                              `${proposalModule.prefix}${id}`
-                            ),
-                          },
-                        },
-                        pending:
-                          // If successfully checked for vote and found nothing,
-                          // and wallet had voting power, mark as pending. If
-                          // failed to check vote or load voting power, don't
-                          // mark as pending.
-                          voted === false &&
-                          !!hasVotingPowerForDaoAtHeight[
-                            `${serializeDaoSource({
-                              chainId,
-                              coreAddress,
-                            })}:${start_height}`
-                          ],
-                        order:
-                          'at_time' in expiration
-                            ? Number(expiration.at_time)
-                            : 'at_height' in expiration
-                              ? Number(expiration.at_height)
-                              : undefined,
-                      })
-                    ) ?? []
-              ),
-            }
-          }
-        ),
-      ]
-    },
-})
+export const feedOpenProposalsQueries = {
+  /**
+   * Fetch open proposals as feed items.
+   */
+  openProposals: (options: Parameters<typeof fetchFeedOpenProposals>[1]) =>
+    queryOptions({
+      queryKey: ['feed', 'openProposals', options],
+      queryFn: (ctx) => fetchFeedOpenProposals(ctx.client, options),
+    }),
+}

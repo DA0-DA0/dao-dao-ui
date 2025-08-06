@@ -1,4 +1,4 @@
-import { QueryClient, queryOptions, skipToken } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
   ONFT,
@@ -246,36 +246,27 @@ export const omniflixQueries = {
    * Fetch ONFT collection supply.
    */
   onftCollectionSupply: (
-    /**
-     * If undefined, returns loading state.
-     */
-    options?: Parameters<typeof fetchOnftCollectionSupply>[0]
+    options: Parameters<typeof fetchOnftCollectionSupply>[0]
   ) =>
     queryOptions({
       queryKey: ['omniflix', 'onftCollectionSupply', options],
-      queryFn: options ? () => fetchOnftCollectionSupply(options) : skipToken,
+      queryFn: () => fetchOnftCollectionSupply(options),
     }),
   /**
    * Fetch paginated ONFTs.
    */
-  paginatedOnfts: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchPaginatedOnfts>[1]
-  ) =>
+  paginatedOnfts: (options: Parameters<typeof fetchPaginatedOnfts>[1]) =>
     queryOptions({
       queryKey: ['omniflix', 'paginatedOnfts', options],
-      queryFn: () => fetchPaginatedOnfts(queryClient, options),
+      queryFn: (ctx) => fetchPaginatedOnfts(ctx.client, options),
     }),
   /**
    * Fetch all ONFTs.
    */
-  allOnfts: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchAllOnfts>[1]
-  ) =>
+  allOnfts: (options: Parameters<typeof fetchAllOnfts>[1]) =>
     queryOptions({
       queryKey: ['omniflix', 'allOnfts', options],
-      queryFn: () => fetchAllOnfts(queryClient, options),
+      queryFn: (ctx) => fetchAllOnfts(ctx.client, options),
     }),
   /**
    * Fetch ONFT.

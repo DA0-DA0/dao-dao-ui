@@ -1,8 +1,4 @@
-import {
-  useQueryClient,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 import { daoVotingOnftStakedQueries, omniflixQueries } from '@dao-dao/state'
@@ -23,11 +19,10 @@ export const useGovernanceCollectionInfo = ({
   const votingModule = useVotingModule()
   const { address: walletAddress } = useWallet()
 
-  const queryClient = useQueryClient()
   const {
     data: { onft_collection_id },
   } = useSuspenseQuery(
-    daoVotingOnftStakedQueries.config(queryClient, {
+    daoVotingOnftStakedQueries.config({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
     })
@@ -55,28 +50,24 @@ export const useGovernanceCollectionInfo = ({
 
   // Wallet balance
   const loadingWalletBalance = useQueryLoadingDataWithError(
-    omniflixQueries.onftCollectionSupply(
-      fetchWalletBalance && walletAddress
-        ? {
-            chainId: votingModule.chainId,
-            id: onft_collection_id,
-            owner: walletAddress,
-          }
-        : undefined
-    )
+    fetchWalletBalance && walletAddress
+      ? omniflixQueries.onftCollectionSupply({
+          chainId: votingModule.chainId,
+          id: onft_collection_id,
+          owner: walletAddress,
+        })
+      : undefined
   )
 
   // Treasury balance
   const loadingTreasuryBalance = useQueryLoadingDataWithError(
-    omniflixQueries.onftCollectionSupply(
-      fetchTreasuryBalance
-        ? {
-            chainId: votingModule.chainId,
-            id: onft_collection_id,
-            owner: votingModule.dao.coreAddress,
-          }
-        : undefined
-    )
+    fetchTreasuryBalance
+      ? omniflixQueries.onftCollectionSupply({
+          chainId: votingModule.chainId,
+          id: onft_collection_id,
+          owner: votingModule.dao.coreAddress,
+        })
+      : undefined
   )
 
   return {

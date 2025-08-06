@@ -139,14 +139,14 @@ const main = async () => {
     maybeGetChainForChainId(srcChainId) ||
       // Fetch from Skip API if doesn't exist locally.
       queryClient.fetchQuery(
-        skipQueries.chain(queryClient, {
+        skipQueries.chain({
           chainId: srcChainId,
         })
       ),
     maybeGetChainForChainId(destChainId) ||
       // Fetch from Skip API if doesn't exist locally.
       queryClient.fetchQuery(
-        skipQueries.chain(queryClient, {
+        skipQueries.chain({
           chainId: destChainId,
         })
       ),
@@ -267,7 +267,7 @@ const main = async () => {
     try {
       trace = (
         await queryClient.fetchQuery(
-          skipQueries.recommendedAsset(queryClient, {
+          skipQueries.recommendedAsset({
             fromChainId: destChainId,
             denom: getNativeTokenForChainId(destChainId).denomOrAddress,
             toChainId: srcChainId,

@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import {
   DaoRewardsDistributorActiveDistributionsCard as StatelessDaoRewardsDistributorActiveDistributionsCard,
@@ -15,9 +13,8 @@ export const DaoRewardsDistributorActiveDistributionsCard = (
 ) => {
   const { chainId, coreAddress } = useDao()
 
-  const queryClient = useQueryClient()
   const distributions = useQueryLoadingDataWithError(
-    daoRewardsDistributorExtraQueries.allDistributions(queryClient, {
+    daoRewardsDistributorExtraQueries.allDistributions({
       chainId,
       daoAddress: coreAddress,
     })

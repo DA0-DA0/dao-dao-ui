@@ -45,6 +45,7 @@ Default.args = {
   SuspenseLoader,
   saves: {
     loading: false,
+    errored: false,
     data: [
       {
         name: 'Deposit $10',
@@ -77,6 +78,7 @@ LoadingSaves.args = {
   ...Default.args,
   saves: {
     loading: true,
+    errored: false,
   },
 }
 
@@ -85,6 +87,7 @@ NoSaves.args = {
   ...Default.args,
   saves: {
     loading: false,
+    errored: false,
     data: [],
   },
 }

@@ -59,13 +59,10 @@ export class DaoVotingTokenStakedMintAction extends ActionBase<MintData> {
     )
 
     this.tokenFactoryIssuerAddress = await this.options.queryClient.fetchQuery(
-      daoVotingTokenStakedExtraQueries.validatedTokenfactoryIssuerContract(
-        this.options.queryClient,
-        {
-          chainId: this.options.chain.chainId,
-          address: this.options.context.dao.votingModule.address,
-        }
-      )
+      daoVotingTokenStakedExtraQueries.validatedTokenfactoryIssuerContract({
+        chainId: this.options.chain.chainId,
+        address: this.options.context.dao.votingModule.address,
+      })
     )
 
     // Need token factory issuer address to mint.

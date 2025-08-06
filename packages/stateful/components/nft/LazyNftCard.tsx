@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { forwardRef, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -22,9 +21,8 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
     },
     ref
   ) {
-    const queryClient = useQueryClient()
     const info = useQueryLoadingDataWithError(
-      nftQueries.cardInfo(queryClient, {
+      nftQueries.cardInfo({
         chainId,
         collection: collectionAddress,
         tokenId,
@@ -49,7 +47,7 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
       // not staker. The owner in the `type` and the owner of the NFT are
       // unrelated. Sorry... I just confused myself and then re-learned this.
       type === 'owner'
-        ? nftQueries.ownerOrStaker(queryClient, {
+        ? nftQueries.ownerOrStaker({
             chainId,
             collection: collectionAddress,
             tokenId,

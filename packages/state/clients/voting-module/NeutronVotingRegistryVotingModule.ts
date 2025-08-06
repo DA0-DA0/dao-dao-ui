@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
@@ -26,7 +26,7 @@ export class NeutronVotingRegistryVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -47,7 +47,7 @@ export class NeutronVotingRegistryVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return neutronVotingRegistryQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,

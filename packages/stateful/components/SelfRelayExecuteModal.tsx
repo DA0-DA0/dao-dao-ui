@@ -356,7 +356,7 @@ export const SelfRelayExecuteModal = ({
           }
 
           const feeToken = await queryClient.fetchQuery(
-            tokenQueries.info(queryClient, {
+            tokenQueries.info({
               chainId: chain.chainId,
               type: TokenType.Native,
               denomOrAddress: feeDenom,

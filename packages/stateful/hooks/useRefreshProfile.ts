@@ -1,8 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 import { useCallback } from 'react'
 
-import { useUpdatingRef } from '@dao-dao/stateless'
+import {
+  useDependencyTrackedQueryClient,
+  useUpdatingRef,
+} from '@dao-dao/stateless'
 import { LoadingData, UnifiedProfile } from '@dao-dao/types'
 import { toBech32Hash } from '@dao-dao/utils'
 
@@ -17,7 +19,7 @@ export const useRefreshProfile = (
   address: string | string[],
   profile: LoadingData<UnifiedProfile | UnifiedProfile[]>
 ) => {
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
 
   // Stabilize reference so callback doesn't change. The latest values will be
   // used when refresh is called.
@@ -41,16 +43,14 @@ export const useRefreshProfile = (
     )
 
     hashes.forEach((bech32Hash) =>
-      queryClient.invalidateQueries({
-        queryKey: [
-          {
-            category: 'profile',
-            options: {
-              bech32Hash,
-            },
+      queryClient.invalidate([
+        {
+          category: 'profile',
+          options: {
+            bech32Hash,
           },
-        ],
-      })
+        },
+      ])
     )
   }, [addressRef, profileRef, queryClient])
 }

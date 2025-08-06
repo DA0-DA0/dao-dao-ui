@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { Addr } from '@dao-dao/types/contracts/ValenceAccount'
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
@@ -43,19 +43,16 @@ export const valenceAccountQueries = {
     chainId,
     contractAddress,
     options,
-  }: ValenceAccountGetAdminQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceAccountQueryKeys.getAdmin(chainId, contractAddress),
-    queryFn: async () =>
-      new ValenceAccountQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getAdmin(),
-    ...options,
-  }),
+  }: ValenceAccountGetAdminQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: valenceAccountQueryKeys.getAdmin(chainId, contractAddress),
+      queryFn: async () =>
+        new ValenceAccountQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getAdmin(),
+      ...options,
+    }),
 }
 export interface ValenceAccountReactQuery<TResponse, TData = TResponse> {
   chainId: string

@@ -1,4 +1,7 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+} from '@tanstack/react-query'
 
 import {
   TotalPowerAtHeightResponse,
@@ -43,7 +46,7 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
     address?: string,
     height?: number
   ): Pick<
-    FetchQueryOptions<VotingPowerAtHeightResponse>,
+    UndefinedInitialDataOptions<VotingPowerAtHeightResponse>,
     'queryKey' | 'queryFn'
   >
 
@@ -59,7 +62,10 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
    */
   getTotalVotingPowerQuery(
     height?: number
-  ): Pick<FetchQueryOptions<TotalPowerAtHeightResponse>, 'queryKey' | 'queryFn'>
+  ): Pick<
+    UndefinedInitialDataOptions<TotalPowerAtHeightResponse>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Fetch the total voting power. Optionally specify a block height. If
@@ -72,7 +78,7 @@ export interface IVotingModuleBase<Dao extends IDaoBase = IDaoBase> {
    * all voting modules have a governance token.
    */
   getGovernanceTokenQuery?(): Pick<
-    FetchQueryOptions<GenericToken>,
+    UnusedSkipTokenOptions<GenericToken>,
     'queryKey' | 'queryFn'
   >
 

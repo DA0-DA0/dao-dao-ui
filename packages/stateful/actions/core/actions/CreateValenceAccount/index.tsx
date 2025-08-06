@@ -1,5 +1,4 @@
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -70,18 +69,14 @@ const Component: ActionComponent = (props) => {
         })),
   })
 
-  const queryClient = useQueryClient()
   const rebalancer = mustGetSupportedChainConfig(chainId).valence?.rebalancer
   const serviceFee = useQueryLoadingDataWithError(
-    valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee(
-      queryClient,
-      rebalancer
-        ? {
-            chainId,
-            address: rebalancer,
-          }
-        : undefined
-    )
+    rebalancer
+      ? valenceRebalancerExtraQueries.rebalancerRegistrationServiceFee({
+          chainId,
+          address: rebalancer,
+        })
+      : undefined
   )
   useEffect(() => {
     setValue(
@@ -271,7 +266,7 @@ export class CreateValenceAccountAction extends ActionBase<CreateValenceAccountD
       (decodedMessage.stargate.value as MsgInstantiateContract2).funds.map(
         async ({ denom, amount }) => {
           const token = await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,

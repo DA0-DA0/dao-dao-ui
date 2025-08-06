@@ -1191,7 +1191,7 @@ export const allSubDaoConfigsSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const subDaos = await queryClient.fetchQuery(
-        daoQueries.listAllSubDaos(queryClient, {
+        daoQueries.listAllSubDaos({
           chainId: queryClientParams.chainId,
           address: queryClientParams.contractAddress,
         })

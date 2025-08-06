@@ -51,7 +51,7 @@ export class UpdateStakingConfigAction extends ActionBase<UpdateStakingConfigDat
 
   async setup() {
     const { unstaking_duration } = await this.options.queryClient.fetchQuery(
-      daoVotingCw721StakedQueries.config(this.options.queryClient, {
+      daoVotingCw721StakedQueries.config({
         chainId: this.options.chain.chainId,
         contractAddress: this.stakingContractAddress,
       })

@@ -1,4 +1,4 @@
-import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
+import { useSuspenseQueries } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -6,12 +6,13 @@ import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
   contractQueries,
+  daoVotingOnftStakedExtraQueries,
   daoVotingOnftStakedQueries,
   daoVotingOnftStakedQueryKeys,
   omniflixQueries,
   refreshDaoVotingPowerAtom,
 } from '@dao-dao/state'
-import { useDao } from '@dao-dao/stateless'
+import { useDao, useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
 import { NftClaimsResponse } from '@dao-dao/types/contracts/DaoVotingOnftStaked'
 import { claimAvailable, getNftKey } from '@dao-dao/utils'
@@ -33,17 +34,17 @@ export const useStakingInfo = ({
   const dao = useDao()
   const { address: walletAddress } = useWallet()
   const { collectionAddress } = useGovernanceCollectionInfo()
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
 
   const { votingModule } = dao
 
   const [stakingContractVersion, unstakingDuration] = useSuspenseQueries({
     queries: [
-      contractQueries.version(queryClient, {
+      contractQueries.version({
         chainId: votingModule.chainId,
         address: votingModule.address,
       }),
-      daoVotingOnftStakedQueries.config(queryClient, {
+      daoVotingOnftStakedQueries.config({
         chainId: votingModule.chainId,
         contractAddress: votingModule.address,
       }),
@@ -63,81 +64,43 @@ export const useStakingInfo = ({
   // Refresh totals, mostly for total staked power.
   const refreshTotals = useCallback(() => {
     setRefreshDaoVotingPower((id) => id + 1)
-    queryClient.invalidateQueries({
-      queryKey: dao.getVotingPowerQuery(walletAddress).queryKey,
-    })
-    queryClient.invalidateQueries({
-      queryKey: dao.getTotalVotingPowerQuery().queryKey,
-    })
-    queryClient.invalidateQueries({
-      queryKey: dao.votingModule.getVotingPowerQuery(walletAddress).queryKey,
-    })
-    queryClient.invalidateQueries({
-      queryKey: dao.votingModule.getTotalVotingPowerQuery().queryKey,
-    })
-    queryClient.invalidateQueries({
-      queryKey: omniflixQueries.onftCollectionSupply({
+    queryClient.invalidate(dao.getVotingPowerQuery(walletAddress))
+    queryClient.invalidate(dao.getTotalVotingPowerQuery())
+    queryClient.invalidate(dao.votingModule.getVotingPowerQuery(walletAddress))
+    queryClient.invalidate(dao.votingModule.getTotalVotingPowerQuery())
+    queryClient.invalidate(
+      omniflixQueries.onftCollectionSupply({
         chainId: votingModule.chainId,
         id: collectionAddress,
-      }).queryKey,
-    })
-    queryClient.invalidateQueries({
-      queryKey: [
-        'omniflix',
-        'paginatedOnfts',
-        {
-          chainId: votingModule.chainId,
-          id: collectionAddress,
-        },
-      ],
-    })
-    queryClient.invalidateQueries({
-      queryKey: [
-        'omniflix',
-        'allOnfts',
-        {
-          chainId: votingModule.chainId,
-          id: collectionAddress,
-        },
-      ],
-    })
-    queryClient.invalidateQueries({
-      queryKey: [
-        'indexer',
-        'query',
-        {
-          chainId: votingModule.chainId,
-          contractAddress: votingModule.address,
-          formula: 'daoVotingOnftStaked/topStakers',
-        },
-      ],
-    })
-
-    // Invalidate indexer query first.
-    queryClient.invalidateQueries({
-      queryKey: [
-        'indexer',
-        'query',
-        {
-          chainId: votingModule.chainId,
-          contractAddress: votingModule.address,
-          formula: 'daoVotingOnftStaked/stakedNfts',
-          args: {
-            address: walletAddress,
-          },
-        },
-      ],
-    })
-    // Then invalidate contract query that uses indexer query.
-    queryClient.invalidateQueries({
-      queryKey: daoVotingOnftStakedQueryKeys.stakedNfts(
+      })
+    )
+    queryClient.invalidate(
+      omniflixQueries.paginatedOnfts({
+        chainId: votingModule.chainId,
+        id: collectionAddress,
+      } as any)
+    )
+    queryClient.invalidate(
+      omniflixQueries.allOnfts({
+        chainId: votingModule.chainId,
+        id: collectionAddress,
+      })
+    )
+    queryClient.invalidate(
+      daoVotingOnftStakedExtraQueries.topStakers({
+        chainId: votingModule.chainId,
+        address: votingModule.address,
+      })
+    )
+    queryClient.invalidate(
+      daoVotingOnftStakedQueryKeys.stakedNfts(
         votingModule.chainId,
         votingModule.address,
         {
           address: walletAddress,
         }
-      ),
-    })
+      )
+    )
   }, [
     votingModule,
     dao,
@@ -163,35 +126,19 @@ export const useStakingInfo = ({
       : blockHeightLoading.data.header.height
 
   const refreshClaims = useCallback(() => {
-    // Invalidate indexer query first.
-    queryClient.invalidateQueries({
-      queryKey: [
-        'indexer',
-        'query',
-        {
-          chainId: votingModule.chainId,
-          contractAddress: votingModule.address,
-          formula: 'daoVotingOnftStaked/nftClaims',
-          args: {
-            address: walletAddress,
-          },
-        },
-      ],
-    })
-    // Then invalidate contract query that uses indexer query.
-    queryClient.invalidateQueries({
-      queryKey: daoVotingOnftStakedQueryKeys.nftClaims(
+    queryClient.invalidate(
+      daoVotingOnftStakedQueryKeys.nftClaims(
         votingModule.chainId,
         votingModule.address,
         {
           address: walletAddress,
         }
-      ),
-    })
+      )
+    )
   }, [votingModule, queryClient, walletAddress])
 
   const loadingClaims = useQueryLoadingData(
-    daoVotingOnftStakedQueries.nftClaims(queryClient, {
+    daoVotingOnftStakedQueries.nftClaims({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       args: {
@@ -221,7 +168,7 @@ export const useStakingInfo = ({
 
   // Wallet staked value
   const loadingWalletStakedNfts = useQueryLoadingDataWithError(
-    daoVotingOnftStakedQueries.stakedNfts(queryClient, {
+    daoVotingOnftStakedQueries.stakedNfts({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       args: {
@@ -244,7 +191,7 @@ export const useStakingInfo = ({
 
   const loadingWalletUnstakedNfts = useQueryLoadingDataWithError(
     {
-      ...omniflixQueries.allOnfts(queryClient, {
+      ...omniflixQueries.allOnfts({
         chainId: votingModule.chainId,
         id: collectionAddress,
         owner: walletAddress ?? '',

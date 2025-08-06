@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { DaoDaoIndexerAllStats, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import { chainIsIndexed, getSupportedChains, retry } from '@dao-dao/utils'
@@ -82,11 +82,9 @@ export const miscQueries = {
   /**
    * Fetch home page stats.
    */
-  homePageStats: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchHomePageStats>[1]
-  ) => ({
-    queryKey: ['misc', 'homePageStats', options],
-    queryFn: () => fetchHomePageStats(queryClient, options),
-  }),
+  homePageStats: (options: Parameters<typeof fetchHomePageStats>[1]) =>
+    queryOptions({
+      queryKey: ['misc', 'homePageStats', options],
+      queryFn: (ctx) => fetchHomePageStats(ctx.client, options),
+    }),
 }

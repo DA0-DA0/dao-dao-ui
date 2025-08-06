@@ -5,7 +5,6 @@ import {
   HomeOutlined,
   InboxOutlined,
 } from '@mui/icons-material'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
@@ -70,14 +69,13 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const daoPageHref = getDaoPath(coreAddress)
     const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
-    const queryClient = useQueryClient()
     const subDaosLoading = useQueryLoadingData(
       coreVersion === ContractVersion.Gov
-        ? daoQueries.chainSubDaoInfos(queryClient, {
+        ? daoQueries.chainSubDaoInfos({
             chainId,
           })
         : {
-            ...daoQueries.subDaoInfos(queryClient, {
+            ...daoQueries.subDaoInfos({
               chainId,
               coreAddress,
             }),

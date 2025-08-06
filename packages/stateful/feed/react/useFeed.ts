@@ -1,9 +1,10 @@
+import { useQueries } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
-import { waitForAll } from 'recoil'
 
-import { lazyDaoCardPropsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useUpdatingRef } from '@dao-dao/stateless'
+import { daoQueries } from '@dao-dao/state/query'
+import { useUpdatingRef } from '@dao-dao/stateless'
 import { FeedDaoWithItems, FeedState } from '@dao-dao/types'
+import { makeCombineQueryResultsIntoLoadingDataWithError } from '@dao-dao/utils'
 
 import { getSources } from '../core'
 
@@ -112,20 +113,20 @@ export const useFeed = (): FeedState => {
     }, [memoizedSources])
 
   // Get info for all DAOs found.
-  const daoLazyCardProps = useCachedLoadable(
-    waitForAll(
-      sourceDaosWithItems.map(({ chainId, coreAddress }) =>
-        lazyDaoCardPropsSelector({
-          chainId,
-          coreAddress,
-        })
-      )
-    )
-  )
+
+  const daoLazyCardProps = useQueries({
+    queries: sourceDaosWithItems.map(({ chainId, coreAddress }) =>
+      daoQueries.lazyDaoCardProps({
+        chainId,
+        coreAddress,
+      })
+    ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError(),
+  })
 
   // Combine DAO info with DAOs and items.
   const daosWithItems = useMemo(() => {
-    if (daoLazyCardProps.state !== 'hasValue') {
+    if (daoLazyCardProps.loading || daoLazyCardProps.errored) {
       return []
     }
 
@@ -135,15 +136,19 @@ export const useFeed = (): FeedState => {
           { chainId, coreAddress, items },
           index
         ): FeedDaoWithItems | undefined =>
-          daoLazyCardProps.contents[index] && {
-            dao: {
-              chainId,
-              coreAddress,
-              name: daoLazyCardProps.contents[index].info.name,
-              imageUrl: daoLazyCardProps.contents[index].info.imageUrl,
-            },
-            items,
-          }
+          !daoLazyCardProps.loading &&
+          !daoLazyCardProps.errored &&
+          daoLazyCardProps.data[index]
+            ? {
+                dao: {
+                  chainId,
+                  coreAddress,
+                  name: daoLazyCardProps.data[index].info.name,
+                  imageUrl: daoLazyCardProps.data[index].info.imageUrl,
+                },
+                items,
+              }
+            : undefined
       )
       .filter(
         (daoWithItems): daoWithItems is FeedDaoWithItems => !!daoWithItems

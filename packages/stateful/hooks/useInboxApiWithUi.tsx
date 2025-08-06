@@ -11,7 +11,6 @@ import { processError } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../components'
 import { useInboxApi } from './useInboxApi'
-import { useWallet } from './useWallet'
 
 export type UseInboxApiWithUiOptions = {
   /**
@@ -30,7 +29,6 @@ export const useInboxApiWithUi = ({
     isReady,
     replace,
   } = useRouter()
-  const { isWalletConnected } = useWallet()
 
   const { inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
@@ -38,10 +36,10 @@ export const useInboxApiWithUi = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const { ready, verify: doVerify } = api
+  const { isWalletConnected, verify: doVerify } = api
 
   const verify = useCallback(async () => {
-    if (ready && isReady) {
+    if (isWalletConnected && isReady) {
       if (typeof code === 'string') {
         if (await doVerify(code)) {
           toast.success(t('info.emailVerified'))
@@ -52,7 +50,7 @@ export const useInboxApiWithUi = ({
 
       replace('/notifications/settings', undefined, { shallow: true })
     }
-  }, [code, isReady, replace, ready, t, doVerify])
+  }, [code, isReady, replace, isWalletConnected, t, doVerify])
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -104,7 +102,7 @@ export const useInboxApiWithUi = ({
     <Tooltip title={t('button.refresh')}>
       <IconButton
         Icon={Refresh}
-        disabled={!api.ready}
+        disabled={!isWalletConnected}
         iconClassName={clsx(refreshSpinning && 'animate-spin-medium')}
         // If spinning but no longer refreshing, stop after iteration.
         onAnimationIteration={
@@ -136,7 +134,7 @@ export const useInboxApiWithUi = ({
     >
       <IconButton
         Icon={countChecked ? Delete : ClearAll}
-        disabled={!api.ready || api.updating || !inbox.items.length}
+        disabled={!isWalletConnected || api.updating || !inbox.items.length}
         loading={checking}
         onClick={clearChecked}
         size={mode === 'popup' ? 'sm' : undefined}
@@ -148,7 +146,7 @@ export const useInboxApiWithUi = ({
     <Tooltip title={t('button.settings')}>
       <IconButtonLink
         Icon={Settings}
-        disabled={!api.ready}
+        disabled={!isWalletConnected}
         href="/notifications/settings"
         replace={mode === 'page'}
         shallow

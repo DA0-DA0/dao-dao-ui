@@ -75,13 +75,10 @@ export class WithdrawRewardDistributionAction extends ActionBase<WithdrawRewardD
       await Promise.all(
         this.distributors.map(async ({ address }) => {
           const distributions = await this.options.queryClient.fetchQuery(
-            daoRewardsDistributorExtraQueries.distributions(
-              this.options.queryClient,
-              {
-                chainId: this.options.chain.chainId,
-                address,
-              }
-            )
+            daoRewardsDistributorExtraQueries.distributions({
+              chainId: this.options.chain.chainId,
+              address,
+            })
           )
 
           return await Promise.all(

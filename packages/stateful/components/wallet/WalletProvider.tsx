@@ -121,7 +121,8 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     [setWeb3AuthPrompt]
   )
 
-  const getSigningOptions = makeGetSignerOptions(useQueryClient())
+  const queryClient = useQueryClient()
+  const getSigningOptions = makeGetSignerOptions(queryClient)
 
   // Auto-connect to Keplr mobile web if in that context.
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)

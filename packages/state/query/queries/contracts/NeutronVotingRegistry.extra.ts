@@ -34,7 +34,7 @@ export const fetchNeutronVaultsWithInfo = async (
         async (vault): Promise<VotingVaultWithInfo> => ({
           ...vault,
           info: await queryClient.fetchQuery(
-            neutronVaultExtraQueries.info(queryClient, {
+            neutronVaultExtraQueries.info({
               chainId,
               address: vault.address,
             })
@@ -64,12 +64,9 @@ export const neutronVotingRegistryExtraQueries = {
   /**
    * Fetch voting vaults with info.
    */
-  vaultsWithInfo: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchNeutronVaultsWithInfo>[1]
-  ) =>
+  vaultsWithInfo: (options: Parameters<typeof fetchNeutronVaultsWithInfo>[1]) =>
     queryOptions({
       queryKey: ['neutronVotingRegistryExtra', 'vaultsWithInfo', options],
-      queryFn: () => fetchNeutronVaultsWithInfo(queryClient, options),
+      queryFn: (ctx) => fetchNeutronVaultsWithInfo(ctx.client, options),
     }),
 }

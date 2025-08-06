@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Config,
@@ -93,160 +93,152 @@ export const neutronCwdSubdaoTimelockSingleQueryKeys = {
     ] as const,
 }
 export const neutronCwdSubdaoTimelockSingleQueries = {
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronCwdSubdaoTimelockSingleConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdSubdaoTimelockSingle/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdSubdaoTimelockSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronCwdSubdaoTimelockSingleConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.config(
+        chainId,
         contractAddress
-      ).config()
-    },
-    ...options,
-  }),
-  proposal: <TData = SingleChoiceProposal>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: NeutronCwdSubdaoTimelockSingleProposalQuery<TData>
-  ): UseQueryOptions<SingleChoiceProposal, Error, TData> => ({
-    queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.proposal(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdSubdaoTimelockSingle/proposal',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdSubdaoTimelockSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposal({
-        proposalId: args.proposalId,
-      })
-    },
-    ...options,
-  }),
-  listProposals: <TData = ProposalListResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: NeutronCwdSubdaoTimelockSingleListProposalsQuery<TData>
-  ): UseQueryOptions<ProposalListResponse, Error, TData> => ({
-    queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.listProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          proposals: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'neutron/cwdSubdaoTimelockSingle/listProposals',
+              formula: 'neutron/cwdSubdaoTimelockSingle/config',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdSubdaoTimelockSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
+  proposal: <TData = SingleChoiceProposal>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: NeutronCwdSubdaoTimelockSingleProposalQuery<TData>) =>
+    queryOptions<SingleChoiceProposal, Error, TData>({
+      queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.proposal(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'neutron/cwdSubdaoTimelockSingle/proposal',
               args,
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdSubdaoTimelockSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listProposals({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  proposalExecutionError: <TData = NullableString>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: NeutronCwdSubdaoTimelockSingleProposalExecutionErrorQuery<TData>
-  ): UseQueryOptions<NullableString, Error, TData> => ({
-    queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.proposalExecutionError(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'neutron/cwdSubdaoTimelockSingle/proposalExecutionError',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdSubdaoTimelockSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposal({
+          proposalId: args.proposalId,
+        })
+      },
+      ...options,
+    }),
+  listProposals: <TData = ProposalListResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: NeutronCwdSubdaoTimelockSingleListProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.listProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            proposals: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'neutron/cwdSubdaoTimelockSingle/listProposals',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new NeutronCwdSubdaoTimelockSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalExecutionError({
-        proposalId: args.proposalId,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdSubdaoTimelockSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listProposals({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  proposalExecutionError: <TData = NullableString>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: NeutronCwdSubdaoTimelockSingleProposalExecutionErrorQuery<TData>) =>
+    queryOptions<NullableString, Error, TData>({
+      queryKey: neutronCwdSubdaoTimelockSingleQueryKeys.proposalExecutionError(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'neutron/cwdSubdaoTimelockSingle/proposalExecutionError',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new NeutronCwdSubdaoTimelockSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalExecutionError({
+          proposalId: args.proposalId,
+        })
+      },
+      ...options,
+    }),
 }
 export interface NeutronCwdSubdaoTimelockSingleReactQuery<
   TResponse,

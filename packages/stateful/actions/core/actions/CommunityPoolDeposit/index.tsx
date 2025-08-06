@@ -99,7 +99,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
     }
 
     const token = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId,
         type: TokenType.Native,
         denomOrAddress: denom,
@@ -144,7 +144,7 @@ export class CommunityPoolDepositAction extends ActionBase<CommunityPoolDepositD
   ]: ProcessedMessage[]): Promise<CommunityPoolDepositData> {
     const { amount, denom } = decodedMessage.stargate.value.amount[0]
     const { decimals } = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId,
         type: TokenType.Native,
         denomOrAddress: denom,

@@ -301,7 +301,7 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
     const cw20TokenDecimals = isCw20
       ? (
           await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Cw20,
               denomOrAddress: isWasmExecute
@@ -330,7 +330,7 @@ export class ExecuteAction extends ActionBase<ExecuteData> {
               amount,
               decimals: (
                 await this.options.queryClient.fetchQuery(
-                  tokenQueries.info(this.options.queryClient, {
+                  tokenQueries.info({
                     chainId,
                     type: TokenType.Native,
                     denomOrAddress: denom,

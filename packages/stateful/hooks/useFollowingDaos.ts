@@ -1,29 +1,18 @@
-import uniq from 'lodash.uniq'
 import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState, waitForAll } from 'recoil'
 
-import {
-  followingDaosSelector,
-  refreshFollowingDaosAtom,
-  temporaryFollowingDaosAtom,
-} from '@dao-dao/state'
-import { useCachedLoadingWithError, useUpdatingRef } from '@dao-dao/stateless'
-import { DaoSource } from '@dao-dao/types'
-import {
-  FOLLOWING_DAOS_PREFIX,
-  KVPK_API_BASE,
-  daoSourcesEqual,
-  processError,
-  serializeDaoSource,
-} from '@dao-dao/utils'
+import { useUpdatingRef } from '@dao-dao/stateless'
+import { DaoSource, LoadingDataWithError } from '@dao-dao/types'
+import { processError, serializeDaoSource } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useQueryLoadingDataWithError } from './query'
 import { useManageProfile } from './useManageProfile'
+import { useFollowingDaosKvpkClient } from './usePfpkClient'
 import { useProfile } from './useProfile'
 
 export type UseFollowingDaosReturn = {
+  following: LoadingDataWithError<DaoSource[]>
   isFollowing: (dao: DaoSource) => boolean
   setFollowing: (dao: DaoSource) => Promise<boolean>
   setUnfollowing: (dao: DaoSource) => Promise<boolean>
@@ -33,48 +22,31 @@ export type UseFollowingDaosReturn = {
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
 
-  const { connected, connecting, uniquePublicKeys } = useProfile()
+  const { connected, connecting } = useProfile()
   const { profile, addChains } = useManageProfile()
 
-  // Following API doesn't update right away, so this serves to keep track of
-  // all successful updates for the current session. This will be reset on page
-  // refresh.
-  const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
+  const { client: followingDaosKvpkClient } = useFollowingDaosKvpkClient()
 
-  const followingDaosLoading = useCachedLoadingWithError(
-    uniquePublicKeys.loading
+  const following = useQueryLoadingDataWithError(
+    profile.loading
       ? undefined
-      : waitForAll(
-          uniquePublicKeys.data.map(({ publicKey }) =>
-            followingDaosSelector({
-              walletPublicKey: publicKey,
-            })
-          )
-        )
-  )
-
-  const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
-  const refreshFollowing = useCallback(
-    () => setRefreshFollowingDaos((id) => id + 1),
-    [setRefreshFollowingDaos]
+      : followingDaosKvpkClient.listFollowingDaosQuery({
+          uuid: profile.data.uuid,
+        })
   )
 
   const isFollowing = useMemo(() => {
     // Construct set of following DAOs so we can check existence quickly.
     const followingDaosSet = new Set(
-      followingDaosLoading.loading || followingDaosLoading.errored
+      following.loading || following.errored
         ? []
-        : followingDaosLoading.data.flat().map(serializeDaoSource)
+        : following.data.flat().map(serializeDaoSource)
     )
 
     return (dao: DaoSource) => followingDaosSet.has(serializeDaoSource(dao))
-  }, [followingDaosLoading])
+  }, [following])
 
   const [updating, setUpdating] = useState(false)
-  const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    KVPK_API_BASE,
-    'Update Following'
-  )
 
   // Turn this into a reference so we can use it in `setFollowing` without
   // memoizing.
@@ -84,7 +56,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     async (dao: DaoSource) => {
       const addChains = addChainsRef.current
 
-      if (!ready || profile.loading || !addChains.ready) {
+      if (!connected || profile.loading || !addChains.ready) {
         toast.error(t('error.logInToFollow'))
         return false
       }
@@ -100,30 +72,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
           await addChains.go([dao.chainId])
         }
 
-        const serializedDaoSource = serializeDaoSource(dao)
-
-        await postRequest(
-          '/set',
-          {
-            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-            value: 1,
-          },
-          undefined,
-          // Use DAO chain ID for following state to ensure we use the same
-          // chain ID when following and unfollowing the DAO.
-          dao.chainId
-        )
-
-        setTemporary((prev) => ({
-          // Add to the tmp list of followed DAOs.
-          following: uniq([...prev.following, serializedDaoSource]),
-          // Remove from the tmp list of unfollowed DAOs.
-          unfollowing: prev.unfollowing.filter(
-            (unfollowed) => unfollowed !== serializedDaoSource
-          ),
-        }))
-
-        refreshFollowing()
+        await followingDaosKvpkClient.followDao(dao)
 
         return true
       } catch (err) {
@@ -135,21 +84,12 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [
-      addChainsRef,
-      postRequest,
-      profile,
-      ready,
-      refreshFollowing,
-      setTemporary,
-      t,
-      updating,
-    ]
+    [addChainsRef, connected, followingDaosKvpkClient, profile, t, updating]
   )
 
   const setUnfollowing = useCallback(
     async (dao: DaoSource) => {
-      if (!ready) {
+      if (!connected) {
         toast.error(t('error.logInToFollow'))
         return false
       }
@@ -160,51 +100,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       setUpdating(true)
 
       try {
-        // Try to find which public key is following this DAO and use a chain ID
-        // for unfollowing with that same public key. By default we follow from
-        // the chain the DAO is on, so this is for backwards compatibilty in
-        // case some follows are stuck on another public key. We have to
-        // unfollow using the same public key that followed since keys are
-        // stored under the signing public key.
-        const followingPublicKeyIndex =
-          followingDaosLoading.loading || followingDaosLoading.errored
-            ? undefined
-            : followingDaosLoading.data.findIndex((follows) =>
-                follows.some((f) => daoSourcesEqual(f, dao))
-              )
-        const unfollowChainId =
-          (uniquePublicKeys.loading ||
-          followingPublicKeyIndex === undefined ||
-          followingPublicKeyIndex === -1
-            ? undefined
-            : uniquePublicKeys.data[followingPublicKeyIndex]?.chains[0]
-                ?.chainId) ||
-          // Fallback to DAO chain ID since this will most likely be the right
-          // chain.
-          dao.chainId
-
-        const serializedDaoSource = serializeDaoSource(dao)
-
-        await postRequest(
-          '/set',
-          {
-            key: FOLLOWING_DAOS_PREFIX + serializedDaoSource,
-            value: null,
-          },
-          undefined,
-          unfollowChainId
-        )
-
-        setTemporary((prev) => ({
-          // Remove from the tmp list of followed DAOs.
-          following: prev.following.filter(
-            (followed) => followed !== serializedDaoSource
-          ),
-          // Add to the tmp list of unfollowed DAOs.
-          unfollowing: uniq([...prev.unfollowing, serializedDaoSource]),
-        }))
-
-        refreshFollowing()
+        await followingDaosKvpkClient.unfollowDao(dao)
 
         return true
       } catch (err) {
@@ -216,19 +112,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [
-      followingDaosLoading,
-      postRequest,
-      ready,
-      refreshFollowing,
-      setTemporary,
-      t,
-      uniquePublicKeys,
-      updating,
-    ]
+    [connected, followingDaosKvpkClient, t, updating]
   )
 
   return {
+    following,
     isFollowing,
     setFollowing,
     setUnfollowing,
@@ -237,6 +125,6 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       connecting ||
       // Updating if wallet connected and following is loading or update is in
       // progress.
-      (connected && (followingDaosLoading.loading || updating)),
+      (connected && (following.loading || updating)),
   }
 }

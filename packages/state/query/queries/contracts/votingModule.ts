@@ -38,7 +38,7 @@ export const fetchVotingModuleActiveThreshold = async (
   try {
     return {
       active_threshold: await queryClient.fetchQuery(
-        indexerQueries.queryContract<ActiveThreshold>(queryClient, {
+        indexerQueries.queryContract<ActiveThreshold>({
           chainId,
           contractAddress: address,
           formula: 'daoVoting/activeThreshold',
@@ -74,11 +74,10 @@ export const votingModuleQueries = {
    * Fetch the active threshold.
    */
   activeThresold: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchVotingModuleActiveThreshold>[1]
   ) =>
     queryOptions({
       queryKey: ['votingModule', 'activeThresold', options],
-      queryFn: () => fetchVotingModuleActiveThreshold(queryClient, options),
+      queryFn: (ctx) => fetchVotingModuleActiveThreshold(ctx.client, options),
     }),
 }

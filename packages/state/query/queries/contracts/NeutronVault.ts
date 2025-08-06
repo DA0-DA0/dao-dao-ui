@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -149,165 +149,153 @@ export const neutronVaultQueries = {
     chainId,
     contractAddress,
     options,
-  }: NeutronVaultConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
+  }: NeutronVaultConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: neutronVaultQueryKeys.config(chainId, contractAddress),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVaultVotingPowerAtHeightQuery<TData>): UseQueryOptions<
-    VotingPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVaultVotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: neutronVaultQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVaultTotalPowerAtHeightQuery<TData>): UseQueryOptions<
-    TotalPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVaultTotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: neutronVaultQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   bondingStatus: <TData = BondingStatusResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVaultBondingStatusQuery<TData>): UseQueryOptions<
-    BondingStatusResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.bondingStatus(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).bondingStatus({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVaultBondingStatusQuery<TData>) =>
+    queryOptions<BondingStatusResponse, Error, TData>({
+      queryKey: neutronVaultQueryKeys.bondingStatus(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).bondingStatus({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   dao: <TData = Addr>({
     chainId,
     contractAddress,
     options,
-  }: NeutronVaultDaoQuery<TData>): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: neutronVaultQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
+  }: NeutronVaultDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: neutronVaultQueryKeys.dao(chainId, contractAddress),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
   name: <TData = String>({
     chainId,
     contractAddress,
     options,
-  }: NeutronVaultNameQuery<TData>): UseQueryOptions<String, Error, TData> => ({
-    queryKey: neutronVaultQueryKeys.name(chainId, contractAddress),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).name()
-    },
-    ...options,
-  }),
+  }: NeutronVaultNameQuery<TData>) =>
+    queryOptions<String, Error, TData>({
+      queryKey: neutronVaultQueryKeys.name(chainId, contractAddress),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).name()
+      },
+      ...options,
+    }),
   description: <TData = String>({
     chainId,
     contractAddress,
     options,
-  }: NeutronVaultDescriptionQuery<TData>): UseQueryOptions<
-    String,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.description(chainId, contractAddress),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).description()
-    },
-    ...options,
-  }),
+  }: NeutronVaultDescriptionQuery<TData>) =>
+    queryOptions<String, Error, TData>({
+      queryKey: neutronVaultQueryKeys.description(chainId, contractAddress),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).description()
+      },
+      ...options,
+    }),
   listBonders: <TData = ArrayOfTupleOfAddrAndUint128>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVaultListBondersQuery<TData>): UseQueryOptions<
-    ArrayOfTupleOfAddrAndUint128,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVaultQueryKeys.listBonders(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new NeutronVaultQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listBonders({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVaultListBondersQuery<TData>) =>
+    queryOptions<ArrayOfTupleOfAddrAndUint128, Error, TData>({
+      queryKey: neutronVaultQueryKeys.listBonders(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVaultQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listBonders({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   info: contractQueries.info,
 }
 export interface NeutronVaultReactQuery<TResponse, TData = TResponse> {

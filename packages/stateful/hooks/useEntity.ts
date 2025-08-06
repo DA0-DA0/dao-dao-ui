@@ -1,5 +1,4 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { entityQueries } from '@dao-dao/state/query'
@@ -55,15 +54,12 @@ export const useEntity = (address: string): UseEntityReturn => {
   }, [address, currentBech32Prefix, currentChainId])
 
   const entity = useQueryLoadingData(
-    entityQueries.info(
-      useQueryClient(),
-      address
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    ),
+    address
+      ? entityQueries.info({
+          chainId,
+          address,
+        })
+      : undefined,
     // Should never error but just in case...
     {
       type: EntityType.Wallet,

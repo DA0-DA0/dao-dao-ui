@@ -1,5 +1,4 @@
 import { fromBase64 } from '@cosmjs/encoding'
-import { QueryClient } from '@tanstack/react-query'
 import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -8,9 +7,7 @@ import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTrans
 import {
   ChainXGovDao,
   contractQueries,
-  dehydrateSerializable,
   getDao,
-  makeReactQueryClient,
   polytoneQueries,
   queryIndexer,
 } from '@dao-dao/state'
@@ -21,6 +18,7 @@ import {
   GovProposalVersion,
   GovProposalWithDecodedContent,
   IDaoBase,
+  IQueryClient,
   ProposalV1,
   ProposalV1Beta1,
 } from '@dao-dao/types'
@@ -39,6 +37,7 @@ import {
   getConfiguredGovChainByName,
   getDaoPath,
   isErrorWithSubstring,
+  makeDependencyTrackedQueryClient,
   processError,
 } from '@dao-dao/utils'
 
@@ -63,7 +62,7 @@ interface GetDaoStaticPropsMakerOptions {
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
-    queryClient: QueryClient
+    queryClient: IQueryClient
     chain: AnyChain
     dao: IDaoBase
   }) =>
@@ -96,7 +95,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         ? getConfiguredGovChainByName(coreAddress)
         : undefined
 
-    const queryClient = makeReactQueryClient()
+    const queryClient = makeDependencyTrackedQueryClient()
 
     const getForChainId = async (
       chainId: string
@@ -154,7 +153,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description,
           accentColor,
           info: dao.info,
-          reactQueryDehydratedState: dehydrateSerializable(queryClient),
+          dehydratedQueryClientState: queryClient.dehydrate(),
           ...additionalProps,
         }
 
@@ -194,7 +193,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               ...i18nProps,
               title: 'DAO not found',
               description: '',
-              reactQueryDehydratedState: dehydrateSerializable(queryClient),
+              dehydratedQueryClientState: queryClient.dehydrate(),
             },
             // Regenerate the page at most once per second. Serves cached copy
             // and refreshes in background.
@@ -207,7 +206,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ? (
               await queryClient
                 .fetchQuery(
-                  contractQueries.info(queryClient, {
+                  contractQueries.info({
                     chainId,
                     address: coreAddress,
                   })
@@ -229,7 +228,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ) {
             // If address is polytone proxy, redirect to DAO on native chain.
             const { remoteAddress } = await queryClient.fetchQuery(
-              polytoneQueries.reverseLookupProxy(queryClient, {
+              polytoneQueries.reverseLookupProxy({
                 chainId,
                 address: coreAddress,
               })
@@ -248,7 +247,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                 ...i18nProps,
                 title: 'Not a DAO contract',
                 description: '',
-                reactQueryDehydratedState: dehydrateSerializable(queryClient),
+                dehydratedQueryClientState: queryClient.dehydrate(),
               },
               // Regenerate the page at most once per second. Serves cached copy
               // and refreshes in background.
@@ -265,7 +264,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.500'),
             description: '',
-            reactQueryDehydratedState: dehydrateSerializable(queryClient),
+            dehydratedQueryClientState: queryClient.dehydrate(),
             // Report to Sentry.
             error: processError(error, {
               tags: {
@@ -307,7 +306,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             ...i18nProps,
             title: serverT('title.daoNotFound'),
             description: err instanceof Error ? err.message : `${err}`,
-            reactQueryDehydratedState: dehydrateSerializable(queryClient),
+            dehydratedQueryClientState: queryClient.dehydrate(),
           },
         }
       }

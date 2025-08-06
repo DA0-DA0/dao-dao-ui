@@ -305,7 +305,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
   async setup() {
     const { minDeposit, supportsV1 } =
       await this.options.queryClient.fetchQuery(
-        chainQueries.govParams(this.options.queryClient, {
+        chainQueries.govParams({
           chainId: this.defaultChainId,
         })
       )
@@ -313,7 +313,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
     const deposit = minDeposit[0]
 
     const depositToken = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId: this.defaultChainId,
         type: TokenType.Native,
         denomOrAddress: deposit.denom,
@@ -380,7 +380,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
         })
       ),
       this.options.queryClient.fetchQuery(
-        chainQueries.supportsV1GovModule(this.options.queryClient, {
+        chainQueries.supportsV1GovModule({
           chainId,
         })
       ),
@@ -495,7 +495,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
       const deposit = await Promise.all(
         proposal.initialDeposit.map(async ({ denom, amount }) => {
           const { decimals } = await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,
@@ -517,7 +517,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
                 async ({ denom, amount }) => {
                   const { decimals } =
                     await this.options.queryClient.fetchQuery(
-                      tokenQueries.info(this.options.queryClient, {
+                      tokenQueries.info({
                         chainId,
                         type: TokenType.Native,
                         denomOrAddress: denom,
@@ -573,7 +573,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
       const deposit = await Promise.all(
         proposal.initialDeposit.map(async ({ denom, amount }) => {
           const { decimals } = await this.options.queryClient.fetchQuery(
-            tokenQueries.info(this.options.queryClient, {
+            tokenQueries.info({
               chainId,
               type: TokenType.Native,
               denomOrAddress: denom,

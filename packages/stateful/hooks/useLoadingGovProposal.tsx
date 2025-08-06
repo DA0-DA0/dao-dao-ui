@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { chainQueries } from '@dao-dao/state'
@@ -24,24 +23,23 @@ export const useLoadingGovProposal = (
 ): LoadingData<GovProposalWithMetadata> => {
   const { t } = useTranslation()
   const { chain } = useConfiguredChainContext()
-  const queryClient = useQueryClient()
 
   const loadingProposal = useQueryLoadingDataWithError(
-    chainQueries.govProposal(queryClient, {
+    chainQueries.govProposal({
       chainId: chain.chainId,
       proposalId: Number(proposalId),
     })
   )
 
   const loadingProposalTally = useQueryLoadingDataWithError(
-    chainQueries.govProposalTally(queryClient, {
+    chainQueries.govProposalTally({
       chainId: chain.chainId,
       proposalId: Number(proposalId),
     })
   )
 
   const loadingGovParams = useQueryLoadingDataWithError(
-    chainQueries.govParams(queryClient, {
+    chainQueries.govParams({
       chainId: chain.chainId,
     })
   )

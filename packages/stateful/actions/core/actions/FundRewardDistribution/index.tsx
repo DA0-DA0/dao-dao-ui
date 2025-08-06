@@ -117,13 +117,10 @@ export class FundRewardDistributionAction extends ActionBase<FundRewardDistribut
         this.distributors.map(
           async ({ address }) =>
             await this.options.queryClient.fetchQuery(
-              daoRewardsDistributorExtraQueries.distributions(
-                this.options.queryClient,
-                {
-                  chainId: this.options.chain.chainId,
-                  address,
-                }
-              )
+              daoRewardsDistributorExtraQueries.distributions({
+                chainId: this.options.chain.chainId,
+                address,
+              })
             )
         )
       )

@@ -3,14 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
 import { daoQueries, neutronGovSpamDbQueries } from '@dao-dao/state/query'
-import {
-  daoVetoableDaosSelector,
-  refreshProposalsIdAtom,
-} from '@dao-dao/state/recoil'
+import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
   useAppContext,
-  useCachedLoadingWithError,
   useDao,
   useDaoNavHelpers,
   useLoadingPromise,
@@ -39,7 +35,6 @@ import {
   useQueryLoadingDataWithError,
 } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
-import { daosWithDropdownVetoableProposalListSelector } from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { LinkWrapper } from './LinkWrapper'
 import { ProposalLine } from './ProposalLine'
@@ -117,16 +112,16 @@ export const ProposalList = ({
     deps: [dao],
   })
 
-  const vetoableDaosLoading = useCachedLoadingWithError(
-    daoVetoableDaosSelector({
+  const vetoableDaosLoading = useQueryLoadingDataWithError(
+    daoQueries.vetoableDaos({
       chainId: dao.chainId,
       coreAddress: dao.coreAddress,
     })
   )
-  const daosWithVetoableProposals = useCachedLoadingWithError(
+  const daosWithVetoableProposals = useQueryLoadingDataWithError(
     hideVetoable
       ? undefined
-      : daosWithDropdownVetoableProposalListSelector({
+      : daoQueries.daosWithDropdownVetoableProposalList({
           chainId: dao.chainId,
           coreAddress: dao.coreAddress,
           daoPageMode: mode,

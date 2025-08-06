@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { accountQueries } from '@dao-dao/state/query'
@@ -21,6 +20,7 @@ export const ImportMultisigModal = (
   props: StatefulImportMultisigModalProps
 ) => {
   const { chainId: currentChainId } = useChain()
+
   const form = useForm<ImportMultisigForm>({
     defaultValues: {
       chainId: currentChainId,
@@ -30,17 +30,14 @@ export const ImportMultisigModal = (
   const address = form.watch('address')
 
   const loadingMultisig = useQueryLoadingDataWithError(
-    accountQueries.multisig(
-      useQueryClient(),
-      chainId &&
-        address &&
-        isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
-        ? {
-            chainId,
-            address,
-          }
-        : undefined
-    )
+    chainId &&
+      address &&
+      isValidBech32Address(address, getChainForChainId(chainId).bech32Prefix)
+      ? accountQueries.multisig({
+          chainId,
+          address,
+        })
+      : undefined
   )
 
   return (

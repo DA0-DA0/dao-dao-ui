@@ -1,4 +1,4 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import { Account } from '../account'
 import { AnyChain } from '../chain'
@@ -138,7 +138,7 @@ export interface IDaoBase {
     address?: string,
     height?: number
   ): Pick<
-    FetchQueryOptions<VotingPowerAtHeightResponse>,
+    UndefinedInitialDataOptions<VotingPowerAtHeightResponse>,
     'queryKey' | 'queryFn'
   >
 
@@ -154,7 +154,10 @@ export interface IDaoBase {
    */
   getTotalVotingPowerQuery(
     height?: number
-  ): Pick<FetchQueryOptions<TotalPowerAtHeightResponse>, 'queryKey' | 'queryFn'>
+  ): Pick<
+    UndefinedInitialDataOptions<TotalPowerAtHeightResponse>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Fetch the total voting power. Optional specify a block height. If
@@ -175,7 +178,10 @@ export interface IDaoBase {
   /**
    * Query options to fetch the TVL.
    */
-  tvlQuery: Pick<FetchQueryOptions<AmountWithTimestamp>, 'queryKey' | 'queryFn'>
+  tvlQuery: Pick<
+    UndefinedInitialDataOptions<AmountWithTimestamp>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Fetch the TVL.

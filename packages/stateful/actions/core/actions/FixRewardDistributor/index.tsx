@@ -46,18 +46,14 @@ const Component: ActionComponent<undefined, FixRewardDistributorData> = (
   const {
     address,
     chain: { chainId },
-    queryClient,
   } = useActionOptions()
   const { setValue } = useFormContext<FixRewardDistributorData>()
 
   const recovery = useQueryLoadingDataWithError(
-    daoRewardsDistributorExtraQueries.v250DistributionRecoveryInfo(
-      queryClient,
-      {
-        chainId,
-        daoAddress: address,
-      }
-    )
+    daoRewardsDistributorExtraQueries.v250DistributionRecoveryInfo({
+      chainId,
+      daoAddress: address,
+    })
   )
 
   useEffect(() => {
@@ -145,7 +141,7 @@ export class FixRewardDistributorAction extends ActionBase<FixRewardDistributorD
       await Promise.all(
         this.distributors.map(async ({ id, address }) => {
           const { info } = await this.options.queryClient.fetchQuery(
-            contractQueries.info(this.options.queryClient, {
+            contractQueries.info({
               chainId: this.options.chain.chainId,
               address,
             })

@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { contractQueries } from '@dao-dao/state/query'
 import { LoadingDataWithError } from '@dao-dao/types'
 import { isSecretNetwork } from '@dao-dao/utils'
@@ -22,7 +20,6 @@ export const useGenerateInstantiate2 = ({
   codeId,
   salt,
 }: UseGenerateInstantiate2Options): LoadingDataWithError<string> => {
-  const queryClient = useQueryClient()
   return useQueryLoadingDataWithError(
     chainId &&
       creator &&
@@ -31,7 +28,7 @@ export const useGenerateInstantiate2 = ({
       codeId > 0 &&
       // Instantiate2 not supported on Secret Network, so just don't load.
       !isSecretNetwork(chainId)
-      ? contractQueries.instantiate2Address(queryClient, {
+      ? contractQueries.instantiate2Address({
           chainId,
           creator,
           codeId,

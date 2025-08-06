@@ -62,7 +62,7 @@ export const getVoteSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })
@@ -95,7 +95,7 @@ export const listVotesSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })
@@ -187,7 +187,7 @@ export const listPaginatedVotesSelector: (
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: queryClientParams.chainId,
           address: queryClientParams.contractAddress,
         })
@@ -245,7 +245,7 @@ export const proposalSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })
@@ -270,7 +270,7 @@ export const configSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })
@@ -292,7 +292,7 @@ export const proposalCountSelector = selectorFamily<number, QueryClientParams>({
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })
@@ -324,7 +324,7 @@ export const reverseProposalsSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const proposalModuleVersion = await queryClient.fetchQuery(
-        contractQueries.version(queryClient, {
+        contractQueries.version({
           chainId: params.chainId,
           address: params.contractAddress,
         })

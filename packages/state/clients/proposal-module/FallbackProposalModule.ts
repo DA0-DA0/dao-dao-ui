@@ -1,4 +1,4 @@
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -46,7 +46,7 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
     throw new Error('Not implemented')
   }
 
-  getProposalQuery(): FetchQueryOptions {
+  getProposalQuery(): UndefinedInitialDataOptions {
     throw new Error('Not implemented')
   }
 
@@ -54,7 +54,7 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
     throw new Error('Not implemented')
   }
 
-  getVoteQuery(): FetchQueryOptions {
+  getVoteQuery(): UndefinedInitialDataOptions {
     throw new Error('Not implemented')
   }
 
@@ -62,16 +62,16 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
     throw new Error('Not implemented')
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     throw new Error('Not implemented')
   }
 
-  getConfigQuery(): FetchQueryOptions {
+  getConfigQuery(): UndefinedInitialDataOptions {
     throw new Error('Not implemented')
   }
 
   getDepositInfoQuery(): Pick<
-    FetchQueryOptions<CheckedDepositInfo | null>,
+    UndefinedInitialDataOptions<CheckedDepositInfo | null>,
     'queryKey' | 'queryFn'
   > {
     throw new Error('Not implemented')
@@ -82,7 +82,7 @@ export class FallbackProposalModule extends ProposalModuleBase<CwDao> {
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
     throw new Error('Not implemented')

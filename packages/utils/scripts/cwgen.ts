@@ -137,7 +137,12 @@ codegen({
       )
       content = content.replace(
         'import { UseQueryOptions',
-        'import { QueryClient, UseQueryOptions'
+        'import { QueryClient, UseQueryOptions, queryOptions'
+      )
+      // replace UseQueryOptions with in queryOptions helper
+      content = content.replace(
+        /\): UseQueryOptions<([^>]+)> => \(\{/gm,
+        ') => queryOptions<$1>({'
       )
       // remove hooks
       content = content.replace(/\nexport function use.+\n[^;]+;\n\}/gm, '')
@@ -153,13 +158,6 @@ codegen({
         /info: <TData = InfoResponse,?>[^}]+\}[^{]+\{[^,]+,[^,]+,[^)]+\),?/m,
         'info: contractQueries.info,'
       )
-      // add queryClient argument to functions
-      if (indexer) {
-        content = content.replace(
-          /(: <TData = [^>]+>\()\{/g,
-          '$1queryClient: QueryClient,{'
-        )
-      }
       // replace client with chain ID and contract address
       content = content.replace(
         /client: [^;]+;/g,
@@ -187,11 +185,11 @@ codegen({
         /queryFn: \(\) => client\.([^(]+)(\([^\)]*\)),/gm,
         indexer
           ? `
-    queryFn: async () => {
+    queryFn: async (ctx) => {
       try {
         // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+        return await ctx.client.fetchQuery(
+          indexerQueries.queryContract({
             chainId,
             contractAddress,
             formula: '${camelCasedContractName}/$1',

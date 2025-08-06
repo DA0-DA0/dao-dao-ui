@@ -1,4 +1,3 @@
-import { QueryClient } from '@tanstack/react-query'
 import { TFunction } from 'next-i18next'
 
 import { getDao } from '@dao-dao/state/clients'
@@ -13,6 +12,7 @@ import {
   ActionContextType,
   ActionOptions,
   EntityType,
+  IQueryClient,
   ImplementedAction,
 } from '@dao-dao/types'
 import {
@@ -35,12 +35,12 @@ export const fetchActionsWithOptions = async ({
   address,
 }: {
   t: TFunction
-  queryClient: QueryClient
+  queryClient: IQueryClient
   chainId: string
   address: string
 }) => {
   const entity = await queryClient.fetchQuery(
-    entityQueries.info(queryClient, {
+    entityQueries.info({
       chainId,
       address,
     })
@@ -68,14 +68,14 @@ export const fetchActionsWithOptions = async ({
     const [profile, accounts] = await Promise.all([
       queryClient
         .fetchQuery(
-          profileQueries.unified(queryClient, {
+          profileQueries.unified({
             chainId,
             address,
           })
         )
         .catch(() => makeEmptyUnifiedProfile(chainId, address)),
       queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address,
         })

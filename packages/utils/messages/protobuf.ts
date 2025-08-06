@@ -107,7 +107,7 @@ export const decodeGovProposal = async (
   if (govProposal.proposal.metadata) {
     let metadata
     // If metadata is a URL, try to fetch metadata.
-    if (isValidUrl(govProposal.proposal.metadata, true)) {
+    if (isValidUrl(govProposal.proposal.metadata)) {
       try {
         const res = await fetch(
           transformIpfsUrlToHttpsIfNecessary(govProposal.proposal.metadata)

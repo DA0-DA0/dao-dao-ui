@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import { Addr } from '@dao-dao/types'
 import {
@@ -138,184 +138,160 @@ export const valenceRebalancerQueries = {
     contractAddress,
     args,
     options,
-  }: ValenceRebalancerGetConfigQuery<TData>): UseQueryOptions<
-    RebalancerConfig,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getConfig(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getConfig({
-        addr: args.addr,
-      })
-    },
-    ...options,
-  }),
+  }: ValenceRebalancerGetConfigQuery<TData>) =>
+    queryOptions<RebalancerConfig, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getConfig(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getConfig({
+          addr: args.addr,
+        })
+      },
+      ...options,
+    }),
   getAllConfigs: <TData = ArrayOfTupleOfAddrAndRebalancerConfig>({
     chainId,
     contractAddress,
     args,
     options,
-  }: ValenceRebalancerGetAllConfigsQuery<TData>): UseQueryOptions<
-    ArrayOfTupleOfAddrAndRebalancerConfig,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getAllConfigs(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getAllConfigs({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: ValenceRebalancerGetAllConfigsQuery<TData>) =>
+    queryOptions<ArrayOfTupleOfAddrAndRebalancerConfig, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getAllConfigs(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getAllConfigs({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   getPausedConfig: <TData = PauseData>({
     chainId,
     contractAddress,
     args,
     options,
-  }: ValenceRebalancerGetPausedConfigQuery<TData>): UseQueryOptions<
-    PauseData,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getPausedConfig(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getPausedConfig({
-        addr: args.addr,
-      })
-    },
-    ...options,
-  }),
+  }: ValenceRebalancerGetPausedConfigQuery<TData>) =>
+    queryOptions<PauseData, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getPausedConfig(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getPausedConfig({
+          addr: args.addr,
+        })
+      },
+      ...options,
+    }),
   getSystemStatus: <TData = SystemRebalanceStatus>({
     chainId,
     contractAddress,
     options,
-  }: ValenceRebalancerGetSystemStatusQuery<TData>): UseQueryOptions<
-    SystemRebalanceStatus,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getSystemStatus(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: ValenceRebalancerGetSystemStatusQuery<TData>) =>
+    queryOptions<SystemRebalanceStatus, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getSystemStatus(
+        chainId,
         contractAddress
-      ).getSystemStatus()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getSystemStatus()
+      },
+      ...options,
+    }),
   getServiceFee: <TData = NullableCoin>({
     chainId,
     contractAddress,
     args,
     options,
-  }: ValenceRebalancerGetServiceFeeQuery<TData>): UseQueryOptions<
-    NullableCoin,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getServiceFee(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getServiceFee({
-        account: args.account,
-        action: args.action,
-      })
-    },
-    ...options,
-  }),
+  }: ValenceRebalancerGetServiceFeeQuery<TData>) =>
+    queryOptions<NullableCoin, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getServiceFee(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getServiceFee({
+          account: args.account,
+          action: args.action,
+        })
+      },
+      ...options,
+    }),
   getWhiteLists: <TData = WhitelistsResponse>({
     chainId,
     contractAddress,
     options,
-  }: ValenceRebalancerGetWhiteListsQuery<TData>): UseQueryOptions<
-    WhitelistsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getWhiteLists(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: ValenceRebalancerGetWhiteListsQuery<TData>) =>
+    queryOptions<WhitelistsResponse, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getWhiteLists(
+        chainId,
         contractAddress
-      ).getWhiteLists()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getWhiteLists()
+      },
+      ...options,
+    }),
   getManagersAddrs: <TData = ManagersAddrsResponse>({
     chainId,
     contractAddress,
     options,
-  }: ValenceRebalancerGetManagersAddrsQuery<TData>): UseQueryOptions<
-    ManagersAddrsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getManagersAddrs(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: ValenceRebalancerGetManagersAddrsQuery<TData>) =>
+    queryOptions<ManagersAddrsResponse, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getManagersAddrs(
+        chainId,
         contractAddress
-      ).getManagersAddrs()
-    },
-    ...options,
-  }),
+      ),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getManagersAddrs()
+      },
+      ...options,
+    }),
   getAdmin: <TData = Addr>({
     chainId,
     contractAddress,
     options,
-  }: ValenceRebalancerGetAdminQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
-    queryKey: valenceRebalancerQueryKeys.getAdmin(chainId, contractAddress),
-    queryFn: async () => {
-      return new ValenceRebalancerQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getAdmin()
-    },
-    ...options,
-  }),
+  }: ValenceRebalancerGetAdminQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: valenceRebalancerQueryKeys.getAdmin(chainId, contractAddress),
+      queryFn: async () => {
+        return new ValenceRebalancerQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getAdmin()
+      },
+      ...options,
+    }),
 }
 export interface ValenceRebalancerReactQuery<TResponse, TData = TResponse> {
   chainId: string

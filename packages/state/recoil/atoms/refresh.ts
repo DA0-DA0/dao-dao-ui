@@ -66,24 +66,6 @@ export const refreshWalletProposalStatsAtom = atom({
   default: 0,
 })
 
-// Change this to refresh following DAOs.
-export const refreshFollowingDaosAtom = atom({
-  key: 'refreshFollowingDaos',
-  default: 0,
-})
-
-// Change this to refresh saved TXs.
-export const refreshSavedTxsAtom = atom({
-  key: 'refreshSavedTxs',
-  default: 0,
-})
-
-// Change this to refresh hidden balances.
-export const refreshHiddenBalancesAtom = atom({
-  key: 'refreshHiddenBalances',
-  default: 0,
-})
-
 // Change this to refresh polytone listener results.
 export const refreshPolytoneListenerResultsAtom = atom({
   key: 'refreshPolytoneListenerResults',

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -59,7 +58,6 @@ const Component: ActionComponent = (props) => {
     context,
     chain: { chainId: srcChainId },
   } = useActionOptions()
-  const queryClient = useQueryClient()
 
   const { watch, setError, clearErrors, setValue } =
     useFormContext<IcaExecuteData>()
@@ -67,7 +65,7 @@ const Component: ActionComponent = (props) => {
 
   const icaRemoteAddressLoading = useQueryLoadingDataWithError(
     destChainId
-      ? accountQueries.remoteIcaAddress(queryClient, {
+      ? accountQueries.remoteIcaAddress({
           address,
           srcChainId,
           destChainId,

@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -108,146 +108,137 @@ export const neutronVotingRegistryQueryKeys = {
     ] as const,
 }
 export const neutronVotingRegistryQueries = {
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: NeutronVotingRegistryDaoQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: neutronVotingRegistryQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'item',
-            args: {
-              key: 'dao',
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronVotingRegistryDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: neutronVotingRegistryQueryKeys.dao(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'item',
+              args: {
+                key: 'dao',
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new NeutronVotingRegistryQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: NeutronVotingRegistryConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: neutronVotingRegistryQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'item',
-            args: {
-              key: 'config',
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new NeutronVotingRegistryQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: NeutronVotingRegistryConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: neutronVotingRegistryQueryKeys.config(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'item',
+              args: {
+                key: 'config',
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new NeutronVotingRegistryQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new NeutronVotingRegistryQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
   votingVaults: <TData = ArrayOfVotingVault>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVotingRegistryVotingVaultsQuery<TData>): UseQueryOptions<
-    ArrayOfVotingVault,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVotingRegistryQueryKeys.votingVaults(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVotingRegistryQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingVaults({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVotingRegistryVotingVaultsQuery<TData>) =>
+    queryOptions<ArrayOfVotingVault, Error, TData>({
+      queryKey: neutronVotingRegistryQueryKeys.votingVaults(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVotingRegistryQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingVaults({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVotingRegistryVotingPowerAtHeightQuery<TData>): UseQueryOptions<
-    VotingPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVotingRegistryQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVotingRegistryQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVotingRegistryVotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: neutronVotingRegistryQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVotingRegistryQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          address: args.address,
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: NeutronVotingRegistryTotalPowerAtHeightQuery<TData>): UseQueryOptions<
-    TotalPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: neutronVotingRegistryQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new NeutronVotingRegistryQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
+  }: NeutronVotingRegistryTotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: neutronVotingRegistryQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new NeutronVotingRegistryQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        })
+      },
+      ...options,
+    }),
   info: contractQueries.info,
 }
 export interface NeutronVotingRegistryReactQuery<TResponse, TData = TResponse> {

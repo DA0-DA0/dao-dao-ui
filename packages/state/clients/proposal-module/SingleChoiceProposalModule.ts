@@ -1,5 +1,5 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
@@ -182,14 +182,11 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   /**
    * Query options to fetch the DAO address.
    */
-  static getDaoAddressQuery(
-    queryClient: QueryClient,
-    options: {
-      chainId: string
-      contractAddress: string
-    }
-  ) {
-    return daoProposalSingleV2Queries.dao(queryClient, options)
+  static getDaoAddressQuery(options: {
+    chainId: string
+    contractAddress: string
+  }) {
+    return daoProposalSingleV2Queries.dao(options)
   }
 
   /**
@@ -203,7 +200,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
     // Load contract info with version.
     const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info(this.queryClient, {
+      contractQueries.info({
         chainId: this.chainId,
         address: this.address,
       })
@@ -219,13 +216,10 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       isFeatureSupportedByVersion(Feature.PrePropose, this._version)
         ? this.queryClient
             .fetchQuery(
-              daoProposalSingleV2Queries.proposalCreationPolicy(
-                this.queryClient,
-                {
-                  chainId: this.chainId,
-                  contractAddress: this.address,
-                }
-              )
+              daoProposalSingleV2Queries.proposalCreationPolicy({
+                chainId: this.chainId,
+                contractAddress: this.address,
+              })
             )
             .catch(() => null)
             .then(async (creationPolicy) => {
@@ -241,7 +235,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
 
               if (preProposeAddress) {
                 this._prePropose = await this.queryClient.fetchQuery(
-                  proposalQueries.preProposeModule(this.queryClient, {
+                  proposalQueries.preProposeModule({
                     chainId: this.chainId,
                     address: preProposeAddress,
                   })
@@ -253,7 +247,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       isFeatureSupportedByVersion(Feature.Veto, this._version)
         ? this.queryClient
             .fetchQuery(
-              daoProposalSingleV2Queries.config(this.queryClient, {
+              daoProposalSingleV2Queries.config({
                 chainId: this.chainId,
                 contractAddress: this.address,
               })
@@ -542,8 +536,8 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
-    return daoProposalSingleV2Queries.proposal(this.queryClient, {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
+    return daoProposalSingleV2Queries.proposal({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -556,7 +550,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<SingleChoiceApprovalProposal> {
+  }): UndefinedInitialDataOptions<SingleChoiceApprovalProposal> {
     if (!this.prePropose) {
       throw new Error('Pre-propose module not found')
     }
@@ -564,7 +558,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       throw new Error('Pre-propose module is not an approval module')
     }
 
-    return daoPreProposeApprovalSingleQueries.queryExtension(this.queryClient, {
+    return daoPreProposeApprovalSingleQueries.queryExtension({
       chainId: this.chainId,
       contractAddress: this.prePropose.address,
       args: {
@@ -583,13 +577,13 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
+  }): UndefinedInitialDataOptions<VoteResponse> {
     const query =
       this.version === ContractVersion.V1
         ? cwProposalSingleV1Queries.vote
         : daoProposalSingleV2Queries.getVote
 
-    return query(this.queryClient, {
+    return query({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -615,26 +609,26 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     const query =
       this.version === ContractVersion.V1
         ? cwProposalSingleV1Queries.proposalCount
         : daoProposalSingleV2Queries.proposalCount
 
-    return query(this.queryClient, {
+    return query({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
-    return daoProposalSingleV2Queries.config(this.queryClient, {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
+    return daoProposalSingleV2Queries.config({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'singleChoiceProposalModule',
@@ -644,15 +638,14 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           address: this.address,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (this.prePropose) {
-          const { deposit_info: depositInfo } =
-            await this.queryClient.fetchQuery(
-              daoPreProposeSingleQueries.config(this.queryClient, {
-                chainId: this.chainId,
-                contractAddress: this.prePropose.address,
-              })
-            )
+          const { deposit_info: depositInfo } = await ctx.client.fetchQuery(
+            daoPreProposeSingleQueries.config({
+              chainId: this.chainId,
+              contractAddress: this.prePropose.address,
+            })
+          )
 
           return depositInfo || null
         } else if (
@@ -660,13 +653,12 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           // instead of a separate pre-propose module.
           !isFeatureSupportedByVersion(Feature.PrePropose, this.version)
         ) {
-          const { deposit_info: depositInfo } =
-            await this.queryClient.fetchQuery(
-              cwProposalSingleV1Queries.config(this.queryClient, {
-                chainId: this.chainId,
-                contractAddress: this.address,
-              })
-            )
+          const { deposit_info: depositInfo } = await ctx.client.fetchQuery(
+            cwProposalSingleV1Queries.config({
+              chainId: this.chainId,
+              contractAddress: this.address,
+            })
+          )
 
           return depositInfo
             ? {
@@ -693,10 +685,10 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
-    return daoProposalSingleV2Queries.delegationModule(this.queryClient, {
+    return daoProposalSingleV2Queries.delegationModule({
       chainId: this.chainId,
       contractAddress: this.address,
     })
@@ -708,7 +700,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
   }: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
+  }): UndefinedInitialDataOptions<UnvotedDelegatedVotingPower> {
     return {
       queryKey: [
         'singleChoiceProposalModule',
@@ -720,7 +712,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           proposalId,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (
           !isFeatureSupportedByVersion(Feature.VoteDelegation, this.version)
         ) {
@@ -750,20 +742,17 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
           }
         }
 
-        const { total, effective } = await this.queryClient.fetchQuery(
-          daoVoteDelegationQueries.unvotedDelegatedVotingPower(
-            this.queryClient,
-            {
-              chainId: this.chainId,
-              contractAddress: delegationModule,
-              args: {
-                delegate,
-                height: start_height,
-                proposalId,
-                proposalModule: this.address,
-              },
-            }
-          )
+        const { total, effective } = await ctx.client.fetchQuery(
+          daoVoteDelegationQueries.unvotedDelegatedVotingPower({
+            chainId: this.chainId,
+            contractAddress: delegationModule,
+            args: {
+              delegate,
+              height: start_height,
+              proposalId,
+              proposalModule: this.address,
+            },
+          })
         )
 
         return {

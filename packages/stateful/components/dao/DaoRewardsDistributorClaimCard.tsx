@@ -1,15 +1,12 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  daoRewardsDistributorExtraQueries,
-  daoRewardsDistributorQueryKeys,
-} from '@dao-dao/state/query'
+import { daoRewardsDistributorExtraQueries } from '@dao-dao/state/query'
 import {
   DaoRewardsDistributorClaimCard as StatelessDaoRewardsDistributorClaimCard,
   useDao,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import { StatefulDaoRewardsDistributorClaimCardProps } from '@dao-dao/types'
 import { executeSmartContracts, processError } from '@dao-dao/utils'
@@ -23,10 +20,10 @@ export const DaoRewardsDistributorClaimCard = (
   const dao = useDao()
   const { address, isWalletConnected, getSigningClient } = useWallet()
 
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const rewards = useQueryLoadingDataWithError(
     address
-      ? daoRewardsDistributorExtraQueries.pendingDaoRewards(queryClient, {
+      ? daoRewardsDistributorExtraQueries.pendingDaoRewards({
           chainId: dao.chainId,
           daoAddress: dao.coreAddress,
           recipient: address,
@@ -77,33 +74,14 @@ export const DaoRewardsDistributorClaimCard = (
 
       toast.success(t('success.claimedRewards'))
 
-      //! Refresh pending rewards...
-
-      // Refetch contract queries depended on by pending rewards query.
-      await queryClient.refetchQueries({
-        queryKey: [
-          {
-            ...daoRewardsDistributorQueryKeys.contract[0],
-            method: 'pending_rewards',
-          },
-        ],
-      })
-
-      await queryClient.refetchQueries({
-        queryKey: ['daoRewardsDistributorExtra', 'listAllPendingRewards'],
-      })
-
-      // Refetch pending rewards query.
-      await queryClient.refetchQueries({
-        queryKey: daoRewardsDistributorExtraQueries.pendingDaoRewards(
-          queryClient,
-          {
-            chainId: dao.chainId,
-            daoAddress: dao.coreAddress,
-            recipient: address,
-          }
-        ).queryKey,
-      })
+      // Refresh.
+      await queryClient.refetch(
+        daoRewardsDistributorExtraQueries.pendingDaoRewards({
+          chainId: dao.chainId,
+          daoAddress: dao.coreAddress,
+          recipient: address,
+        })
+      )
     } catch (error) {
       console.error(error)
       toast.error(processError(error))

@@ -1,13 +1,12 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   daoPreProposeApprovalMultipleQueries,
-  indexerQueries,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
+import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import { ProposalRefreshers } from '@dao-dao/types'
 
 import { useProposalModuleAdapterContext } from '../../../react/context'
@@ -19,7 +18,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     options: { proposalNumber, isApprovalProposal },
   } = useProposalModuleAdapterContext()
 
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const [refreshProposalId, setRefreshProposalId] = useRecoilState(
     refreshProposalIdAtom({
@@ -34,91 +33,36 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     // Invalidate indexer queries first, then contract queries.
 
     if (isApprovalProposal && proposalModule.prePropose) {
-      queryClient
-        .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
-            chainId: proposalModule.chainId,
-            contractAddress: proposalModule.prePropose.address,
-            formula: 'daoPreProposeApprovalMultiple/proposal',
-            args: {
-              id: proposalNumber,
-            },
-          })
-        )
-        .then(() =>
-          queryClient.refetchQueries(
-            proposalModule.getApprovalProposalQuery({
-              proposalId: proposalNumber,
-            })
-          )
-        )
-
-      queryClient
-        .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
-            chainId: proposalModule.chainId,
-            contractAddress: proposalModule.prePropose.address,
-            formula:
-              'daoPreProposeApprovalMultiple/completedProposalIdForCreatedProposalId',
-            args: {
-              id: proposalNumber,
-            },
-          })
-        )
-        .then(() =>
-          queryClient.refetchQueries(
-            daoPreProposeApprovalMultipleQueries.queryExtension(queryClient, {
-              chainId: proposalModule.chainId,
-              contractAddress: proposalModule.prePropose!.address,
-              args: {
-                msg: {
-                  completed_proposal_id_for_created_proposal_id: {
-                    id: proposalNumber,
-                  },
-                },
+      queryClient.refetch(
+        proposalModule.getApprovalProposalQuery({
+          proposalId: proposalNumber,
+        })
+      )
+      queryClient.refetch(
+        daoPreProposeApprovalMultipleQueries.queryExtension({
+          chainId: proposalModule.chainId,
+          contractAddress: proposalModule.prePropose!.address,
+          args: {
+            msg: {
+              completed_proposal_id_for_created_proposal_id: {
+                id: proposalNumber,
               },
-            })
-          )
-        )
+            },
+          },
+        })
+      )
     } else {
-      queryClient
-        .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
-            chainId: proposalModule.chainId,
-            contractAddress: proposalModule.address,
-            formula: 'daoProposalMultiple/vote',
-            args: {
-              proposalId: proposalNumber,
-            },
-          })
-        )
-        .then(() =>
-          queryClient.refetchQueries(
-            proposalModule.getVoteQuery({
-              proposalId: proposalNumber,
-              voter: undefined,
-            })
-          )
-        )
-
-      queryClient
-        .refetchQueries(
-          indexerQueries.queryContract(queryClient, {
-            chainId: proposalModule.chainId,
-            contractAddress: proposalModule.address,
-            formula: 'daoProposalMultiple/proposal',
-            args: {
-              proposalId: proposalNumber,
-            },
-          })
-        )
-        .then(() =>
-          queryClient.refetchQueries(
-            proposalModule.getProposalQuery({
-              proposalId: proposalNumber,
-            })
-          )
-        )
+      queryClient.refetch(
+        proposalModule.getVoteQuery({
+          proposalId: proposalNumber,
+          voter: undefined,
+        })
+      )
+      queryClient.refetch(
+        proposalModule.getProposalQuery({
+          proposalId: proposalNumber,
+        })
+      )
     }
   }, [
     isApprovalProposal,

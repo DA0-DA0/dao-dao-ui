@@ -1,8 +1,7 @@
 import {
   QueryClient,
-  UseQueryOptions,
+  UnusedSkipTokenOptions,
   queryOptions,
-  skipToken,
 } from '@tanstack/react-query'
 
 import {
@@ -52,10 +51,11 @@ export const fetchProfileInfo = async (
   )
   // Copy PFPK profile info into unified profile.
   profile.uuid = pfpkProfile.uuid
-  profile.nonce = pfpkProfile.nonce
   profile.name = pfpkProfile.name
   profile.nft = pfpkProfile.nft
   profile.chains = pfpkProfile.chains
+  profile.createdAt = pfpkProfile.createdAt
+  profile.updatedAt = pfpkProfile.updatedAt
 
   // Use profile address for Stargaze if set, falling back to transforming the
   // address (which is unreliable due to different chains using different HD
@@ -87,7 +87,7 @@ export const fetchProfileInfo = async (
   if (!pfpkProfile?.nft?.imageUrl) {
     const stargazeNameImage = await queryClient
       .fetchQuery(
-        profileQueries.stargazeNameImage(queryClient, {
+        profileQueries.stargazeNameImage({
           address: stargazeAddress,
         })
       )
@@ -244,11 +244,7 @@ export const profileQueries = {
   /**
    * Fetch unified profile.
    */
-  unified: (
-    queryClient: QueryClient,
-    // If undefined, query will be disabled.
-    options?: Parameters<typeof fetchProfileInfo>[1]
-  ) =>
+  unified: (options: Parameters<typeof fetchProfileInfo>[1]) =>
     queryOptions({
       queryKey: [
         {
@@ -262,9 +258,7 @@ export const profileQueries = {
           },
         },
       ],
-      queryFn: options
-        ? () => fetchProfileInfo(queryClient, options)
-        : skipToken,
+      queryFn: (ctx) => fetchProfileInfo(ctx.client, options),
     }),
   /**
    * Fetch PFPK profile.
@@ -272,11 +266,9 @@ export const profileQueries = {
   pfpk: (
     /**
      * Redirects address queries to bech32 hash queries.
-     *
-     * If undefined, query will be disabled.
      */
-    options?: { address: string } | { bech32Hash: string }
-  ): UseQueryOptions<
+    options: { address: string } | { bech32Hash: string }
+  ): UnusedSkipTokenOptions<
     PfpkProfile,
     Error,
     PfpkProfile,
@@ -284,12 +276,12 @@ export const profileQueries = {
       {
         category: 'profile'
         name: 'pfpk'
-        options: { bech32Hash: string } | undefined
+        options: { bech32Hash: string }
       },
     ]
   > =>
     // Redirect address queries to bech32 hash queries.
-    options && 'address' in options
+    'address' in options
       ? profileQueries.pfpk({
           bech32Hash: toBech32Hash(options.address),
         })
@@ -301,7 +293,7 @@ export const profileQueries = {
               options,
             },
           ],
-          queryFn: options ? () => fetchPfpkProfileInfo(options) : skipToken,
+          queryFn: () => fetchPfpkProfileInfo(options),
         }),
   /**
    * Fetch Stargaze name for a wallet adderss.
@@ -314,25 +306,19 @@ export const profileQueries = {
   /**
    * Fetch Stargaze name's image associated an address.
    */
-  stargazeNameImage: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchStargazeNameImage>[1]
-  ) =>
+  stargazeNameImage: (options: Parameters<typeof fetchStargazeNameImage>[1]) =>
     queryOptions({
       queryKey: ['profile', 'stargazeNameImage', options],
-      queryFn: () => fetchStargazeNameImage(queryClient, options),
+      queryFn: (ctx) => fetchStargazeNameImage(ctx.client, options),
     }),
   /**
    * Search for profiles by name prefix.
    */
   searchByNamePrefix: (
-    /**
-     * If undefined, query will be disabled.
-     */
-    options?: Parameters<typeof searchProfilesByNamePrefix>[0]
+    options: Parameters<typeof searchProfilesByNamePrefix>[0]
   ) =>
     queryOptions({
       queryKey: ['profile', 'searchByNamePrefix', options],
-      queryFn: options ? () => searchProfilesByNamePrefix(options) : skipToken,
+      queryFn: () => searchProfilesByNamePrefix(options),
     }),
 }

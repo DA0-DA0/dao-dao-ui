@@ -163,7 +163,7 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
         chainId === ChainId.OmniflixHubMainnet ||
         chainId === ChainId.OmniflixHubTestnet
           ? await queryClient.fetchQuery(
-              omniflixQueries.allOnfts(queryClient, {
+              omniflixQueries.allOnfts({
                 chainId,
                 owner: coreAddress,
               })

@@ -55,7 +55,7 @@ export const genericTokenSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const client = get(queryClientAtom)
-      return await client.fetchQuery(tokenQueries.info(client, params))
+      return await client.fetchQuery(tokenQueries.info(params))
     },
 })
 
@@ -111,7 +111,7 @@ export const usdPriceSelector = selectorFamily<
 
       const queryClient = get(queryClientAtom)
       return await queryClient
-        .fetchQuery(tokenQueries.usdPrice(queryClient, params))
+        .fetchQuery(tokenQueries.usdPrice(params))
         .catch(() => undefined)
     },
 })
@@ -246,16 +246,14 @@ export const genericTokenBalancesSelector = selectorFamily<
 
 export const genericTokenBalanceSelector = selectorFamily<
   GenericTokenBalance,
-  Parameters<typeof tokenQueries.balance>[1]
+  Parameters<typeof tokenQueries.balance>[0]
 >({
   key: 'genericTokenBalance',
   get:
     (params) =>
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
-      return await queryClient.fetchQuery(
-        tokenQueries.balance(queryClient, params)
-      )
+      return await queryClient.fetchQuery(tokenQueries.balance(params))
     },
 })
 
@@ -303,7 +301,7 @@ export const genericTokenUndelegatingBalancesSelector = selectorFamily<
     async ({ get }) => {
       const queryClient = get(queryClientAtom)
       const { unbondingDelegations } = await queryClient.fetchQuery(
-        chainQueries.nativeDelegationInfo(queryClient, params)
+        chainQueries.nativeDelegationInfo(params)
       )
 
       const tokens = get(
@@ -574,7 +572,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         const queryClient = get(queryClientAtom)
         const { delegations, unbondingDelegations } =
           await queryClient.fetchQuery(
-            chainQueries.nativeDelegationInfo(queryClient, {
+            chainQueries.nativeDelegationInfo({
               chainId,
               address: owner,
             })

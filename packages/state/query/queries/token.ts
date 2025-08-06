@@ -39,7 +39,7 @@ export const fetchTokenInfo = async (
   const [source, asset] = await Promise.all([
     queryClient
       .fetchQuery(
-        tokenQueries.source(queryClient, {
+        tokenQueries.source({
           chainId,
           type,
           denomOrAddress,
@@ -53,7 +53,7 @@ export const fetchTokenInfo = async (
       })),
     queryClient
       .fetchQuery(
-        skipQueries.asset(queryClient, {
+        skipQueries.asset({
           chainId,
           type,
           denomOrAddress,
@@ -86,7 +86,7 @@ export const fetchTokenInfo = async (
     // if it's different. This has happened before when Skip does not have
     // an IBC asset that we were able to reverse engineer the source for.
     const sourceAsset = await queryClient
-      .fetchQuery(skipQueries.asset(queryClient, source))
+      .fetchQuery(skipQueries.asset(source))
       .catch(() => null)
 
     if (sourceAsset) {
@@ -117,13 +117,13 @@ export const fetchTokenInfo = async (
   if (type === TokenType.Cw20) {
     const [tokenInfo, imageUrl] = await Promise.all([
       queryClient.fetchQuery(
-        cw20BaseQueries.tokenInfo(queryClient, {
+        cw20BaseQueries.tokenInfo({
           chainId,
           contractAddress: denomOrAddress,
         })
       ),
       queryClient.fetchQuery(
-        tokenQueries.cw20LogoUrl(queryClient, {
+        tokenQueries.cw20LogoUrl({
           chainId,
           address: denomOrAddress,
         })
@@ -186,14 +186,14 @@ export const fetchTokenInfo = async (
       if (metaData) {
         // try to load image from metadata url, otherwise using fallback
         let imageUrl
-        if (metaData.uri && isValidUrl(metaData.uri, true)) {
+        if (metaData.uri && isValidUrl(metaData.uri)) {
           try {
             const res = await fetch(
               transformIpfsUrlToHttpsIfNecessary(metaData.uri)
             )
             if (res.ok) {
               const { image } = await res.json()
-              if (image && isValidUrl(image, true)) {
+              if (image && isValidUrl(image)) {
                 imageUrl = image
               }
             }
@@ -296,7 +296,7 @@ export const fetchTokenSource = async (
   // Check if Skip API has the info.
   const skipAsset = await queryClient
     .fetchQuery(
-      skipQueries.asset(queryClient, {
+      skipQueries.asset({
         chainId,
         type,
         denomOrAddress,
@@ -387,7 +387,7 @@ export const fetchTokenBalance = (
 ): Promise<GenericTokenBalance> =>
   Promise.all([
     queryClient.fetchQuery(
-      tokenQueries.info(queryClient, { chainId, type, denomOrAddress })
+      tokenQueries.info({ chainId, type, denomOrAddress })
     ),
     type === TokenType.Native
       ? queryClient
@@ -402,7 +402,7 @@ export const fetchTokenBalance = (
       : type === TokenType.Cw20
         ? queryClient
             .fetchQuery(
-              cw20BaseQueries.balance(queryClient, {
+              cw20BaseQueries.balance({
                 chainId,
                 contractAddress: denomOrAddress,
                 args: {
@@ -434,7 +434,7 @@ export const fetchCw20LogoUrl = async (
 ): Promise<string | null> => {
   try {
     const logoUrl = await queryClient.fetchQuery(
-      indexerQueries.queryContract(queryClient, {
+      indexerQueries.queryContract({
         chainId,
         contractAddress: address,
         formula: 'cw20/logoUrl',
@@ -450,7 +450,7 @@ export const fetchCw20LogoUrl = async (
   const logoInfo = (
     await queryClient
       .fetchQuery(
-        cw20BaseQueries.marketingInfo(queryClient, {
+        cw20BaseQueries.marketingInfo({
           chainId,
           contractAddress: address,
         })
@@ -497,9 +497,7 @@ export const fetchUsdPrice = async (
     throw new Error('USD prices are only available on mainnet')
   }
 
-  const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, options)
-  )
+  const token = await queryClient.fetchQuery(tokenQueries.info(options))
 
   const usdPrice =
     (await queryClient.fetchQuery(
@@ -524,47 +522,35 @@ export const tokenQueries = {
   /**
    * Fetch info for a token.
    */
-  info: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchTokenInfo>[1]
-  ) =>
+  info: (options: Parameters<typeof fetchTokenInfo>[1]) =>
     queryOptions({
       queryKey: ['token', 'info', options],
-      queryFn: () => fetchTokenInfo(queryClient, options),
+      queryFn: (ctx) => fetchTokenInfo(ctx.client, options),
     }),
   /**
    * Resolve a denom on a chain to its source chain and base denom. If an IBC
    * asset, reverse engineer IBC denom. Otherwise returns the inputs.
    */
-  source: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchTokenSource>[1]
-  ) =>
+  source: (options: Parameters<typeof fetchTokenSource>[1]) =>
     queryOptions({
       queryKey: ['token', 'source', options],
-      queryFn: () => fetchTokenSource(queryClient, options),
+      queryFn: (ctx) => fetchTokenSource(ctx.client, options),
     }),
   /**
    * Fetch the balance for any token.
    */
-  balance: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchTokenBalance>[1]
-  ) =>
+  balance: (options: Parameters<typeof fetchTokenBalance>[1]) =>
     queryOptions({
       queryKey: ['token', 'balance', options],
-      queryFn: () => fetchTokenBalance(queryClient, options),
+      queryFn: (ctx) => fetchTokenBalance(ctx.client, options),
     }),
   /**
    * Fetch the logo URL for a cw20 token if it exists.
    */
-  cw20LogoUrl: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchCw20LogoUrl>[1]
-  ) =>
+  cw20LogoUrl: (options: Parameters<typeof fetchCw20LogoUrl>[1]) =>
     queryOptions({
       queryKey: ['token', 'cw20LogoUrl', options],
-      queryFn: () => fetchCw20LogoUrl(queryClient, options),
+      queryFn: (ctx) => fetchCw20LogoUrl(ctx.client, options),
     }),
   /**
    * Fetch the info for a BitSong Fantoken.
@@ -577,12 +563,9 @@ export const tokenQueries = {
   /**
    * Fetch the USD price for a token.
    */
-  usdPrice: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchUsdPrice>[1]
-  ) =>
+  usdPrice: (options: Parameters<typeof fetchUsdPrice>[1]) =>
     queryOptions({
       queryKey: ['token', 'usdPrice', options],
-      queryFn: () => fetchUsdPrice(queryClient, options),
+      queryFn: (ctx) => fetchUsdPrice(ctx.client, options),
     }),
 }

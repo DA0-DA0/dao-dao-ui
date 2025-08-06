@@ -2,7 +2,7 @@ import {
   CustomTxOptions,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 
@@ -144,7 +144,7 @@ export interface IProposalModuleBase<
    */
   getProposalQuery(options: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse>
+  }): UndefinedInitialDataOptions<ProposalResponse>
 
   /**
    * Fetch a proposal.
@@ -157,7 +157,7 @@ export interface IProposalModuleBase<
    */
   getApprovalProposalQuery(options: {
     proposalId: number
-  }): FetchQueryOptions<ApprovalProposal>
+  }): UndefinedInitialDataOptions<ApprovalProposal>
 
   /**
    * Fetch an approval proposal from the pre-propose-approval module, if
@@ -174,7 +174,7 @@ export interface IProposalModuleBase<
   getVoteQuery(options: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse>
+  }): UndefinedInitialDataOptions<VoteResponse>
 
   /**
    * Fetch the vote on a proposal by a given address. If the address has not
@@ -188,7 +188,7 @@ export interface IProposalModuleBase<
   /**
    * Query options to fetch the total number of proposals.
    */
-  getProposalCountQuery(): FetchQueryOptions<number>
+  getProposalCountQuery(): UndefinedInitialDataOptions<number>
 
   /**
    * Fetch the total number of proposals.
@@ -198,13 +198,16 @@ export interface IProposalModuleBase<
   /**
    * Query options to fetch the config.
    */
-  getConfigQuery(): Pick<FetchQueryOptions<Config>, 'queryKey' | 'queryFn'>
+  getConfigQuery(): Pick<
+    UndefinedInitialDataOptions<Config>,
+    'queryKey' | 'queryFn'
+  >
 
   /**
    * Query options to fetch configured deposit info, if any.
    */
   getDepositInfoQuery(): Pick<
-    FetchQueryOptions<CheckedDepositInfo | null>,
+    UndefinedInitialDataOptions<CheckedDepositInfo | null>,
     'queryKey' | 'queryFn'
   >
 
@@ -217,7 +220,7 @@ export interface IProposalModuleBase<
    * Query options to fetch the delegation module address, or null if none.
    */
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   >
 
@@ -228,7 +231,7 @@ export interface IProposalModuleBase<
   getUnvotedDelegatedVotingPowerQuery(options: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<UnvotedDelegatedVotingPower>
+  }): UndefinedInitialDataOptions<UnvotedDelegatedVotingPower>
 
   /**
    * Fetch a delegate's registration info, optionally at a specific height, or
@@ -237,7 +240,7 @@ export interface IProposalModuleBase<
   getDelegateRegistrationQuery(options: {
     delegate: string
     height?: number
-  }): FetchQueryOptions<RegistrationResponse | null>
+  }): UndefinedInitialDataOptions<RegistrationResponse | null>
 }
 
 export type UnvotedDelegatedVotingPower = {

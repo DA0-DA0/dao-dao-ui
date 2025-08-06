@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -12,12 +11,13 @@ import {
   useChain,
   useDao,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import { ModuleId, TokenType } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
-import { usePostRequest } from '../../../hooks/usePostRequest'
+import { usePfpkClientPost } from '../../../hooks/usePfpkClientPost'
 import { retroactiveCompensationQueries } from '../../../queries'
 import {
   Cw20Token,
@@ -61,8 +61,8 @@ export const CreateSurvey = () => {
     []
   )
 
-  const queryClient = useQueryClient()
-  const postRequest = usePostRequest()
+  const queryClient = useDependencyTrackedQueryClient()
+  const postRequest = usePfpkClientPost()
 
   const [loading, setLoading] = useState(false)
   const onCreate = useCallback(
@@ -145,11 +145,11 @@ export const CreateSurvey = () => {
         toast.success(t('success.compensationCycleCreated'))
 
         // Reload survey list.
-        await queryClient.refetchQueries({
-          queryKey: retroactiveCompensationQueries.listSurveys(queryClient, {
+        await queryClient.refetch(
+          retroactiveCompensationQueries.listSurveys({
             daoAddress: coreAddress,
-          }).queryKey,
-        })
+          })
+        )
 
         // Navigate to survey.
         router.push(

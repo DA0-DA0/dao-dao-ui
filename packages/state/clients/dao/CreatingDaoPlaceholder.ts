@@ -1,6 +1,6 @@
 import {
-  FetchQueryOptions,
   QueryClient,
+  UndefinedInitialDataOptions,
   skipToken,
 } from '@tanstack/react-query'
 
@@ -106,14 +106,14 @@ export class CreatingDaoPlaceholder extends DaoBase {
     return []
   }
 
-  getVotingPowerQuery(): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  getVotingPowerQuery(): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     return {
       queryKey: [],
       queryFn: skipToken,
     }
   }
 
-  getTotalVotingPowerQuery(): FetchQueryOptions<TotalPowerAtHeightResponse> {
+  getTotalVotingPowerQuery(): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
     return {
       queryKey: [],
       queryFn: skipToken,

@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AnyContractInfo,
@@ -129,130 +129,113 @@ export const secretDaoPreProposeApprovalSingleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretSingleChoiceApprovalProposalModuleQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.proposalModule(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretSingleChoiceApprovalProposalModuleQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoPreProposeApprovalSingleQueryKeys.proposalModule(
+        chainId,
         contractAddress
-      ).proposalModule(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModule(),
+      ...options,
+    }),
   dao: <TData = AnyContractInfo>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeApprovalSingleDaoQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.dao(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeApprovalSingleDaoQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoPreProposeApprovalSingleQueryKeys.dao(
+        chainId,
         contractAddress
-      ).dao(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   config: <TData = Config>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeApprovalSingleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeApprovalSingleConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoPreProposeApprovalSingleQueryKeys.config(
+        chainId,
         contractAddress
-      ).config(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   depositInfo: <TData = DepositInfoResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoPreProposeApprovalSingleDepositInfoQuery<TData>): UseQueryOptions<
-    DepositInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.depositInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).depositInfo({
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoPreProposeApprovalSingleDepositInfoQuery<TData>) =>
+    queryOptions<DepositInfoResponse, Error, TData>({
+      queryKey: secretDaoPreProposeApprovalSingleQueryKeys.depositInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).depositInfo({
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   proposalSubmittedHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretSingleChoiceApprovalProposalSubmittedHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.proposalSubmittedHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposalSubmittedHooks(),
-    ...options,
-  }),
+  }: SecretSingleChoiceApprovalProposalSubmittedHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey:
+        secretDaoPreProposeApprovalSingleQueryKeys.proposalSubmittedHooks(
+          chainId,
+          contractAddress
+        ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalSubmittedHooks(),
+      ...options,
+    }),
   queryExtension: <TData = Binary>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoPreProposeApprovalSingleQueryExtensionQuery<TData>): UseQueryOptions<
-    Binary,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeApprovalSingleQueryKeys.queryExtension(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeApprovalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).queryExtension({
-        msg: args.msg,
-      }),
-    ...options,
-  }),
+  }: SecretDaoPreProposeApprovalSingleQueryExtensionQuery<TData>) =>
+    queryOptions<Binary, Error, TData>({
+      queryKey: secretDaoPreProposeApprovalSingleQueryKeys.queryExtension(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeApprovalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).queryExtension({
+          msg: args.msg,
+        }),
+      ...options,
+    }),
   info: contractQueries.info,
 }
 export interface SecretDaoPreProposeApprovalSingleReactQuery<

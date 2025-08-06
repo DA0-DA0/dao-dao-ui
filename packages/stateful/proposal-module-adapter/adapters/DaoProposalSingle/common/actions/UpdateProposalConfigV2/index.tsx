@@ -213,7 +213,7 @@ export class DaoProposalSingleV2UpdateConfigAction extends ActionBase<UpdateProp
 
   async setup() {
     const config = await this.options.queryClient.fetchQuery(
-      daoProposalSingleV2Queries.config(this.options.queryClient, {
+      daoProposalSingleV2Queries.config({
         chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
@@ -224,13 +224,10 @@ export class DaoProposalSingleV2UpdateConfigAction extends ActionBase<UpdateProp
     // null.
     const cw1WhitlistAdmins = config.veto
       ? await this.options.queryClient.fetchQuery(
-          cw1WhitelistExtraQueries.adminsIfCw1Whitelist(
-            this.options.queryClient,
-            {
-              chainId: this.proposalModule.chainId,
-              address: config.veto.vetoer,
-            }
-          )
+          cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
+            chainId: this.proposalModule.chainId,
+            address: config.veto.vetoer,
+          })
         )
       : null
 
@@ -247,7 +244,7 @@ export class DaoProposalSingleV2UpdateConfigAction extends ActionBase<UpdateProp
 
   async encode(data: UpdateProposalConfigData): Promise<UnifiedCosmosMsg> {
     const config = await this.options.queryClient.fetchQuery(
-      daoProposalSingleV2Queries.config(this.options.queryClient, {
+      daoProposalSingleV2Queries.config({
         chainId: this.proposalModule.chainId,
         contractAddress: this.proposalModule.address,
       })
@@ -344,13 +341,10 @@ export class DaoProposalSingleV2UpdateConfigAction extends ActionBase<UpdateProp
     // null.
     const cw1WhitlistAdmins = config.veto
       ? await this.options.queryClient.fetchQuery(
-          cw1WhitelistExtraQueries.adminsIfCw1Whitelist(
-            this.options.queryClient,
-            {
-              chainId: this.proposalModule.chainId,
-              address: config.veto.vetoer,
-            }
-          )
+          cw1WhitelistExtraQueries.adminsIfCw1Whitelist({
+            chainId: this.proposalModule.chainId,
+            address: config.veto.vetoer,
+          })
         )
       : null
 

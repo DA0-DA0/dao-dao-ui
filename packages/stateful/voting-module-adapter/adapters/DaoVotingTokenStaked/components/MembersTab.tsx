@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -23,9 +22,8 @@ export const MembersTab = () => {
   const votingModule = useVotingModule()
   const { governanceToken } = useGovernanceTokenInfo()
 
-  const queryClient = useQueryClient()
   const members = useQueryLoadingDataWithError(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
       formula:

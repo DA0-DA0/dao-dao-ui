@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
@@ -45,7 +45,7 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId: currentChainId },
   } = useActionOptions()
-  const queryClient = useQueryClient()
+
   const { watch } = useFormContext<TransferNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -71,7 +71,7 @@ const Component: ActionComponent = (props) => {
     queries:
       chainId && nfts.length
         ? nfts.map(({ collection, tokenId }) =>
-            nftQueries.cardInfo(queryClient, { chainId, collection, tokenId })
+            nftQueries.cardInfo({ chainId, collection, tokenId })
           )
         : [],
     combine: makeCombineQueryResultsIntoLoadingDataWithError(),

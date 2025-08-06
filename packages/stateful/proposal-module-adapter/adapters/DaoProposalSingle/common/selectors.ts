@@ -103,7 +103,7 @@ export const reverseProposalInfosSelector: (
             ? new Date(response.createdAt)
             : queryClient
                 .fetchQuery(
-                  chainQueries.blockTimestampSafe(queryClient, {
+                  chainQueries.blockTimestampSafe({
                     chainId,
                     height: start_height,
                   })

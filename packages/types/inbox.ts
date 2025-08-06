@@ -179,7 +179,7 @@ export type InboxConfig = {
 }
 
 export type InboxApi = {
-  ready: boolean
+  isWalletConnected: boolean
   updating: boolean
   clear: (
     items: {

@@ -79,27 +79,21 @@ export const indexerQueries = {
   /**
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
-  query: <T = any>(
-    queryClient: QueryClient,
-    options: FetchIndexerQueryOptions
-  ) =>
+  query: <T = any>(options: FetchIndexerQueryOptions) =>
     queryOptions({
       queryKey: ['indexer', 'query', options],
-      queryFn: () => fetchIndexerQuery<T>(queryClient, options),
+      queryFn: (ctx) => fetchIndexerQuery<T>(ctx.client, options),
     }),
   /**
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
-  queryAccount: <T = any>(
-    queryClient: QueryClient,
-    {
-      address,
-      ...options
-    }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
-      address: string
-    }
-  ) =>
-    indexerQueries.query<T>(queryClient, {
+  queryAccount: <T = any>({
+    address,
+    ...options
+  }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
+    address: string
+  }) =>
+    indexerQueries.query<T>({
       ...options,
       type: IndexerFormulaType.Account,
       address,
@@ -107,16 +101,13 @@ export const indexerQueries = {
   /**
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
-  queryContract: <T = any>(
-    queryClient: QueryClient,
-    {
-      contractAddress: address,
-      ...options
-    }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
-      contractAddress: string
-    }
-  ) =>
-    indexerQueries.query<T>(queryClient, {
+  queryContract: <T = any>({
+    contractAddress: address,
+    ...options
+  }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
+    contractAddress: string
+  }) =>
+    indexerQueries.query<T>({
       ...options,
       type: IndexerFormulaType.Contract,
       address,
@@ -125,26 +116,22 @@ export const indexerQueries = {
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
   queryGeneric: <T = any>(
-    queryClient: QueryClient,
     options: Omit<FetchIndexerQueryOptions, 'type' | 'address'>
   ) =>
-    indexerQueries.query<T>(queryClient, {
+    indexerQueries.query<T>({
       ...options,
       type: IndexerFormulaType.Generic,
     }),
   /**
    * Fetch indexer query, unless the indexer is behind and there is a fallback.
    */
-  queryValidator: <T = any>(
-    queryClient: QueryClient,
-    {
-      validatorOperatorAddress: address,
-      ...options
-    }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
-      validatorOperatorAddress: string
-    }
-  ) =>
-    indexerQueries.query<T>(queryClient, {
+  queryValidator: <T = any>({
+    validatorOperatorAddress: address,
+    ...options
+  }: Omit<FetchIndexerQueryOptions, 'type' | 'address'> & {
+    validatorOperatorAddress: string
+  }) =>
+    indexerQueries.query<T>({
       ...options,
       type: IndexerFormulaType.Validator,
       address,

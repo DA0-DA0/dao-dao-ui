@@ -1,5 +1,5 @@
 import { CustomTxOptions } from '@cosmjs/cosmwasm-stargate'
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
@@ -236,14 +236,11 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   /**
    * Query options to fetch the DAO address.
    */
-  static getDaoAddressQuery(
-    queryClient: QueryClient,
-    options: {
-      chainId: string
-      contractAddress: string
-    }
-  ) {
-    return daoProposalMultipleQueries.dao(queryClient, options)
+  static getDaoAddressQuery(options: {
+    chainId: string
+    contractAddress: string
+  }) {
+    return daoProposalMultipleQueries.dao(options)
   }
 
   /**
@@ -257,7 +254,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
     // Load contract info with version.
     const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info(this.queryClient, {
+      contractQueries.info({
         chainId: this.chainId,
         address: this.address,
       })
@@ -273,13 +270,10 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       isFeatureSupportedByVersion(Feature.PrePropose, this._version)
         ? this.queryClient
             .fetchQuery(
-              daoProposalMultipleQueries.proposalCreationPolicy(
-                this.queryClient,
-                {
-                  chainId: this.chainId,
-                  contractAddress: this.address,
-                }
-              )
+              daoProposalMultipleQueries.proposalCreationPolicy({
+                chainId: this.chainId,
+                contractAddress: this.address,
+              })
             )
             .catch(() => null)
             .then(async (creationPolicy) => {
@@ -295,7 +289,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
 
               if (preProposeAddress) {
                 this._prePropose = await this.queryClient.fetchQuery(
-                  proposalQueries.preProposeModule(this.queryClient, {
+                  proposalQueries.preProposeModule({
                     chainId: this.chainId,
                     address: preProposeAddress,
                   })
@@ -307,7 +301,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       isFeatureSupportedByVersion(Feature.Veto, this._version)
         ? this.queryClient
             .fetchQuery(
-              daoProposalMultipleQueries.config(this.queryClient, {
+              daoProposalMultipleQueries.config({
                 chainId: this.chainId,
                 contractAddress: this.address,
               })
@@ -551,8 +545,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
-    return daoProposalMultipleQueries.proposal(this.queryClient, {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
+    return daoProposalMultipleQueries.proposal({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -565,7 +559,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<MultipleChoiceApprovalProposal> {
+  }): UndefinedInitialDataOptions<MultipleChoiceApprovalProposal> {
     if (!this.prePropose) {
       throw new Error('Pre-propose module not found')
     }
@@ -573,20 +567,17 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       throw new Error('Pre-propose module is not an approval module')
     }
 
-    return daoPreProposeApprovalMultipleQueries.queryExtension(
-      this.queryClient,
-      {
-        chainId: this.chainId,
-        contractAddress: this.prePropose.address,
-        args: {
-          msg: {
-            proposal: {
-              id: proposalId,
-            },
+    return daoPreProposeApprovalMultipleQueries.queryExtension({
+      chainId: this.chainId,
+      contractAddress: this.prePropose.address,
+      args: {
+        msg: {
+          proposal: {
+            id: proposalId,
           },
         },
-      }
-    )
+      },
+    })
   }
 
   getVoteQuery({
@@ -595,8 +586,8 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
-    return daoProposalMultipleQueries.getVote(this.queryClient, {
+  }): UndefinedInitialDataOptions<VoteResponse> {
+    return daoProposalMultipleQueries.getVote({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -622,28 +613,28 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
-    return daoProposalMultipleQueries.proposalCount(this.queryClient, {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
+    return daoProposalMultipleQueries.proposalCount({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDaoAddressQuery(): FetchQueryOptions<string> {
-    return daoProposalMultipleQueries.dao(this.queryClient, {
+  getDaoAddressQuery(): UndefinedInitialDataOptions<string> {
+    return daoProposalMultipleQueries.dao({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
-    return daoProposalMultipleQueries.config(this.queryClient, {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
+    return daoProposalMultipleQueries.config({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'multipleChoiceProposalModule',
@@ -653,15 +644,14 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           address: this.address,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (this.prePropose) {
-          const { deposit_info: depositInfo } =
-            await this.queryClient.fetchQuery(
-              daoPreProposeMultipleQueries.config(this.queryClient, {
-                chainId: this.chainId,
-                contractAddress: this.prePropose.address,
-              })
-            )
+          const { deposit_info: depositInfo } = await ctx.client.fetchQuery(
+            daoPreProposeMultipleQueries.config({
+              chainId: this.chainId,
+              contractAddress: this.prePropose.address,
+            })
+          )
 
           return depositInfo || null
         }
@@ -678,10 +668,10 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
-    return daoProposalMultipleQueries.delegationModule(this.queryClient, {
+    return daoProposalMultipleQueries.delegationModule({
       chainId: this.chainId,
       contractAddress: this.address,
     })
@@ -693,7 +683,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
   }: {
     delegate: string
     proposalId: number
-  }): FetchQueryOptions<UnvotedDelegatedVotingPower> {
+  }): UndefinedInitialDataOptions<UnvotedDelegatedVotingPower> {
     return {
       queryKey: [
         'multipleChoiceProposalModule',
@@ -705,7 +695,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           proposalId,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (
           !isFeatureSupportedByVersion(Feature.VoteDelegation, this.version)
         ) {
@@ -735,20 +725,17 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
           }
         }
 
-        const { total, effective } = await this.queryClient.fetchQuery(
-          daoVoteDelegationQueries.unvotedDelegatedVotingPower(
-            this.queryClient,
-            {
-              chainId: this.chainId,
-              contractAddress: delegationModule,
-              args: {
-                delegate,
-                height: start_height,
-                proposalId,
-                proposalModule: this.address,
-              },
-            }
-          )
+        const { total, effective } = await ctx.client.fetchQuery(
+          daoVoteDelegationQueries.unvotedDelegatedVotingPower({
+            chainId: this.chainId,
+            contractAddress: delegationModule,
+            args: {
+              delegate,
+              height: start_height,
+              proposalId,
+              proposalModule: this.address,
+            },
+          })
         )
 
         return {

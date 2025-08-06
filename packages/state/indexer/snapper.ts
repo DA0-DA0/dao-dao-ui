@@ -48,7 +48,9 @@ export const querySnapper = async <T = any>({
   // If text fails to parse as JSON, return the text as is. This is backwards
   // compatibility for strings that were not encoded properly.
   try {
-    return text && typeof text === 'string' ? JSON.parse(text) : text
+    return text && typeof text === 'string'
+      ? JSON.parse(text)
+      : (text as T | undefined)
   } catch (err) {
     console.error(`Failed to parse Snapper response (${text}) as JSON:`, err)
     return text as T

@@ -24,7 +24,7 @@ export const fetchDaoVotingOnftStakedTopStakers = async (
   }[]
 > =>
   (await queryClient.fetchQuery(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId,
       contractAddress: address,
       formula: 'daoVotingOnftStaked/topStakers',
@@ -50,7 +50,7 @@ export const fetchDaoVotingOnftStakedStaker = (
   }
 ): Promise<string | null> =>
   queryClient.fetchQuery(
-    indexerQueries.queryContract(queryClient, {
+    indexerQueries.queryContract({
       chainId,
       contractAddress: address,
       formula: 'daoVotingOnftStaked/staker',
@@ -66,24 +66,20 @@ export const daoVotingOnftStakedExtraQueries = {
    * Fetch top stakers.
    */
   topStakers: (
-    queryClient: QueryClient,
     options: Parameters<typeof fetchDaoVotingOnftStakedTopStakers>[1]
   ) =>
     queryOptions({
       queryKey: ['daoVotingOnftStakedExtra', 'topStakers', options],
-      queryFn: () => fetchDaoVotingOnftStakedTopStakers(queryClient, options),
+      queryFn: (ctx) => fetchDaoVotingOnftStakedTopStakers(ctx.client, options),
     }),
 
   /**
    * Fetch staker for given ONFT in ONFT-staked voting module. Returns null if
    * not staked.
    */
-  staker: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchDaoVotingOnftStakedStaker>[1]
-  ) =>
+  staker: (options: Parameters<typeof fetchDaoVotingOnftStakedStaker>[1]) =>
     queryOptions({
       queryKey: ['daoVotingOnftStakedExtra', 'staker', options],
-      queryFn: () => fetchDaoVotingOnftStakedStaker(queryClient, options),
+      queryFn: (ctx) => fetchDaoVotingOnftStakedStaker(ctx.client, options),
     }),
 }

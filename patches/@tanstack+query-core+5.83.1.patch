@@ -1,0 +1,60 @@
+diff --git a/node_modules/@tanstack/query-core/build/modern/query.cjs b/node_modules/@tanstack/query-core/build/modern/query.cjs
+index 678c417..887dc66 100644
+--- a/node_modules/@tanstack/query-core/build/modern/query.cjs
++++ b/node_modules/@tanstack/query-core/build/modern/query.cjs
+@@ -209,8 +209,12 @@ var Query = class extends import_removable.Removable {
+     const fetchFn = () => {
+       const queryFn = (0, import_utils.ensureQueryFn)(this.options, fetchOptions);
+       const createQueryFnContext = () => {
++        const client =
++          this.#client.dependencyTracker
++            ? this.#client.dependencyTracker.wrapQueryClient(this.queryHash)
++            : this.#client
+         const queryFnContext2 = {
+-          client: this.#client,
++          client,
+           queryKey: this.queryKey,
+           meta: this.meta
+         };
+diff --git a/node_modules/@tanstack/query-core/build/modern/query.js b/node_modules/@tanstack/query-core/build/modern/query.js
+index 5df0185..f96604f 100644
+--- a/node_modules/@tanstack/query-core/build/modern/query.js
++++ b/node_modules/@tanstack/query-core/build/modern/query.js
+@@ -192,8 +192,12 @@ var Query = class extends Removable {
+     const fetchFn = () => {
+       const queryFn = ensureQueryFn(this.options, fetchOptions);
+       const createQueryFnContext = () => {
++        const client =
++          this.#client.dependencyTracker
++            ? this.#client.dependencyTracker.wrapQueryClient(this.queryHash)
++            : this.#client
+         const queryFnContext2 = {
+-          client: this.#client,
++          client,
+           queryKey: this.queryKey,
+           meta: this.meta
+         };
+diff --git a/node_modules/@tanstack/query-core/build/modern/queryClient.cjs b/node_modules/@tanstack/query-core/build/modern/queryClient.cjs
+index 37e298a..cdd1fab 100644
+--- a/node_modules/@tanstack/query-core/build/modern/queryClient.cjs
++++ b/node_modules/@tanstack/query-core/build/modern/queryClient.cjs
+@@ -201,6 +201,7 @@ var QueryClient = class {
+       defaultedOptions.retry = false;
+     }
+     const query = this.#queryCache.build(this, defaultedOptions);
++    options?.trackDependency?.(query);
+     return query.isStaleByTime(
+       (0, import_utils.resolveStaleTime)(defaultedOptions.staleTime, query)
+     ) ? query.fetch(defaultedOptions) : Promise.resolve(query.state.data);
+diff --git a/node_modules/@tanstack/query-core/build/modern/queryClient.js b/node_modules/@tanstack/query-core/build/modern/queryClient.js
+index 64a5a5f..b49b802 100644
+--- a/node_modules/@tanstack/query-core/build/modern/queryClient.js
++++ b/node_modules/@tanstack/query-core/build/modern/queryClient.js
+@@ -185,6 +185,7 @@ var QueryClient = class {
+       defaultedOptions.retry = false;
+     }
+     const query = this.#queryCache.build(this, defaultedOptions);
++    options?.trackDependency?.(query);
+     return query.isStaleByTime(
+       resolveStaleTime(defaultedOptions.staleTime, query)
+     ) ? query.fetch(defaultedOptions) : Promise.resolve(query.state.data);

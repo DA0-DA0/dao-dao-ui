@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { useDao } from '@dao-dao/stateless'
 
 import { IconButtonLink } from '../../../../../../../components'
@@ -18,10 +16,9 @@ export const Home = () => {
     loadAccount: true,
   })
   const { isMember = false } = useMembership()
-  const queryClient = useQueryClient()
 
   const loadingSurveys = useQueryLoadingDataWithError(
-    retroactiveCompensationQueries.listSurveys(queryClient, {
+    retroactiveCompensationQueries.listSurveys({
       daoAddress: dao.coreAddress,
       walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
     })

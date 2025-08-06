@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AdminResponse,
@@ -98,111 +98,96 @@ export const secretCw4GroupQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretCw4GroupAdminQuery<TData>): UseQueryOptions<
-    AdminResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretCw4GroupQueryKeys.admin(chainId, contractAddress),
-    queryFn: async () => {
-      return new SecretCw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).admin()
-    },
-    ...options,
-  }),
+  }: SecretCw4GroupAdminQuery<TData>) =>
+    queryOptions<AdminResponse, Error, TData>({
+      queryKey: secretCw4GroupQueryKeys.admin(chainId, contractAddress),
+      queryFn: async () => {
+        return new SecretCw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).admin()
+      },
+      ...options,
+    }),
   totalWeight: <TData = TotalWeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretCw4GroupTotalWeightQuery<TData>): UseQueryOptions<
-    TotalWeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretCw4GroupQueryKeys.totalWeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new SecretCw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalWeight({
-        atHeight: args.atHeight,
-      })
-    },
-    ...options,
-  }),
+  }: SecretCw4GroupTotalWeightQuery<TData>) =>
+    queryOptions<TotalWeightResponse, Error, TData>({
+      queryKey: secretCw4GroupQueryKeys.totalWeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new SecretCw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalWeight({
+          atHeight: args.atHeight,
+        })
+      },
+      ...options,
+    }),
   listMembers: <TData = MemberListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretCw4GroupListMembersQuery<TData>): UseQueryOptions<
-    MemberListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretCw4GroupQueryKeys.listMembers(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new SecretCw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listMembers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
+  }: SecretCw4GroupListMembersQuery<TData>) =>
+    queryOptions<MemberListResponse, Error, TData>({
+      queryKey: secretCw4GroupQueryKeys.listMembers(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new SecretCw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listMembers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
   member: <TData = MemberResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretCw4GroupMemberQuery<TData>): UseQueryOptions<
-    MemberResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretCw4GroupQueryKeys.member(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new SecretCw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).member({
-        atHeight: args.atHeight,
-        auth: args.auth,
-      })
-    },
-    ...options,
-  }),
+  }: SecretCw4GroupMemberQuery<TData>) =>
+    queryOptions<MemberResponse, Error, TData>({
+      queryKey: secretCw4GroupQueryKeys.member(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new SecretCw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).member({
+          atHeight: args.atHeight,
+          auth: args.auth,
+        })
+      },
+      ...options,
+    }),
   hooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretCw4GroupHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretCw4GroupQueryKeys.hooks(chainId, contractAddress),
-    queryFn: async () => {
-      return new SecretCw4GroupQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).hooks()
-    },
-    ...options,
-  }),
+  }: SecretCw4GroupHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretCw4GroupQueryKeys.hooks(chainId, contractAddress),
+      queryFn: async () => {
+        return new SecretCw4GroupQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).hooks()
+      },
+      ...options,
+    }),
 }
 export interface SecretCw4GroupReactQuery<TResponse, TData = TResponse> {
   chainId: string

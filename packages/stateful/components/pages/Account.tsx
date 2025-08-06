@@ -1,5 +1,4 @@
 import { fromBech32 } from '@cosmjs/encoding'
-import { useQueryClient } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -71,7 +70,7 @@ export const Account: NextPage = () => {
   )
 
   const profile = useQueryLoadingData(
-    profileQueries.unified(useQueryClient(), {
+    profileQueries.unified({
       chainId: configuredChain.chainId,
       address: accountAddress,
     }),

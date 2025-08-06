@@ -1,4 +1,8 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import {
+  UndefinedInitialDataOptions,
+  UnusedSkipTokenOptions,
+  skipToken,
+} from '@tanstack/react-query'
 
 import { GenericToken, ModuleInstantiateInfo, TokenType } from '@dao-dao/types'
 import {
@@ -66,7 +70,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -75,7 +79,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingOnftStakedQueries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingOnftStakedQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -87,8 +91,8 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingOnftStakedQueries.totalPowerAtHeight(this.queryClient, {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoVotingOnftStakedQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -97,7 +101,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
     })
   }
 
-  getGovernanceTokenQuery = (): FetchQueryOptions<GenericToken> => {
+  getGovernanceTokenQuery = (): UnusedSkipTokenOptions<GenericToken> => {
     return {
       queryKey: [
         'onftStakedVotingModule',
@@ -107,15 +111,15 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
           address: this.address,
         },
       ],
-      queryFn: async () => {
-        const { onft_collection_id } = await this.queryClient.fetchQuery(
-          daoVotingOnftStakedQueries.config(this.queryClient, {
+      queryFn: async (ctx) => {
+        const { onft_collection_id } = await ctx.client.fetchQuery(
+          daoVotingOnftStakedQueries.config({
             chainId: this.chainId,
             contractAddress: this.address,
           })
         )
 
-        const { symbol, previewUri } = await this.queryClient.fetchQuery(
+        const { symbol, previewUri } = await ctx.client.fetchQuery(
           omniflixQueries.onftCollectionInfo({
             chainId: this.chainId,
             id: onft_collection_id,
@@ -146,7 +150,7 @@ export class OnftStakedVotingModule extends VotingModuleBase<CwDao> {
   async getHooks(): Promise<string[]> {
     return (
       await this.queryClient.fetchQuery(
-        daoVotingOnftStakedQueries.hooks(this.queryClient, {
+        daoVotingOnftStakedQueries.hooks({
           chainId: this.chainId,
           contractAddress: this.getHookCaller(),
         })

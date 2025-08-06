@@ -71,7 +71,7 @@ export const InnerDaoTxTreasuryHistory = ({
   ).data.header.height
   const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
   const initialLowestHeightLoadedTimestamp = useSuspenseQuery(
-    chainQueries.blockTimestampSafe(queryClient, {
+    chainQueries.blockTimestampSafe({
       chainId,
       height: initialMinHeight,
     })
@@ -118,7 +118,7 @@ export const InnerDaoTxTreasuryHistory = ({
             )
 
             const newLowestHeightLoadedTimestamp = await queryClient.fetchQuery(
-              chainQueries.blockTimestamp(queryClient, {
+              chainQueries.blockTimestamp({
                 chainId,
                 height: minHeight,
               })

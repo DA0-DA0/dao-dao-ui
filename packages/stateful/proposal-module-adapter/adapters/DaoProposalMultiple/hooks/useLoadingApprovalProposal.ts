@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { proposalQueries } from '@dao-dao/state/query'
@@ -26,7 +25,6 @@ export const useLoadingApprovalProposal = (): LoadingData<
     proposalModule,
     proposalNumber,
   } = useProposalModuleAdapterOptions()
-  const queryClient = useQueryClient()
 
   const loadingProposal: LoadingData<
     MultipleChoiceApprovalProposal | undefined
@@ -41,7 +39,7 @@ export const useLoadingApprovalProposal = (): LoadingData<
   const approverProposalId = useQueryLoadingDataWithError(
     proposalModule.prePropose?.type === PreProposeModuleType.Approval &&
       !!proposalModule.prePropose.config.preProposeApproverContract
-      ? proposalQueries.approverIdForPreProposeApprovalId(queryClient, {
+      ? proposalQueries.approverIdForPreProposeApprovalId({
           chainId,
           preProposeAddress: proposalModule.prePropose.address,
           proposalNumber,

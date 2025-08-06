@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AnyContractInfo,
@@ -97,105 +97,90 @@ export const secretDaoVotingCw4Queries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingCw4GroupContractQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.groupContract(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingCw4QueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingCw4GroupContractQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoVotingCw4QueryKeys.groupContract(
+        chainId,
         contractAddress
-      ).groupContract(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingCw4QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).groupContract(),
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingCw4VotingPowerAtHeightQuery<TData>): UseQueryOptions<
-    VotingPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingCw4QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        auth: args.auth,
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingCw4VotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoVotingCw4QueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingCw4QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          auth: args.auth,
+          height: args.height,
+        }),
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingCw4TotalPowerAtHeightQuery<TData>): UseQueryOptions<
-    TotalPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingCw4QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingCw4TotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoVotingCw4QueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingCw4QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        }),
+      ...options,
+    }),
   dao: <TData = AnyContractInfo>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingCw4DaoQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.dao(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoVotingCw4QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao(),
-    ...options,
-  }),
+  }: SecretDaoVotingCw4DaoQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoVotingCw4QueryKeys.dao(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoVotingCw4QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   info: <TData = InfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingCw4InfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingCw4QueryKeys.info(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoVotingCw4QueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).info(),
-    ...options,
-  }),
+  }: SecretDaoVotingCw4InfoQuery<TData>) =>
+    queryOptions<InfoResponse, Error, TData>({
+      queryKey: secretDaoVotingCw4QueryKeys.info(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoVotingCw4QueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info(),
+      ...options,
+    }),
 }
 export interface SecretDaoVotingCw4ReactQuery<TResponse, TData = TResponse> {
   chainId: string

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -80,9 +79,8 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     })
   )
 
-  const queryClient = useQueryClient()
   const loadingStakes = useQueryLoadingDataWithError(
-    chainQueries.nativeDelegationInfo(queryClient, {
+    chainQueries.nativeDelegationInfo({
       address: walletAddress,
       chainId,
     }),

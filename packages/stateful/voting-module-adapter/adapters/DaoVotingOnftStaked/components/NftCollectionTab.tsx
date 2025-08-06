@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { omniflixQueries } from '@dao-dao/state/query'
@@ -34,9 +33,8 @@ export const NftCollectionTab = () => {
     })
   )
 
-  const queryClient = useQueryClient()
   const nfts = useQueryLoadingDataWithError(
-    omniflixQueries.paginatedOnfts(queryClient, {
+    omniflixQueries.paginatedOnfts({
       chainId,
       id: collectionAddress,
       page,

@@ -1,4 +1,4 @@
-import { FetchQueryOptions, QueryClient } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   CheckedDepositInfo,
@@ -135,13 +135,10 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   /**
    * Query options to fetch the DAO address.
    */
-  static getDaoAddressQuery(
-    _: QueryClient,
-    options: {
-      chainId: string
-      contractAddress: string
-    }
-  ) {
+  static getDaoAddressQuery(options: {
+    chainId: string
+    contractAddress: string
+  }) {
     return secretDaoProposalMultipleQueries.dao(options)
   }
 
@@ -156,7 +153,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
 
     // Load contract info with version.
     const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info(this.queryClient, {
+      contractQueries.info({
         chainId: this.chainId,
         address: this.address,
       })
@@ -188,7 +185,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
 
       if (preProposeAddress) {
         this._prePropose = await this.queryClient.fetchQuery(
-          proposalQueries.preProposeModule(this.queryClient, {
+          proposalQueries.preProposeModule({
             chainId: this.chainId,
             address: preProposeAddress,
           })
@@ -420,7 +417,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     proposalId,
   }: {
     proposalId: number
-  }): FetchQueryOptions<ProposalResponse> {
+  }): UndefinedInitialDataOptions<ProposalResponse> {
     return secretDaoProposalMultipleQueries.proposal({
       chainId: this.chainId,
       contractAddress: this.address,
@@ -444,7 +441,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   }: {
     proposalId: number
     voter?: string
-  }): FetchQueryOptions<VoteResponse> {
+  }): UndefinedInitialDataOptions<VoteResponse> {
     // If no voter nor permit, return query in loading state.
     const permit = voter && this.dao.getExistingPermit(voter)
     return secretDaoProposalMultipleQueries.getVote({
@@ -485,28 +482,28 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     )
   }
 
-  getProposalCountQuery(): FetchQueryOptions<number> {
+  getProposalCountQuery(): UndefinedInitialDataOptions<number> {
     return secretDaoProposalMultipleQueries.proposalCount({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDaoAddressQuery(): FetchQueryOptions<string> {
+  getDaoAddressQuery(): UndefinedInitialDataOptions<string> {
     return secretDaoProposalMultipleQueries.dao({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getConfigQuery(): FetchQueryOptions<Config> {
+  getConfigQuery(): UndefinedInitialDataOptions<Config> {
     return secretDaoProposalMultipleQueries.config({
       chainId: this.chainId,
       contractAddress: this.address,
     })
   }
 
-  getDepositInfoQuery(): FetchQueryOptions<CheckedDepositInfo | null> {
+  getDepositInfoQuery(): UndefinedInitialDataOptions<CheckedDepositInfo | null> {
     return {
       queryKey: [
         'secretMultipleChoiceProposalModule',
@@ -516,15 +513,14 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
           address: this.address,
         },
       ],
-      queryFn: async () => {
+      queryFn: async (ctx) => {
         if (this.prePropose) {
-          const { deposit_info: depositInfo } =
-            await this.queryClient.fetchQuery(
-              secretDaoPreProposeMultipleQueries.config({
-                chainId: this.chainId,
-                contractAddress: this.prePropose.address,
-              })
-            )
+          const { deposit_info: depositInfo } = await ctx.client.fetchQuery(
+            secretDaoPreProposeMultipleQueries.config({
+              chainId: this.chainId,
+              contractAddress: this.prePropose.address,
+            })
+          )
 
           return depositInfo
             ? {
@@ -554,7 +550,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
   }
 
   getDelegationModuleQuery(): Pick<
-    FetchQueryOptions<string | null>,
+    UndefinedInitialDataOptions<string | null>,
     'queryKey' | 'queryFn'
   > {
     throw new Error('Delegation module not supported')

@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -238,278 +238,242 @@ export const secretDaoProposalSingleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.config(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.config(
+        chainId,
         contractAddress
-      ).config(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   proposal: <TData = ProposalResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalSingleProposalQuery<TData>): UseQueryOptions<
-    ProposalResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposal(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).proposal({
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleProposalQuery<TData>) =>
+    queryOptions<ProposalResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.proposal(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposal({
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   listProposals: <TData = ProposalListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalSingleListProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.listProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listProposals({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleListProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.listProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listProposals({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   reverseProposals: <TData = ProposalListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalSingleReverseProposalsQuery<TData>): UseQueryOptions<
-    ProposalListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.reverseProposals(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).reverseProposals({
-        limit: args.limit,
-        startBefore: args.startBefore,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleReverseProposalsQuery<TData>) =>
+    queryOptions<ProposalListResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.reverseProposals(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).reverseProposals({
+          limit: args.limit,
+          startBefore: args.startBefore,
+        }),
+      ...options,
+    }),
   getVote: <TData = VoteResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalSingleGetVoteQuery<TData>): UseQueryOptions<
-    VoteResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.getVote(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getVote({
-        auth: args.auth,
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleGetVoteQuery<TData>) =>
+    queryOptions<VoteResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.getVote(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getVote({
+          auth: args.auth,
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   listVotes: <TData = VoteListResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoProposalSingleListVotesQuery<TData>): UseQueryOptions<
-    VoteListResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.listVotes(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listVotes({
-        limit: args.limit,
-        proposalId: args.proposalId,
-        startAfter: args.startAfter,
-      }),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleListVotesQuery<TData>) =>
+    queryOptions<VoteListResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.listVotes(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listVotes({
+          limit: args.limit,
+          proposalId: args.proposalId,
+          startAfter: args.startAfter,
+        }),
+      ...options,
+    }),
   proposalCount: <TData = number>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleProposalCountQuery<TData>): UseQueryOptions<
-    number,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposalCount(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleProposalCountQuery<TData>) =>
+    queryOptions<number, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.proposalCount(
+        chainId,
         contractAddress
-      ).proposalCount(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCount(),
+      ...options,
+    }),
   proposalCreationPolicy: <TData = ProposalCreationPolicy>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleProposalCreationPolicyQuery<TData>): UseQueryOptions<
-    ProposalCreationPolicy,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposalCreationPolicy(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleProposalCreationPolicyQuery<TData>) =>
+    queryOptions<ProposalCreationPolicy, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.proposalCreationPolicy(
+        chainId,
         contractAddress
-      ).proposalCreationPolicy(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalCreationPolicy(),
+      ...options,
+    }),
   proposalHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleProposalHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.proposalHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleProposalHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.proposalHooks(
+        chainId,
         contractAddress
-      ).proposalHooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalHooks(),
+      ...options,
+    }),
   voteHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleVoteHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.voteHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleVoteHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.voteHooks(
+        chainId,
         contractAddress
-      ).voteHooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).voteHooks(),
+      ...options,
+    }),
   dao: <TData = Addr>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleDaoQuery<TData>): UseQueryOptions<
-    Addr,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao(),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.dao(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   info: <TData = InfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleInfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.info(chainId, contractAddress),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).info(),
-    ...options,
-  }),
+  }: SecretDaoProposalSingleInfoQuery<TData>) =>
+    queryOptions<InfoResponse, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.info(chainId, contractAddress),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info(),
+      ...options,
+    }),
   nextProposalId: <TData = Uint64>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoProposalSingleNextProposalIdQuery<TData>): UseQueryOptions<
-    Uint64,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoProposalSingleQueryKeys.nextProposalId(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoProposalSingleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoProposalSingleNextProposalIdQuery<TData>) =>
+    queryOptions<Uint64, Error, TData>({
+      queryKey: secretDaoProposalSingleQueryKeys.nextProposalId(
+        chainId,
         contractAddress
-      ).nextProposalId(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoProposalSingleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).nextProposalId(),
+      ...options,
+    }),
 }
 export interface SecretDaoProposalSingleReactQuery<
   TResponse,

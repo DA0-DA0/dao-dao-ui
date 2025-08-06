@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Claim,
@@ -149,446 +149,449 @@ export const cw20StakeQueryKeys = {
     ] as const,
 }
 export const cw20StakeQueries = {
-  stakedBalanceAtHeight: <TData = StakedBalanceAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: Cw20StakeStakedBalanceAtHeightQuery<TData>
-  ): UseQueryOptions<StakedBalanceAtHeightResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.stakedBalanceAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      // If Oraichain proxy, get staking token and pass to indexer query.
-      let oraichainStakingToken: string | undefined
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
-        })
-      )
-      if (isOraichainProxy) {
-        oraichainStakingToken = (
-          await queryClient.fetchQuery(
-            cw20StakeExtraQueries.oraichainProxySnapshotConfig(queryClient, {
-              chainId,
-              address: contractAddress,
-            })
-          )
-        ).asset_key
-      }
-
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+  stakedBalanceAtHeight: <TData = StakedBalanceAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20StakeStakedBalanceAtHeightQuery<TData>) =>
+    queryOptions<StakedBalanceAtHeightResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.stakedBalanceAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        // If Oraichain proxy, get staking token and pass to indexer query.
+        let oraichainStakingToken: string | undefined
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
             chainId,
-            contractAddress,
-            formula: 'cw20Stake/stakedBalanceAtHeight',
-            args: {
-              address: args.address,
-              height: args.height,
-              ...(oraichainStakingToken && { oraichainStakingToken }),
-            },
+            address: contractAddress,
           })
         )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedBalanceAtHeight({
-        address: args.address,
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
-  totalStakedAtHeight: <TData = TotalStakedAtHeightResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: Cw20StakeTotalStakedAtHeightQuery<TData>
-  ): UseQueryOptions<TotalStakedAtHeightResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.totalStakedAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      // If Oraichain proxy, get staking token and pass to indexer query.
-      let oraichainStakingToken: string | undefined
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
-        })
-      )
-      if (isOraichainProxy) {
-        oraichainStakingToken = (
-          await queryClient.fetchQuery(
-            cw20StakeExtraQueries.oraichainProxySnapshotConfig(queryClient, {
-              chainId,
-              address: contractAddress,
-            })
-          )
-        ).asset_key
-      }
-
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20Stake/totalStakedAtHeight',
-            args: {
-              height: args.height,
-              ...(oraichainStakingToken && { oraichainStakingToken }),
-            },
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalStakedAtHeight({
-        height: args.height,
-      })
-    },
-    ...options,
-  }),
-  stakedValue: <TData = StakedValueResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: Cw20StakeStakedValueQuery<TData>
-  ): UseQueryOptions<StakedValueResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.stakedValue(chainId, contractAddress, args),
-    queryFn: async () => {
-      // Oraichain proxy handles passing the query through.
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
-        })
-      )
-      if (isOraichainProxy) {
-        return {
-          value: (
-            await queryClient.fetchQuery(
-              cw20StakeQueries.stakedBalanceAtHeight(queryClient, {
+        if (isOraichainProxy) {
+          oraichainStakingToken = (
+            await ctx.client.fetchQuery(
+              cw20StakeExtraQueries.oraichainProxySnapshotConfig({
                 chainId,
-                contractAddress,
-                args,
+                address: contractAddress,
               })
             )
-          ).balance,
+          ).asset_key
         }
-      }
 
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          value: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20Stake/stakedValue',
-              args,
-            })
-          ),
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedValue({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
-  totalValue: <TData = TotalValueResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20StakeTotalValueQuery<TData>
-  ): UseQueryOptions<TotalValueResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.totalValue(chainId, contractAddress),
-    queryFn: async () => {
-      // Oraichain proxy handles passing the query through.
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
-        })
-      )
-      if (isOraichainProxy) {
-        return {
-          total: (
-            await queryClient.fetchQuery(
-              cw20StakeQueries.totalStakedAtHeight(queryClient, {
-                chainId,
-                contractAddress,
-                args: {},
-              })
-            )
-          ).total,
-        }
-      }
-
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          total: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20Stake/totalValue',
-            })
-          ),
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalValue()
-    },
-    ...options,
-  }),
-  getConfig: <TData = Config>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20StakeGetConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.getConfig(chainId, contractAddress),
-    queryFn: async () => {
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
-        })
-      )
-
-      // Oraichain proxy handles passing the query through.
-      if (!isOraichainProxy) {
         try {
           // Attempt to fetch data from the indexer.
-          return await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
               chainId,
               contractAddress,
-              formula: 'cw20Stake/config',
+              formula: 'cw20Stake/stakedBalanceAtHeight',
+              args: {
+                address: args.address,
+                height: args.height,
+                ...(oraichainStakingToken && { oraichainStakingToken }),
+              },
             })
           )
         } catch (error) {
           console.error(error)
         }
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getConfig()
-    },
-    ...options,
-  }),
-  claims: <TData = ClaimsResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: Cw20StakeClaimsQuery<TData>
-  ): UseQueryOptions<ClaimsResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.claims(chainId, contractAddress, args),
-    queryFn: async () => {
-      // Convert Oraichain lock infos to claims.
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedBalanceAtHeight({
+          address: args.address,
+          height: args.height,
         })
-      )
-      if (isOraichainProxy) {
-        const { asset_key, staking_contract } = await queryClient.fetchQuery(
-          cw20StakeExtraQueries.oraichainProxySnapshotConfig(queryClient, {
+      },
+      ...options,
+    }),
+  totalStakedAtHeight: <TData = TotalStakedAtHeightResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20StakeTotalStakedAtHeightQuery<TData>) =>
+    queryOptions<TotalStakedAtHeightResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.totalStakedAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        // If Oraichain proxy, get staking token and pass to indexer query.
+        let oraichainStakingToken: string | undefined
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
             chainId,
             address: contractAddress,
           })
         )
-        const { lock_infos } = await queryClient.fetchQuery(
-          oraichainCw20StakingExtraQueries.listAllLockInfos(queryClient, {
-            chainId,
-            address: staking_contract,
-            stakerAddr: args.address,
-            stakingToken: asset_key,
-          })
-        )
+        if (isOraichainProxy) {
+          oraichainStakingToken = (
+            await ctx.client.fetchQuery(
+              cw20StakeExtraQueries.oraichainProxySnapshotConfig({
+                chainId,
+                address: contractAddress,
+              })
+            )
+          ).asset_key
+        }
 
-        return {
-          claims: lock_infos.map(
-            ({ amount, unlock_time }): Claim => ({
-              amount,
-              release_at: {
-                // Convert seconds to nanoseconds.
-                at_time: (BigInt(unlock_time) * BigInt(1e9)).toString(),
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cw20Stake/totalStakedAtHeight',
+              args: {
+                height: args.height,
+                ...(oraichainStakingToken && { oraichainStakingToken }),
               },
             })
-          ),
+          )
+        } catch (error) {
+          console.error(error)
         }
-      }
 
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          claims: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20Stake/claims',
-              args,
-            })
-          ),
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).claims({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
-  getHooks: <TData = GetHooksResponse>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20StakeGetHooksQuery<TData>
-  ): UseQueryOptions<GetHooksResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.getHooks(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cw20Stake/getHooks',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).getHooks()
-    },
-    ...options,
-  }),
-  listStakers: <TData = ListStakersResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: Cw20StakeListStakersQuery<TData>
-  ): UseQueryOptions<ListStakersResponse, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.listStakers(chainId, contractAddress, args),
-    queryFn: async () => {
-      // Oraichain has their own interface.
-      const isOraichainProxy = await queryClient.fetchQuery(
-        cw20StakeExtraQueries.isOraichainProxySnapshotContract(queryClient, {
-          chainId,
-          address: contractAddress,
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalStakedAtHeight({
+          height: args.height,
         })
-      )
-      if (isOraichainProxy) {
-        return { stakers: [] }
-      }
-
-      try {
-        // Attempt to fetch data from the indexer.
-        return {
-          stakers: await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'cw20Stake/listStakers',
-              args,
-            })
-          ),
-        }
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).listStakers({
-        limit: args.limit,
-        startAfter: args.startAfter,
-      })
-    },
-    ...options,
-  }),
-  ownership: <TData = OwnershipForAddr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: Cw20StakeOwnershipQuery<TData>
-  ): UseQueryOptions<OwnershipForAddr, Error, TData> => ({
-    queryKey: cw20StakeQueryKeys.ownership(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
+      },
+      ...options,
+    }),
+  stakedValue: <TData = StakedValueResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20StakeStakedValueQuery<TData>) =>
+    queryOptions<StakedValueResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.stakedValue(chainId, contractAddress, args),
+      queryFn: async (ctx) => {
+        // Oraichain proxy handles passing the query through.
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
             chainId,
-            contractAddress,
-            formula: 'cw20Stake/ownership',
+            address: contractAddress,
           })
         )
-      } catch (error) {
-        console.error(error)
-      }
+        if (isOraichainProxy) {
+          return {
+            value: (
+              await ctx.client.fetchQuery(
+                cw20StakeQueries.stakedBalanceAtHeight({
+                  chainId,
+                  contractAddress,
+                  args,
+                })
+              )
+            ).balance,
+          }
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new Cw20StakeQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).ownership()
-    },
-    ...options,
-  }),
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            value: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'cw20Stake/stakedValue',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedValue({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
+  totalValue: <TData = TotalValueResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20StakeTotalValueQuery<TData>) =>
+    queryOptions<TotalValueResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.totalValue(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        // Oraichain proxy handles passing the query through.
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
+            chainId,
+            address: contractAddress,
+          })
+        )
+        if (isOraichainProxy) {
+          return {
+            total: (
+              await ctx.client.fetchQuery(
+                cw20StakeQueries.totalStakedAtHeight({
+                  chainId,
+                  contractAddress,
+                  args: {},
+                })
+              )
+            ).total,
+          }
+        }
+
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            total: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'cw20Stake/totalValue',
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalValue()
+      },
+      ...options,
+    }),
+  getConfig: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20StakeGetConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: cw20StakeQueryKeys.getConfig(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
+            chainId,
+            address: contractAddress,
+          })
+        )
+
+        // Oraichain proxy handles passing the query through.
+        if (!isOraichainProxy) {
+          try {
+            // Attempt to fetch data from the indexer.
+            return await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'cw20Stake/config',
+              })
+            )
+          } catch (error) {
+            console.error(error)
+          }
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getConfig()
+      },
+      ...options,
+    }),
+  claims: <TData = ClaimsResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20StakeClaimsQuery<TData>) =>
+    queryOptions<ClaimsResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.claims(chainId, contractAddress, args),
+      queryFn: async (ctx) => {
+        // Convert Oraichain lock infos to claims.
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
+            chainId,
+            address: contractAddress,
+          })
+        )
+        if (isOraichainProxy) {
+          const { asset_key, staking_contract } = await ctx.client.fetchQuery(
+            cw20StakeExtraQueries.oraichainProxySnapshotConfig({
+              chainId,
+              address: contractAddress,
+            })
+          )
+          const { lock_infos } = await ctx.client.fetchQuery(
+            oraichainCw20StakingExtraQueries.listAllLockInfos({
+              chainId,
+              address: staking_contract,
+              stakerAddr: args.address,
+              stakingToken: asset_key,
+            })
+          )
+
+          return {
+            claims: lock_infos.map(
+              ({ amount, unlock_time }): Claim => ({
+                amount,
+                release_at: {
+                  // Convert seconds to nanoseconds.
+                  at_time: (BigInt(unlock_time) * BigInt(1e9)).toString(),
+                },
+              })
+            ),
+          }
+        }
+
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            claims: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'cw20Stake/claims',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).claims({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
+  getHooks: <TData = GetHooksResponse>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20StakeGetHooksQuery<TData>) =>
+    queryOptions<GetHooksResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.getHooks(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cw20Stake/getHooks',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).getHooks()
+      },
+      ...options,
+    }),
+  listStakers: <TData = ListStakersResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: Cw20StakeListStakersQuery<TData>) =>
+    queryOptions<ListStakersResponse, Error, TData>({
+      queryKey: cw20StakeQueryKeys.listStakers(chainId, contractAddress, args),
+      queryFn: async (ctx) => {
+        // Oraichain has their own interface.
+        const isOraichainProxy = await ctx.client.fetchQuery(
+          cw20StakeExtraQueries.isOraichainProxySnapshotContract({
+            chainId,
+            address: contractAddress,
+          })
+        )
+        if (isOraichainProxy) {
+          return { stakers: [] }
+        }
+
+        try {
+          // Attempt to fetch data from the indexer.
+          return {
+            stakers: await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'cw20Stake/listStakers',
+                args,
+              })
+            ),
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).listStakers({
+          limit: args.limit,
+          startAfter: args.startAfter,
+        })
+      },
+      ...options,
+    }),
+  ownership: <TData = OwnershipForAddr>({
+    chainId,
+    contractAddress,
+    options,
+  }: Cw20StakeOwnershipQuery<TData>) =>
+    queryOptions<OwnershipForAddr, Error, TData>({
+      queryKey: cw20StakeQueryKeys.ownership(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cw20Stake/ownership',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new Cw20StakeQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).ownership()
+      },
+      ...options,
+    }),
 }
 export interface Cw20StakeReactQuery<TResponse, TData = TResponse> {
   chainId: string

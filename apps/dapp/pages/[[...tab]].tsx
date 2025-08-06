@@ -4,25 +4,21 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import {
-  daoQueries,
-  dehydrateSerializable,
-  makeReactQueryClient,
-  miscQueries,
-} from '@dao-dao/state'
+import { daoQueries, miscQueries } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
 import { AccountTabId } from '@dao-dao/types'
 import {
   MAINNET,
   getDaoInfoForChainId,
   getSupportedChains,
+  makeDependencyTrackedQueryClient,
   retry,
 } from '@dao-dao/utils'
 
 export default Home
 
 // Share query client across static props generators since the data is the same.
-const queryClient = makeReactQueryClient()
+const queryClient = makeDependencyTrackedQueryClient()
 
 export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
   locale,
@@ -59,7 +55,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
 
     // Get home page stats.
     queryClient.fetchQuery(
-      miscQueries.homePageStats(queryClient, {
+      miscQueries.homePageStats({
         chainId,
       })
     ),
@@ -69,9 +65,7 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       (featured) =>
         Promise.all(
           featured?.map((dao) =>
-            retry(5, () =>
-              queryClient.fetchQuery(daoQueries.info(queryClient, dao))
-            )
+            retry(5, () => queryClient.fetchQuery(daoQueries.info(dao)))
           ) || []
         )
     ),
@@ -86,8 +80,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       stats,
       // Chain x/gov DAOs.
       ...(chainGovDaos && { chainGovDaos }),
-      // Dehydrate react-query state with featured DAOs preloaded.
-      reactQueryDehydratedState: dehydrateSerializable(queryClient),
+      // Dehydrate query client state with featured DAOs preloaded.
+      dehydratedQueryClientState: queryClient.dehydrate(),
     },
     // Revalidate every 6 hours.
     revalidate: 6 * 60 * 60,

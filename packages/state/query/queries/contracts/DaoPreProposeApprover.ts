@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   Addr,
@@ -133,262 +133,250 @@ export const daoPreProposeApproverQueryKeys = {
     ] as const,
 }
 export const daoPreProposeApproverQueries = {
-  proposalModule: <TData = Addr>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoPreProposeApproverProposalModuleQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoPreProposeApproverQueryKeys.proposalModule(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoPreProposeApprover/proposalModule',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
-
-      // If indexer query fails, fallback to contract query.
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  proposalModule: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverProposalModuleQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.proposalModule(
+        chainId,
         contractAddress
-      ).proposalModule()
-    },
-    ...options,
-  }),
-  dao: <TData = Addr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: DaoPreProposeApproverDaoQuery<TData>
-  ): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: daoPreProposeApproverQueryKeys.dao(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoPreProposeApprover/dao',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoPreProposeApprover/proposalModule',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).dao()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModule()
+      },
+      ...options,
+    }),
+  dao: <TData = Addr>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverDaoQuery<TData>) =>
+    queryOptions<Addr, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.dao(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoPreProposeApprover/dao',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+
+        // If indexer query fails, fallback to contract query.
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao()
+      },
+      ...options,
+    }),
   info: contractQueries.info,
-  config: <TData = Config>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      options,
-    }: DaoPreProposeApproverConfigQuery<TData>
-  ): UseQueryOptions<Config, Error, TData> => ({
-    queryKey: daoPreProposeApproverQueryKeys.config(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoPreProposeApprover/config',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  config: <TData = Config>({
+    chainId,
+    contractAddress,
+    options,
+  }: DaoPreProposeApproverConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.config(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoPreProposeApprover/config',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).config()
-    },
-    ...options,
-  }),
-  depositInfo: <TData = DepositInfoResponse>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoPreProposeApproverDepositInfoQuery<TData>
-  ): UseQueryOptions<DepositInfoResponse, Error, TData> => ({
-    queryKey: daoPreProposeApproverQueryKeys.depositInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'daoPreProposeApprover/depositInfo',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config()
+      },
+      ...options,
+    }),
+  depositInfo: <TData = DepositInfoResponse>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeApproverDepositInfoQuery<TData>) =>
+    queryOptions<DepositInfoResponse, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.depositInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'daoPreProposeApprover/depositInfo',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).depositInfo({
-        proposalId: args.proposalId,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).depositInfo({
+          proposalId: args.proposalId,
+        })
+      },
+      ...options,
+    }),
   canPropose: <TData = Boolean>({
     chainId,
     contractAddress,
     args,
     options,
-  }: DaoPreProposeApproverCanProposeQuery<TData>): UseQueryOptions<
-    Boolean,
-    Error,
-    TData
-  > => ({
-    queryKey: daoPreProposeApproverQueryKeys.canPropose(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).canPropose({
-        address: args.address,
-      })
-    },
-    ...options,
-  }),
+  }: DaoPreProposeApproverCanProposeQuery<TData>) =>
+    queryOptions<Boolean, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.canPropose(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).canPropose({
+          address: args.address,
+        })
+      },
+      ...options,
+    }),
   proposalSubmittedHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: DaoPreProposeApproverProposalSubmittedHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: daoPreProposeApproverQueryKeys.proposalSubmittedHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () => {
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: DaoPreProposeApproverProposalSubmittedHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.proposalSubmittedHooks(
+        chainId,
         contractAddress
-      ).proposalSubmittedHooks()
-    },
-    ...options,
-  }),
-  queryExtension: <TData = any>(
-    queryClient: QueryClient,
-    {
-      chainId,
-      contractAddress,
-      args,
-      options,
-    }: DaoPreProposeApproverQueryExtensionQuery<TData>
-  ): UseQueryOptions<any, Error, TData> => ({
-    queryKey: daoPreProposeApproverQueryKeys.queryExtension(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        const query = args.msg
-        if ('pre_propose_approval_contract' in query) {
-          const preProposeApprovalContract = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula: 'daoPreProposeApprover/preProposeApprovalContract',
-            })
-          )
-          if (preProposeApprovalContract) {
-            return preProposeApprovalContract
+      ),
+      queryFn: async () => {
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalSubmittedHooks()
+      },
+      ...options,
+    }),
+  queryExtension: <TData = any>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: DaoPreProposeApproverQueryExtensionQuery<TData>) =>
+    queryOptions<any, Error, TData>({
+      queryKey: daoPreProposeApproverQueryKeys.queryExtension(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          const query = args.msg
+          if ('pre_propose_approval_contract' in query) {
+            const preProposeApprovalContract = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula: 'daoPreProposeApprover/preProposeApprovalContract',
+              })
+            )
+            if (preProposeApprovalContract) {
+              return preProposeApprovalContract
+            }
+          } else if (
+            'pre_propose_approval_id_for_approver_proposal_id' in query
+          ) {
+            const proposalId = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula:
+                  'daoPreProposeApprover/preProposeApprovalIdForApproverProposalId',
+                args: {
+                  id: query.pre_propose_approval_id_for_approver_proposal_id.id,
+                },
+              })
+            )
+            if (proposalId) {
+              return proposalId
+            }
+          } else if (
+            'approver_proposal_id_for_pre_propose_approval_id' in query
+          ) {
+            const proposalId = await ctx.client.fetchQuery(
+              indexerQueries.queryContract({
+                chainId,
+                contractAddress,
+                formula:
+                  'daoPreProposeApprover/approverProposalIdForPreProposeApprovalId',
+                args: {
+                  id: query.approver_proposal_id_for_pre_propose_approval_id.id,
+                },
+              })
+            )
+            if (proposalId) {
+              return proposalId
+            }
           }
-        } else if (
-          'pre_propose_approval_id_for_approver_proposal_id' in query
-        ) {
-          const proposalId = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula:
-                'daoPreProposeApprover/preProposeApprovalIdForApproverProposalId',
-              args: {
-                id: query.pre_propose_approval_id_for_approver_proposal_id.id,
-              },
-            })
-          )
-          if (proposalId) {
-            return proposalId
-          }
-        } else if (
-          'approver_proposal_id_for_pre_propose_approval_id' in query
-        ) {
-          const proposalId = await queryClient.fetchQuery(
-            indexerQueries.queryContract(queryClient, {
-              chainId,
-              contractAddress,
-              formula:
-                'daoPreProposeApprover/approverProposalIdForPreProposeApprovalId',
-              args: {
-                id: query.approver_proposal_id_for_pre_propose_approval_id.id,
-              },
-            })
-          )
-          if (proposalId) {
-            return proposalId
-          }
+        } catch (error) {
+          console.error(error)
         }
-      } catch (error) {
-        console.error(error)
-      }
 
-      // If indexer query fails, fallback to contract query.
-      return new DaoPreProposeApproverQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).queryExtension({
-        msg: args.msg,
-      })
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new DaoPreProposeApproverQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).queryExtension({
+          msg: args.msg,
+        })
+      },
+      ...options,
+    }),
 }
 export interface DaoPreProposeApproverReactQuery<TResponse, TData = TResponse> {
   chainId: string

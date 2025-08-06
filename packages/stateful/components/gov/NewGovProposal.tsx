@@ -119,7 +119,7 @@ export const NewGovProposal = (innerProps: NewGovProposalProps) => {
   const { profile } = useProfile()
   const accounts = useQueryLoadingDataWithError(
     walletAddress
-      ? accountQueries.list(queryClient, {
+      ? accountQueries.list({
           chainId: chainContext.chainId,
           address: walletAddress,
         })
@@ -431,7 +431,7 @@ const InnerNewGovProposal = ({
         }
 
         const proposal = await queryClient.fetchQuery(
-          chainQueries.govProposal(queryClient, {
+          chainQueries.govProposal({
             chainId: chainContext.chainId,
             proposalId,
           })

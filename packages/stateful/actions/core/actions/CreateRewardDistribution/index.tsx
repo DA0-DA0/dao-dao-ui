@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { nanoid } from 'nanoid'
 import { useFormContext } from 'react-hook-form'
 
@@ -50,7 +49,6 @@ const Component: ActionComponent<undefined, CreateRewardDistributionData> = (
   props
 ) => {
   const { chainId } = useChain()
-  const queryClient = useQueryClient()
 
   const { watch } = useFormContext<CreateRewardDistributionData>()
   const type = watch((props.fieldNamePrefix + 'type') as 'type')
@@ -77,7 +75,7 @@ const Component: ActionComponent<undefined, CreateRewardDistributionData> = (
 
   const token = useQueryLoadingDataWithError(
     denomOrAddress
-      ? tokenQueries.info(queryClient, {
+      ? tokenQueries.info({
           chainId,
           type,
           denomOrAddress,
@@ -163,7 +161,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     const messages: UnifiedCosmosMsg[] = []
 
     const token = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId: this.options.chain.chainId,
         type,
         denomOrAddress,
@@ -191,7 +189,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
       const salt = `dao-reward-distributor-${id}`
 
       distributor = await this.options.queryClient.fetchQuery(
-        contractQueries.instantiate2Address(this.options.queryClient, {
+        contractQueries.instantiate2Address({
           chainId: this.options.chain.chainId,
           creator: this.options.address,
           codeId,
@@ -583,7 +581,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
         : createMsg.denom.cw20
 
     const token = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId: this.options.chain.chainId,
         type,
         denomOrAddress,

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -102,7 +101,6 @@ const StatefulSpendComponent: ComponentType<
     chain: { chainId: currentChainId },
   } = useActionOptions()
   const { watch, setValue, getValues } = useFormContext<SpendData>()
-  const queryClient = useQueryClient()
 
   const fromChainId = watch(
     (props.fieldNamePrefix + 'fromChainId') as 'fromChainId'
@@ -151,7 +149,7 @@ const StatefulSpendComponent: ComponentType<
   // using custom token input.
   const loadingToken = useQueryLoadingDataWithError(
     fromChainId && denom
-      ? tokenQueries.info(queryClient, {
+      ? tokenQueries.info({
           chainId: fromChainId,
           denomOrAddress: denom,
           // isCw20 not immediately updated for custom tokens.
@@ -439,7 +437,7 @@ const StatefulSpendComponent: ComponentType<
           // If Neutron is one of the non-destination chains, meaning it will be
           // transferred out of Neutron at some point.
           ibcPath.data.slice(0, -1).includes(ChainId.NeutronMainnet)
-        ? neutronQueries.ibcTransferFee(queryClient)
+        ? neutronQueries.ibcTransferFee()
         : undefined
   )
 
@@ -472,15 +470,12 @@ const StatefulSpendComponent: ComponentType<
 
   const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
   const loadingEntity = useQueryLoadingDataWithError(
-    entityQueries.info(
-      queryClient,
-      validRecipient
-        ? {
-            address: recipient,
-            chainId: toChainId,
-          }
-        : undefined
-    )
+    validRecipient
+      ? entityQueries.info({
+          address: recipient,
+          chainId: toChainId,
+        })
+      : undefined
   )
   // Cache last successfully loaded entity.
   useEffect(() => {
@@ -582,7 +577,7 @@ export class SpendAction extends ActionBase<SpendData> {
     encodeContext: ActionEncodeContext
   ): Promise<UnifiedCosmosMsg | UnifiedCosmosMsg[]> {
     const { decimals } = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId: fromChainId,
         denomOrAddress: denom,
         type: cw20 ? TokenType.Cw20 : TokenType.Native,
@@ -666,7 +661,7 @@ export class SpendAction extends ActionBase<SpendData> {
           fromChainId === ChainId.NeutronTestnet
             ? (
                 await this.options.queryClient.fetchQuery(
-                  neutronQueries.ibcTransferFee(this.options.queryClient)
+                  neutronQueries.ibcTransferFee()
                 )
               )?.fee
             : undefined
@@ -744,7 +739,7 @@ export class SpendAction extends ActionBase<SpendData> {
                 fromChainId === ChainId.NeutronTestnet) && {
                 fee: (
                   await this.options.queryClient.fetchQuery(
-                    neutronQueries.ibcTransferFee(this.options.queryClient)
+                    neutronQueries.ibcTransferFee()
                   )
                 )?.fee,
               }),
@@ -909,7 +904,7 @@ export class SpendAction extends ActionBase<SpendData> {
           await Promise.all(
             pfmChainPath.slice(0, -1).map((chainId) =>
               this.options.queryClient.fetchQuery(
-                skipQueries.chainPfmEnabled(this.options.queryClient, {
+                skipQueries.chainPfmEnabled({
                   chainId,
                 })
               )
@@ -978,7 +973,7 @@ export class SpendAction extends ActionBase<SpendData> {
       }) && decodedMessage.stargate.value.sourcePort === 'transfer'
 
     const token = await this.options.queryClient.fetchQuery(
-      tokenQueries.info(this.options.queryClient, {
+      tokenQueries.info({
         chainId,
         type: isNative || isIbcTransfer ? TokenType.Native : TokenType.Cw20,
         denomOrAddress: isIbcTransfer

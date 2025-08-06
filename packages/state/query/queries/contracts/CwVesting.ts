@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { QueryClient, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   NullableUint64,
@@ -119,180 +119,193 @@ export const cwVestingQueryKeys = {
     ] as const,
 }
 export const cwVestingQueries = {
-  ownership: <TData = OwnershipForAddr>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwVestingOwnershipQuery<TData>
-  ): UseQueryOptions<OwnershipForAddr, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.ownership(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cwVesting/ownership',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  ownership: <TData = OwnershipForAddr>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwVestingOwnershipQuery<TData>) =>
+    queryOptions<OwnershipForAddr, Error, TData>({
+      queryKey: cwVestingQueryKeys.ownership(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cwVesting/ownership',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).ownership()
-    },
-    ...options,
-  }),
-  info: <TData = Vest>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwVestingInfoQuery<TData>
-  ): UseQueryOptions<Vest, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.info(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cwVesting/info',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).ownership()
+      },
+      ...options,
+    }),
+  info: <TData = Vest>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwVestingInfoQuery<TData>) =>
+    queryOptions<Vest, Error, TData>({
+      queryKey: cwVestingQueryKeys.info(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cwVesting/info',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).info()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info()
+      },
+      ...options,
+    }),
   distributable: <TData = Uint128>({
     chainId,
     contractAddress,
     args,
     options,
-  }: CwVestingDistributableQuery<TData>): UseQueryOptions<
-    Uint128,
-    Error,
-    TData
-  > => ({
-    queryKey: cwVestingQueryKeys.distributable(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).distributable({
-        t: args.t,
-      })
-    },
-    ...options,
-  }),
-  vested: <TData = Uint128>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, args, options }: CwVestingVestedQuery<TData>
-  ): UseQueryOptions<Uint128, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.vested(chainId, contractAddress, args),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cwVesting/vested',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+  }: CwVestingDistributableQuery<TData>) =>
+    queryOptions<Uint128, Error, TData>({
+      queryKey: cwVestingQueryKeys.distributable(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () => {
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).distributable({
+          t: args.t,
+        })
+      },
+      ...options,
+    }),
+  vested: <TData = Uint128>({
+    chainId,
+    contractAddress,
+    args,
+    options,
+  }: CwVestingVestedQuery<TData>) =>
+    queryOptions<Uint128, Error, TData>({
+      queryKey: cwVestingQueryKeys.vested(chainId, contractAddress, args),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cwVesting/vested',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).vested({
-        t: args.t,
-      })
-    },
-    ...options,
-  }),
-  totalToVest: <TData = Uint128>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwVestingTotalToVestQuery<TData>
-  ): UseQueryOptions<Uint128, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.totalToVest(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cwVesting/totalToVest',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).vested({
+          t: args.t,
+        })
+      },
+      ...options,
+    }),
+  totalToVest: <TData = Uint128>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwVestingTotalToVestQuery<TData>) =>
+    queryOptions<Uint128, Error, TData>({
+      queryKey: cwVestingQueryKeys.totalToVest(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cwVesting/totalToVest',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalToVest()
-    },
-    ...options,
-  }),
-  vestDuration: <TData = NullableUint64>(
-    queryClient: QueryClient,
-    { chainId, contractAddress, options }: CwVestingVestDurationQuery<TData>
-  ): UseQueryOptions<NullableUint64, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.vestDuration(chainId, contractAddress),
-    queryFn: async () => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await queryClient.fetchQuery(
-          indexerQueries.queryContract(queryClient, {
-            chainId,
-            contractAddress,
-            formula: 'cwVesting/vestDuration',
-          })
-        )
-      } catch (error) {
-        console.error(error)
-      }
+        // If indexer query fails, fallback to contract query.
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalToVest()
+      },
+      ...options,
+    }),
+  vestDuration: <TData = NullableUint64>({
+    chainId,
+    contractAddress,
+    options,
+  }: CwVestingVestDurationQuery<TData>) =>
+    queryOptions<NullableUint64, Error, TData>({
+      queryKey: cwVestingQueryKeys.vestDuration(chainId, contractAddress),
+      queryFn: async (ctx) => {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: 'cwVesting/vestDuration',
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
 
-      // If indexer query fails, fallback to contract query.
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).vestDuration()
-    },
-    ...options,
-  }),
+        // If indexer query fails, fallback to contract query.
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).vestDuration()
+      },
+      ...options,
+    }),
   stake: <TData = Uint128>({
     chainId,
     contractAddress,
     args,
     options,
-  }: CwVestingStakeQuery<TData>): UseQueryOptions<Uint128, Error, TData> => ({
-    queryKey: cwVestingQueryKeys.stake(chainId, contractAddress, args),
-    queryFn: async () => {
-      return new CwVestingQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stake(args)
-    },
-    ...options,
-  }),
+  }: CwVestingStakeQuery<TData>) =>
+    queryOptions<Uint128, Error, TData>({
+      queryKey: cwVestingQueryKeys.stake(chainId, contractAddress, args),
+      queryFn: async () => {
+        return new CwVestingQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stake(args)
+      },
+      ...options,
+    }),
 }
 export interface CwVestingReactQuery<TResponse, TData = TResponse> {
   chainId: string

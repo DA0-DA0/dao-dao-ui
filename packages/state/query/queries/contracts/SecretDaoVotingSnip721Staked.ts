@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   ActiveThresholdResponse,
@@ -193,219 +193,189 @@ export const secretDaoVotingSnip721StakedQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.config(
+        chainId,
         contractAddress
-      ).config(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   nftClaims: <TData = NftClaimsResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingSnip721StakedNftClaimsQuery<TData>): UseQueryOptions<
-    NftClaimsResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.nftClaims(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).nftClaims({
-        auth: args.auth,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingSnip721StakedNftClaimsQuery<TData>) =>
+    queryOptions<NftClaimsResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.nftClaims(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).nftClaims({
+          auth: args.auth,
+        }),
+      ...options,
+    }),
   hooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.hooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.hooks(
+        chainId,
         contractAddress
-      ).hooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).hooks(),
+      ...options,
+    }),
   stakedNfts: <TData = ArrayOfString>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingSnip721StakedStakedNftsQuery<TData>): UseQueryOptions<
-    ArrayOfString,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.stakedNfts(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).stakedNfts({
-        auth: args.auth,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingSnip721StakedStakedNftsQuery<TData>) =>
+    queryOptions<ArrayOfString, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.stakedNfts(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).stakedNfts({
+          auth: args.auth,
+        }),
+      ...options,
+    }),
   activeThreshold: <TData = ActiveThresholdResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedActiveThresholdQuery<TData>): UseQueryOptions<
-    ActiveThresholdResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.activeThreshold(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedActiveThresholdQuery<TData>) =>
+    queryOptions<ActiveThresholdResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.activeThreshold(
+        chainId,
         contractAddress
-      ).activeThreshold(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).activeThreshold(),
+      ...options,
+    }),
   isActive: <TData = Boolean>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedIsActiveQuery<TData>): UseQueryOptions<
-    Boolean,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.isActive(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedIsActiveQuery<TData>) =>
+    queryOptions<Boolean, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.isActive(
+        chainId,
         contractAddress
-      ).isActive(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).isActive(),
+      ...options,
+    }),
   votingPowerAtHeight: <TData = VotingPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingSnip721StakedVotingPowerAtHeightQuery<TData>): UseQueryOptions<
-    VotingPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.votingPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).votingPowerAtHeight({
-        auth: args.auth,
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingSnip721StakedVotingPowerAtHeightQuery<TData>) =>
+    queryOptions<VotingPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.votingPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).votingPowerAtHeight({
+          auth: args.auth,
+          height: args.height,
+        }),
+      ...options,
+    }),
   totalPowerAtHeight: <TData = TotalPowerAtHeightResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoVotingSnip721StakedTotalPowerAtHeightQuery<TData>): UseQueryOptions<
-    TotalPowerAtHeightResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.totalPowerAtHeight(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).totalPowerAtHeight({
-        height: args.height,
-      }),
-    ...options,
-  }),
+  }: SecretDaoVotingSnip721StakedTotalPowerAtHeightQuery<TData>) =>
+    queryOptions<TotalPowerAtHeightResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.totalPowerAtHeight(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).totalPowerAtHeight({
+          height: args.height,
+        }),
+      ...options,
+    }),
   dao: <TData = AnyContractInfo>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedDaoQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.dao(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedDaoQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.dao(
+        chainId,
         contractAddress
-      ).dao(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   info: <TData = InfoResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoVotingSnip721StakedInfoQuery<TData>): UseQueryOptions<
-    InfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoVotingSnip721StakedQueryKeys.info(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoVotingSnip721StakedQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoVotingSnip721StakedInfoQuery<TData>) =>
+    queryOptions<InfoResponse, Error, TData>({
+      queryKey: secretDaoVotingSnip721StakedQueryKeys.info(
+        chainId,
         contractAddress
-      ).info(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoVotingSnip721StakedQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).info(),
+      ...options,
+    }),
 }
 export interface SecretDaoVotingSnip721StakedReactQuery<
   TResponse,

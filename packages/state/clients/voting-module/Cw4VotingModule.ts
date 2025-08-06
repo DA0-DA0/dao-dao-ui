@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
@@ -70,7 +70,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -79,7 +79,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoVotingCw4Queries.votingPowerAtHeight(this.queryClient, {
+    return daoVotingCw4Queries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -91,8 +91,8 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoVotingCw4Queries.totalPowerAtHeight(this.queryClient, {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoVotingCw4Queries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.address,
       args: {
@@ -103,7 +103,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
 
   async getHookCaller(): Promise<string> {
     return this.queryClient.fetchQuery(
-      daoVotingCw4Queries.groupContract(this.queryClient, {
+      daoVotingCw4Queries.groupContract({
         chainId: this.chainId,
         contractAddress: this.address,
       })
@@ -113,7 +113,7 @@ export class Cw4VotingModule extends VotingModuleBase<CwDao> {
   async getHooks(): Promise<string[]> {
     return (
       await this.queryClient.fetchQuery(
-        cw4GroupQueries.hooks(this.queryClient, {
+        cw4GroupQueries.hooks({
           chainId: this.chainId,
           contractAddress: await this.getHookCaller(),
         })

@@ -1,13 +1,10 @@
-import {
-  FetchQueryOptions,
-  QueryClient,
-  skipToken,
-} from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import {
   AnyChain,
   DaoInfo,
   IProposalModuleBase,
+  IQueryClient,
   IVotingModuleBase,
   InstantiateInfo,
   ModuleInstantiateInfo,
@@ -66,7 +63,7 @@ export class CwDao extends DaoBase {
   protected _votingModule: IVotingModuleBase | undefined
 
   constructor(
-    queryClient: QueryClient,
+    queryClient: IQueryClient,
     protected readonly options: {
       chainId: string
       coreAddress: string
@@ -77,7 +74,7 @@ export class CwDao extends DaoBase {
     // Attempt immediate initialization if query is cached.
     this.setInfo(
       this.queryClient.getQueryData(
-        daoQueries.info(this.queryClient, {
+        daoQueries.info({
           chainId: this.options.chainId,
           coreAddress: this.options.coreAddress,
         }).queryKey
@@ -152,7 +149,7 @@ export class CwDao extends DaoBase {
         await p.time(
           'info',
           this.queryClient.fetchQuery(
-            daoQueries.info(this.queryClient, {
+            daoQueries.info({
               chainId: this.options.chainId,
               coreAddress: this.options.coreAddress,
             })
@@ -265,7 +262,7 @@ export class CwDao extends DaoBase {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -274,7 +271,7 @@ export class CwDao extends DaoBase {
       }
     }
 
-    return daoDaoCoreQueries.votingPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.votingPowerAtHeight({
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {
@@ -286,8 +283,8 @@ export class CwDao extends DaoBase {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoDaoCoreQueries.totalPowerAtHeight(this.queryClient, {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoDaoCoreQueries.totalPowerAtHeight({
       chainId: this.options.chainId,
       contractAddress: this.options.coreAddress,
       args: {

@@ -135,7 +135,7 @@ export class WithdrawTokenSwapAction extends ActionBase<WithdrawTokenSwapData> {
         },
       }) &&
       (await this.options.queryClient.fetchQuery(
-        contractQueries.isContract(this.options.queryClient, {
+        contractQueries.isContract({
           chainId,
           address: decodedMessage.wasm.execute.contract_addr,
           nameOrNames: ContractName.CwTokenSwap,

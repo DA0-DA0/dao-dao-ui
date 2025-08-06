@@ -4,7 +4,7 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
 import {
   AnyContractInfo,
@@ -129,130 +129,112 @@ export const secretDaoPreProposeMultipleQueries = {
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeMultipleProposalModuleQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.proposalModule(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeMultipleProposalModuleQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.proposalModule(
+        chainId,
         contractAddress
-      ).proposalModule(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalModule(),
+      ...options,
+    }),
   dao: <TData = AnyContractInfo>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeMultipleDaoQuery<TData>): UseQueryOptions<
-    AnyContractInfo,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.dao(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeMultipleDaoQuery<TData>) =>
+    queryOptions<AnyContractInfo, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.dao(
+        chainId,
         contractAddress
-      ).dao(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).dao(),
+      ...options,
+    }),
   config: <TData = Config>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeMultipleConfigQuery<TData>): UseQueryOptions<
-    Config,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.config(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeMultipleConfigQuery<TData>) =>
+    queryOptions<Config, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.config(
+        chainId,
         contractAddress
-      ).config(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).config(),
+      ...options,
+    }),
   depositInfo: <TData = DepositInfoResponse>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoPreProposeMultipleDepositInfoQuery<TData>): UseQueryOptions<
-    DepositInfoResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.depositInfo(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).depositInfo({
-        proposalId: args.proposalId,
-      }),
-    ...options,
-  }),
+  }: SecretDaoPreProposeMultipleDepositInfoQuery<TData>) =>
+    queryOptions<DepositInfoResponse, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.depositInfo(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).depositInfo({
+          proposalId: args.proposalId,
+        }),
+      ...options,
+    }),
   proposalSubmittedHooks: <TData = HooksResponse>({
     chainId,
     contractAddress,
     options,
-  }: SecretDaoPreProposeMultipleProposalSubmittedHooksQuery<TData>): UseQueryOptions<
-    HooksResponse,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.proposalSubmittedHooks(
-      chainId,
-      contractAddress
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
+  }: SecretDaoPreProposeMultipleProposalSubmittedHooksQuery<TData>) =>
+    queryOptions<HooksResponse, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.proposalSubmittedHooks(
+        chainId,
         contractAddress
-      ).proposalSubmittedHooks(),
-    ...options,
-  }),
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).proposalSubmittedHooks(),
+      ...options,
+    }),
   queryExtension: <TData = Binary>({
     chainId,
     contractAddress,
     args,
     options,
-  }: SecretDaoPreProposeMultipleQueryExtensionQuery<TData>): UseQueryOptions<
-    Binary,
-    Error,
-    TData
-  > => ({
-    queryKey: secretDaoPreProposeMultipleQueryKeys.queryExtension(
-      chainId,
-      contractAddress,
-      args
-    ),
-    queryFn: async () =>
-      new SecretDaoPreProposeMultipleQueryClient(
-        await getCosmWasmClientForChainId(chainId),
-        contractAddress
-      ).queryExtension({
-        msg: args.msg,
-      }),
-    ...options,
-  }),
+  }: SecretDaoPreProposeMultipleQueryExtensionQuery<TData>) =>
+    queryOptions<Binary, Error, TData>({
+      queryKey: secretDaoPreProposeMultipleQueryKeys.queryExtension(
+        chainId,
+        contractAddress,
+        args
+      ),
+      queryFn: async () =>
+        new SecretDaoPreProposeMultipleQueryClient(
+          await getCosmWasmClientForChainId(chainId),
+          contractAddress
+        ).queryExtension({
+          msg: args.msg,
+        }),
+      ...options,
+    }),
   info: contractQueries.info,
 }
 export interface SecretDaoPreProposeMultipleReactQuery<

@@ -1,4 +1,4 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import uniqBy from 'lodash.uniqby'
 
 import {
@@ -37,7 +37,6 @@ export const TabRenderer = ({
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership()
 
-  const queryClient = useQueryClient()
   const vestingContractsLoading = useQueries({
     queries: [
       // Factory or factory list depending on version.
@@ -56,7 +55,7 @@ export const TabRenderer = ({
           : // Should never happen.
             []
       ).map(({ chainId, address }) =>
-        cwPayrollFactoryExtraQueries.listAllVestingContracts(queryClient, {
+        cwPayrollFactoryExtraQueries.listAllVestingContracts({
           chainId,
           address,
         })
@@ -64,7 +63,7 @@ export const TabRenderer = ({
 
       // Old factories.
       ...(oldFactories || []).map(({ address }) =>
-        cwPayrollFactoryExtraQueries.listAllVestingContracts(queryClient, {
+        cwPayrollFactoryExtraQueries.listAllVestingContracts({
           chainId: defaultChainId,
           address,
         })
@@ -74,7 +73,7 @@ export const TabRenderer = ({
       // whose ownership was transferred to this DAO but that are still part of
       // a different factory.
       ...accounts.map(({ chainId, address }) =>
-        contractQueries.listVestingContractsOwnedByAccount(queryClient, {
+        contractQueries.listVestingContractsOwnedByAccount({
           chainId,
           address,
         })
@@ -96,7 +95,7 @@ export const TabRenderer = ({
         ? []
         : vestingContractsLoading.data.flatMap(({ chainId, contracts }) =>
             contracts.map(({ contract }) =>
-              cwVestingExtraQueries.info(queryClient, {
+              cwVestingExtraQueries.info({
                 chainId,
                 address: contract,
               })

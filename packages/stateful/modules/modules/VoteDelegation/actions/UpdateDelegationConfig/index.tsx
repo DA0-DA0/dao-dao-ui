@@ -84,16 +84,13 @@ export class UpdateDelegationConfigAction extends ActionBase<UpdateDelegationCon
     this.Component = function Component(props: ActionComponentProps) {
       const currentConfig = useQueries({
         queries: [
-          daoVoteDelegationQueries.config<Config & VotingPowerCapResponse>(
-            options.queryClient,
-            {
-              chainId: options.chain.chainId,
-              contractAddress: action.voteDelegationAddress,
-            }
-          ),
+          daoVoteDelegationQueries.config<Config & VotingPowerCapResponse>({
+            chainId: options.chain.chainId,
+            contractAddress: action.voteDelegationAddress,
+          }),
           daoVoteDelegationQueries.votingPowerCap<
             Config & VotingPowerCapResponse
-          >(options.queryClient, {
+          >({
             chainId: options.chain.chainId,
             contractAddress: action.voteDelegationAddress,
             args: {},
@@ -131,13 +128,13 @@ export class UpdateDelegationConfigAction extends ActionBase<UpdateDelegationCon
       { vp_cap_percent },
     ] = await Promise.all([
       this.options.queryClient.fetchQuery(
-        daoVoteDelegationQueries.config(this.options.queryClient, {
+        daoVoteDelegationQueries.config({
           chainId: this.options.chain.chainId,
           contractAddress: this.voteDelegationAddress,
         })
       ),
       this.options.queryClient.fetchQuery(
-        daoVoteDelegationQueries.votingPowerCap(this.options.queryClient, {
+        daoVoteDelegationQueries.votingPowerCap({
           chainId: this.options.chain.chainId,
           contractAddress: this.voteDelegationAddress,
           args: {},

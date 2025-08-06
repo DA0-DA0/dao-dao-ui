@@ -71,7 +71,7 @@ export const treasuryTransactionsSelector = selectorFamily<
         txs.map(({ height }) =>
           queryClient
             .fetchQuery(
-              chainQueries.blockTimestampSafe(queryClient, {
+              chainQueries.blockTimestampSafe({
                 chainId,
                 height,
               })

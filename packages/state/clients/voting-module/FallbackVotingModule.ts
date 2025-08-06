@@ -1,4 +1,4 @@
-import { FetchQueryOptions, skipToken } from '@tanstack/react-query'
+import { UndefinedInitialDataOptions, skipToken } from '@tanstack/react-query'
 
 import { ModuleInstantiateInfo } from '@dao-dao/types'
 import {
@@ -24,7 +24,7 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
   getVotingPowerQuery(
     address?: string,
     height?: number
-  ): FetchQueryOptions<VotingPowerAtHeightResponse> {
+  ): UndefinedInitialDataOptions<VotingPowerAtHeightResponse> {
     // If no address, return query in loading state.
     if (!address) {
       return {
@@ -33,7 +33,7 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
       }
     }
 
-    return daoDaoCoreQueries.votingPowerAtHeight(this.queryClient, {
+    return daoDaoCoreQueries.votingPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.dao.coreAddress,
       args: {
@@ -45,8 +45,8 @@ export class FallbackVotingModule extends VotingModuleBase<CwDao> {
 
   getTotalVotingPowerQuery(
     height?: number
-  ): FetchQueryOptions<TotalPowerAtHeightResponse> {
-    return daoDaoCoreQueries.totalPowerAtHeight(this.queryClient, {
+  ): UndefinedInitialDataOptions<TotalPowerAtHeightResponse> {
+    return daoDaoCoreQueries.totalPowerAtHeight({
       chainId: this.chainId,
       contractAddress: this.dao.coreAddress,
       args: {

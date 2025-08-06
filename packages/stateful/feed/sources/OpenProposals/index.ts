@@ -1,24 +1,19 @@
 import { useCallback } from 'react'
-import { constSelector, useSetRecoilState, waitForAll } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
-import {
-  followingDaosSelector,
-  refreshOpenProposalsAtom,
-} from '@dao-dao/state/recoil'
-import {
-  useCachedLoadable,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import { FeedSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
 import {
+  useFollowingDaos,
   useOnWebSocketMessage,
   useProfile,
+  useQueryLoadingDataWithError,
   useRefreshGovProposals,
 } from '../../../hooks'
 import { OpenProposalsProposalLine } from './OpenProposalsProposalLineProps'
-import { feedOpenProposalsSelector } from './state'
+import { feedOpenProposalsQueries } from './state'
 import { OpenProposalsProposalLineProps } from './types'
 
 export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
@@ -32,42 +27,26 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
       setRefreshOpenProposals((id) => id + 1)
     }, [refreshGovProposals, setRefreshOpenProposals])
 
-    const { chains, uniquePublicKeys } = useProfile()
+    const { connected, profile, chains } = useProfile()
+    const { following } = useFollowingDaos()
 
-    const daosWithItemsLoadable = useCachedLoadable(
-      uniquePublicKeys.loading || chains.loading
-        ? undefined
-        : uniquePublicKeys.data.length > 0
-          ? feedOpenProposalsSelector({
-              publicKeys: uniquePublicKeys.data.map(
-                ({ publicKey }) => publicKey
-              ),
-              profileAddresses: chains.data.map(({ chainId, address }) => ({
-                chainId,
-                address,
-              })),
-            })
-          : constSelector([])
-    )
-
-    const followingDaosLoadable = useCachedLoadingWithError(
-      !uniquePublicKeys.loading
-        ? waitForAll(
-            uniquePublicKeys.data.map(({ publicKey }) =>
-              followingDaosSelector({
-                walletPublicKey: publicKey,
-              })
-            )
-          )
-        : undefined,
-      (data) => data.flat()
+    const daosWithItems = useQueryLoadingDataWithError(
+      !profile.loading && !chains.loading
+        ? feedOpenProposalsQueries.openProposals({
+            uuid: profile.data.uuid,
+            profileAddresses: chains.data.map(({ chainId, address }) => ({
+              chainId,
+              address,
+            })),
+          })
+        : undefined
     )
 
     // Refresh when any proposal or vote is updated for any of the followed
     // DAOs.
     useOnWebSocketMessage(
-      !followingDaosLoadable.loading && !followingDaosLoadable.errored
-        ? followingDaosLoadable.data.map(({ chainId, coreAddress }) =>
+      !following.loading && !following.errored
+        ? following.data.map(({ chainId, coreAddress }) =>
             webSocketChannelNameForDao({
               chainId,
               coreAddress,
@@ -79,14 +58,12 @@ export const OpenProposals: FeedSource<OpenProposalsProposalLineProps> = {
     )
 
     return {
-      loading: daosWithItemsLoadable.state === 'loading',
-      refreshing:
-        daosWithItemsLoadable.state === 'hasValue' &&
-        daosWithItemsLoadable.updating,
+      loading: daosWithItems.loading && connected,
+      refreshing: !daosWithItems.loading && !!daosWithItems.updating,
       daosWithItems:
-        daosWithItemsLoadable.state === 'hasValue'
-          ? daosWithItemsLoadable.contents
-          : [],
+        daosWithItems.loading || daosWithItems.errored
+          ? []
+          : daosWithItems.data,
       refresh,
     }
   },

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -86,10 +85,9 @@ const Component: ActionComponent = (props) => {
 
   const bech32Prefix = maybeGetChainForChainId(chainId)?.bech32Prefix
 
-  const queryClient = useQueryClient()
   const daoSubDaosLoading = useQueryLoadingDataWithError(
     context.type === ActionContextType.Dao
-      ? daoQueries.listAllSubDaos(queryClient, {
+      ? daoQueries.listAllSubDaos({
           chainId: currentChainId,
           address,
           // We only care about the SubDAOs this DAO has admin powers over.
@@ -107,7 +105,7 @@ const Component: ActionComponent = (props) => {
   const walletAdminOfDaosLoading = useQueryLoadingDataWithError(
     context.type === ActionContextType.Wallet ||
       context.type === ActionContextType.Gov
-      ? daoQueries.listWalletAdminOfDaos(queryClient, {
+      ? daoQueries.listWalletAdminOfDaos({
           chainId,
           address,
         })

@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -8,7 +7,6 @@ import {
   ActionBase,
   ThumbDownEmoji,
   useActionOptions,
-  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
@@ -32,7 +30,6 @@ import {
   ProposalLine,
 } from '../../../../components'
 import { useQueryLoadingDataWithError } from '../../../../hooks'
-import { daosWithVetoableProposalsSelector } from '../../../../recoil'
 import {
   VetoProposalComponent as StatelessVetoProposalComponent,
   VetoProposalData,
@@ -54,8 +51,8 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     (props.fieldNamePrefix + 'proposalId') as 'proposalId'
   )
 
-  const daoVetoableProposals = useCachedLoadingWithError(
-    daosWithVetoableProposalsSelector({
+  const daoVetoableProposals = useQueryLoadingDataWithError(
+    daoQueries.daosWithVetoableProposals({
       chainId: daoChainId,
       coreAddress: address,
       // Include even those not registered in the DAO's list.
@@ -92,17 +89,13 @@ const Component: ActionComponent<undefined, VetoProposalData> = (props) => {
     setValue,
   ])
 
-  const queryClient = useQueryClient()
   const selectedDaoInfo = useQueryLoadingDataWithError(
-    daoQueries.info(
-      queryClient,
-      chainId && coreAddress
-        ? {
-            chainId,
-            coreAddress,
-          }
-        : undefined
-    )
+    chainId && coreAddress
+      ? daoQueries.info({
+          chainId,
+          coreAddress,
+        })
+      : undefined
   )
 
   // Select first proposal once loaded if nothing selected.
@@ -189,7 +182,7 @@ export class VetoProposalAction extends ActionBase<VetoProposalData> {
 
     const isCw1Whitelist = proposal.veto
       ? await this.options.queryClient.fetchQuery(
-          contractQueries.isCw1Whitelist(this.options.queryClient, {
+          contractQueries.isCw1Whitelist({
             chainId,
             address: proposal.veto.vetoer,
           })

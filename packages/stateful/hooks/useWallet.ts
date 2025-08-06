@@ -4,7 +4,6 @@ import { OfflineSigner } from '@cosmjs/proto-signing'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { SecretUtils } from '@keplr-wallet/types'
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -14,7 +13,11 @@ import {
   walletChainIdAtom,
 } from '@dao-dao/state/recoil'
 import { makeGetSignerOptions } from '@dao-dao/state/utils'
-import { useChainContextIfAvailable, useUpdatingRef } from '@dao-dao/stateless'
+import {
+  useChainContextIfAvailable,
+  useDependencyTrackedQueryClient,
+  useUpdatingRef,
+} from '@dao-dao/stateless'
 import { AnyChain, LoadingData } from '@dao-dao/types'
 import {
   SecretSigningCosmWasmClient,
@@ -206,7 +209,7 @@ export const useWallet = ({
   ])
 
   // Pre-fetch dynamic gas price for this chain when the wallet is used.
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   useEffect(() => {
     queryClient.prefetchQuery({
       ...chainQueries.dynamicGasPrice({ chainId: chain.chainId }),
@@ -225,38 +228,29 @@ export const useWallet = ({
     // Refresh Recoil balance selectors.
     setRefreshWalletBalancesId((id) => id + 1)
 
-    // Invalidate native and staked balances.
-    queryClient.invalidateQueries({
-      queryKey: [
-        'chain',
-        'nativeBalance',
-        {
-          chainId,
-          ...(address && { address }),
-        },
-      ],
-    })
-    queryClient.invalidateQueries({
-      queryKey: [
-        'chain',
-        'nativeStakedBalance',
-        {
-          chainId,
-          ...(address && { address }),
-        },
-      ],
-    })
-    // Invalidate validators.
-    queryClient.invalidateQueries({
-      queryKey: ['chain', 'validator', { chainId }],
-    })
-    // Then native delegation info.
-    queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+    // Invalidate native balances and staked balances.
+    queryClient.invalidate([
+      'chain',
+      'nativeBalance',
+      {
         chainId,
         ...(address && { address }),
-      } as any).queryKey,
-    })
+      },
+    ])
+    queryClient.invalidate([
+      'chain',
+      'nativeStakedBalance',
+      {
+        chainId,
+        ...(address && { address }),
+      },
+    ])
+    queryClient.invalidate(
+      chainQueries.nativeDelegationInfo({
+        chainId,
+        ...(address && { address }),
+      } as any)
+    )
   }, [chainId, queryClient, setRefreshWalletBalancesId, walletChainRef])
 
   const response = useMemo(

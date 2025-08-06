@@ -45,7 +45,7 @@ export const accountsSelector = selectorFamily<
     ({ get }) => {
       const queryClient = get(queryClientAtom)
       return queryClient.fetchQuery(
-        accountQueries.list(queryClient, {
+        accountQueries.list({
           chainId,
           address,
           ...(includeIcaChains && { includeIcaChains }),

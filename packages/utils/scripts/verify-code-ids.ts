@@ -73,7 +73,7 @@ const main = async () => {
             }
 
             const { info } = await queryClient.fetchQuery(
-              contractQueries.info(queryClient, {
+              contractQueries.info({
                 chainId,
                 address: contracts[0],
               })

@@ -29,7 +29,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
+import { usePfpkClient } from '../../hooks/usePfpkClient'
 import { useWallet } from '../../hooks/useWallet'
 import { ConnectWallet } from '../ConnectWallet'
 
@@ -46,10 +46,10 @@ export const DiscordNotifierConfigureModal = () => {
   const [visible, setVisible] = useState(false)
 
   // Handle discord notifier code redirect.
-  const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
-    DISCORD_NOTIFIER_API_BASE,
-    DISCORD_NOTIFIER_SIGNATURE_TYPE
-  )
+  const { pfpkClient } = usePfpkClient({
+    apiUrl: DISCORD_NOTIFIER_API_BASE,
+    defaultSignatureType: DISCORD_NOTIFIER_SIGNATURE_TYPE,
+  })
 
   const [discordNotifierSetup, setDiscordNotifierSetup] = useRecoilState(
     discordNotifierSetupAtom(coreAddress)
@@ -148,12 +148,15 @@ export const DiscordNotifierConfigureModal = () => {
 
     setLoadingRegistration(true)
     try {
-      await postRequest(`/${coreAddress}/register`, {
-        code: router.query.code,
-        clientId: discordNotifierSetup.clientId,
-        clientSecret: discordNotifierSetup.clientSecret,
-        botToken: discordNotifierSetup.botToken,
-        redirectUri: discordNotifierSetup.redirectUri,
+      await pfpkClient.signAndSend({
+        endpoint: `/${coreAddress}/register`,
+        data: {
+          code: router.query.code,
+          clientId: discordNotifierSetup.clientId,
+          clientSecret: discordNotifierSetup.clientSecret,
+          botToken: discordNotifierSetup.botToken,
+          redirectUri: discordNotifierSetup.redirectUri,
+        },
       })
 
       toast.success(t('success.discordNotifierEnabled'))
@@ -177,7 +180,7 @@ export const DiscordNotifierConfigureModal = () => {
     router,
     setDiscordNotifierSetup,
     t,
-    postRequest,
+    pfpkClient,
     coreAddress,
     getDaoPath,
   ])
@@ -212,13 +215,13 @@ export const DiscordNotifierConfigureModal = () => {
 
     // Don't attempt to auto-register until wallet ready. Still show the modal
     // above since the wallet may be connecting.
-    if (postRequestReady) {
+    if (isWalletConnected) {
       registered.current = true
       register()
     }
   }, [
     router,
-    postRequestReady,
+    isWalletConnected,
     discordNotifierSetup,
     setDiscordNotifierSetup,
     t,
@@ -230,8 +233,11 @@ export const DiscordNotifierConfigureModal = () => {
     async (id: string) => {
       setLoadingRegistration(true)
       try {
-        await postRequest(`/${coreAddress}/unregister`, {
-          id,
+        await pfpkClient.signAndSend({
+          endpoint: `/${coreAddress}/unregister`,
+          data: {
+            id,
+          },
         })
 
         toast.success(t('success.discordNotifierRemoved'))
@@ -243,7 +249,7 @@ export const DiscordNotifierConfigureModal = () => {
         setLoadingRegistration(false)
       }
     },
-    [coreAddress, postRequest, t]
+    [coreAddress, pfpkClient, t]
   )
 
   return (

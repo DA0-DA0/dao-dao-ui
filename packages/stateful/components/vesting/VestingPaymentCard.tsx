@@ -1,14 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import {
-  chainQueries,
-  cwVestingExtraQueries,
-  cwVestingQueryKeys,
-} from '@dao-dao/state/query'
+import { cwVestingExtraQueries } from '@dao-dao/state/query'
 import { tokenCardLazyInfoSelector } from '@dao-dao/state/recoil'
 import {
   VestingPaymentCard as StatelessVestingPaymentCard,
@@ -16,6 +11,7 @@ import {
   useCachedLoadable,
   useChain,
   useDaoNavHelpers,
+  useDependencyTrackedQueryClient,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -58,11 +54,11 @@ export const VestingPaymentCard = ({
     attemptConnection: true,
   })
 
-  const queryClient = useQueryClient()
+  const queryClient = useDependencyTrackedQueryClient()
   // Use info passed into props as fallback, since it came from the list query;
   // the individual query updates more frequently.
   const freshInfo = useQueryLoadingDataWithError(
-    cwVestingExtraQueries.info(queryClient, {
+    cwVestingExtraQueries.info({
       chainId,
       address: fallbackInfo.vestingContractAddress,
     })
@@ -104,41 +100,13 @@ export const VestingPaymentCard = ({
     }
   )
 
-  const refresh = () => {
-    // Invalidate validators.
-    queryClient.invalidateQueries({
-      queryKey: ['chain', 'validator', { chainId }],
-    })
-    // Invalidate staking info.
-    queryClient.invalidateQueries({
-      queryKey: chainQueries.nativeDelegationInfo(queryClient, {
+  const refresh = () =>
+    queryClient.invalidate(
+      cwVestingExtraQueries.info({
         chainId,
         address: vestingContractAddress,
-      }).queryKey,
-    })
-    // Invalidate vesting indexer queries.
-    queryClient.invalidateQueries({
-      queryKey: [
-        'indexer',
-        'query',
-        {
-          chainId,
-          address: vestingContractAddress,
-        },
-      ],
-    })
-    // Then invalidate contract queries that depend on indexer queries.
-    queryClient.invalidateQueries({
-      queryKey: cwVestingQueryKeys.address(chainId, vestingContractAddress),
-    })
-    // Then info query.
-    queryClient.invalidateQueries({
-      queryKey: cwVestingExtraQueries.info(queryClient, {
-        chainId,
-        address: vestingContractAddress,
-      }).queryKey,
-    })
-  }
+      })
+    )
 
   const awaitNextBlock = useAwaitNextBlock()
 

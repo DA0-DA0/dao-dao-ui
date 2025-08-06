@@ -169,7 +169,7 @@ const DApp = (props: AppProps) => (
       }}
     />
 
-    <StateProvider dehyratedState={props.pageProps.reactQueryDehydratedState}>
+    <StateProvider dehydratedState={props.pageProps.dehydratedQueryClientState}>
       <InnerApp {...props} />
     </StateProvider>
   </>
