@@ -245,6 +245,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.ThorchainMainnet,
         name: 'thorchain',
         mainnet: true,
+        noGov: true,
         indexer: SupportedChainIndexerMode.All,
         createSubDaoViaDao: true,
         accentColor: '#00eed1',
@@ -480,6 +481,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.ThorchainStagenet,
         name: 'thorchain',
         mainnet: false,
+        noGov: true,
         indexer: SupportedChainIndexerMode.None,
         accentColor: '#00eed1',
         factoryContractAddress:
