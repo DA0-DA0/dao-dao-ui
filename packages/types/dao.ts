@@ -32,6 +32,7 @@ import {
   UnifiedCosmosMsg,
 } from './contracts/common'
 import {
+  Config as DaoDaoCoreConfig,
   InstantiateMsg as DaoDaoCoreInstantiateMsg,
   ProposalModuleWithInfo,
 } from './contracts/DaoDaoCore'
@@ -783,4 +784,13 @@ export type V250RewardDistributorRecoveryInfo = {
     | {
         step: 'done'
       }
+}
+
+export type MemberOfDao = {
+  dao: string
+  info: ContractVersionInfo
+  config: DaoDaoCoreConfig
+  votingModule: string
+  votingModuleInfo: ContractVersionInfo
+  proposalCount: number
 }

@@ -1,13 +1,7 @@
 import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
-import {
-  noWait,
-  selector,
-  selectorFamily,
-  waitForAll,
-  waitForAny,
-} from 'recoil'
+import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import {
   AccountType,
@@ -49,7 +43,7 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
-import { chainQueries } from '../../query'
+import { chainQueries, walletQueries } from '../../query'
 import { queryClientAtom } from '../atoms'
 import {
   refreshGovProposalsAtom,
@@ -62,7 +56,6 @@ import {
   queryValidatorIndexerSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
-import { walletTokenDaoStakedDenomsSelector } from './wallet'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -150,22 +143,23 @@ export const nativeBalancesSelector = selectorFamily<
   key: 'nativeBalances',
   get:
     ({ address, chainId }) =>
-    ({ get }) => {
+    async ({ get }) => {
       get(refreshWalletBalancesIdAtom(address))
 
       const balances = [
         ...get(justNativeBalancesSelector({ address, chainId })),
       ]
       const nativeToken = getNativeTokenForChainId(chainId)
-      const stakedDenoms =
-        get(
-          noWait(
-            walletTokenDaoStakedDenomsSelector({
-              walletAddress: address,
-              chainId,
-            })
-          )
-        ).valueMaybe() || []
+
+      const queryClient = get(queryClientAtom)
+      const stakedDenoms = await queryClient
+        .fetchQuery(
+          walletQueries.tokenDaoStakedDenoms({
+            address,
+            chainId,
+          })
+        )
+        .catch(() => [])
 
       const uniqueDenoms = new Set(balances.map(({ denom }) => denom))
 
