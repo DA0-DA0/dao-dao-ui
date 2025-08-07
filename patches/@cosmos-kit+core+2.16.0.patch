@@ -1,12 +1,47 @@
 diff --git a/node_modules/@cosmos-kit/core/esm/manager.js b/node_modules/@cosmos-kit/core/esm/manager.js
-index 1f377af..bb65d8f 100644
+index 1f377af..0297256 100644
 --- a/node_modules/@cosmos-kit/core/esm/manager.js
 +++ b/node_modules/@cosmos-kit/core/esm/manager.js
-@@ -237,24 +237,97 @@ export class WalletManager extends StateBase {
+@@ -215,7 +215,7 @@ export class WalletManager extends StateBase {
+         }
+         return await this.getWalletRepo(_chainName).getNameService();
+     };
+-    _reconnect = async (walletName, checkConnection = false) => {
++    _reconnect = async (walletName, checkConnection = false, onlyChainNames) => {
+         if (checkConnection &&
+             this.getMainWallet(walletName)?.isWalletDisconnected) {
+             return;
+@@ -223,9 +223,21 @@ export class WalletManager extends StateBase {
+         this.logger?.debug('[Event Emit] `refresh_connection` (manager)');
+         this.coreEmitter.emit('refresh_connection');
+         await this.getMainWallet(walletName).connect();
+-        await this.getMainWallet(walletName)
+-            .getChainWalletList(true)[0]
+-            ?.connect(true);
++        await Promise.all(
++            this.getMainWallet(walletName)
++              .getChainWalletList(true)
++              .map((w, index) =>
++                !onlyChainNames
++                  ? // If no chains specified, just connect the first chain wallet and sync to all active chain wallets.
++                    index === 0
++                    ? w.connect(true)
++                    : undefined
++                  : // If chains specified, connect only the specified chains, without sync.
++                  onlyChainNames.includes(w.chainName)
++                  ? w.connect(false)
++                  : undefined
++              )
++          );
+     };
+     _restoreAccounts = async () => {
+         const walletName = 
+@@ -237,26 +249,104 @@ export class WalletManager extends StateBase {
              try {
                  const mainWallet = this.getMainWallet(walletName);
                  mainWallet.activate();
 +                
++                let onlyChainNames;
                  if (mainWallet.clientMutable.state === State.Done) {
 -                    const accountsStr = window.localStorage.getItem('cosmos-kit@2:core//accounts');
 -                    if (accountsStr && accountsStr !== '[]') {
@@ -109,9 +144,16 @@ index 1f377af..bb65d8f 100644
 +                        return;
 +                      }
                      }
++
++                    onlyChainNames = connectedChainRecords.map(
++                        (chainRecord) => chainRecord.name
++                    );
 +                  }
                  }
 +
                  if (mainWallet.walletInfo.mode !== 'wallet-connect') {
-                     await this._reconnect(walletName);
+-                    await this._reconnect(walletName);
++                    await this._reconnect(walletName, undefined, onlyChainNames);
                  }
+             }
+             catch (error) {
