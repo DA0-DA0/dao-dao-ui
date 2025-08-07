@@ -22,6 +22,7 @@ import {
   averageColorSelector,
   chainQueries,
   contractQueries,
+  daoCreatedCardPropsAtom,
   walletChainIdAtom,
 } from '@dao-dao/state'
 import { CwDao } from '@dao-dao/state/clients/dao/CwDao'
@@ -110,11 +111,7 @@ import {
 } from '../../hooks'
 import { getModules } from '../../modules'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
-import {
-  daoCreatedCardPropsAtom,
-  makeDefaultNewDao,
-  newDaoAtom,
-} from '../../recoil/atoms/newDao'
+import { makeDefaultNewDao, newDaoAtom } from '../../recoil/atoms/newDao'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SuspenseLoader } from '../SuspenseLoader'

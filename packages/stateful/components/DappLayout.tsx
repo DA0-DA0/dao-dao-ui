@@ -9,6 +9,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
+  daoCreatedCardPropsAtom,
   daoQueries,
   mountedInBrowserAtom,
   navigationCompactAtom,
@@ -34,7 +35,6 @@ import {
 
 import { CommandModal } from '../command'
 import { useAutoRefreshData, useFollowingDaos, useWallet } from '../hooks'
-import { daoCreatedCardPropsAtom } from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
