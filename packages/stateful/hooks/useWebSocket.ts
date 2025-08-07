@@ -1,12 +1,11 @@
-import { Channel } from 'pusher-js'
-import { useCallback, useEffect, useState } from 'react'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import Pusher, { Channel } from 'pusher-js'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   indexerUpStatusSelector,
   indexerWebSocketChannelSubscriptionsAtom,
-  indexerWebSocketSelector,
   mountedInBrowserAtom,
 } from '@dao-dao/state/recoil'
 import {
@@ -16,6 +15,9 @@ import {
 } from '@dao-dao/stateless'
 import { ParametersExceptFirst } from '@dao-dao/types'
 import {
+  WEB_SOCKET_PUSHER_APP_KEY,
+  WEB_SOCKET_PUSHER_HOST,
+  WEB_SOCKET_PUSHER_PORT,
   objectMatchesStructure,
   webSocketChannelNameForDao,
 } from '@dao-dao/utils'
@@ -23,8 +25,20 @@ import {
 export const useWebSocket = () => {
   // Get pusher client once mounted in browser.
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
-  const pusher = useRecoilValue(
-    mountedInBrowser ? indexerWebSocketSelector : constSelector(undefined)
+  const pusher = useMemo(
+    () =>
+      mountedInBrowser
+        ? new Pusher(WEB_SOCKET_PUSHER_APP_KEY, {
+            wsHost: WEB_SOCKET_PUSHER_HOST,
+            wsPort: WEB_SOCKET_PUSHER_PORT,
+            wssPort: WEB_SOCKET_PUSHER_PORT,
+            forceTLS: true,
+            disableStats: true,
+            enabledTransports: ['ws', 'wss'],
+            disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
+          })
+        : undefined,
+    [mountedInBrowser]
   )
 
   const [connected, setConnected] = useState(

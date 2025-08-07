@@ -44,7 +44,6 @@ import {
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
   neutronProtoRpcClientRouter,
-  nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
   secretCosmWasmClientRouter,
   stargateClientRouter,
@@ -118,13 +117,6 @@ export const osmosisRpcClientForChainSelector = selectorFamily({
   key: 'osmosisRpcClientForChain',
   get: (chainId: string) => async () =>
     await osmosisProtoRpcClientRouter.connect(chainId),
-  dangerouslyAllowMutability: true,
-})
-
-export const nobleRpcClientSelector = selector({
-  key: 'nobleRpcClient',
-  get: async () =>
-    await nobleProtoRpcClientRouter.connect(ChainId.NobleMainnet),
   dangerouslyAllowMutability: true,
 })
 
