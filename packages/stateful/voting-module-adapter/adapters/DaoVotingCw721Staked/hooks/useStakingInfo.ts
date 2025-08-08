@@ -8,7 +8,6 @@ import {
   chainQueries,
   daoVotingCw721StakedQueries,
   refreshClaimsIdAtom,
-  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadingWithError, useDao } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
@@ -38,19 +37,6 @@ export const useStakingInfo = ({
       contractAddress: dao.votingModule.address,
     })
   )
-
-  const setRefreshTotalBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(undefined)
-  )
-  // Refresh NFTs owned by staking contract.
-  const setRefreshStakedNftsId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(dao.votingModule.address)
-  )
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(() => {
-    setRefreshTotalBalancesId((id) => id + 1)
-    setRefreshStakedNftsId((id) => id + 1)
-  }, [setRefreshStakedNftsId, setRefreshTotalBalancesId])
 
   /// Optional
 
@@ -148,7 +134,6 @@ export const useStakingInfo = ({
     stakingContractVersion: dao.votingModule.version,
     stakingContractAddress: dao.votingModule.address,
     unstakingDuration: unstakingDuration ?? undefined,
-    refreshTotals,
     /// Optional
     // Claims
     refreshClaims: fetchClaims ? refreshClaims : undefined,

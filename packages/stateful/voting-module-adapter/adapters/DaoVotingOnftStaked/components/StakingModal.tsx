@@ -68,7 +68,7 @@ const InnerStakingModal = ({
   })
   const {
     stakingContractAddress,
-    refreshTotals,
+    refreshAllBalances,
     loadingWalletStakedValue,
     refreshClaims,
     loadingWalletStakedNfts,
@@ -186,7 +186,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshTotals()
+          refreshAllBalances()
 
           toast.success(
             t('success.stakedTokens', {
@@ -242,7 +242,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshTotals()
+          refreshAllBalances()
           refreshClaims?.()
 
           toast.success(

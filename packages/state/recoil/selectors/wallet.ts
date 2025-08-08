@@ -16,9 +16,9 @@ import {
 } from '@dao-dao/types'
 import { getNativeTokenForChainId, loadableToLoadingData } from '@dao-dao/utils'
 
-import { refreshWalletBalancesIdAtom } from '../atoms'
-import { accountsSelector } from './account'
-import { nativeBalancesSelector, nativeDelegatedBalanceSelector } from './chain'
+import { accountQueries, tokenQueries } from '../../query'
+import { queryClientAtom, refreshWalletBalancesIdAtom } from '../atoms'
+import { nativeDelegatedBalanceSelector } from './chain'
 import { queryAccountIndexerSelector } from './indexer'
 import {
   walletLazyNftCardInfosSelector,
@@ -38,22 +38,23 @@ export const walletTokenCardInfosSelector = selectorFamily<
   key: 'walletTokenCardInfos',
   get:
     ({ walletAddress, chainId }) =>
-    ({ get }) => {
+    async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
+      const queryClient = get(queryClientAtom)
 
-      const allAccounts = get(
-        accountsSelector({
+      const allAccounts = await queryClient.fetchQuery(
+        accountQueries.list({
           chainId,
           address: walletAddress,
         })
       )
 
-      const nativeBalances = get(
-        waitForAll(
-          allAccounts.map(({ chainId, address }) =>
-            nativeBalancesSelector({
-              address,
+      const nativeBalances = await Promise.all(
+        allAccounts.map(({ chainId, address }) =>
+          queryClient.fetchQuery(
+            tokenQueries.nativeBalances({
               chainId,
+              address,
             })
           )
         )

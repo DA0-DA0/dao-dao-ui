@@ -16,10 +16,12 @@ import {
   getChainForChainName,
   getFallbackImage,
   getIbcTransferInfoFromChannel,
+  getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
   ibcProtoRpcClientRouter,
   isSecretNetwork,
   isValidUrl,
+  stargateClientRouter,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -28,6 +30,7 @@ import { contractQueries } from './contract'
 import { cw20BaseQueries } from './contracts'
 import { indexerQueries } from './indexer'
 import { skipQueries } from './skip'
+import { walletQueries } from './wallet'
 
 /**
  * Fetch info for a token.
@@ -518,6 +521,67 @@ export const fetchUsdPrice = async (
   }
 }
 
+/**
+ * Fetch native token balances for a wallet.
+ */
+export const fetchNativeTokenBalances = async (
+  queryClient: QueryClient,
+  { chainId, address }: { chainId: string; address: string }
+): Promise<GenericTokenBalance[]> => {
+  const nativeToken = getNativeTokenForChainId(chainId)
+
+  // Load owned balances and tokens staked in DAOs.
+  const [balanceMap, stakedDenoms] = await Promise.all([
+    stargateClientRouter
+      .connect(chainId)
+      .then((client) => client.getAllBalances(address))
+      .then((balances) =>
+        Object.fromEntries(balances.map(({ denom, amount }) => [denom, amount]))
+      ),
+    queryClient.fetchQuery(
+      walletQueries.tokenDaoStakedDenoms({
+        address,
+        chainId,
+      })
+    ),
+  ])
+
+  // Create set of unique tokens from balances.
+  const uniqueDenoms = new Set(Object.keys(balanceMap))
+
+  // Add native denom if not present.
+  if (!uniqueDenoms.has(nativeToken.denomOrAddress)) {
+    balanceMap[nativeToken.denomOrAddress] = '0'
+    uniqueDenoms.add(nativeToken.denomOrAddress)
+  }
+
+  // Add denoms staked to DAOs if not present.
+  stakedDenoms.forEach((denom) => {
+    if (!uniqueDenoms.has(denom)) {
+      balanceMap[denom] = '0'
+      uniqueDenoms.add(denom)
+    }
+  })
+
+  // Load info for all unique tokens.
+  const tokens = await Promise.all(
+    Array.from(uniqueDenoms).map((denom) =>
+      queryClient.fetchQuery(
+        tokenQueries.info({
+          chainId,
+          type: TokenType.Native,
+          denomOrAddress: denom,
+        })
+      )
+    )
+  )
+
+  return tokens.map((token) => ({
+    token,
+    balance: balanceMap[token.denomOrAddress] ?? '0',
+  }))
+}
+
 export const tokenQueries = {
   /**
    * Fetch info for a token.
@@ -567,5 +631,13 @@ export const tokenQueries = {
     queryOptions({
       queryKey: ['token', 'usdPrice', options],
       queryFn: (ctx) => fetchUsdPrice(ctx.client, options),
+    }),
+  /**
+   * Fetch native token balances for a wallet.
+   */
+  nativeBalances: (options: Parameters<typeof fetchNativeTokenBalances>[1]) =>
+    queryOptions({
+      queryKey: ['token', 'nativeBalances', options],
+      queryFn: (ctx) => fetchNativeTokenBalances(ctx.client, options),
     }),
 }

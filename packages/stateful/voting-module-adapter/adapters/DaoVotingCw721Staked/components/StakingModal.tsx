@@ -4,11 +4,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import {
-  refreshDaoVotingPowerAtom,
-  refreshWalletBalancesIdAtom,
-  stakingLoadingAtom,
-} from '@dao-dao/state'
+import { refreshDaoVotingPowerAtom, stakingLoadingAtom } from '@dao-dao/state'
 import {
   ModalLoader,
   SegmentedControls,
@@ -47,12 +43,12 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const votingModule = useVotingModule()
-  const { address: walletAddress = '', isWalletConnected } = useWallet()
+  const {
+    address: walletAddress = '',
+    isWalletConnected,
+    refreshBalances,
+  } = useWallet()
   const plausible = usePlausible<PlausibleEvents>()
-
-  const setRefreshWalletNftsId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(walletAddress)
-  )
 
   const [mode, setMode] = useState<StakingMode>(initialMode)
 
@@ -67,7 +63,6 @@ const InnerStakingModal = ({
     })
   const {
     stakingContractAddress,
-    refreshTotals,
     loadingWalletStakedValue,
     refreshClaims,
     loadingWalletStakedNfts,
@@ -146,8 +141,12 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          setRefreshWalletNftsId((id) => id + 1)
-          refreshTotals()
+          // Refresh wallet and staking contract balances.
+          refreshBalances()
+          refreshBalances({
+            chainId: votingModule.chainId,
+            address: stakingContractAddress,
+          })
           refreshDaoVotingPower()
 
           toast.success(
@@ -190,8 +189,12 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          setRefreshWalletNftsId((id) => id + 1)
-          refreshTotals()
+          // Refresh wallet and staking contract balances.
+          refreshBalances()
+          refreshBalances({
+            chainId: votingModule.chainId,
+            address: stakingContractAddress,
+          })
           refreshClaims?.()
           refreshDaoVotingPower()
 

@@ -926,7 +926,7 @@ export const InnerCreateDaoForm = ({
           const coreVersion = parseContractVersion(info.version)
 
           // New wallet balances will not appear until the next block.
-          awaitNextBlock().then(refreshBalances)
+          awaitNextBlock().then(() => refreshBalances())
 
           //! Show DAO created modal.
 

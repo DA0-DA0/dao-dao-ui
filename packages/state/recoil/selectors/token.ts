@@ -36,7 +36,6 @@ import { queryClientAtom, refreshTokenCardLazyInfoAtom } from '../atoms'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
-  nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   nativeUnstakingDurationSecondsSelector,
 } from './chain'
@@ -171,17 +170,17 @@ export const genericTokenBalancesSelector = selectorFamily<
       const chainId = filter?.account?.chainId || mainChainId
       const address = filter?.account?.address || mainAddress
 
+      const queryClient = get(queryClientAtom)
+
       const nativeTokenBalances =
         !filter?.tokenType || filter.tokenType === TokenType.Native
-          ? get(
-              nativeBalancesSelector({
+          ? await queryClient.fetchQuery(
+              tokenQueries.nativeBalances({
                 address,
                 chainId,
               })
             )
           : []
-
-      const queryClient = get(queryClientAtom)
 
       const cw20TokenBalances =
         !filter?.tokenType || filter.tokenType === TokenType.Cw20

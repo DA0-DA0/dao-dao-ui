@@ -61,8 +61,8 @@ export const useStakingInfo = ({
     refreshDaoVotingPowerAtom(dao.coreAddress)
   )
 
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(() => {
+  // Refresh ONFT balances and voting power.
+  const refreshAllBalances = useCallback(() => {
     setRefreshDaoVotingPower((id) => id + 1)
     queryClient.invalidate(dao.getVotingPowerQuery(walletAddress))
     queryClient.invalidate(dao.getTotalVotingPowerQuery())
@@ -213,7 +213,7 @@ export const useStakingInfo = ({
     stakingContractVersion,
     stakingContractAddress: votingModule.address,
     unstakingDuration,
-    refreshTotals,
+    refreshAllBalances,
     /// Optional
     // Claims
     refreshClaims: fetchClaims ? refreshClaims : undefined,

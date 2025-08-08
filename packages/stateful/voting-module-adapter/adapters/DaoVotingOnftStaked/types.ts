@@ -20,7 +20,7 @@ export interface UseStakingInfoResponse {
   stakingContractVersion: ContractVersion
   stakingContractAddress: string
   unstakingDuration?: Duration
-  refreshTotals: () => void
+  refreshAllBalances: () => void
   /// Optional
   // Claims
   refreshClaims?: () => void

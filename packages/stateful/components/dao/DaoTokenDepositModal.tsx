@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Cw20BaseSelectors,
   nativeDenomBalanceWithTimestampSelector,
-  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
   CopyToClipboard,
@@ -19,7 +17,7 @@ import {
 import { Account } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
-import { Cw20BaseHooks, useWallet } from '../../hooks'
+import { Cw20BaseHooks, useRefreshBalances, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 
 export type DaoTokenDepositModalProps = Pick<
@@ -50,13 +48,10 @@ export const DaoTokenDepositModal = ({
 
   const depositAddress = owner.address
 
-  const setRefreshDaoBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(depositAddress)
-  )
-  const refreshDaoBalances = useCallback(
-    () => setRefreshDaoBalancesId((id) => id + 1),
-    [setRefreshDaoBalancesId]
-  )
+  const refreshDaoBalances = useRefreshBalances({
+    chainId: token.chainId,
+    address: address ?? '',
+  })
 
   const loadingBalance = useCachedLoading(
     !address

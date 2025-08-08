@@ -53,7 +53,6 @@ export const ProfileCardMemberInfo = ({
   const {
     stakingContractAddress,
     unstakingDuration,
-    refreshTotals,
     claimsPending,
     claimsAvailable,
     loadingWalletStakedValue,
@@ -141,8 +140,12 @@ export const ProfileCardMemberInfo = ({
       // New balances will not appear until the next block.
       await awaitNextBlock()
 
+      // Refresh wallet and staking contract balances.
       refreshBalances()
-      refreshTotals()
+      refreshBalances({
+        chainId: votingModule.chainId,
+        address: stakingContractAddress,
+      })
       refreshClaims?.()
 
       toast.success(
@@ -166,13 +169,13 @@ export const ProfileCardMemberInfo = ({
     votingModule.version,
     votingModule.address,
     votingModule.contractName,
+    votingModule.chainId,
     stakingContractAddress,
     plausible,
     chainId,
     coreAddress,
     awaitNextBlock,
     refreshBalances,
-    refreshTotals,
     refreshClaims,
     collectionInfo.symbol,
   ])

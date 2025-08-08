@@ -5,13 +5,10 @@ import { ChainContext, WalletAccount } from '@cosmos-kit/core'
 import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { SecretUtils } from '@keplr-wallet/types'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import { chainQueries } from '@dao-dao/state/query'
-import {
-  refreshWalletBalancesIdAtom,
-  walletChainIdAtom,
-} from '@dao-dao/state/recoil'
+import { walletChainIdAtom } from '@dao-dao/state/recoil'
 import { makeGetSignerOptions } from '@dao-dao/state/utils'
 import {
   useChainContextIfAvailable,
@@ -31,6 +28,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useQueryLoadingData } from './query'
+import { useRefreshBalances } from './useRefreshBalances'
 
 export type UseWalletOptions = {
   /**
@@ -77,9 +75,15 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
    */
   getSecretUtils: () => SecretUtils
   /**
-   * Refresh wallet balances.
+   * Refresh wallet balances. Defaults to the currently connected wallet.
    */
-  refreshBalances: () => void
+  refreshBalances: (
+    account?: {
+      chainId: string
+      address: string
+    },
+    all?: boolean
+  ) => void
 }
 
 export const useWallet = ({
@@ -219,39 +223,10 @@ export const useWallet = ({
     })
   }, [queryClient, chain.chainId])
 
-  const setRefreshWalletBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(walletChainRef.current.address ?? '')
-  )
-  const refreshBalances = useCallback(() => {
-    const address = walletChainRef.current.address
-
-    // Refresh Recoil balance selectors.
-    setRefreshWalletBalancesId((id) => id + 1)
-
-    // Invalidate native balances and staked balances.
-    queryClient.invalidate([
-      'chain',
-      'nativeBalance',
-      {
-        chainId,
-        ...(address && { address }),
-      },
-    ])
-    queryClient.invalidate([
-      'chain',
-      'nativeStakedBalance',
-      {
-        chainId,
-        ...(address && { address }),
-      },
-    ])
-    queryClient.invalidate(
-      chainQueries.nativeDelegationInfo({
-        chainId,
-        ...(address && { address }),
-      } as any)
-    )
-  }, [chainId, queryClient, setRefreshWalletBalancesId, walletChainRef])
+  const refreshBalances = useRefreshBalances({
+    chainId: walletChainRef.current.chain.chain_id,
+    address: walletChainRef.current.address ?? '',
+  })
 
   const response = useMemo(
     (): UseWalletReturn => {
