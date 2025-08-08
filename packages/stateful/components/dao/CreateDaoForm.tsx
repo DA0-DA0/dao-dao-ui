@@ -19,10 +19,10 @@ import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  averageColorSelector,
   chainQueries,
   contractQueries,
   daoCreatedCardPropsAtom,
+  miscQueries,
   walletChainIdAtom,
 } from '@dao-dao/state'
 import { CwDao } from '@dao-dao/state/clients/dao/CwDao'
@@ -41,7 +41,6 @@ import {
   StatusCard,
   Tooltip,
   TooltipInfoIcon,
-  useCachedLoadable,
   useDaoIfAvailable,
   useDaoNavHelpers,
   useSupportedChainContext,
@@ -397,20 +396,17 @@ export const InnerCreateDaoForm = ({
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
   // Get average color of image URL.
-  const averageImgColorLoadable = useCachedLoadable(
-    !imageUrl ? undefined : averageColorSelector(imageUrl)
+  const averageImgColorLoading = useQueryLoadingDataWithError(
+    imageUrl ? miscQueries.averageColor(imageUrl) : undefined
   )
   useEffect(() => {
-    if (
-      averageImgColorLoadable.state !== 'hasValue' ||
-      !averageImgColorLoadable.contents
-    ) {
+    if (averageImgColorLoading.loading || averageImgColorLoading.errored) {
       setAccentColor(undefined)
       return
     }
 
-    setAccentColor(averageImgColorLoadable.contents)
-  }, [averageImgColorLoadable, imageUrl, setAccentColor])
+    setAccentColor(averageImgColorLoading.data)
+  }, [averageImgColorLoading, imageUrl, setAccentColor])
 
   //! Page state
   const [pageIndex, setPageIndex] = useState(initialPageIndex)

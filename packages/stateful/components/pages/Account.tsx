@@ -5,12 +5,10 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { chainQueries, profileQueries } from '@dao-dao/state/query'
-import { averageColorSelector } from '@dao-dao/state/recoil'
+import { chainQueries, miscQueries, profileQueries } from '@dao-dao/state/query'
 import {
   ChainProvider,
   Account as StatelessAccount,
-  useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
 import { Theme } from '@dao-dao/types'
@@ -80,17 +78,21 @@ export const Account: NextPage = () => {
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
-  const averageImgColorLoadable = useCachedLoadable(
-    profile.loading ? undefined : averageColorSelector(profile.data.imageUrl)
+  const averageImgColorLoading = useQueryLoadingDataWithError(
+    profile.loading
+      ? undefined
+      : miscQueries.averageColor(profile.data.imageUrl)
   )
 
   // Set theme's accentColor.
   useEffect(() => {
-    if (router.isFallback || averageImgColorLoadable.state !== 'hasValue') {
+    if (router.isFallback || averageImgColorLoading.loading) {
       return
     }
 
-    const accentColor = averageImgColorLoadable.contents
+    const accentColor = averageImgColorLoading.errored
+      ? undefined
+      : averageImgColorLoading.data
 
     // Only set the accent color if we have enough contrast.
     if (accentColor) {
@@ -109,13 +111,7 @@ export const Account: NextPage = () => {
     }
 
     setAccentColor(accentColor ?? undefined)
-  }, [
-    setAccentColor,
-    router.isFallback,
-    theme,
-    averageImgColorLoadable.state,
-    averageImgColorLoadable.contents,
-  ])
+  }, [setAccentColor, router.isFallback, theme, averageImgColorLoading])
 
   const pageTitle = ACCOUNT_PAGE_TITLE.replace('ADDRESS', accountAddress)
   const pageDescription = ACCOUNT_PAGE_DESCRIPTION.replace(

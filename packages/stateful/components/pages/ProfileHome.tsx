@@ -10,8 +10,8 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
+import { miscQueries } from '@dao-dao/state/query'
 import {
-  averageColorSelector,
   mergeProfilesVisibleAtom,
   updateProfileNftVisibleAtom,
   walletChainIdAtom,
@@ -20,14 +20,17 @@ import {
   ChainProvider,
   PageLoader,
   ProfileHome as StatelessProfileHome,
-  useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
 import { AccountTab, AccountTabId, Theme } from '@dao-dao/types'
 import { getConfiguredChainConfig, getConfiguredChains } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/providers/wallet'
-import { useEntity, useManageProfile } from '../../hooks'
+import {
+  useEntity,
+  useManageProfile,
+  useQueryLoadingDataWithError,
+} from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import {
   ProfileActions,
@@ -94,8 +97,10 @@ export const ProfileHome = () => {
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
-  const averageImgColorLoadable = useCachedLoadable(
-    profile.loading ? undefined : averageColorSelector(profile.data.imageUrl)
+  const averageImgColorLoading = useQueryLoadingDataWithError(
+    profile.loading
+      ? undefined
+      : miscQueries.averageColor(profile.data.imageUrl)
   )
 
   const setUpdateProfileNftVisible = useSetRecoilState(
@@ -105,11 +110,13 @@ export const ProfileHome = () => {
 
   // Set theme's accentColor.
   useEffect(() => {
-    if (router.isFallback || averageImgColorLoadable.state !== 'hasValue') {
+    if (router.isFallback || averageImgColorLoading.loading) {
       return
     }
 
-    const accentColor = averageImgColorLoadable.contents
+    const accentColor = averageImgColorLoading.errored
+      ? undefined
+      : averageImgColorLoading.data
 
     // Only set the accent color if we have enough contrast.
     if (accentColor) {
@@ -128,13 +135,7 @@ export const ProfileHome = () => {
     }
 
     setAccentColor(accentColor ?? undefined)
-  }, [
-    setAccentColor,
-    router.isFallback,
-    theme,
-    averageImgColorLoadable.state,
-    averageImgColorLoadable.contents,
-  ])
+  }, [setAccentColor, router.isFallback, theme, averageImgColorLoading])
 
   return (
     <>
