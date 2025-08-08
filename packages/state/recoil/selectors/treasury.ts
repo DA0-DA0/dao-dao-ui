@@ -1,5 +1,3 @@
-import { parseCoins } from '@cosmjs/proto-signing'
-import { Event, IndexedTx } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
@@ -18,152 +16,17 @@ import {
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getNativeTokenForChainId,
-  getTokenForChainIdAndDenom,
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
-import { chainQueries } from '../../query'
-import { queryClientAtom } from '../atoms'
 import { accountsSelector } from './account'
-import {
-  cosmWasmClientForChainSelector,
-  nativeDelegatedBalanceSelector,
-} from './chain'
+import { nativeDelegatedBalanceSelector } from './chain'
 import { querySnapperSelector } from './indexer'
 import {
   genericTokenBalancesSelector,
   genericTokenSelector,
   tokenCardLazyInfoSelector,
 } from './token'
-
-type TreasuryTransactionsParams = WithChainId<{
-  address: string
-  minHeight?: number
-  maxHeight?: number
-}>
-
-interface TreasuryTransaction {
-  tx: IndexedTx
-  timestamp: Date | undefined
-  events: readonly Event[]
-}
-
-export const treasuryTransactionsSelector = selectorFamily<
-  TreasuryTransaction[],
-  TreasuryTransactionsParams
->({
-  key: 'treasuryTransactions',
-  get:
-    ({ address, minHeight, maxHeight, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-
-      const txs = await client.searchTx(
-        [
-          `message.module='bank' AND (transfer.sender='${address}' OR transfer.recipient='${address}')`,
-          ...(minHeight !== undefined ? `tx.height>=${minHeight}` : []),
-          ...(maxHeight !== undefined ? `tx.height<=${maxHeight}` : []),
-        ].join('AND')
-      )
-
-      const queryClient = get(queryClientAtom)
-      const txDates = await Promise.all(
-        txs.map(({ height }) =>
-          queryClient
-            .fetchQuery(
-              chainQueries.blockTimestampSafe({
-                chainId,
-                height,
-              })
-            )
-            .then((time) => (time ? new Date(time) : undefined))
-        )
-      )
-
-      return txs
-        .map(
-          (tx, index): TreasuryTransaction => ({
-            tx,
-            timestamp: txDates[index],
-            events: tx.events,
-          })
-        )
-        .sort((a, b) =>
-          // Sort descending by timestamp, putting undefined timestamps last.
-          b.timestamp && a.timestamp
-            ? b.timestamp.getTime() - a.timestamp.getTime()
-            : !a.timestamp
-              ? 1
-              : !b.timestamp
-                ? -1
-                : b.tx.height - a.tx.height
-        )
-    },
-})
-
-export interface TransformedTreasuryTransaction {
-  hash: string
-  height: number
-  timestamp: Date | undefined
-  sender: string
-  recipient: string
-  amount: HugeDecimal
-  token: GenericToken
-  outgoing: boolean
-}
-
-export const transformedTreasuryTransactionsSelector = selectorFamily<
-  TransformedTreasuryTransaction[],
-  TreasuryTransactionsParams
->({
-  key: 'transformedTreasuryTransactions',
-  get:
-    (params) =>
-    async ({ get }) => {
-      const txs = get(treasuryTransactionsSelector(params))
-
-      return txs
-        .map(({ tx: { hash, height }, timestamp, events }) => {
-          const transferEvent = events.find(({ type }) => type === 'transfer')
-          if (!transferEvent) {
-            return
-          }
-
-          let sender = transferEvent.attributes.find(
-            ({ key }) => key === 'sender'
-          )?.value
-          let recipient = transferEvent.attributes.find(
-            ({ key }) => key === 'recipient'
-          )?.value
-          const amount = transferEvent.attributes.find(
-            ({ key }) => key === 'amount'
-          )?.value
-
-          if (!sender || !recipient || !amount) {
-            return
-          }
-
-          const coin = parseCoins(amount)[0]
-          if (!coin) {
-            return
-          }
-
-          const token = getTokenForChainIdAndDenom(params.chainId, coin.denom)
-
-          return {
-            hash,
-            height,
-            timestamp,
-            sender,
-            recipient,
-            amount: HugeDecimal.from(coin),
-            token,
-            outgoing: sender === params.address,
-          }
-        })
-        .filter(Boolean) as TransformedTreasuryTransaction[]
-    },
-})
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
