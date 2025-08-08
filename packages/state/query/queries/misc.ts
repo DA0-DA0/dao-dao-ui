@@ -2,6 +2,7 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { DaoDaoIndexerAllStats, DaoDaoIndexerChainStats } from '@dao-dao/types'
 import {
+  DISCORD_NOTIFIER_API_BASE,
   FAST_AVERAGE_COLOR_API_TEMPLATE,
   chainIsIndexed,
   getSupportedChains,
@@ -111,6 +112,28 @@ export const fetchAverageColor = async (url: string) => {
   return color
 }
 
+/**
+ * Fetch Discord notifier registrations.
+ */
+export const fetchDiscordNotifierRegistrations = async ({
+  chainId,
+  coreAddress,
+  walletPublicKey,
+}: {
+  chainId: string
+  coreAddress: string
+  walletPublicKey: string
+}) => {
+  const { registrations } = await (
+    await fetch(
+      DISCORD_NOTIFIER_API_BASE +
+        `/${chainId}/${coreAddress}/${walletPublicKey}/registrations`
+    )
+  ).json()
+
+  return Array.isArray(registrations) ? registrations : []
+}
+
 export const miscQueries = {
   /**
    * Fetch home page stats.
@@ -127,5 +150,15 @@ export const miscQueries = {
     queryOptions({
       queryKey: ['misc', 'averageColor', url],
       queryFn: () => fetchAverageColor(url),
+    }),
+  /**
+   * Fetch Discord notifier registrations.
+   */
+  discordNotifierRegistrations: (
+    options: Parameters<typeof fetchDiscordNotifierRegistrations>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['misc', 'discordNotifierRegistrations', options],
+      queryFn: () => fetchDiscordNotifierRegistrations(options),
     }),
 }
