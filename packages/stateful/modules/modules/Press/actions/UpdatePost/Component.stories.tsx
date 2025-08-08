@@ -24,9 +24,11 @@ Default.args = {
   options: {
     postLoading: {
       loading: true,
+      errored: false,
     },
     postsLoading: {
       loading: false,
+      errored: false,
       data: [
         {
           id: '1',

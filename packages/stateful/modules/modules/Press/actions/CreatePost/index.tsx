@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { ActionBase, MemoEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, MemoEmoji } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -12,7 +12,8 @@ import {
 import { getChainAddressForActionOptions } from '@dao-dao/utils'
 
 import { MintNftAction } from '../../../../../actions/core/actions'
-import { postSelector } from '../../state'
+import { useQueryLoadingDataWithError } from '../../../../../hooks'
+import { pressQueries } from '../../state'
 import { PressData } from '../../types'
 import { CreatePostComponent, CreatePostData } from './Component'
 
@@ -22,14 +23,13 @@ const Component: ActionComponent = (props) => {
   const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
   const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
-  const postLoading = useCachedLoading(
+  const postLoading = useQueryLoadingDataWithError(
     uploaded && tokenId && tokenUri
-      ? postSelector({
+      ? pressQueries.post({
           id: tokenId,
           metadataUri: tokenUri,
         })
-      : undefined,
-    undefined
+      : undefined
   )
 
   return (

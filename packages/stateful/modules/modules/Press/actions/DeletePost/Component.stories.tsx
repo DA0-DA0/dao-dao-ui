@@ -24,6 +24,7 @@ Default.args = {
   options: {
     postsLoading: {
       loading: false,
+      errored: false,
       data: [
         {
           id: '1',
@@ -45,6 +46,7 @@ Default.args = {
     },
     postLoading: {
       loading: true,
+      errored: false,
     },
   },
 }

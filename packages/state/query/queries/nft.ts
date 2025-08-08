@@ -9,7 +9,11 @@ import {
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
-import { stargazeIndexerClient, stargazeTokenQuery } from '../../graphql'
+import {
+  stargazeCollectionTokensQuery,
+  stargazeIndexerClient,
+  stargazeTokenQuery,
+} from '../../graphql'
 import {
   cw721BaseQueries,
   daoVotingCw721StakedExtraQueries,
@@ -320,6 +324,87 @@ export const fetchNftMetadataFromUri = async ({
   return parseNftMetadata(metadata)
 }
 
+const ALL_TOKENS_LIMIT = 30
+const ALL_TOKENS_STARGAZE_INDEXER_LIMIT = 100
+
+/**
+ * Fetch all token IDs for a given NFT collection.
+ */
+export const fetchUnpaginatedAllTokenIds = async (
+  queryClient: QueryClient,
+  {
+    chainId,
+    address,
+    limit,
+  }: { chainId: string; address: string; limit?: number }
+): Promise<string[]> => {
+  const allTokens: string[] = []
+
+  // Use Stargaze indexer if collection is on Stargaze.
+  if (
+    chainId === ChainId.StargazeMainnet ||
+    chainId === ChainId.StargazeTestnet
+  ) {
+    while (true) {
+      const { error, data } = await stargazeIndexerClient.query({
+        query: stargazeCollectionTokensQuery,
+        variables: {
+          collectionAddr: address,
+          limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
+          offset: allTokens.length,
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.tokens?.pageInfo) {
+        break
+      }
+
+      allTokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
+
+      if (
+        allTokens.length === data.tokens.pageInfo.total ||
+        (limit && allTokens.length >= limit)
+      ) {
+        break
+      }
+    }
+  } else {
+    while (true) {
+      const { tokens } = await queryClient.fetchQuery(
+        cw721BaseQueries.allTokens({
+          chainId,
+          contractAddress: address,
+          args: {
+            startAfter: allTokens[allTokens.length - 1],
+            limit: ALL_TOKENS_LIMIT,
+          },
+        })
+      )
+
+      if (!tokens?.length) {
+        break
+      }
+
+      allTokens.push(...tokens)
+
+      // If we have less than the limit of items, we've exhausted all of them,
+      // so stop. Or if we reached the requested limit, stop.
+      if (
+        tokens.length < ALL_TOKENS_LIMIT ||
+        (limit && allTokens.length >= limit)
+      ) {
+        break
+      }
+    }
+  }
+
+  return allTokens.slice(0, limit || allTokens.length)
+}
+
 export const nftQueries = {
   /**
    * Fetch owner of NFT, or staked if NFT is staked with the given staking
@@ -355,5 +440,15 @@ export const nftQueries = {
     queryOptions({
       queryKey: ['nft', 'metadataFromUri', options],
       queryFn: () => fetchNftMetadataFromUri(options),
+    }),
+  /**
+   * Fetch all token IDs for a given NFT collection.
+   */
+  unpaginatedAllTokenIds: (
+    options: Parameters<typeof fetchUnpaginatedAllTokenIds>[1]
+  ) =>
+    queryOptions({
+      queryKey: ['nft', 'unpaginatedAllTokenIds', options],
+      queryFn: (ctx) => fetchUnpaginatedAllTokenIds(ctx.client, options),
     }),
 }

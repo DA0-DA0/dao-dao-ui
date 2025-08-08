@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ErrorPage,
   IconButtonLink,
   InputErrorMessage,
   InputLabel,
@@ -11,7 +12,7 @@ import {
   useDao,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionComponent, LoadingData } from '@dao-dao/types'
+import { ActionComponent, LoadingDataWithError } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
 import { Post } from '../../types'
@@ -21,8 +22,8 @@ export type DeletePostData = {
 }
 
 type DeletePostOptions = {
-  postsLoading: LoadingData<Post[]>
-  postLoading: LoadingData<Post | undefined>
+  postsLoading: LoadingDataWithError<Post[]>
+  postLoading: LoadingDataWithError<Post>
 }
 
 export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
@@ -41,6 +42,8 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
   return isCreating ? (
     postsLoading.loading ? (
       <Loader />
+    ) : postsLoading.errored ? (
+      <ErrorPage error={postsLoading.error} />
     ) : (
       <div className="flex flex-col gap-2">
         <InputLabel name={t('form.postToDelete')} />
@@ -61,7 +64,7 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
     )
   ) : postLoading.loading ? (
     <Loader />
-  ) : !postLoading.data ? (
+  ) : postLoading.errored ? (
     <p>{id}</p>
   ) : (
     <div className="flex flex-row items-center gap-2">
@@ -69,6 +72,7 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
 
       {/* If post still exists in current list, link to it. */}
       {!postsLoading.loading &&
+        !postsLoading.errored &&
         postsLoading.data.some((post) => post.id === id) && (
           <IconButtonLink
             Icon={ArrowOutwardRounded}

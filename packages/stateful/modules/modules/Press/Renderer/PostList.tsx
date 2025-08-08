@@ -2,14 +2,14 @@ import { WarningRounded } from '@mui/icons-material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LineLoaders, NoContent } from '@dao-dao/stateless'
-import { LoadingData } from '@dao-dao/types'
+import { ErrorPage, LineLoaders, NoContent } from '@dao-dao/stateless'
+import { LoadingDataWithError } from '@dao-dao/types'
 
 import { Post } from '../types'
 import { PostLine } from './PostLine'
 
 export interface PostListProps {
-  postsLoading: LoadingData<Post[]>
+  postsLoading: LoadingDataWithError<Post[]>
   onClick: (id: string) => void
   createPostHref: string | undefined
 }
@@ -23,7 +23,7 @@ export const PostList = ({
 
   const sortedPosts = useMemo(
     () =>
-      postsLoading.loading
+      postsLoading.loading || postsLoading.errored
         ? []
         : postsLoading.data.sort(
             (a, b) =>
@@ -38,6 +38,8 @@ export const PostList = ({
       lines={10}
       type="post"
     />
+  ) : postsLoading.errored ? (
+    <ErrorPage error={postsLoading.error} />
   ) : sortedPosts.length > 0 ? (
     <div className="space-y-1 border-t border-border-secondary pt-6">
       {sortedPosts.map((post, index) => (

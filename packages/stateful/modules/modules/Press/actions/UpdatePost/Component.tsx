@@ -6,6 +6,7 @@ import { Trans, useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ErrorPage,
   ImageDropInput,
   InputErrorMessage,
   InputLabel,
@@ -15,7 +16,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, LoadingData } from '@dao-dao/types'
+import { ActionComponent, LoadingDataWithError } from '@dao-dao/types'
 import {
   processError,
   transformIpfsUrlToHttpsIfNecessary,
@@ -40,8 +41,8 @@ export type UpdatePostData = {
 }
 
 type UpdatePostOptions = {
-  postLoading: LoadingData<Post | undefined>
-  postsLoading: LoadingData<Post[]>
+  postLoading: LoadingDataWithError<Post>
+  postsLoading: LoadingDataWithError<Post[]>
 }
 
 export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
@@ -62,9 +63,10 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
   const [uploading, setUploading] = useState(false)
 
   const updateId = watch((fieldNamePrefix + 'updateId') as 'updateId')
-  const updatingPost = postsLoading.loading
-    ? undefined
-    : postsLoading.data.find(({ id }) => id === updateId)
+  const updatingPost =
+    postsLoading.loading || postsLoading.errored
+      ? undefined
+      : postsLoading.data.find(({ id }) => id === updateId)
   // When updatingPost changes, update form values.
   useEffect(() => {
     if (updatingPost) {
@@ -80,7 +82,12 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
 
   // If updateId is undefined and posts finish loading, set to first post.
   useEffect(() => {
-    if (!updateId && !postsLoading.loading && postsLoading.data.length > 0) {
+    if (
+      !updateId &&
+      !postsLoading.loading &&
+      !postsLoading.errored &&
+      postsLoading.data.length > 0
+    ) {
       setValue(
         (fieldNamePrefix + 'updateId') as 'updateId',
         postsLoading.data[0].id
@@ -152,6 +159,7 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
           validation={[validateRequired]}
         >
           {!postsLoading.loading &&
+            !postsLoading.errored &&
             postsLoading.data.map(({ id, title }) => (
               <option key={id} value={id}>
                 {title}
@@ -252,8 +260,10 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
         </div>
       )}
     </>
-  ) : postLoading.loading || !postLoading.data ? (
+  ) : postLoading.loading ? (
     <Loader />
+  ) : postLoading.errored ? (
+    <ErrorPage error={postLoading.error} />
   ) : (
     <>
       {isCreating && (
