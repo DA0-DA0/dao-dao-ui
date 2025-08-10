@@ -190,7 +190,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraClassicMainnet,
         name: 'terraclassic',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#ffd842',
         noInstantiate2Create: true,
         factoryContractAddress:
