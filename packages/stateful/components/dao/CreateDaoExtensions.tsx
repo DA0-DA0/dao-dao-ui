@@ -58,10 +58,10 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
 
   return (
     <>
-      <p className="header-text text-text-body mt-4 mb-2 md:mt-8">
+      <p className="header-text mb-2 mt-4 text-text-body md:mt-8">
         {t('title.extensions')}
       </p>
-      <p className="body-text text-text-secondary mb-8">
+      <p className="body-text mb-8 text-text-secondary">
         {t('info.extensionsDescription')}
       </p>
 
@@ -74,11 +74,11 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
               <div
                 key={id}
                 className={clsx(
-                  'bg-background-tertiary flex flex-col gap-5 px-7 py-5 rounded-md ring-1 transition-all',
+                  'flex flex-col gap-5 rounded-md bg-background-tertiary px-7 py-5 ring-1 transition-all',
                   added ? 'ring-border-interactive-active' : 'ring-transparent'
                 )}
               >
-                <div className="flex flex-row gap-3 items-center">
+                <div className="flex flex-row items-center gap-3">
                   <IconButton
                     Icon={Add}
                     circular
@@ -115,7 +115,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                 </div>
 
                 {added && Editor && (
-                  <div className="animate-fade-in border-border-secondary pt-4 border-t -mx-7 px-7">
+                  <div className="-mx-7 animate-fade-in border-t border-border-secondary px-7 pt-4">
                     <Editor
                       errors={
                         (errors.extensions?.[id] as any)?.data as FieldErrors
@@ -137,11 +137,11 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
               <div
                 key={id}
                 className={clsx(
-                  'bg-background-tertiary flex flex-col gap-5 px-7 py-5 rounded-md ring-1 transition-all',
+                  'flex flex-col gap-5 rounded-md bg-background-tertiary px-7 py-5 ring-1 transition-all',
                   added ? 'ring-border-interactive-active' : 'ring-transparent'
                 )}
               >
-                <div className="flex flex-row gap-3 items-center">
+                <div className="flex flex-row items-center gap-3">
                   <IconButton
                     Icon={Add}
                     circular
@@ -184,7 +184,7 @@ export const CreateDaoExtensions = (context: CreateDaoContext) => {
                 {added &&
                   Editor &&
                   (dao ? (
-                    <div className="animate-fade-in border-border-secondary pt-4 border-t -mx-7 px-7">
+                    <div className="-mx-7 animate-fade-in border-t border-border-secondary px-7 pt-4">
                       <DaoContext.Provider
                         value={{
                           dao,

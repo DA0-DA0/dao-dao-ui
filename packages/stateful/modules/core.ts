@@ -58,18 +58,18 @@ export const getDaoModule = <Variables extends Record<string, unknown> = any>(
     return null
   }
 
-  const module = getModuleById(id, {
+  const existingModule = getModuleById(id, {
     chainId: dao.chainId,
     version: dao.coreVersion,
     isDaoCreation: dao instanceof CreatingDaoPlaceholder,
   })
 
-  if (!module) {
+  if (!existingModule) {
     return null
   }
 
   return {
-    module,
+    module: existingModule,
     daoModule,
   }
 }
@@ -90,11 +90,14 @@ export const getDaoModules = (
   })
 
   return dao.modules.flatMap((daoModule) => {
-    const module = modules.find((module) => module.id === daoModule.id)
-    if (!module) {
+    const existingModule = modules.find((module) => module.id === daoModule.id)
+    if (!existingModule) {
       return []
     }
 
-    return { module, daoModule }
+    return {
+      module: existingModule,
+      daoModule,
+    }
   })
 }

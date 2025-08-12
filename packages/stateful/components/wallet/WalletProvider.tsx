@@ -43,8 +43,8 @@ import {
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
-import { WalletUi } from './WalletUi'
 import { useSyncWalletSigner, useWallet } from '../../hooks'
+import { WalletUi } from './WalletUi'
 
 // Set better name for MetaMask wallets.
 leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'

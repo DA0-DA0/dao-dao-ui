@@ -5,7 +5,7 @@ import {
   RemoveCircle,
   Timelapse,
 } from '@mui/icons-material'
-import { ReactElement } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1beta1/gov'
@@ -41,7 +41,7 @@ export const GovProposalStatus = ({
 export const GovProposalStatusMap: Record<
   ProposalStatus,
   {
-    Icon: (props: { className: string }) => ReactElement
+    Icon: ComponentType<{ className: string }>
     i18nKey: string
     iconClassName: string
     textClassName: string

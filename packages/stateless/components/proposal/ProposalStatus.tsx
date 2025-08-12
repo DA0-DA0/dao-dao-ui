@@ -8,7 +8,7 @@ import {
   ThumbDownOutlined,
   Timelapse,
 } from '@mui/icons-material'
-import { ReactElement } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -47,7 +47,7 @@ export const ProposalStatus = ({ status, ...props }: ProposalStatusProps) => {
 export const ProposalStatusMap: Record<
   ProposalStatusKey,
   {
-    Icon: (props: { className: string }) => ReactElement
+    Icon: ComponentType<{ className: string }>
     iconClassName: string
     textClassName: string
   }

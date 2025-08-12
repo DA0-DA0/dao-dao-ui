@@ -114,14 +114,14 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
 
     // Optionally add additional module messages when updating a module.
     if (setting) {
-      const module = getModules({
+      const existingModule = getModules({
         chainId: this.dao.chainId,
         version: this.dao.coreVersion,
       }).find((w) => w.id === id)
-      if (module?.editAction) {
+      if (existingModule?.editAction) {
         msgs.push(
           ...[
-            await module.editAction.encode({
+            await existingModule.editAction.encode({
               data: values,
               options: this.options,
               extra,
@@ -156,13 +156,13 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
     // Optionally match additional module messages when updating a module.
     if (setting) {
       const moduleId = key.substring(DAO_MODULE_ITEM_PREFIX.length)
-      const module = getModuleById(moduleId, {
+      const existingModule = getModuleById(moduleId, {
         chainId: this.dao.chainId,
         version: this.dao.coreVersion,
       })
-      if (module?.editAction && messages.length > 1) {
+      if (existingModule?.editAction && messages.length > 1) {
         const values = JSON.parse(value)
-        const moduleMatch = await module.editAction.match({
+        const moduleMatch = await existingModule.editAction.match({
           data: values,
           messages: messages.slice(1),
           options: this.options,
@@ -199,12 +199,12 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
 
     // Decode additional module data if necessary.
     if (mode === 'set') {
-      const module = getModuleById(id, {
+      const existingModule = getModuleById(id, {
         chainId: this.dao.chainId,
         version: this.dao.coreVersion,
       })
-      if (module?.editAction?.decode && messages.length > 1) {
-        extra = await module.editAction.decode({
+      if (existingModule?.editAction?.decode && messages.length > 1) {
+        extra = await existingModule.editAction.decode({
           data: values,
           messages: messages.slice(1),
           options: this.options,

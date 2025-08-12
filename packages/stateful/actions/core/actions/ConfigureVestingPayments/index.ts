@@ -52,12 +52,12 @@ export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsMo
     await this.manageModulesAction.setup()
 
     // Attempt to load existing module data.
-    const module = this.manageModulesAction.dao.modules.find(
+    const existingModule = this.manageModulesAction.dao.modules.find(
       ({ id }) => id === ModuleId.VestingPayments
     )
 
-    this._defaults = module
-      ? cloneDeep(module.values)
+    this._defaults = existingModule
+      ? cloneDeep(existingModule.values)
       : {
           factories: {},
         }
