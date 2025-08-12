@@ -1,0 +1,176 @@
+diff --git a/node_modules/@confio/relayer/build/lib/ibcclient.d.ts b/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
+index 97a818a..9c12fde 100644
+--- a/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
++++ b/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
+@@ -52,6 +52,7 @@ export declare type IbcClientOptions = SigningStargateClientOptions & {
+     gasPrice: GasPrice;
+     estimatedBlockTime: number;
+     estimatedIndexerTime: number;
++    defaultFee?: "auto" | number;
+ };
+ export declare class IbcClient {
+     readonly gasPrice: GasPrice;
+@@ -64,6 +65,7 @@ export declare class IbcClient {
+     readonly revisionNumber: bigint;
+     readonly estimatedBlockTime: number;
+     readonly estimatedIndexerTime: number;
++    readonly defaultFee: "auto" | number;
+     static connectWithSigner(endpoint: string, signer: OfflineSigner, senderAddress: string, options: IbcClientOptions): Promise<IbcClient>;
+     private constructor();
+     revisionHeight(height: number): Height;
+diff --git a/node_modules/@confio/relayer/build/lib/ibcclient.js b/node_modules/@confio/relayer/build/lib/ibcclient.js
+index 1bf85dc..e5d6f50 100644
+--- a/node_modules/@confio/relayer/build/lib/ibcclient.js
++++ b/node_modules/@confio/relayer/build/lib/ibcclient.js
+@@ -77,6 +77,7 @@ class IbcClient {
+         this.logger = options.logger ?? new logger_1.NoopLogger();
+         this.estimatedBlockTime = options.estimatedBlockTime;
+         this.estimatedIndexerTime = options.estimatedIndexerTime;
++        this.defaultFee = options.defaultFee ?? "auto";
+     }
+     static async connectWithSigner(endpoint, signer, senderAddress, options) {
+         // override any registry setup, use the other options
+@@ -339,7 +340,7 @@ class IbcClient {
+             transferAmount,
+             memo,
+         });
+-        const result = await this.sign.sendTokens(this.senderAddress, recipientAddress, transferAmount, "auto", memo);
++        const result = await this.sign.sendTokens(this.senderAddress, recipientAddress, transferAmount, this.defaultFee, memo);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -356,7 +357,7 @@ class IbcClient {
+             msgs,
+         });
+         const senderAddress = this.senderAddress;
+-        const result = await this.sign.signAndBroadcast(senderAddress, msgs, "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, msgs, this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -384,7 +385,7 @@ class IbcClient {
+             }),
+         };
+         this.logger.debug("MsgCreateClient", createMsg);
+-        const result = await this.sign.signAndBroadcast(senderAddress, [createMsg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [createMsg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -420,7 +421,7 @@ class IbcClient {
+                 mutableMsg.value.clientMessage.value = toBase64AsAny(mutableMsg.value.clientMessage.value);
+             }
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [updateMsg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [updateMsg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -447,7 +448,7 @@ class IbcClient {
+             }),
+         };
+         this.logger.debug(`MsgConnectionOpenInit`, msg);
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -494,7 +495,7 @@ class IbcClient {
+             mutableMsg.value.proofConsensus = toBase64AsAny(mutableMsg.value.proofConsensus);
+             mutableMsg.value.proofInit = toBase64AsAny(mutableMsg.value.proofInit);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -536,7 +537,7 @@ class IbcClient {
+             mutableMsg.value.proofTry = toBase64AsAny(mutableMsg.value.proofTry);
+             mutableMsg.value.proofClient = toBase64AsAny(mutableMsg.value.proofClient);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -562,7 +563,7 @@ class IbcClient {
+         this.logger.debug("MsgConnectionOpenConfirm", deepCloneAndMutate(msg, (mutableMsg) => {
+             mutableMsg.value.proofAck = toBase64AsAny(mutableMsg.value.proofAck);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -592,7 +593,7 @@ class IbcClient {
+             }),
+         };
+         this.logger.debug("MsgChannelOpenInit", msg);
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -634,7 +635,7 @@ class IbcClient {
+         this.logger.debug("MsgChannelOpenTry", deepCloneAndMutate(msg, (mutableMsg) => {
+             mutableMsg.value.proofInit = toBase64AsAny(mutableMsg.value.proofInit);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -671,7 +672,7 @@ class IbcClient {
+         this.logger.debug("MsgChannelOpenAck", deepCloneAndMutate(msg, (mutableMsg) => {
+             mutableMsg.value.proofTry = toBase64AsAny(mutableMsg.value.proofTry);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -698,7 +699,7 @@ class IbcClient {
+         this.logger.debug("MsgChannelOpenConfirm", deepCloneAndMutate(msg, (mutableMsg) => {
+             mutableMsg.value.proofAck = toBase64AsAny(mutableMsg.value.proofAck);
+         }));
+-        const result = await this.sign.signAndBroadcast(senderAddress, [msg], "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, [msg], this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -743,7 +744,7 @@ class IbcClient {
+                 }
+             })),
+         });
+-        const result = await this.sign.signAndBroadcast(senderAddress, msgs, "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, msgs, this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -794,7 +795,7 @@ class IbcClient {
+                 }
+             })),
+         });
+-        const result = await this.sign.signAndBroadcast(senderAddress, msgs, "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, msgs, this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -840,7 +841,7 @@ class IbcClient {
+                 mutableMsg.value.proofUnreceived = toBase64AsAny(mutableMsg.value.proofUnreceived);
+             })),
+         });
+-        const result = await this.sign.signAndBroadcast(senderAddress, msgs, "auto");
++        const result = await this.sign.signAndBroadcast(senderAddress, msgs, this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }
+@@ -854,7 +855,7 @@ class IbcClient {
+     /** timeout in seconds (SigningStargateClient converts to nanoseconds) */
+     timeoutTime) {
+         this.logger.verbose(`Transfer tokens to ${receiver}`);
+-        const result = await this.sign.sendIbcTokens(this.senderAddress, receiver, token, sourcePort, sourceChannel, timeoutHeight, timeoutTime, "auto");
++        const result = await this.sign.sendIbcTokens(this.senderAddress, receiver, token, sourcePort, sourceChannel, timeoutHeight, timeoutTime, this.defaultFee);
+         if ((0, stargate_1.isDeliverTxFailure)(result)) {
+             throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
+         }

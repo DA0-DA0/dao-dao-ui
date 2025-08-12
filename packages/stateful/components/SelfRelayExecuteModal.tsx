@@ -391,6 +391,8 @@ export const SelfRelayExecuteModal = ({
                 estimatedIndexerTime: 3000,
                 // Force ignore version type mismatch caused by dependencies.
                 gasPrice: new DynamicGasPrice(queryClient, chain) as any,
+                // Set default fee multiplier.
+                defaultFee: CHAIN_GAS_MULTIPLIER,
               }
             )
           )
