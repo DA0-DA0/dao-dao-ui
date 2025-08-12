@@ -28,13 +28,11 @@ export default async function handler(
       mimetype
     )
 
-    return res.status(200).json({
+    res.status(200).json({
       cid,
     })
   } catch (err) {
-    return res
-      .status(400)
-      .json({ error: err instanceof Error ? err.message : err })
+    res.status(400).json({ error: err instanceof Error ? err.message : err })
   }
 }
 

@@ -22,7 +22,7 @@ export default async function handler(
 
     // Make sure name is not empty.
     if (!name?.trim()) {
-      return res.status(400).json({ error: 'Name cannot be empty.' })
+      throw new Error('Name cannot be empty.')
     }
 
     // Parse additional metadata if present.
@@ -31,13 +31,13 @@ export default async function handler(
       try {
         extra = JSON5.parse(_extra)
       } catch {
-        return res.status(400).json({ error: 'Invalid extra metadata.' })
+        throw new Error('Invalid extra metadata.')
       }
     }
 
     // Ensure image has extension if exists.
     if (imageData && !imageExtension) {
-      return res.status(400).json({ error: 'No image extension found.' })
+      throw new Error('No image extension found.')
     }
 
     const folder = nanoid()
@@ -70,15 +70,13 @@ export default async function handler(
     const metadataUrl = `ipfs://${cid}`
     const imageUrl = metadata.image
 
-    return res.status(200).json({
+    res.status(200).json({
       cid,
       metadataUrl,
       imageUrl,
     })
   } catch (err) {
-    return res
-      .status(400)
-      .json({ error: err instanceof Error ? err.message : err })
+    res.status(400).json({ error: err instanceof Error ? err.message : err })
   }
 }
 

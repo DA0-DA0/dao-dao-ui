@@ -9,9 +9,7 @@ export default async function handler(
 ) {
   try {
     if (typeof req.body !== 'object' || req.body === null) {
-      return res.status(400).json({
-        error: 'Invalid request body.',
-      })
+      throw new Error('Invalid request body.')
     }
 
     const cid = await uploadToFilebase(
@@ -20,12 +18,10 @@ export default async function handler(
       'application/json'
     )
 
-    return res.status(200).json({
+    res.status(200).json({
       cid,
     })
   } catch (err) {
-    return res
-      .status(400)
-      .json({ error: err instanceof Error ? err.message : err })
+    res.status(400).json({ error: err instanceof Error ? err.message : err })
   }
 }
