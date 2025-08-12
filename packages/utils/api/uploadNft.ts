@@ -30,7 +30,7 @@ export default async function handler(
     if (_extra) {
       try {
         extra = JSON5.parse(_extra)
-      } catch (err) {
+      } catch {
         return res.status(400).json({ error: 'Invalid extra metadata.' })
       }
     }

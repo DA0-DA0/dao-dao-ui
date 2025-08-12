@@ -18,6 +18,7 @@
     "cwgen": "yarn utils cwgen",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
+    "cfg": "yarn workspace @dao-dao/config",
     "i18n": "yarn workspace @dao-dao/i18n",
     "state": "yarn workspace @dao-dao/state",
     "stateless": "yarn workspace @dao-dao/stateless",

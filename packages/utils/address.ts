@@ -31,7 +31,7 @@ export const isValidBech32Address = (
     }
 
     return true
-  } catch (err) {
+  } catch {
     return false
   }
 }

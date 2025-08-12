@@ -160,7 +160,7 @@ class DeploymentQueue {
             config = JSON.parse(jsonStr)
           }
         }
-      } catch (e) {
+      } catch {
         // Ignore parse errors
       }
 

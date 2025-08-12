@@ -455,7 +455,7 @@ export const toAccessibleImageUrl = (
 export const toValidatorAddress = (address: string, bech32Prefix: string) => {
   try {
     return toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
-  } catch (err) {
+  } catch {
     return ''
   }
 }
@@ -464,7 +464,7 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
 export const toBech32Hash = (address: string) => {
   try {
     return toHex(fromBech32(address).data)
-  } catch (err) {
+  } catch {
     return ''
   }
 }
@@ -508,7 +508,7 @@ export const abbreviateAddress = (address: string, takeN = 4): string => {
   let prefixLength
   try {
     prefixLength = fromBech32(address).prefix.length
-  } catch (e) {
+  } catch {
     // Conservative estimate.
     prefixLength = 8
   }
