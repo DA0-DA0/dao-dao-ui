@@ -154,7 +154,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.MigalooMainnet,
         name: 'migaloo',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#3ccd64',
         factoryContractAddress:
           'migaloo1d08e0gph0awec2ut76tzh92c6ftl6n85wpm0gq8xxe0eu8j97kzqpys8nw',
