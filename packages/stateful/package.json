@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/stateful",
-  "version": "2.7.1-rc.4",
+  "version": "2.7.1-rc.5",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
@@ -33,11 +33,11 @@
     "@cosmos-kit/station": "^2.13.3",
     "@cosmos-kit/trust": "^2.14.3",
     "@cosmos-kit/web3auth": "^2.16.3",
-    "@dao-dao/i18n": "2.7.1-rc.4",
-    "@dao-dao/math": "2.7.1-rc.4",
-    "@dao-dao/state": "2.7.1-rc.4",
-    "@dao-dao/stateless": "2.7.1-rc.4",
-    "@dao-dao/utils": "2.7.1-rc.4",
+    "@dao-dao/i18n": "2.7.1-rc.5",
+    "@dao-dao/math": "2.7.1-rc.5",
+    "@dao-dao/state": "2.7.1-rc.5",
+    "@dao-dao/stateless": "2.7.1-rc.5",
+    "@dao-dao/utils": "2.7.1-rc.5",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -77,9 +77,9 @@
   "devDependencies": {
     "@chain-registry/types": "^0.50.185",
     "@cosmjs/amino": "0.33.1",
-    "@dao-dao/config": "2.7.1-rc.4",
+    "@dao-dao/config": "2.7.1-rc.5",
     "@dao-dao/cosmiframe": "0.1.0",
-    "@dao-dao/types": "2.7.1-rc.4",
+    "@dao-dao/types": "2.7.1-rc.5",
     "@storybook/react": "^6.5.10",
     "@tanstack/react-query-devtools": "5.83.1",
     "@types/file-saver": "^2.0.5",
@@ -100,7 +100,7 @@
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "2.7.1-rc.4",
+    "@dao-dao/storybook": "2.7.1-rc.5",
     "next": "^12 || ^13",
     "react": "^17 || ^18"
   },
