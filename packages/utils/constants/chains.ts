@@ -209,7 +209,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OraichainMainnet,
         name: 'oraichain',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         overrideChainImageUrl: '/chains/oraichain.svg',
         accentColor: '#ffffff',
         factoryContractAddress:
