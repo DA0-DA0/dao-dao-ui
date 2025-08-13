@@ -138,7 +138,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.StargazeMainnet,
         name: 'stargaze',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#8ac3cc',
         factoryContractAddress:
           'stars1rncaxmp9n0cw6l5uw9qjwzptqjckdrk99hewh857j72pr3gv7tzqv5s88r',
