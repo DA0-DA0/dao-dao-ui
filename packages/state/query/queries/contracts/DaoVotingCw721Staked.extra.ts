@@ -1,5 +1,7 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
+import { SupportedChainIndexerMode } from '@dao-dao/types'
+
 import { indexerQueries } from '../indexer'
 
 /**
@@ -30,6 +32,10 @@ export const fetchDaoVotingCw721StakedTopStakers = async (
       formula: 'daoVotingCw721Staked/topStakers',
       ...(limit && { args: { limit } }),
       noFallback: true,
+      allowedModes: [
+        SupportedChainIndexerMode.Tx,
+        SupportedChainIndexerMode.All,
+      ],
     })
   )) || []
 
@@ -58,6 +64,10 @@ export const fetchDaoVotingCw721StakedStaker = (
         tokenId,
       },
       noFallback: true,
+      allowedModes: [
+        SupportedChainIndexerMode.Tx,
+        SupportedChainIndexerMode.All,
+      ],
     })
   )
 

@@ -27,6 +27,10 @@ export type QueryIndexerOptions = WithChainId<
      * the indexer query.
      */
     ttl?: number
+    /**
+     * Modes to require. Defaults to `All`.
+     */
+    allowedModes?: SupportedChainIndexerMode[]
   } & (
     | {
         type: `${IndexerFormulaType.Generic}`
@@ -48,8 +52,9 @@ export const queryIndexer = async <T = any>({
   times,
   chainId,
   ttl,
+  allowedModes = [SupportedChainIndexerMode.All],
 }: QueryIndexerOptions): Promise<T | undefined> => {
-  if (!chainIsIndexed(chainId, SupportedChainIndexerMode.All)) {
+  if (!chainIsIndexed(chainId, ...allowedModes)) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
