@@ -261,6 +261,14 @@ export const MISCONFIGURED_DAOS: {
     redirectDao:
       'thor1l2fyshlx6kngng08hs88jdgs3tvu0e3ny5aemfp3tuuu0ma2gklqkqydna',
   },
+  // Liquidy Non-circulating Supply DAO
+  {
+    chainId: ChainId.ThorchainMainnet,
+    coreAddress:
+      'thor1nmpvmmre4hlq23y64fxv7p2euglls7jzl0xv9f947kgj66tn5w6s27shuq',
+    redirectDao:
+      'thor18938jyzw35k743rrzeyulks8w5x0uvqu7v5xcj9d33p90ngehj4smsz0zr',
+  },
 ]
 
 /**
