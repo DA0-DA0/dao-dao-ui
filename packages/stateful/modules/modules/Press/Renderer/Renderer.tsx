@@ -11,7 +11,7 @@ import { Button, Tooltip, useDao, useDaoNavHelpers } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
   IconButtonLinkProps,
-  LoadingData,
+  LoadingDataWithError,
   ModuleId,
 } from '@dao-dao/types'
 
@@ -20,7 +20,7 @@ import { Post } from '../types'
 import { PostList } from './PostList'
 
 export interface RendererProps {
-  postsLoading: LoadingData<Post[]>
+  postsLoading: LoadingDataWithError<Post[]>
   isMember: boolean
   createPostHref: string | undefined
   // Template containing IDTOUPDATE for the post ID to update.
@@ -62,7 +62,7 @@ export const Renderer = ({
   )
 
   const openPost =
-    postsLoading.loading || !openPostId
+    postsLoading.loading || postsLoading.errored || !openPostId
       ? undefined
       : postsLoading.data.find(
           (post) =>

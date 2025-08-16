@@ -9,7 +9,6 @@ import {
   cw20StakeQueries,
   daoVotingCw20StakedQueries,
   refreshClaimsIdAtom,
-  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoading, useDao } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
@@ -40,15 +39,6 @@ export const useStakingInfo = ({
         contractAddress: stakingContractAddress,
       })
     ).data.unstaking_duration ?? undefined
-
-  const setRefreshTotalBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(undefined)
-  )
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(
-    () => setRefreshTotalBalancesId((id) => id + 1),
-    [setRefreshTotalBalancesId]
-  )
 
   /// Optional
 
@@ -125,7 +115,6 @@ export const useStakingInfo = ({
   return {
     stakingContractAddress,
     unstakingDuration,
-    refreshTotals,
     /// Optional
     // Claims
     refreshClaims: fetchClaims ? refreshClaims : undefined,

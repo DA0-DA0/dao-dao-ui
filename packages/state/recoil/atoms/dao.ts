@@ -1,4 +1,6 @@
-import { atomFamily } from 'recoil'
+import { atom, atomFamily } from 'recoil'
+
+import { DaoCreatedCardProps } from '@dao-dao/types'
 
 import { localStorageEffectJSON } from '../effects'
 
@@ -32,4 +34,12 @@ export const initialActionsVerifiedAtom = atomFamily<
   key: 'initialActionsVerified',
   default: false,
   effects: [localStorageEffectJSON],
+})
+
+/**
+ * When set, shows DAO created modal with these props for the DaoCard shown.
+ */
+export const daoCreatedCardPropsAtom = atom<DaoCreatedCardProps | undefined>({
+  key: 'daoCreatedCardProps',
+  default: undefined,
 })

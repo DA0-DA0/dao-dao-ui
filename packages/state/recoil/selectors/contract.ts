@@ -3,7 +3,7 @@ import { selectorFamily } from 'recoil'
 
 import { InfoResponse, WithChainId } from '@dao-dao/types'
 import {
-  DAO_CORE_CONTRACT_NAMES,
+  contractNameMatches,
   getChainForChainId,
   isInvalidContractError,
   isSecretNetwork,
@@ -90,9 +90,7 @@ export const isContractSelector = selectorFamily<
           })
         )
 
-        return 'name' in nameOrNames
-          ? contract.includes(nameOrNames.name)
-          : nameOrNames.names.some((name) => contract.includes(name))
+        return contractNameMatches(contract, nameOrNames)
       } catch (err) {
         if (isInvalidContractError(err)) {
           console.error(err)
@@ -103,21 +101,4 @@ export const isContractSelector = selectorFamily<
         throw err
       }
     },
-})
-
-export const isDaoSelector = selectorFamily<
-  boolean,
-  WithChainId<{ address: string }>
->({
-  key: 'isDao',
-  get:
-    ({ address, chainId }) =>
-    ({ get }) =>
-      get(
-        isContractSelector({
-          contractAddress: address,
-          chainId,
-          names: DAO_CORE_CONTRACT_NAMES,
-        })
-      ),
 })

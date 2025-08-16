@@ -298,7 +298,7 @@ export const makeUsePublishProposal =
               })
 
               // Allowances will not update until the next block has been added.
-              awaitNextBlock().then(refreshBalances)
+              awaitNextBlock().then(() => refreshBalances())
             } catch (err) {
               throw new Error(
                 `Failed to increase allowance to pay proposal deposit: (${processError(

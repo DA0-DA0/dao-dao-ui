@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
+  daoCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
@@ -16,7 +17,6 @@ import {
 } from '@dao-dao/stateless'
 
 import { useAutoRefreshData, useDaoTabs } from '../hooks'
-import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { LinkWrapper } from './LinkWrapper'
 import { SidebarWallet } from './NavWallet'
 import { StatefulPageHeader } from './PageHeader'

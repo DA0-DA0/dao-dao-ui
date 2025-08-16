@@ -1,5 +1,4 @@
 import {
-  useCachedLoading,
   useDao,
   useDaoNavHelpers,
   useInitializedActionForKey,
@@ -8,8 +7,9 @@ import { ActionKey, ModuleRendererProps } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { ButtonLink, IconButtonLink } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useMembership } from '../../../../hooks/useMembership'
-import { postsSelector } from '../state'
+import { pressQueries } from '../state'
 import { PressData } from '../types'
 import { Renderer as StatelessRenderer } from './Renderer'
 
@@ -24,12 +24,11 @@ export const Renderer = ({
   // native DAO chain for backwards compatibility.
   const pressChainId = configuredChainId || daoChainId
 
-  const postsLoading = useCachedLoading(
-    postsSelector({
-      contractAddress: contract,
+  const postsLoading = useQueryLoadingDataWithError(
+    pressQueries.posts({
       chainId: pressChainId,
-    }),
-    []
+      address: contract,
+    })
   )
 
   const createPostAction = useInitializedActionForKey(ActionKey.CreatePost)

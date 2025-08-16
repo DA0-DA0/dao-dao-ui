@@ -61,7 +61,6 @@ const InnerStakingModal = ({
     })
   const {
     unstakingDuration,
-    refreshTotals,
     sumClaimsAvailable = HugeDecimal.zero,
     loadingWalletStakedValue,
     refreshClaims,
@@ -138,8 +137,12 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
+          // Refresh wallet and staking contract balances.
           refreshBalances()
-          refreshTotals()
+          refreshBalances({
+            chainId: votingModule.chainId,
+            address: votingModule.address,
+          })
           refreshDaoVotingPower()
 
           setAmount(HugeDecimal.zero)
@@ -184,8 +187,12 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
+          // Refresh wallet and staking contract balances.
           refreshBalances()
-          refreshTotals()
+          refreshBalances({
+            chainId: votingModule.chainId,
+            address: votingModule.address,
+          })
           refreshClaims?.()
           refreshDaoVotingPower()
 
@@ -233,8 +240,12 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
+          // Refresh wallet and staking contract balances.
           refreshBalances()
-          refreshTotals()
+          refreshBalances({
+            chainId: votingModule.chainId,
+            address: votingModule.address,
+          })
           refreshClaims?.()
 
           setAmount(HugeDecimal.zero)

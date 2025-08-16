@@ -1,7 +1,14 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import { DaoDaoIndexerAllStats, DaoDaoIndexerChainStats } from '@dao-dao/types'
-import { chainIsIndexed, getSupportedChains, retry } from '@dao-dao/utils'
+import {
+  DISCORD_NOTIFIER_API_BASE,
+  FAST_AVERAGE_COLOR_API_TEMPLATE,
+  chainIsIndexed,
+  getSupportedChains,
+  retry,
+  toAccessibleImageUrl,
+} from '@dao-dao/utils'
 
 import { indexerQueries } from './indexer'
 
@@ -78,6 +85,55 @@ export const fetchHomePageStats = async (
   }
 }
 
+/**
+ * Fetch average color of an image.
+ */
+export const fetchAverageColor = async (url: string) => {
+  // Don't attempt to get average color for local images (development server).
+  if (!url || url.startsWith('http://localhost')) {
+    throw new Error('Invalid image URL')
+  }
+  if (url.endsWith('svg')) {
+    throw new Error('SVG images are not supported')
+  }
+
+  const response = await fetch(
+    FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', toAccessibleImageUrl(url))
+  )
+
+  // Trim newline at the end.
+  const color = (await response.text()).trim()
+
+  // Validate color format.
+  if (!color.startsWith('#')) {
+    throw new Error('Invalid color format')
+  }
+
+  return color
+}
+
+/**
+ * Fetch Discord notifier registrations.
+ */
+export const fetchDiscordNotifierRegistrations = async ({
+  chainId,
+  coreAddress,
+  walletPublicKey,
+}: {
+  chainId: string
+  coreAddress: string
+  walletPublicKey: string
+}) => {
+  const { registrations } = await (
+    await fetch(
+      DISCORD_NOTIFIER_API_BASE +
+        `/${chainId}/${coreAddress}/${walletPublicKey}/registrations`
+    )
+  ).json()
+
+  return Array.isArray(registrations) ? registrations : []
+}
+
 export const miscQueries = {
   /**
    * Fetch home page stats.
@@ -86,5 +142,23 @@ export const miscQueries = {
     queryOptions({
       queryKey: ['misc', 'homePageStats', options],
       queryFn: (ctx) => fetchHomePageStats(ctx.client, options),
+    }),
+  /**
+   * Fetch average color of an image.
+   */
+  averageColor: (url: string) =>
+    queryOptions({
+      queryKey: ['misc', 'averageColor', url],
+      queryFn: () => fetchAverageColor(url),
+    }),
+  /**
+   * Fetch Discord notifier registrations.
+   */
+  discordNotifierRegistrations: (
+    options: Parameters<typeof fetchDiscordNotifierRegistrations>[0]
+  ) =>
+    queryOptions({
+      queryKey: ['misc', 'discordNotifierRegistrations', options],
+      queryFn: () => fetchDiscordNotifierRegistrations(options),
     }),
 }

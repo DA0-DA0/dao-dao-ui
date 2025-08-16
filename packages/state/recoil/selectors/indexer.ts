@@ -1,5 +1,4 @@
-import Pusher from 'pusher-js'
-import { selector, selectorFamily, waitForAllSettled } from 'recoil'
+import { selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
   Expiration,
@@ -8,13 +7,7 @@ import {
   SupportedChainIndexerMode,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  CommonError,
-  WEB_SOCKET_PUSHER_APP_KEY,
-  WEB_SOCKET_PUSHER_HOST,
-  WEB_SOCKET_PUSHER_PORT,
-  getSupportedChains,
-} from '@dao-dao/utils'
+import { CommonError, getSupportedChains } from '@dao-dao/utils'
 
 import {
   DaoProposalSearchResult,
@@ -324,20 +317,4 @@ export const walletProposalStatsSelector = selectorFamily<
         }
       )
     },
-})
-
-export const indexerWebSocketSelector = selector({
-  key: 'indexerWebSocket',
-  get: () =>
-    new Pusher(WEB_SOCKET_PUSHER_APP_KEY, {
-      wsHost: WEB_SOCKET_PUSHER_HOST,
-      wsPort: WEB_SOCKET_PUSHER_PORT,
-      wssPort: WEB_SOCKET_PUSHER_PORT,
-      forceTLS: true,
-      disableStats: true,
-      enabledTransports: ['ws', 'wss'],
-      disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
-    }),
-  // Client must be internally mutable.
-  dangerouslyAllowMutability: true,
 })

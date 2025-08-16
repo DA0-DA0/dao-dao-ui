@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
 
-import { ActionBase, TrashEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, TrashEmoji } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -12,7 +11,8 @@ import {
 } from '@dao-dao/types/actions'
 
 import { BurnNftAction } from '../../../../../actions/core/actions'
-import { postSelector, postsSelector } from '../../state'
+import { useQueryLoadingDataWithError } from '../../../../../hooks'
+import { pressQueries } from '../../state'
 import { PressData } from '../../types'
 import { DeletePostComponent, DeletePostData } from './Component'
 
@@ -48,24 +48,22 @@ export class DeletePostAction extends ActionBase<DeletePostData> {
       const { watch } = useFormContext()
       const id = watch((props.fieldNamePrefix + 'id') as 'id')
 
-      const postsLoading = useCachedLoading(
-        postsSelector({
-          contractAddress: pressData.contract,
+      const postsLoading = useQueryLoadingDataWithError(
+        pressQueries.posts({
           chainId: pressChainId,
-        }),
-        []
+          address: pressData.contract,
+        })
       )
 
       // Once created, manually load metadata; it won't be retrievable from the
       // contract if it was successfully removed since the token was burned.
-      const postLoading = useCachedLoading(
+      const postLoading = useQueryLoadingDataWithError(
         !props.isCreating
-          ? postSelector({
+          ? pressQueries.post({
               id,
               metadataUri: `ipfs://${id}/metadata.json`,
             })
-          : constSelector(undefined),
-        undefined
+          : undefined
       )
 
       return (

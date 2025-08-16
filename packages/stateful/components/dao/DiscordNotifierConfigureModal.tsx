@@ -1,21 +1,18 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 
-import {
-  discordNotifierRegistrationsSelector,
-  discordNotifierSetupAtom,
-  refreshDiscordNotifierRegistrationsAtom,
-} from '@dao-dao/state/recoil'
+import { miscQueries } from '@dao-dao/state/query'
+import { discordNotifierSetupAtom } from '@dao-dao/state/recoil'
 import {
   DiscordNoCircleIcon,
   DiscordNotifierRegistrationForm,
   IconButton,
   DiscordNotifierConfigureModal as StatelessDiscordNotifierConfigureModal,
   Tooltip,
-  useCachedLoadable,
   useChain,
   useDao,
   useDaoNavHelpers,
@@ -29,6 +26,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../hooks'
 import { usePfpkClient } from '../../hooks/usePfpkClient'
 import { useWallet } from '../../hooks/useWallet'
 import { ConnectWallet } from '../ConnectWallet'
@@ -36,6 +34,7 @@ import { ConnectWallet } from '../ConnectWallet'
 export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { chainId } = useChain()
   const { getDaoPath } = useDaoNavHelpers()
   const { coreAddress } = useDao()
@@ -55,17 +54,9 @@ export const DiscordNotifierConfigureModal = () => {
     discordNotifierSetupAtom(coreAddress)
   )
 
-  const setRefreshRegistrations = useSetRecoilState(
-    refreshDiscordNotifierRegistrationsAtom({
-      chainId,
-      coreAddress,
-      walletPublicKey: hexPublicKey.loading ? '' : hexPublicKey.data,
-    })
-  )
-
-  const registrationsLoadable = useCachedLoadable(
+  const registrationsLoading = useQueryLoadingDataWithError(
     !hexPublicKey.loading
-      ? discordNotifierRegistrationsSelector({
+      ? miscQueries.discordNotifierRegistrations({
           chainId,
           coreAddress,
           walletPublicKey: hexPublicKey.data,
@@ -73,9 +64,9 @@ export const DiscordNotifierConfigureModal = () => {
       : undefined
   )
   const registrations =
-    registrationsLoadable.state === 'hasValue'
-      ? registrationsLoadable.contents
-      : []
+    registrationsLoading.loading || registrationsLoading.errored
+      ? []
+      : registrationsLoading.data
 
   // Refresh in a loop for 60 seconds.
   const [refreshing, setRefreshing] = useState(false)
@@ -85,7 +76,17 @@ export const DiscordNotifierConfigureModal = () => {
       refreshRegistrationLoopNum.current = 20
 
       const interval = setInterval(() => {
-        setRefreshRegistrations((prev) => prev + 1)
+        queryClient.invalidateQueries({
+          queryKey: miscQueries
+            .discordNotifierRegistrations({
+              chainId: '',
+              coreAddress: '',
+              walletPublicKey: '',
+            })
+            // Remove options, just invalidating all registrations. Only the one
+            // we currently query will be re-fetched.
+            .queryKey.slice(0, -1),
+        })
 
         refreshRegistrationLoopNum.current -= 1
         if (refreshRegistrationLoopNum.current === 0) {
@@ -94,7 +95,7 @@ export const DiscordNotifierConfigureModal = () => {
         }
       }, 3000)
     }
-  }, [refreshing, setRefreshRegistrations])
+  }, [refreshing, queryClient])
 
   // Stop refreshing if registration length updates.
   const numRegistrations = registrations.length

@@ -290,3 +290,18 @@ export const bech32DataToAddress = (
  */
 export const bech32AddressToBase64 = (bech32Address: string): string =>
   toBase64(fromBech32(bech32Address).data)
+
+/**
+ * Whether or not contract name matches a given name or names.
+ */
+export const contractNameMatches = (
+  contractName: string,
+  nameOrNames: string | string[] | { name: string } | { names: string[] }
+): boolean =>
+  typeof nameOrNames === 'string' || 'name' in nameOrNames
+    ? contractName.includes(
+        typeof nameOrNames === 'string' ? nameOrNames : nameOrNames.name
+      )
+    : ('names' in nameOrNames ? nameOrNames.names : nameOrNames).some((name) =>
+        contractName.includes(name)
+      )

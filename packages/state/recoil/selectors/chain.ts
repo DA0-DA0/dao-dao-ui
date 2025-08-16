@@ -1,19 +1,12 @@
 import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
-import {
-  noWait,
-  selector,
-  selectorFamily,
-  waitForAll,
-  waitForAny,
-} from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AccountType,
   AmountWithTimestamp,
   ChainId,
-  GenericTokenBalance,
   GenericTokenBalanceWithOwner,
   GovProposalWithDecodedContent,
   TokenType,
@@ -44,7 +37,6 @@ import {
   getNativeTokenForChainId,
   ibcProtoRpcClientRouter,
   neutronProtoRpcClientRouter,
-  nobleProtoRpcClientRouter,
   osmosisProtoRpcClientRouter,
   secretCosmWasmClientRouter,
   stargateClientRouter,
@@ -63,7 +55,6 @@ import {
   queryValidatorIndexerSelector,
 } from './indexer'
 import { genericTokenSelector } from './token'
-import { walletTokenDaoStakedDenomsSelector } from './wallet'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -121,13 +112,6 @@ export const osmosisRpcClientForChainSelector = selectorFamily({
   dangerouslyAllowMutability: true,
 })
 
-export const nobleRpcClientSelector = selector({
-  key: 'nobleRpcClient',
-  get: async () =>
-    await nobleProtoRpcClientRouter.connect(ChainId.NobleMainnet),
-  dangerouslyAllowMutability: true,
-})
-
 export const neutronRpcClientSelector = selector({
   key: 'neutronRpcClient',
   get: async () =>
@@ -135,84 +119,6 @@ export const neutronRpcClientSelector = selector({
       MAINNET ? ChainId.NeutronMainnet : ChainId.NeutronTestnet
     ),
   dangerouslyAllowMutability: true,
-})
-
-export const justNativeBalancesSelector = selectorFamily<
-  readonly Coin[],
-  WithChainId<{ address: string }>
->({
-  key: 'justNativeBalances',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const client = get(stargateClientForChainSelector(chainId))
-      get(refreshWalletBalancesIdAtom(address))
-      return await client.getAllBalances(address)
-    },
-})
-
-export const nativeBalancesSelector = selectorFamily<
-  GenericTokenBalance[],
-  WithChainId<{ address: string }>
->({
-  key: 'nativeBalances',
-  get:
-    ({ address, chainId }) =>
-    ({ get }) => {
-      get(refreshWalletBalancesIdAtom(address))
-
-      const balances = [
-        ...get(justNativeBalancesSelector({ address, chainId })),
-      ]
-      const nativeToken = getNativeTokenForChainId(chainId)
-      const stakedDenoms =
-        get(
-          noWait(
-            walletTokenDaoStakedDenomsSelector({
-              walletAddress: address,
-              chainId,
-            })
-          )
-        ).valueMaybe() || []
-
-      const uniqueDenoms = new Set(balances.map(({ denom }) => denom))
-
-      // Add native denom if not present.
-      if (!uniqueDenoms.has(nativeToken.denomOrAddress)) {
-        balances.push({
-          amount: '0',
-          denom: nativeToken.denomOrAddress,
-        })
-        uniqueDenoms.add(nativeToken.denomOrAddress)
-      }
-
-      // Add denoms staked to DAOs if not present.
-      stakedDenoms.forEach((denom) => {
-        if (!uniqueDenoms.has(denom)) {
-          balances.push({ amount: '0', denom })
-          uniqueDenoms.add(denom)
-        }
-      })
-
-      const tokenLoadables = get(
-        waitForAny(
-          balances.map(({ denom }) =>
-            genericTokenSelector({
-              type: TokenType.Native,
-              denomOrAddress: denom,
-              chainId,
-            })
-          )
-        )
-      )
-
-      return tokenLoadables
-        .map((token, index) => ({
-          token: token.state === 'hasValue' ? token.contents : undefined,
-          balance: balances[index].amount,
-        }))
-        .filter(({ token }) => token !== undefined) as GenericTokenBalance[]
-    },
 })
 
 export const nativeDenomBalanceSelector = selectorFamily<
@@ -500,7 +406,7 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
   get:
     ({ chainId }) =>
     async ({ get }) => {
-      get(refreshWalletBalancesIdAtom(''))
+      get(refreshWalletBalancesIdAtom(undefined))
 
       const client = get(cosmosRpcClientForChainSelector(chainId))
 

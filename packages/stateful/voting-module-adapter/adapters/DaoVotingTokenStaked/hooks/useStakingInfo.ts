@@ -1,5 +1,4 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { useCallback } from 'react'
 import { constSelector, useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -9,7 +8,6 @@ import {
   chainQueries,
   daoVotingTokenStakedQueries,
   refreshClaimsIdAtom,
-  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { TokenStakedVotingModule } from '@dao-dao/state/clients'
 import { useCachedLoading, useVotingModule } from '@dao-dao/stateless'
@@ -32,15 +30,6 @@ export const useStakingInfo = ({
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
     })
-  )
-
-  const setRefreshTotalBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(undefined)
-  )
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(
-    () => setRefreshTotalBalancesId((id) => id + 1),
-    [setRefreshTotalBalancesId]
   )
 
   /// Optional
@@ -121,7 +110,6 @@ export const useStakingInfo = ({
   return {
     stakingContractAddress: votingModule.address,
     unstakingDuration: config.unstaking_duration ?? undefined,
-    refreshTotals,
     /// Optional
     // Claims
     refreshClaims: fetchClaims ? refreshClaims : undefined,

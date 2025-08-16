@@ -6,6 +6,7 @@ import { Trans, useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ErrorPage,
   ImageDropInput,
   InputErrorMessage,
   InputLabel,
@@ -14,7 +15,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, LoadingData } from '@dao-dao/types'
+import { ActionComponent, LoadingDataWithError } from '@dao-dao/types'
 import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
 import { PostMarkdown } from '../../components/PostMarkdown'
@@ -33,7 +34,7 @@ export type CreatePostData = {
 }
 
 type CreatePostOptions = {
-  postLoading: LoadingData<Post | undefined>
+  postLoading: LoadingDataWithError<Post>
 }
 
 export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
@@ -184,8 +185,10 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
         </div>
       )}
     </>
-  ) : postLoading.loading || !postLoading.data ? (
+  ) : postLoading.loading ? (
     <Loader />
+  ) : postLoading.errored ? (
+    <ErrorPage error={postLoading.error} />
   ) : (
     <>
       {isCreating && (

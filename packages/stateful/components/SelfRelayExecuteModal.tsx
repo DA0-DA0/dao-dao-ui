@@ -33,7 +33,6 @@ import {
   nativeDenomBalanceSelector,
   refreshIbcDataAtom,
   refreshPolytoneListenerResultsAtom,
-  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import { DynamicGasPrice } from '@dao-dao/state/utils'
 import {
@@ -72,7 +71,7 @@ import {
   retry,
 } from '@dao-dao/utils'
 
-import { useWallet } from '../hooks'
+import { useRefreshBalances, useWallet } from '../hooks'
 
 enum RelayStatus {
   Uninitialized,
@@ -218,24 +217,28 @@ export const SelfRelayExecuteModal = ({
   }, [visible, status, t])
 
   // Refresh balances for the wallet and relayer wallet.
-  const refreshBalances = useRecoilCallback(
-    ({ set }) =>
-      ({ wallet, relayerAddress }: Relayer) => {
-        set(refreshWalletBalancesIdAtom(wallet.address), (id) => id + 1)
-        set(refreshWalletBalancesIdAtom(relayerAddress), (id) => id + 1)
-      },
-    []
-  )
+  const refreshBalances = useRefreshBalances()
+  const refreshRelayerBalances = useUpdatingRef((relayer: Relayer) => {
+    refreshBalances({
+      chainId: relayer.chain.chainId,
+      address: relayer.wallet.address,
+    })
+    refreshBalances({
+      chainId: relayer.chain.chainId,
+      address: relayer.relayerAddress,
+    })
+  })
+
   // Refresh balances every 10 seconds.
   useEffect(() => {
     if (!relayers) {
       return
     }
     const interval = setInterval(() => {
-      relayers?.forEach(refreshBalances)
+      relayers?.forEach(refreshRelayerBalances.current)
     }, 10000)
     return () => clearInterval(interval)
-  }, [relayers, refreshBalances])
+  }, [relayers, refreshRelayerBalances])
 
   // Create memoized function that returns the relayer funds for a chain,
   // adjusting for number of packets.
@@ -578,7 +581,7 @@ export const SelfRelayExecuteModal = ({
         ...prev,
         [chainId]: false,
       }))
-      refreshBalances(relayer)
+      refreshRelayerBalances.current(relayer)
     }
   }
 
@@ -800,7 +803,7 @@ export const SelfRelayExecuteModal = ({
                 err.message.includes('insufficient funds')
               ) {
                 // Refresh all balances.
-                relayers.map(refreshBalances)
+                relayers.map(refreshRelayerBalances.current)
                 console.error(err)
                 // Increase multipler by 50% so we retry with more funds than
                 // before.
@@ -907,7 +910,7 @@ export const SelfRelayExecuteModal = ({
                 err.message.includes('insufficient funds')
               ) {
                 // Refresh all balances.
-                relayers.map(refreshBalances)
+                relayers.map(refreshRelayerBalances.current)
                 console.error(err)
                 // Increase multipler by 25% so we retry with more funds than
                 // before.
@@ -965,7 +968,7 @@ export const SelfRelayExecuteModal = ({
       return
     } finally {
       // Refresh all balances.
-      relayers.map(refreshBalances)
+      relayers.map(refreshRelayerBalances.current)
 
       // Refresh all polytone results.
       refreshPolytoneResults()
@@ -1074,7 +1077,7 @@ export const SelfRelayExecuteModal = ({
       }
       // Don't catch error. Throw to caller.
     } finally {
-      refreshBalances(relayer)
+      refreshRelayerBalances.current(relayer)
     }
   }
 

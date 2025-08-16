@@ -9,141 +9,22 @@ import {
 import { HugeDecimal } from '@dao-dao/math'
 import {
   AccountType,
-  GenericTokenBalance,
   LazyNftCardInfo,
   TokenCardInfo,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
-  getNativeTokenForChainId,
-  loadableToLoadingData,
-} from '@dao-dao/utils'
+import { getNativeTokenForChainId, loadableToLoadingData } from '@dao-dao/utils'
 
-import { refreshWalletBalancesIdAtom } from '../atoms'
-import { accountsSelector } from './account'
-import { nativeBalancesSelector, nativeDelegatedBalanceSelector } from './chain'
-import { isContractSelector } from './contract'
-import { votingModuleSelector } from './contracts/DaoDaoCore'
-import * as DaoVotingTokenStaked from './contracts/DaoVotingTokenStaked'
+import { accountQueries, tokenQueries } from '../../query'
+import { queryClientAtom, refreshWalletBalancesIdAtom } from '../atoms'
+import { nativeDelegatedBalanceSelector } from './chain'
 import { queryAccountIndexerSelector } from './indexer'
 import {
   walletLazyNftCardInfosSelector,
   walletStakedLazyNftCardInfosSelector,
 } from './nft'
 import { genericTokenSelector, tokenCardLazyInfoSelector } from './token'
-
-// Get CW20 balances for a wallet from the indexer.
-export const walletCw20BalancesSelector = selectorFamily<
-  GenericTokenBalance[],
-  WithChainId<{ walletAddress: string }>
->({
-  key: 'walletCw20Balances',
-  get:
-    ({ walletAddress, chainId }) =>
-    ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(walletAddress))
-
-      const cw20Contracts: {
-        contractAddress: string
-        balance: string
-      }[] =
-        get(
-          queryAccountIndexerSelector({
-            chainId,
-            walletAddress,
-            formula: 'tokens/list',
-            id,
-            noFallback: true,
-          })
-        ) ?? []
-
-      const tokens = get(
-        waitForAll(
-          cw20Contracts.map(({ contractAddress }) =>
-            genericTokenSelector({
-              type: TokenType.Cw20,
-              denomOrAddress: contractAddress,
-              chainId,
-            })
-          )
-        )
-      )
-
-      return tokens.map((token, index) => ({
-        token,
-        balance: cw20Contracts[index].balance,
-      }))
-    },
-})
-
-export const walletTokenDaoStakedDenomsSelector = selectorFamily<
-  readonly string[],
-  WithChainId<{ walletAddress: string }>
->({
-  key: 'walletTokenDaoStakedDenoms',
-  get:
-    ({ walletAddress, chainId }) =>
-    ({ get }) => {
-      // Get the DAOs that the wallet is a member of
-      const daos = get(
-        queryAccountIndexerSelector({
-          chainId,
-          walletAddress,
-          formula: 'daos/memberOf',
-          noFallback: true,
-        })
-      )
-      if (!daos || !Array.isArray(daos) || daos.length === 0) {
-        return []
-      }
-
-      // Get the token staked voting modules for each DAO
-      const votingModules = get(
-        waitForAll(
-          daos.map(({ dao: contractAddress }) =>
-            votingModuleSelector({
-              contractAddress,
-              chainId,
-              params: [],
-            })
-          )
-        )
-      ).filter((contractAddress) =>
-        get(
-          isContractSelector({
-            contractAddress,
-            chainId,
-            names: DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
-          })
-        )
-      )
-
-      if (votingModules.length === 0) {
-        return []
-      }
-
-      // Get a list of denoms from the voting modules
-      const denoms = get(
-        waitForAll(
-          votingModules.map((contractAddress) =>
-            DaoVotingTokenStaked.denomSelector({
-              contractAddress,
-              chainId,
-              params: [],
-            })
-          )
-        )
-      )
-
-      // Create a Set from the denoms to ensure uniqueness
-      const uniqueDenoms = new Set(denoms.map(({ denom }) => denom))
-
-      // Convert the Set back into an array to return
-      return [...uniqueDenoms]
-    },
-})
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
@@ -157,22 +38,23 @@ export const walletTokenCardInfosSelector = selectorFamily<
   key: 'walletTokenCardInfos',
   get:
     ({ walletAddress, chainId }) =>
-    ({ get }) => {
+    async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
+      const queryClient = get(queryClientAtom)
 
-      const allAccounts = get(
-        accountsSelector({
+      const allAccounts = await queryClient.fetchQuery(
+        accountQueries.list({
           chainId,
           address: walletAddress,
         })
       )
 
-      const nativeBalances = get(
-        waitForAll(
-          allAccounts.map(({ chainId, address }) =>
-            nativeBalancesSelector({
-              address,
+      const nativeBalances = await Promise.all(
+        allAccounts.map(({ chainId, address }) =>
+          queryClient.fetchQuery(
+            tokenQueries.nativeBalances({
               chainId,
+              address,
             })
           )
         )

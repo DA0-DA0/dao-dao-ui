@@ -903,7 +903,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
   key: 'daoDaoCoreAllNativeCw721TokenList',
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
-    async ({ get }) => {
+    ({ get }) => {
       // Load CW721s from storage items.
       const storageItemContracts = get(
         listAllItemsWithPrefixSelector({
@@ -936,7 +936,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
 
       const tokenList: ArrayOfAddr = [...storageItemContracts]
       while (true) {
-        const response = await get(
+        const response = get(
           _cw721TokenListSelector({
             ...queryClientParams,
             params: [

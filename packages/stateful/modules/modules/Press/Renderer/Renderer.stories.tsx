@@ -19,6 +19,7 @@ export const Default = Template.bind({})
 Default.args = {
   postsLoading: {
     loading: false,
+    errored: false,
     data: [],
   },
   isMember: true,

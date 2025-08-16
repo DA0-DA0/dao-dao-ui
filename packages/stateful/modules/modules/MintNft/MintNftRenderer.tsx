@@ -4,23 +4,22 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { nftQueries } from '@dao-dao/state/query'
-import { CommonNftSelectors } from '@dao-dao/state/recoil'
 import {
   Button,
   HorizontalScroller,
   MarkdownRenderer,
   NftCard,
   Tooltip,
-  useCachedLoadable,
   useChain,
 } from '@dao-dao/stateless'
 import { ModuleRendererProps } from '@dao-dao/types'
 import {
   executeSmartContract,
-  makeCombineQueryResultsIntoLoadingData,
+  makeCombineQueryResultsIntoLoadingDataWithError,
   processError,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../hooks'
 import { useWallet } from '../../../hooks/useWallet'
 import { MintNftData } from './types'
 
@@ -41,25 +40,28 @@ export const MintNftRenderer = ({
 
   const [minting, setMinting] = useState(false)
 
-  const allTokensLoadable = useCachedLoadable(
-    CommonNftSelectors.unpaginatedAllTokensSelector({
-      contractAddress: nftCollection,
+  const first100TokensLoading = useQueryLoadingDataWithError(
+    nftQueries.unpaginatedAllTokenIds({
       chainId,
+      address: nftCollection,
+      limit: 100,
     })
   )
 
   const first100Cards = useQueries({
     queries:
-      allTokensLoadable.state === 'hasValue'
-        ? allTokensLoadable.contents.slice(0, 100).map((tokenId) =>
+      first100TokensLoading.loading || first100TokensLoading.errored
+        ? []
+        : first100TokensLoading.data.map((tokenId) =>
             nftQueries.cardInfo({
               collection: nftCollection,
               chainId,
               tokenId,
             })
-          )
-        : [],
-    combine: makeCombineQueryResultsIntoLoadingData(),
+          ),
+    combine: makeCombineQueryResultsIntoLoadingDataWithError({
+      loadIfNone: first100TokensLoading.loading,
+    }),
   })
 
   const onClick = async () => {
@@ -94,7 +96,8 @@ export const MintNftRenderer = ({
         <MarkdownRenderer className="text-base" markdown={description} />
       )}
 
-      {(first100Cards.loading || first100Cards.data.length > 0) && (
+      {(first100Cards.loading ||
+        (!first100Cards.errored && first100Cards.data.length > 0)) && (
         <HorizontalScroller
           Component={NftCard}
           containerClassName="-mx-16 3xl:-mx-64 px-[1px]"

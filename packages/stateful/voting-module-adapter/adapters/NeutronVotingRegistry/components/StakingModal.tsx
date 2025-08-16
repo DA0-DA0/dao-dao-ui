@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query'
 import { usePlausible } from 'next-plausible'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState, waitForAll } from 'recoil'
@@ -10,7 +10,6 @@ import {
   genericTokenBalanceSelector,
   neutronVaultQueries,
   refreshDaoVotingPowerAtom,
-  refreshWalletBalancesIdAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import {
@@ -37,6 +36,7 @@ import { SuspenseLoader } from '../../../../components'
 import {
   NeutronVaultHooks,
   useAwaitNextBlock,
+  useRefreshBalances,
   useWallet,
 } from '../../../../hooks'
 import { useVotingModuleInfo } from '../hooks'
@@ -55,7 +55,7 @@ const InnerStakingModal = ({
   initialMode = StakingMode.Stake,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { address = '', isWalletConnected, refreshBalances } = useWallet()
+  const { address = '', isWalletConnected } = useWallet()
   const votingModule = useVotingModule()
   const plausible = usePlausible<PlausibleEvents>()
 
@@ -105,14 +105,7 @@ const InnerStakingModal = ({
         )
   )
 
-  const setRefreshTotalBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(undefined)
-  )
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(
-    () => setRefreshTotalBalancesId((id) => id + 1),
-    [setRefreshTotalBalancesId]
-  )
+  const refreshBalances = useRefreshBalances()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
   const [selectedVaultIndex, setSelectedVaultIndex] = useState(0)
@@ -197,8 +190,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshBalances()
-          refreshTotals()
+          refreshBalances(undefined, true)
           refreshDaoVotingPower()
 
           setAmount(HugeDecimal.zero)
@@ -243,8 +235,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshBalances()
-          refreshTotals()
+          refreshBalances(undefined, true)
           refreshDaoVotingPower()
 
           setAmount(HugeDecimal.zero)

@@ -26,16 +26,19 @@ import {
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
-import { chainQueries, tokenQueries } from '../../query'
+import {
+  chainQueries,
+  contractQueries,
+  tokenQueries,
+  walletQueries,
+} from '../../query'
 import { queryClientAtom, refreshTokenCardLazyInfoAtom } from '../atoms'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
-  nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   nativeUnstakingDurationSecondsSelector,
 } from './chain'
-import { isDaoSelector } from './contract'
 import {
   Cw20BaseSelectors,
   Cw20StakeSelectors,
@@ -44,7 +47,6 @@ import {
 } from './contracts'
 import { queryGenericIndexerSelector, querySnapperSelector } from './indexer'
 import { skipAssetSelector } from './skip'
-import { walletCw20BalancesSelector } from './wallet'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
@@ -168,31 +170,33 @@ export const genericTokenBalancesSelector = selectorFamily<
       const chainId = filter?.account?.chainId || mainChainId
       const address = filter?.account?.address || mainAddress
 
+      const queryClient = get(queryClientAtom)
+
       const nativeTokenBalances =
         !filter?.tokenType || filter.tokenType === TokenType.Native
-          ? get(
-              nativeBalancesSelector({
+          ? await queryClient.fetchQuery(
+              tokenQueries.nativeBalances({
                 address,
                 chainId,
               })
             )
           : []
 
-      const cw20TokenBalances = (
+      const cw20TokenBalances =
         !filter?.tokenType || filter.tokenType === TokenType.Cw20
-          ? get(
-              // Neutron's modified DAOs do not support cw20s, so this may
-              // error. Ignore if so.
-              waitForAllSettled(
-                // If is a DAO contract.
-                get(
-                  isDaoSelector({
-                    address: mainAddress,
-                    chainId: mainChainId,
-                  })
-                )
-                  ? // Get native cw20s.
-                    chainId === mainChainId && address === mainAddress
+          ? // If is a DAO contract.
+            (await queryClient.fetchQuery(
+              contractQueries.isDao({
+                chainId: mainChainId,
+                address: mainAddress,
+              })
+            ))
+            ? get(
+                // Neutron's modified DAOs do not support cw20s, so this may
+                // error. Ignore if so.
+                waitForAllSettled(
+                  // Get native cw20s.
+                  chainId === mainChainId && address === mainAddress
                     ? [
                         DaoDaoCoreSelectors.nativeCw20TokensWithBalancesSelector(
                           {
@@ -215,21 +219,20 @@ export const genericTokenBalancesSelector = selectorFamily<
                           ),
                         ]
                       : []
-                  : isValidWalletAddress(
-                        address,
-                        getChainForChainId(chainId).bech32Prefix
-                      )
-                    ? [
-                        walletCw20BalancesSelector({
-                          walletAddress: address,
-                          chainId,
-                        }),
-                      ]
-                    : []
-              )
-            )
+                )
+              )[0]?.valueMaybe() || []
+            : isValidWalletAddress(
+                  address,
+                  getChainForChainId(chainId).bech32Prefix
+                )
+              ? await queryClient.fetchQuery(
+                  walletQueries.cw20Balances({
+                    chainId,
+                    address,
+                  })
+                )
+              : []
           : []
-      )[0]
 
       return [
         ...nativeTokenBalances.map((native) => ({
@@ -237,9 +240,7 @@ export const genericTokenBalancesSelector = selectorFamily<
           isGovernanceToken:
             nativeGovernanceTokenDenom === native.token.denomOrAddress,
         })),
-        ...(cw20TokenBalances?.state === 'hasValue'
-          ? cw20TokenBalances.contents
-          : []),
+        ...cw20TokenBalances,
       ]
     },
 })

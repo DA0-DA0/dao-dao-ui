@@ -1,14 +1,9 @@
 import cloneDeep from 'lodash.clonedeep'
 import { nanoid } from 'nanoid'
-import { atom, atomFamily } from 'recoil'
+import { atomFamily } from 'recoil'
 
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
-import {
-  DaoCreatedCardProps,
-  DepositRefundPolicy,
-  DurationUnits,
-  NewDao,
-} from '@dao-dao/types'
+import { DepositRefundPolicy, DurationUnits, NewDao } from '@dao-dao/types'
 import {
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
@@ -98,10 +93,4 @@ export const newDaoAtom = atomFamily<
   key: 'newDao',
   default: ({ chainId }) => makeDefaultNewDao(chainId),
   effects: [localStorageEffectJSON],
-})
-
-// When set, shows DAO created modal with these props for the DaoCard shown.
-export const daoCreatedCardPropsAtom = atom<DaoCreatedCardProps | undefined>({
-  key: 'daoCreatedCardProps',
-  default: undefined,
 })

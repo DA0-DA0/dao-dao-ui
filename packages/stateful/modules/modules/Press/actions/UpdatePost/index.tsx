@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { ActionBase, PencilEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { ActionBase, PencilEmoji } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -10,7 +10,8 @@ import {
   ProcessedMessage,
 } from '@dao-dao/types/actions'
 
-import { postSelector, postsSelector } from '../../state'
+import { useQueryLoadingDataWithError } from '../../../../../hooks'
+import { pressQueries } from '../../state'
 import { PressData } from '../../types'
 import { CreatePostAction } from '../CreatePost'
 import { DeletePostAction } from '../DeletePost'
@@ -53,24 +54,22 @@ export class UpdatePostAction extends ActionBase<UpdatePostData> {
       const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
       const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
-      const postLoading = useCachedLoading(
+      const postLoading = useQueryLoadingDataWithError(
         uploaded && tokenId && tokenUri
-          ? postSelector({
+          ? pressQueries.post({
               id: tokenId,
               metadataUri: tokenUri,
             })
-          : undefined,
-        undefined
+          : undefined
       )
 
-      const postsLoading = useCachedLoading(
-        postsSelector({
-          contractAddress: pressData.contract,
+      const postsLoading = useQueryLoadingDataWithError(
+        pressQueries.posts({
           // The chain that Press is set up on. If chain ID is undefined,
           // default to native DAO chain for backwards compatibility.
           chainId: pressData.chainId || options.chain.chainId,
-        }),
-        []
+          address: pressData.contract,
+        })
       )
 
       return (

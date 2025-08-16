@@ -22,6 +22,7 @@ Default.args = {
   options: {
     postLoading: {
       loading: true,
+      errored: false,
     },
   },
 }
