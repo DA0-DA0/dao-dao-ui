@@ -14,7 +14,7 @@ import {
   useDao,
   useUpdatingRef,
 } from '@dao-dao/stateless'
-import { ParametersExceptFirst } from '@dao-dao/types'
+import { ContractVersion, ParametersExceptFirst } from '@dao-dao/types'
 import {
   objectMatchesStructure,
   webSocketChannelNameForDao,
@@ -250,6 +250,10 @@ export const useOnDaoWebSocketMessage = <D = any>(
 export const useOnCurrentDaoWebSocketMessage = <D = any>(
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage<D>>
 ) => {
-  const { chainId, coreAddress } = useDao()
-  return useOnDaoWebSocketMessage<D>(chainId, coreAddress, ...args)
+  const { chainId, coreAddress, coreVersion } = useDao()
+  return useOnDaoWebSocketMessage<D>(
+    chainId,
+    coreVersion === ContractVersion.Gov ? 'GOV' : coreAddress,
+    ...args
+  )
 }

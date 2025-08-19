@@ -12,7 +12,11 @@ import {
   InboxItemType,
   InboxItemTypeProposalCreatedData,
 } from '@dao-dao/types'
-import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
+import {
+  formatDate,
+  formatDateTimeTz,
+  getConfiguredChainConfig,
+} from '@dao-dao/utils'
 
 import { ButtonLink } from '../../ButtonLink'
 import { EntityDisplay } from '../../EntityDisplay'
@@ -22,6 +26,11 @@ export const ProposalRenderer = ({
   data: { chainId, dao, proposalId, proposalTitle },
   compact,
 }: InboxItemRendererProps<InboxItemTypeProposalCreatedData>) => {
+  // Replace GOV with the configured chain name for native chain governance.
+  if (dao === 'GOV') {
+    dao = getConfiguredChainConfig(chainId)?.name ?? dao
+  }
+
   const { t } = useTranslation()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
