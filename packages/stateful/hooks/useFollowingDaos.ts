@@ -67,8 +67,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       setUpdating(true)
       try {
         // If DAO's chain not added to profile, add it so that we know to load
-        // followed DAOs from the public key on this chain later.
-        if (!profile.data.chains[dao.chainId]) {
+        // followed DAOs from the public key on this chain later. Otherwise, if
+        // profile does not yet exist, it will be created with the public key
+        // automatically by the `followDao` call below, so no need to
+        // redundantly call `addChains`.
+        if (profile.data.uuid && !profile.data.chains[dao.chainId]) {
           await addChains.go([dao.chainId])
         }
 

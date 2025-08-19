@@ -99,6 +99,8 @@ declare global {
   }
 }
 
+const PFPK_ADMIN_ROLE = 'admin'
+
 // TODO(pfpk): use this client as the source of truth for profiles and UUIDs.
 // move queries here, auto refresh, etc. so we don't have to call fetchProfile a
 // bunch. also useful in KvpkClient and other derivatives since they'll need
@@ -484,23 +486,23 @@ export class PfpkClient {
     return this.findOrCreateToken({
       chainId,
       audience: PFPK_API_HOSTNAME,
-      role: 'admin',
+      role: PFPK_ADMIN_ROLE,
     })
   }
 
   /**
    * Find a non-expired token for a given chain signer and audience, optionally
-   * with a specific role as well. Creates a new one with the specified audience
-   * and role if not found.
+   * with a specific role as well, validating tokens and preparing the chain if
+   * necessary. Returns null if not found.
    */
-  async findOrCreateToken({
+  async findValidToken({
     chainId,
     ...filter
   }: {
     chainId?: string
     audience: string
     role?: string
-  }): Promise<string> {
+  }): Promise<string | null> {
     const alreadyPrepared = this.isPrepared(chainId)
 
     // Validate desired tokens if already prepared.
@@ -513,12 +515,31 @@ export class PfpkClient {
     }
 
     // Attempt to find an existing token.
-    const existingToken = this.findToken({
+    return this.findToken({
       chainId,
       ...filter,
     })
-    if (existingToken) {
-      return existingToken
+  }
+
+  /**
+   * Find a non-expired token for a given chain signer and audience, optionally
+   * with a specific role as well, preparing the chain if necessary. Creates a
+   * new one with the specified audience and role if not found.
+   */
+  async findOrCreateToken({
+    chainId,
+    ...filter
+  }: {
+    chainId?: string
+    audience: string
+    role?: string
+  }): Promise<string> {
+    const validToken = await this.findValidToken({
+      chainId,
+      ...filter,
+    })
+    if (validToken) {
+      return validToken
     }
 
     // If no token is found, create a new one and return it.
@@ -530,6 +551,9 @@ export class PfpkClient {
           role: filter.role,
         },
       ],
+      // If no token is found, create an admin token as well, unless creating a
+      // token for the PFPK service already.
+      withAdminIfNeeded: filter.audience !== PFPK_API_HOSTNAME,
     })
 
     return token
@@ -537,7 +561,8 @@ export class PfpkClient {
 
   /**
    * Find a non-expired token for a given chain signer, optionally filtered by
-   * audience and role. Returns null if not found.
+   * audience and role. Throws if the signer is not prepared. Returns null if
+   * not found.
    */
   findToken({
     chainId,
@@ -563,12 +588,37 @@ export class PfpkClient {
   async createTokens({
     chainId,
     tokens,
+    withAdminIfNeeded = false,
   }: {
     chainId?: string
     tokens: Required<CreateTokensRequest>['tokens']
+    /**
+     * If no PFPK admin token exists, also create one.
+     */
+    withAdminIfNeeded?: boolean
   }): Promise<CreateTokensResponse['tokens']> {
     let requestBody: RequestBody<CreateTokensRequest>
     let token: string | undefined
+
+    // Check if we need to create an admin token.
+    if (withAdminIfNeeded) {
+      const adminToken = await this.findValidToken({
+        chainId,
+        audience: PFPK_API_HOSTNAME,
+        role: PFPK_ADMIN_ROLE,
+      })
+      // If no admin token exists, add it to the end of the tokens array so it
+      // gets created and saved.
+      if (!adminToken) {
+        tokens = [
+          ...tokens,
+          {
+            audience: [PFPK_API_HOSTNAME],
+            role: PFPK_ADMIN_ROLE,
+          },
+        ]
+      }
+    }
 
     // If tokens includes PFPK service itself, use key signature auth.
     // Otherwise, use token auth.
@@ -595,6 +645,10 @@ export class PfpkClient {
 
     // Save tokens.
     await this._addTokens({ chainId, tokens: body.tokens })
+
+    // Call `onProfileUpdated` callback if defined, in case the profile was just
+    // created and empty profiles should be refreshed throughout the UI.
+    await this.onProfileUpdated?.(await this.getOrPrepare(chainId))
 
     return body.tokens
   }
