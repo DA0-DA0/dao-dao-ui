@@ -999,7 +999,7 @@
     "addFundsToContinueDistributing": "Add funds to continue distributing rewards via this distribution at the configured rate.",
     "addToProfileExplanation": "Add the current chain to your profile shown below.",
     "addWalletToProfile": "Add this wallet to your profile.",
-    "addWalletToProfileToEdit": "You cannot edit your profile until you add the chain your wallet is currently connected to. Click to add it.",
+    "addWalletToProfileToEdit": "Click to add the current chain to your profile before you can edit it.",
     "addedToDaoFollowPrompt": "You were added as a member to this DAO. Follow it to receive updates.",
     "addingActionsCloseToCancel_one": "Adding action (close to cancel)...",
     "addingActionsCloseToCancel_other": "Adding actions (close to cancel)...",

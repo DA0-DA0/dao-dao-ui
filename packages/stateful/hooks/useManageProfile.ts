@@ -158,18 +158,15 @@ export const useManageProfile = ({
   const ready =
     !profile.loading &&
     !profile.updating &&
-    // Ensure we have a profile loaded from the server.
-    !!profile.data.uuid &&
     !!currentChainWallet &&
     isWalletConnected
 
   const [updating, setUpdating] = useState(false)
 
-  const profileUuid = profile.loading ? '' : profile.data.uuid
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateProfile = useCallback(
     async (profile: PfpkProfileUpdate) => {
-      if (!ready || !profileUuid) {
+      if (!ready) {
         return
       }
 
@@ -186,7 +183,7 @@ export const useManageProfile = ({
         setUpdating(false)
       }
     },
-    [pfpkClient, profileUuid, ready, walletChainId]
+    [pfpkClient, ready, walletChainId]
   )
 
   const [addChainsStatus, setAddChainsStatus] =

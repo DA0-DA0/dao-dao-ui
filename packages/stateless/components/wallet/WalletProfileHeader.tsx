@@ -22,8 +22,9 @@ export const WalletProfileHeader = ({
     editable &&
     profile &&
     !profile.loading &&
-    !!profile.data.uuid &&
-    !mergeProfileType
+    // Can edit profile if no UUID set (first time profile is created) or if
+    // mergeProfileType is not set (no need to merge).
+    (!profile.data.uuid || !mergeProfileType)
 
   const imageUrl =
     !entity || entity.loading
