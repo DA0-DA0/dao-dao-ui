@@ -1,6 +1,10 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
-import { DaoDaoIndexerAllStats, DaoDaoIndexerChainStats } from '@dao-dao/types'
+import {
+  DaoDaoIndexerAllStats,
+  DaoDaoIndexerChainStats,
+  SupportedChainIndexerMode,
+} from '@dao-dao/types'
 import { chainIsIndexed, getSupportedChains, retry } from '@dao-dao/utils'
 
 import { indexerQueries } from './indexer'
@@ -31,7 +35,12 @@ export const fetchHomePageStats = async (
           )
         ).catch(() => null)
       : null,
-    !chainId || chainIsIndexed(chainId)
+    !chainId ||
+    chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
       ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
@@ -41,7 +50,12 @@ export const fetchHomePageStats = async (
           )
         ).catch(() => null)
       : null,
-    !chainId || chainIsIndexed(chainId)
+    !chainId ||
+    chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
       ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
@@ -54,7 +68,12 @@ export const fetchHomePageStats = async (
           )
         ).catch(() => null)
       : null,
-    !chainId || chainIsIndexed(chainId)
+    !chainId ||
+    chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
       ? retry(3, () =>
           queryClient.fetchQuery(
             indexerQueries.snapper<DaoDaoIndexerChainStats>({
