@@ -170,7 +170,13 @@ export const searchDaoProposals = async ({
 }: SearchDaoProposalsOptions): Promise<DaoProposalSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
-  if (!chainIsIndexed(chainId)) {
+  if (
+    !chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
+  ) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 
