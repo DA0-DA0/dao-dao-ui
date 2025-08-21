@@ -673,7 +673,7 @@ export const ibcAckReceivedSelector = selectorFamily<
           sequence: BigInt(sequence),
         })
         return true
-      } catch (err) {
+      } catch {
         return false
       }
     },
