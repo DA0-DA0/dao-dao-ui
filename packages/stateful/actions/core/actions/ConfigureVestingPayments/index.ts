@@ -81,6 +81,8 @@ export class ConfigureVestingPaymentsAction extends ActionBase<VestingPaymentsMo
     // Ensure this is setting the vesting payments module item.
     const { mode, id } = await this.manageModulesAction.decode(messages)
     return mode === 'set' && id === ModuleId.VestingPayments
+      ? manageModulesMatch
+      : false
   }
 
   async decode(

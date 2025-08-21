@@ -1,13 +1,15 @@
 import { Check } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
+import { nanoid } from 'nanoid'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { contractQueries } from '@dao-dao/state/query'
 import {
   Button,
   ChainLabel,
-  ChainProvider,
   InputErrorMessage,
   Tooltip,
   useSupportedChainContext,
@@ -18,18 +20,15 @@ import {
   LATEST_VESTING_CONTRACT_VERSION,
   ModuleEditorProps,
   VestingPaymentsModuleData,
+  VestingPaymentsModuleExtraData,
 } from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
 import {
   getAccountAddress,
   getSupportedChainConfig,
-  instantiateSmartContract,
   mustGetSupportedChainConfig,
   processError,
 } from '@dao-dao/utils'
-
-import { ConnectWallet } from '../../../components'
-import { useWallet } from '../../../hooks/useWallet'
 
 export const VestingPaymentsEditor = (
   props: ModuleEditorProps<VestingPaymentsModuleData>
@@ -120,9 +119,11 @@ const VestingFactoryChain = ({
   chainId,
   isCreating,
   fieldNamePrefix,
+  extraFieldNamePrefix,
   ...props
 }: VestingFactoryChainProps) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const nativeChainId =
     props.accounts.find((a) => a.type === AccountType.Base)?.chainId ||
     props.accounts[0].chainId
@@ -131,16 +132,12 @@ const VestingFactoryChain = ({
     chainId,
   })
   const { codeIds } = mustGetSupportedChainConfig(chainId)
-  const {
-    address: walletAddress,
-    isWalletConnected,
-    getSigningClient,
-  } = useWallet({
-    chainId,
-  })
+
   const isNative = chainId === nativeChainId
 
-  const { watch, setValue } = useFormContext<VestingPaymentsModuleData>()
+  const { watch, setValue } = useFormContext<
+    VestingPaymentsModuleData & { extra: VestingPaymentsModuleExtraData }
+  >()
   const chainFactory = (watch((fieldNamePrefix + 'factories') as 'factories') ||
     {})[chainId]
   const oldFactories = watch(
@@ -187,24 +184,27 @@ const VestingFactoryChain = ({
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiateVestingFactory = async () => {
-    if (!walletAddress) {
-      toast.error(t('error.logInToContinue'))
+    if (!daoChainAccountAddress) {
+      toast.error(t('error.addressNotFoundOnChain'))
       return
     }
 
     setInstantiating(true)
     try {
-      const createdFactoryAddress = await instantiateSmartContract(
-        getSigningClient,
-        walletAddress,
-        codeIds.CwPayrollFactory,
-        `VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`,
-        {
-          owner: daoChainAccountAddress,
-          vesting_code_id: codeIds.CwVesting,
-        } as VestingFactoryInstantiateMsg,
-        undefined,
-        daoChainAccountAddress
+      const salt = `vesting_payments_${nanoid()}`
+      const msg: VestingFactoryInstantiateMsg = {
+        owner: daoChainAccountAddress,
+        vesting_code_id: codeIds.CwVesting,
+      }
+      const label = `VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`
+
+      const createdFactoryAddress = await queryClient.fetchQuery(
+        contractQueries.instantiate2Address({
+          chainId,
+          creator: daoChainAccountAddress,
+          codeId: codeIds.CwPayrollFactory,
+          salt,
+        })
       )
 
       // If factory already set, add to list of old factories.
@@ -232,6 +232,19 @@ const VestingFactoryChain = ({
         setValue((fieldNamePrefix + 'factory') as 'factory', undefined)
         setValue((fieldNamePrefix + 'version') as 'version', undefined)
       }
+
+      // Save extra data for instantiate2.
+      setValue(
+        (extraFieldNamePrefix +
+          `factories.${chainId}`) as `extra.factories.${string}`,
+        {
+          codeId: codeIds.CwPayrollFactory,
+          label,
+          msg,
+          salt,
+          daoChainAccountAddress,
+        }
+      )
 
       // Update chain factory.
       setValue(
@@ -299,32 +312,38 @@ const VestingFactoryChain = ({
                 : t('button.addAccountCreationAction')}
             </Button>
           </Tooltip>
-        ) : isWalletConnected ? (
-          <Button
-            loading={instantiating}
-            onClick={instantiateVestingFactory}
-            variant="primary"
-          >
-            {
-              // If not latest version, show button to update. The old
-              // single-chain factory is automatically moved to the factories
-              // map (and thus `chainFactory`) when it's the latest version, so
-              // if `chainFactory` is undefined and `nativeSingleChainFactory`
-              // is defined, the old factory needs to be updated. The update
-              // function automatically takes care of moving it to the new
-              // factories map and clearing the old state. Thus, show update if
-              // the version is behind, OR if the native factory still exists.
-              (chainFactory &&
-                chainFactory.version < LATEST_VESTING_CONTRACT_VERSION) ||
-              (isNative && nativeSingleChainFactory)
-                ? t('button.prepareUpdate')
-                : t('button.create')
-            }
-          </Button>
         ) : (
-          <ChainProvider chainId={chainId}>
-            <ConnectWallet />
-          </ChainProvider>
+          <Tooltip
+            title={
+              !daoChainAccountAddress
+                ? t('error.addressNotFoundOnChain')
+                : undefined
+            }
+          >
+            <Button
+              disabled={!daoChainAccountAddress}
+              loading={instantiating}
+              onClick={instantiateVestingFactory}
+              variant="primary"
+            >
+              {
+                // If not latest version, show button to update. The old
+                // single-chain factory is automatically moved to the factories
+                // map (and thus `chainFactory`) when it's the latest version,
+                // so if `chainFactory` is undefined and
+                // `nativeSingleChainFactory` is defined, the old factory needs
+                // to be updated. The update function automatically takes care
+                // of moving it to the new factories map and clearing the old
+                // state. Thus, show update if the version is behind, OR if the
+                // native factory still exists.
+                (chainFactory &&
+                  chainFactory.version < LATEST_VESTING_CONTRACT_VERSION) ||
+                (isNative && nativeSingleChainFactory)
+                  ? t('button.prepareUpdate')
+                  : t('button.create')
+              }
+            </Button>
+          </Tooltip>
         )
       }
     </div>

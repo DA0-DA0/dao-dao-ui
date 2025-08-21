@@ -66,6 +66,8 @@ export class EnableRetroactiveCompensationAction extends ActionBase<{}> {
     // Ensure this is setting the retroactive compensation module item.
     const { mode, id } = await this.manageModulesAction.decode(messages)
     return mode === 'set' && id === ModuleId.RetroactiveCompensation
+      ? manageModulesMatch
+      : false
   }
 
   decode() {
