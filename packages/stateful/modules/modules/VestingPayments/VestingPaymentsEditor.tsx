@@ -140,14 +140,11 @@ const VestingFactoryChain = ({
 
   const isNative = chainId === nativeChainId
 
-  const { watch, setValue } = useFormContext<
+  const { watch, setValue, getValues } = useFormContext<
     VestingPaymentsModuleData & { extra: VestingPaymentsModuleExtraData }
   >()
   const chainFactory = (watch((fieldNamePrefix + 'factories') as 'factories') ||
     {})[chainId]
-  const oldFactories = watch(
-    (fieldNamePrefix + 'oldFactories') as 'oldFactories'
-  )
   // Old single-chain fields.
   const nativeSingleChainFactory = watch(
     (fieldNamePrefix + 'factory') as 'factory'
@@ -225,7 +222,8 @@ const VestingFactoryChain = ({
           : undefined)
       if (existingFactory) {
         setValue((fieldNamePrefix + 'oldFactories') as 'oldFactories', [
-          ...(oldFactories ?? []),
+          ...(getValues((fieldNamePrefix + 'oldFactories') as 'oldFactories') ??
+            []),
           {
             chainId,
             address: existingFactory.address,
