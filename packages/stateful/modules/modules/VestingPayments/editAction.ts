@@ -1,10 +1,21 @@
-import {
-  Module,
-  VestingPaymentsModuleData,
-  VestingPaymentsModuleExtraData,
-} from '@dao-dao/types'
+import { Module, VestingPaymentsModuleData } from '@dao-dao/types'
 
 import { Instantiate2Action } from '../../../actions/core/actions'
+import { Instantiate2Data } from '../../../actions/core/actions/Instantiate2/Component'
+
+/**
+ * Data used to instantiate new vesting payment factories.
+ */
+export type VestingPaymentsModuleExtraData = {
+  /**
+   * The factories to create via instantiate2. Map of chain ID to factory
+   * information.
+   */
+  factories: Record<string, Instantiate2Data>
+}
+
+export const VESTING_PAYMENTS_SALT_PREFIX = 'vesting_payments_'
+export const VESTING_PAYMENTS_LABEL_PREFIX = 'VestingFactory-'
 
 /**
  * Additional actions that will be added to the proposal when the module is
@@ -19,20 +30,8 @@ export const editAction: Module<
     const instantiate2Action = new Instantiate2Action(options)
 
     // Create factories that need to be created via instantiate2.
-    const factories = Object.entries(extra?.factories || {})
-
-    return factories.flatMap(
-      ([chainId, { codeId, label, msg, salt, daoChainAccountAddress }]) =>
-        instantiate2Action.encode({
-          chainId,
-          sender: daoChainAccountAddress,
-          admin: daoChainAccountAddress,
-          codeId,
-          label,
-          message: JSON.stringify(msg, null, 2),
-          salt,
-          funds: [],
-        })
+    return Object.values(extra?.factories || {}).flatMap((data) =>
+      instantiate2Action.encode(data)
     )
   },
   // Match hook messages.
@@ -47,8 +46,8 @@ export const editAction: Module<
         const { label, salt } = await instantiate2Action.decode([message])
         // If found expected instantiate2 message format, count and continue.
         if (
-          label.startsWith('VestingFactory-v') &&
-          salt.startsWith('vesting_payments_')
+          salt.startsWith(VESTING_PAYMENTS_SALT_PREFIX) &&
+          label.startsWith(VESTING_PAYMENTS_LABEL_PREFIX)
         ) {
           matches++
           continue
@@ -70,16 +69,7 @@ export const editAction: Module<
 
     return {
       factories: Object.fromEntries(
-        decoded.map(({ chainId, sender, codeId, label, message, salt }) => [
-          chainId,
-          {
-            codeId,
-            label,
-            msg: JSON.parse(message),
-            salt,
-            daoChainAccountAddress: sender,
-          },
-        ])
+        decoded.map((data) => [data.chainId, data])
       ),
     }
   },

@@ -1,26 +1,27 @@
-import { Check } from '@mui/icons-material'
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { nanoid } from 'nanoid'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
+import { contractQueries } from '@dao-dao/state/query'
 import {
-  Button,
-  CopyableAddress,
+  ErrorPage,
+  Loader,
   useDao,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { ModuleEditorProps, VoteDelegationModuleData } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVoteDelegation'
-import { instantiateSmartContract, processError } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
-import { ConnectWallet } from '../../../components'
-import { useWallet } from '../../../hooks'
+import { UpdateDelegationConfigComponent } from './actions/UpdateDelegationConfig/Component'
 import {
-  UpdateDelegationConfigComponent,
-  UpdateDelegationConfigData,
-} from './actions/UpdateDelegationConfig/Component'
+  VOTE_DELEGATION_LABEL_PREFIX,
+  VOTE_DELEGATION_SALT_PREFIX,
+  VoteDelegationModuleExtraData,
+} from './editAction'
 
 export const Editor = ({
   isCreating,
@@ -29,72 +30,112 @@ export const Editor = ({
   extraFieldNamePrefix,
 }: ModuleEditorProps<VoteDelegationModuleData>) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const dao = useDao()
   const {
     config: {
       codeIds: { DaoVoteDelegation: codeId },
     },
   } = useSupportedChainContext()
-  const {
-    isWalletConnected,
-    address: walletAddress = '',
-    getSigningClient,
-  } = useWallet()
 
   const { watch, setValue } = useFormContext<
-    VoteDelegationModuleData & { extra: UpdateDelegationConfigData }
+    VoteDelegationModuleData & { extra: VoteDelegationModuleExtraData }
   >()
   const address = watch((fieldNamePrefix + 'address') as 'address')
   const extra = watch(extraFieldNamePrefix as 'extra')
 
-  const [instantiating, setInstantiating] = useState(false)
-  const instantiate = async () => {
-    if (!isWalletConnected || !walletAddress) {
-      toast.error(t('error.logInToContinue'))
-      return
-    }
+  const [creationError, setCreationError] = useState<string | null>(null)
+  const [instantiating, setInstantiating] = useState(!address)
 
-    setInstantiating(true)
-    try {
-      const hookCaller = await dao.votingModule.getHookCaller()
+  const [salt] = useState(() => VOTE_DELEGATION_SALT_PREFIX + nanoid())
+  const [label] = useState(
+    () => VOTE_DELEGATION_LABEL_PREFIX + ` (${Date.now()})`
+  )
 
-      const contractAddress = await instantiateSmartContract(
-        getSigningClient,
-        walletAddress,
-        codeId,
-        `DAO DAO Vote Delegation (${Date.now()})`,
-        {
+  const hasAddress = !!address
+  const isInstantiating = !!extra.instantiateData
+  useEffect(() => {
+    const instantiate = async () => {
+      setInstantiating(true)
+      try {
+        const [hookCaller, predictedAddress] = await Promise.all([
+          dao.votingModule.getHookCaller(),
+          queryClient.fetchQuery(
+            contractQueries.instantiate2Address({
+              chainId: dao.chainId,
+              creator: dao.coreAddress,
+              codeId,
+              salt,
+            })
+          ),
+        ])
+
+        const instantiateMsg: InstantiateMsg = {
           dao: dao.coreAddress,
-          delegation_validity_blocks: extra.validityBlocks
-            ? HugeDecimal.from(extra.validityBlocks).toNumber()
+          delegation_validity_blocks: extra.updateDelegationConfig
+            .validityBlocks
+            ? HugeDecimal.from(
+                extra.updateDelegationConfig.validityBlocks
+              ).toNumber()
             : null,
           // Hardcoded conservative gas limit that works on Neutron.
           max_delegations: 50,
           no_sync_proposal_modules: false,
-          vp_cap_percent: extra.vpCapPercent
-            ? HugeDecimal.from(extra.vpCapPercent).div(100).toString()
+          vp_cap_percent: extra.updateDelegationConfig.vpCapPercent
+            ? HugeDecimal.from(extra.updateDelegationConfig.vpCapPercent)
+                .div(100)
+                .toString()
             : null,
           vp_hook_callers: [hookCaller],
-        } satisfies InstantiateMsg,
-        undefined,
-        dao.coreAddress
-      )
+        }
 
-      // Should never happen.
-      if (!contractAddress) {
-        throw new Error(t('error.loadingData'))
+        setValue(
+          (extraFieldNamePrefix + 'instantiateData') as 'extra.instantiateData',
+          {
+            chainId: dao.chainId,
+            sender: dao.coreAddress,
+            admin: dao.coreAddress,
+            codeId,
+            label,
+            message: JSON.stringify(instantiateMsg, null, 2),
+            salt,
+            funds: [],
+          }
+        )
+        setValue((fieldNamePrefix + 'address') as 'address', predictedAddress)
+        setCreationError(null)
+      } catch (err) {
+        console.error(err)
+        setCreationError(processError(err))
+      } finally {
+        setInstantiating(false)
       }
-
-      setValue((fieldNamePrefix + 'address') as 'address', contractAddress)
-
-      toast.success(t('success.created'))
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-    } finally {
-      setInstantiating(false)
     }
-  }
+
+    // If address is not set, or if address is set AND is instantiating, make
+    // sure to update instantiate data. If both are set, this means we are
+    // currently creating the module, and we need to update the instantiate data
+    // when the config changes. Instantiate data updates should occur in the
+    // background practically instantly since the queries are cached.
+    if (!hasAddress || isInstantiating) {
+      instantiate()
+    }
+  }, [
+    codeId,
+    dao.chainId,
+    dao.coreAddress,
+    dao.votingModule,
+    isInstantiating,
+    extra.updateDelegationConfig.validityBlocks,
+    extra.updateDelegationConfig.vpCapPercent,
+    extraFieldNamePrefix,
+    fieldNamePrefix,
+    queryClient,
+    setValue,
+    hasAddress,
+    salt,
+    label,
+  ])
 
   return (
     <div className="flex flex-col items-start gap-4">
@@ -102,43 +143,31 @@ export const Editor = ({
         {t('info.voteDelegationExplanation')}
       </p>
 
-      <div className="flex flex-row flex-wrap items-center gap-2">
-        <p className="body-text max-w-prose break-words">
-          {address
-            ? t('info.createdVoteDelegationContract')
-            : t('info.createVoteDelegationContract')}
-        </p>
-
-        {address && <Check className="!h-6 !w-6" />}
-      </div>
+      {!address && instantiating ? (
+        <Loader fill={false} size={24} />
+      ) : (
+        creationError && (
+          <ErrorPage error={creationError || t('error.unknownError')} />
+        )
+      )}
 
       <UpdateDelegationConfigComponent
         allActionsWithData={[]}
-        data={extra}
-        fieldNamePrefix={extraFieldNamePrefix}
+        data={extra?.updateDelegationConfig}
+        fieldNamePrefix={extraFieldNamePrefix + 'updateDelegationConfig.'}
         index={0}
         options={{}}
-        {...(isCreating && !address
+        {...(isCreating
           ? {
               isCreating,
               addAction: () => {},
               remove: () => {},
-              errors: extraErrors,
+              errors: extraErrors?.updateDelegationConfig ?? {},
             }
           : {
               isCreating: false,
             })}
       />
-
-      {address ? (
-        <CopyableAddress address={address} className="!w-auto" />
-      ) : walletAddress ? (
-        <Button loading={instantiating} onClick={instantiate} variant="primary">
-          {t('button.create')}
-        </Button>
-      ) : (
-        <ConnectWallet size="md" />
-      )}
     </div>
   )
 }

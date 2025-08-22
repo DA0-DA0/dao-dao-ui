@@ -35,12 +35,6 @@ import {
   UpdateDelegationConfigData,
 } from './Component'
 
-export const defaultExtra: UpdateDelegationConfigData = {
-  validityBlocks: '7776000',
-  vpCapPercent: '10',
-  maxDelegations: '50',
-}
-
 export class UpdateDelegationConfigAction extends ActionBase<UpdateDelegationConfigData> {
   public readonly key = ActionKey.UpdateDelegationConfig
   public readonly Component: ActionComponent

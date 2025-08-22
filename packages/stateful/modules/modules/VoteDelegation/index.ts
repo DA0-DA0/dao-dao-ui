@@ -11,14 +11,14 @@ import {
   VoteDelegationModuleData,
 } from '@dao-dao/types'
 
-import {
-  UpdateDelegationConfigAction,
-  defaultExtra,
-} from './actions/UpdateDelegationConfig'
-import { editAction } from './editAction'
+import { UpdateDelegationConfigAction } from './actions/UpdateDelegationConfig'
+import { VoteDelegationModuleExtraData, editAction } from './editAction'
 import { Editor } from './Editor'
 
-export const VoteDelegationModule: Module<VoteDelegationModuleData> = {
+export const VoteDelegationModule: Module<
+  VoteDelegationModuleData,
+  VoteDelegationModuleExtraData
+> = {
   id: ModuleId.VoteDelegation,
   title: 'Vote Delegation',
   description: 'Allow members to delegate their voting power within the DAO.',
@@ -31,7 +31,13 @@ export const VoteDelegationModule: Module<VoteDelegationModuleData> = {
   defaultValues: {
     address: '',
   },
-  defaultExtra,
+  defaultExtra: {
+    updateDelegationConfig: {
+      validityBlocks: '7776000',
+      vpCapPercent: '10',
+      maxDelegations: '50',
+    },
+  },
   Editor,
   editAction,
   getActions: ({ address }) => ({

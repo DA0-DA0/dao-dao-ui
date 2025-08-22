@@ -1,6 +1,5 @@
 import { HugeDecimal } from '@dao-dao/math'
 
-import { InstantiateMsg as VestingFactoryInstantiateMsg } from './contracts/CwPayrollFactory'
 import { Vest } from './contracts/CwVesting'
 import { GenericToken } from './token'
 
@@ -52,26 +51,6 @@ export type VestingPaymentsModuleData = {
    * we still show their vesting payments.
    */
   oldFactories?: OldVestingPaymentFactory[]
-}
-
-/**
- * Data used to instantiate new vesting payment factories.
- */
-export type VestingPaymentsModuleExtraData = {
-  /**
-   * The factories to create via instantiate2. Map of chain ID to factory
-   * information.
-   */
-  factories: Record<
-    string,
-    {
-      codeId: number
-      label: string
-      msg: VestingFactoryInstantiateMsg
-      salt: string
-      daoChainAccountAddress: string
-    }
-  >
 }
 
 export type OldVestingPaymentFactory = {

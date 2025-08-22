@@ -20,7 +20,6 @@ import {
   LATEST_VESTING_CONTRACT_VERSION,
   ModuleEditorProps,
   VestingPaymentsModuleData,
-  VestingPaymentsModuleExtraData,
 } from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
 import {
@@ -29,6 +28,12 @@ import {
   mustGetSupportedChainConfig,
   processError,
 } from '@dao-dao/utils'
+
+import {
+  VESTING_PAYMENTS_LABEL_PREFIX,
+  VESTING_PAYMENTS_SALT_PREFIX,
+  VestingPaymentsModuleExtraData,
+} from './editAction'
 
 export const VestingPaymentsEditor = (
   props: ModuleEditorProps<VestingPaymentsModuleData>
@@ -191,14 +196,16 @@ const VestingFactoryChain = ({
 
     setInstantiating(true)
     try {
-      const salt = `vesting_payments_${nanoid()}`
+      const salt = VESTING_PAYMENTS_SALT_PREFIX + nanoid()
+      const label =
+        VESTING_PAYMENTS_LABEL_PREFIX +
+        `v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`
       const msg: VestingFactoryInstantiateMsg = {
         owner: daoChainAccountAddress,
         vesting_code_id: codeIds.CwVesting,
       }
-      const label = `VestingFactory-v${LATEST_VESTING_CONTRACT_VERSION}_${chainId}_${Date.now()}`
 
-      const createdFactoryAddress = await queryClient.fetchQuery(
+      const predictedAddress = await queryClient.fetchQuery(
         contractQueries.instantiate2Address({
           chainId,
           creator: daoChainAccountAddress,
@@ -238,11 +245,14 @@ const VestingFactoryChain = ({
         (extraFieldNamePrefix +
           `factories.${chainId}`) as `extra.factories.${string}`,
         {
+          chainId,
+          sender: daoChainAccountAddress,
+          admin: daoChainAccountAddress,
           codeId: codeIds.CwPayrollFactory,
           label,
-          msg,
+          message: JSON.stringify(msg, null, 2),
           salt,
-          daoChainAccountAddress,
+          funds: [],
         }
       )
 
@@ -250,7 +260,7 @@ const VestingFactoryChain = ({
       setValue(
         (fieldNamePrefix + `factories.${chainId}`) as `factories.${string}`,
         {
-          address: createdFactoryAddress,
+          address: predictedAddress,
           version: LATEST_VESTING_CONTRACT_VERSION,
         }
       )

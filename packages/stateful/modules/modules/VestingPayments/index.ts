@@ -7,10 +7,9 @@ import {
   ModuleId,
   ModuleVisibilityContext,
   VestingPaymentsModuleData,
-  VestingPaymentsModuleExtraData,
 } from '@dao-dao/types'
 
-import { editAction } from './editAction'
+import { VestingPaymentsModuleExtraData, editAction } from './editAction'
 import { Renderer } from './Renderer'
 import { VestingPaymentsEditor as Editor } from './VestingPaymentsEditor'
 
