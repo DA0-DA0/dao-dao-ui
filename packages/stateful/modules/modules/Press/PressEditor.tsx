@@ -139,7 +139,7 @@ export const PressEditor = ({
     !Object.keys(polytoneProxies).length
 
   return (
-    <div className="mt-2 flex flex-col items-start gap-4">
+    <div className="flex flex-col items-start gap-4">
       {/* If DAO on Stargaze and has no cross-chain accounts, show error. */}
       {isCreating && stargazeDaoNoCrossChainAccounts ? (
         <>

@@ -4,11 +4,17 @@ import { useActionOptions } from '@dao-dao/stateless'
 import { VestingPaymentsModuleData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
+import { VestingPaymentsModuleExtraData } from '../../../../modules/modules/VestingPayments/editAction'
 import { VestingPaymentsEditor } from '../../../../modules/modules/VestingPayments/VestingPaymentsEditor'
+
+export type ConfigureVestingPaymentsData = {
+  values: VestingPaymentsModuleData
+  extra: VestingPaymentsModuleExtraData
+}
 
 export const ConfigureVestingPaymentsComponent: ActionComponent<
   undefined,
-  VestingPaymentsModuleData
+  ConfigureVestingPaymentsData
 > = (props) => {
   const { t } = useTranslation()
   const options = useActionOptions()
@@ -22,14 +28,14 @@ export const ConfigureVestingPaymentsComponent: ActionComponent<
       <VestingPaymentsEditor
         {...props}
         accounts={options.context.accounts}
-        data={{
-          ...props.data,
-          extra: {},
-        }}
-        // Unused.
-        extraErrors={{}}
-        // Unused.
-        extraFieldNamePrefix=""
+        allActionsWithData={props.allActionsWithData}
+        data={props.data.values}
+        errors={props.errors?.values}
+        extra={props.data.extra}
+        extraErrors={props.errors?.extra}
+        extraFieldNamePrefix={props.fieldNamePrefix + 'extra.'}
+        fieldNamePrefix={props.fieldNamePrefix + 'values.'}
+        index={props.index}
         options={options}
         type="action"
       />

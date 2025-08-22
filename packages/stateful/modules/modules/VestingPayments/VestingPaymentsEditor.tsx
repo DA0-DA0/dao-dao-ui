@@ -36,7 +36,10 @@ import {
 } from './editAction'
 
 export const VestingPaymentsEditor = (
-  props: ModuleEditorProps<VestingPaymentsModuleData>
+  props: ModuleEditorProps<
+    VestingPaymentsModuleData,
+    VestingPaymentsModuleExtraData
+  >
 ) => {
   const { t } = useTranslation()
 
@@ -45,8 +48,12 @@ export const VestingPaymentsEditor = (
     config: { polytone = {} },
   } = useSupportedChainContext()
 
-  const { setError, clearErrors, watch } =
-    useFormContext<VestingPaymentsModuleData>()
+  const { setError, clearErrors, watch } = useFormContext<
+    VestingPaymentsModuleData & { extra: VestingPaymentsModuleExtraData }
+  >()
+  const instantiatingOnChainIds = Object.keys(
+    watch((props.extraFieldNamePrefix + 'factories') as 'extra.factories') || {}
+  )
   // Multi-chain unified field of multiple factories.
   const factories = watch((props.fieldNamePrefix + 'factories') as 'factories')
   // Old single-chain field.
@@ -62,12 +69,15 @@ export const VestingPaymentsEditor = (
   const possibleChainIds =
     props.type === 'daoCreation'
       ? [nativeChainId]
-      : [
-          nativeChainId,
-          ...Object.keys(polytone).filter((chainId) =>
-            getSupportedChainConfig(chainId)
-          ),
-        ]
+      : // For backwards compatibility, if not creating but there are no factories being instantiated, show all chains. This will happen for actions created before the instantiate2 creation method was adopted.
+        props.isCreating || !instantiatingOnChainIds.length
+        ? [
+            nativeChainId,
+            ...Object.keys(polytone).filter((chainId) =>
+              getSupportedChainConfig(chainId)
+            ),
+          ]
+        : instantiatingOnChainIds
 
   // Prevent action from being submitted if the vesting factories map does not
   // exist.
@@ -93,10 +103,12 @@ export const VestingPaymentsEditor = (
       nativeSingleChainVersion < LATEST_VESTING_CONTRACT_VERSION
 
   return (
-    <div className="mt-2 flex flex-col items-start gap-4">
+    <div className="flex flex-col items-start gap-4">
       <p className="body-text max-w-prose break-words">
         {t('info.vestingManagerExplanation', {
-          context: props.type,
+          context:
+            props.type +
+            (props.type === 'action' && !props.isCreating ? 'Created' : ''),
         })}
       </p>
 

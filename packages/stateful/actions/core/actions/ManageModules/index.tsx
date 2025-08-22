@@ -58,15 +58,18 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export class ManageModulesAction extends ActionBase<ManageModulesData> {
+export class ManageModulesAction<
+  Values extends Record<string, unknown> = Record<string, unknown>,
+  Extra extends Record<string, unknown> = Record<string, unknown>,
+> extends ActionBase<ManageModulesData<Values, Extra>> {
   public readonly key = ActionKey.ManageModules
   public readonly Component = Component
 
-  protected _defaults: ManageModulesData = {
+  protected _defaults: ManageModulesData<Values, Extra> = {
     mode: 'set',
     id: '',
-    values: {},
-    extra: {},
+    values: {} as Values,
+    extra: {} as Extra,
   }
 
   public readonly dao: IDaoBase
@@ -102,7 +105,7 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
     id,
     values,
     extra,
-  }: ManageModulesData): Promise<UnifiedCosmosMsg[]> {
+  }: ManageModulesData<Values, Extra>): Promise<UnifiedCosmosMsg[]> {
     const setting = mode === 'set'
     const msgs = [
       this.manageStorageItemsAction.encode({
@@ -178,7 +181,9 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
     return true
   }
 
-  async decode(messages: ProcessedMessage[]): Promise<ManageModulesData> {
+  async decode(
+    messages: ProcessedMessage[]
+  ): Promise<ManageModulesData<Values, Extra>> {
     const manageStorageItemsData =
       this.manageStorageItemsAction.decode(messages)
 
@@ -215,8 +220,8 @@ export class ManageModulesAction extends ActionBase<ManageModulesData> {
     return {
       mode,
       id,
-      values,
-      extra,
+      values: values as Values,
+      extra: extra as Extra,
     }
   }
 }

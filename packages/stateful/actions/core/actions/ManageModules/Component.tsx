@@ -17,13 +17,16 @@ import {
 import { DaoModule, Module, SuspenseLoaderProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
-export type ManageModulesData = {
+export type ManageModulesData<
+  Values extends Record<string, unknown> = Record<string, unknown>,
+  Extra extends Record<string, unknown> = Record<string, unknown>,
+> = {
   mode: 'set' | 'delete'
   id: string
   // Module data type.
-  values: Record<string, unknown>
+  values: Values
   // Module extra data type used only for encoding.
-  extra: Record<string, unknown>
+  extra: Extra
 }
 
 export type ManageModulesOptions = {
@@ -201,6 +204,7 @@ export const ManageModulesComponent: ActionComponent<ManageModulesOptions> = (
                   accounts={actionOptions.context.accounts}
                   data={props.data.values}
                   errors={errors?.values}
+                  extra={props.data.extra}
                   extraErrors={errors?.extra}
                   extraFieldNamePrefix={fieldNamePrefix + 'extra.'}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
@@ -227,6 +231,7 @@ export const ManageModulesComponent: ActionComponent<ManageModulesOptions> = (
                   {...props}
                   accounts={actionOptions.context.accounts}
                   data={props.data.values}
+                  extra={props.data.extra}
                   extraErrors={{}}
                   extraFieldNamePrefix={fieldNamePrefix + 'extra.'}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}

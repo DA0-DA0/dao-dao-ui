@@ -1608,6 +1608,7 @@
     "vestingIsCancellableByOwner_dao": "This vesting payment can be cancelled by the DAO after it's created.",
     "vestingIsCancellableByOwner_wallet": "You will be able to cancel this vesting payment after it's created.",
     "vestingManagerExplanation_action": "To create vesting payments on a chain, the DAO must have an account and vesting payment manager on that chain. Create vesting payment managers on any of the available chains below, or create cross-chain accounts so you can set up managers in another proposal.",
+    "vestingManagerExplanation_actionCreated": "Vesting payment managers exist or will be created on the chains below so that the DAO can create vesting payments on them.",
     "vestingManagerExplanation_daoCreation": "To create vesting payments on a chain, the DAO must have an account and vesting payment manager on that chain. Since you are creating a DAO, you can only set up vesting on the DAO's home chain for now. Create cross-chain accounts via proposals once the DAO is created in order to manage vesting payments on other chains.",
     "vestingManagerNeeded": "To create a vesting payment on {{chain}}, the DAO must first setup a vesting payment manager by passing a proposal with the setup action. Click the button to add the setup action and remove this vesting payment.",
     "vestingNotCancellable": "This vesting payment cannot be cancelled later.",

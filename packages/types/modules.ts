@@ -76,7 +76,11 @@ export type ModuleEditorProps<
   | ({
       type: 'action'
       options: ActionOptions
-    } & ActionComponentProps<undefined, Variables & { extra: Extra }>)
+      /**
+       * Extra data used only for encoding.
+       */
+      extra: Extra
+    } & ActionComponentProps<undefined, Variables>)
   | {
       type: 'daoCreation'
       // To match action props.
