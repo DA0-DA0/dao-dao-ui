@@ -102,7 +102,7 @@ export class SudoAction extends ActionBase<SudoData> {
         stargate: {
           typeUrl: MsgSudoContract.typeUrl,
           value: MsgSudoContract.fromAmino({
-            authority: authority,
+            authority,
             contract,
             msg: encodeJsonToBase64(msg),
           }),
