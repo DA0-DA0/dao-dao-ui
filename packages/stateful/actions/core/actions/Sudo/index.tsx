@@ -1,4 +1,3 @@
-import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
 import { contractQueries } from '@dao-dao/state'
@@ -87,9 +86,7 @@ export class SudoAction extends ActionBase<SudoData> {
     }
   }
 
-  encode({ chainId, contract, msg: msgString }: SudoData): UnifiedCosmosMsg[] {
-    const msg = JSON5.parse(msgString)
-
+  encode({ chainId, contract, msg }: SudoData): UnifiedCosmosMsg[] {
     const authority = getChainAddressForActionOptions(this.options, chainId)
     if (!authority) {
       throw new Error('No account address found for chain')
