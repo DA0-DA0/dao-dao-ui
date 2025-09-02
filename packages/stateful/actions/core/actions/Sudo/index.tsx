@@ -6,7 +6,7 @@ import {
   ActionBase,
   ChainProvider,
   DaoSupportedChainPickerInput,
-  WhaleEmoji,
+  PlungerEmoji,
   useActionOptions,
 } from '@dao-dao/stateless'
 import { UnifiedCosmosMsg, makeStargateMessage } from '@dao-dao/types'
@@ -75,7 +75,7 @@ export class SudoAction extends ActionBase<SudoData> {
 
   constructor(options: ActionOptions) {
     super(options, {
-      Icon: WhaleEmoji,
+      Icon: PlungerEmoji,
       label: options.t('title.sudoSmartContract'),
       description: options.t('info.sudoSmartContractActionDescription'),
     })

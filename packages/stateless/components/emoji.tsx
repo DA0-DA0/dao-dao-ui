@@ -312,3 +312,7 @@ export const OpenMailboxEmoji = (props: EmojiProps) => (
 export const PauseEmoji = (props: EmojiProps) => (
   <EmojiWrapper emoji="⏸︎" labelI18nKey="emoji.pause" {...props} />
 )
+
+export const PlungerEmoji = (props: EmojiProps) => (
+  <EmojiWrapper emoji="🪠" labelI18nKey="emoji.plunger" {...props} />
+)
