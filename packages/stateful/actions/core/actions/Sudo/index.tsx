@@ -1,3 +1,4 @@
+import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
 import { contractQueries } from '@dao-dao/state'
@@ -20,7 +21,6 @@ import {
 import { MsgSudoContract } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import {
   decodeJsonFromBase64,
-  encodeJsonToBase64,
   getChainAddressForActionOptions,
   isDecodedStargateMsg,
   maybeMakePolytoneExecuteMessages,
@@ -86,7 +86,9 @@ export class SudoAction extends ActionBase<SudoData> {
     }
   }
 
-  encode({ chainId, contract, msg }: SudoData): UnifiedCosmosMsg[] {
+  encode({ chainId, contract, msg: msgString }: SudoData): UnifiedCosmosMsg[] {
+    const msg = JSON5.parse(msgString)
+
     const authority = getChainAddressForActionOptions(this.options, chainId)
     if (!authority) {
       throw new Error('No account address found for chain')
@@ -101,7 +103,7 @@ export class SudoAction extends ActionBase<SudoData> {
           value: MsgSudoContract.fromAmino({
             authority,
             contract,
-            msg: encodeJsonToBase64(msg),
+            msg,
           }),
         },
       })
