@@ -49,6 +49,7 @@ export enum ActionKey {
   Instantiate2 = 'instantiate2',
   Execute = 'execute',
   Migrate = 'migrate',
+  Sudo = 'sudo',
   UpdateAdmin = 'updateAdmin',
   AuthzGrantRevoke = 'authzGrantRevoke',
   AuthzExec = 'authzExec',

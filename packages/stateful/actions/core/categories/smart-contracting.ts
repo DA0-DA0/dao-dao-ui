@@ -15,6 +15,7 @@ export const makeSmartContractingActionCategory: ActionCategoryMaker = ({
     ActionKey.Instantiate2,
     ActionKey.Execute,
     ActionKey.Migrate,
+    ActionKey.Sudo,
     ActionKey.UpdateAdmin,
     ActionKey.UploadCode,
     ActionKey.FeeShare,
