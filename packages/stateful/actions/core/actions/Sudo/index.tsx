@@ -1,3 +1,4 @@
+import { toBase64 } from '@cosmjs/encoding'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
@@ -124,7 +125,9 @@ export class SudoAction extends ActionBase<SudoData> {
       chainId,
       contract: decodedMessage.stargate.value.contract,
       msg: JSON.stringify(
-        decodeJsonFromBase64(decodedMessage.stargate.value.msg)
+        decodeJsonFromBase64(toBase64(decodedMessage.stargate.value.msg), true),
+        null,
+        2
       ),
     }
   }
