@@ -40,10 +40,10 @@ import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureMod
 import { LinkWrapper } from './LinkWrapper'
 import { ProposalLine } from './ProposalLine'
 
-// Contracts enforce a max of 30, though this is on the edge, so use 20.
-const PROP_PAGINATE_LIMIT = 20
+// Contracts enforce a max of 30.
+const PROP_PAGINATE_LIMIT = 10
 // Load proposals until at least this many are loaded.
-const MIN_LOAD_PROPS = PROP_PAGINATE_LIMIT * 2
+const MIN_LOAD_PROPS = PROP_PAGINATE_LIMIT * 3
 
 enum ProposalType {
   Normal = 'normal',
@@ -80,6 +80,7 @@ export const ProposalList = ({
   const [historyProposals, setHistoryProposals] = useState<
     ProposalPropsWithStatus[]
   >([])
+  const [error, setError] = useState<Error | undefined>(undefined)
 
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
@@ -140,6 +141,7 @@ export const ProposalList = ({
       // already loaded proposals.
       async (refreshAll = false) => {
         setLoading(true)
+        setError(undefined)
 
         // If refreshing all, we need to reset the state so we start from the
         // beginning.
@@ -340,6 +342,9 @@ export const ProposalList = ({
             // yet loaded as many as we started with.
             (refreshAll && proposalIdsSeen.size < totalProposalsLoaded)
           )
+        } catch (err) {
+          console.error('Failed to load proposals', err)
+          setError(err instanceof Error ? err : new Error(String(err)))
         } finally {
           // Update state.
           setOpenProposals(newOpenProposals)
@@ -439,7 +444,7 @@ export const ProposalList = ({
       error={
         showingSearchResults && searchedProposals.errored
           ? searchedProposals.error
-          : undefined
+          : error
       }
       hideProposalIds={
         !spamProposalIds.loading && !spamProposalIds.errored
