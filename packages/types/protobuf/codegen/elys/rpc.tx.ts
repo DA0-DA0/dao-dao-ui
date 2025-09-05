@@ -39,6 +39,7 @@ export const createRPCMsgClient = async ({
   },
   elys: {
     amm: new (await import("./amm/tx.rpc.msg")).MsgClientImpl(rpc),
+    masterchef: new (await import("./masterchef/tx.rpc.msg")).MsgClientImpl(rpc),
     stablestake: new (await import("./stablestake/tx.rpc.msg")).MsgClientImpl(rpc)
   }
 });

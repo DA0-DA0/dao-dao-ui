@@ -2,14 +2,17 @@ import { GeneratedType, Registry, OfflineSigner } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, AminoTypes, SigningStargateClient } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 import * as elysAmmTxRegistry from "./amm/tx.registry";
+import * as elysMasterchefTxRegistry from "./masterchef/tx.registry";
 import * as elysStablestakeTxRegistry from "./stablestake/tx.registry";
 import * as elysAmmTxAmino from "./amm/tx.amino";
+import * as elysMasterchefTxAmino from "./masterchef/tx.amino";
 import * as elysStablestakeTxAmino from "./stablestake/tx.amino";
 export const elysAminoConverters = {
   ...elysAmmTxAmino.AminoConverter,
+  ...elysMasterchefTxAmino.AminoConverter,
   ...elysStablestakeTxAmino.AminoConverter
 };
-export const elysProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...elysAmmTxRegistry.registry, ...elysStablestakeTxRegistry.registry];
+export const elysProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [...elysAmmTxRegistry.registry, ...elysMasterchefTxRegistry.registry, ...elysStablestakeTxRegistry.registry];
 export const getSigningElysClientOptions = ({
   defaultTypes = defaultRegistryTypes
 }: {

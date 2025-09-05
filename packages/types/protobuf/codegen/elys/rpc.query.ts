@@ -54,6 +54,7 @@ export const createRPCQueryClient = async ({
     },
     elys: {
       amm: (await import("./amm/query.rpc.Query")).createRpcQueryExtension(client),
+      masterchef: (await import("./masterchef/query.rpc.Query")).createRpcQueryExtension(client),
       stablestake: (await import("./stablestake/query.rpc.Query")).createRpcQueryExtension(client)
     }
   };

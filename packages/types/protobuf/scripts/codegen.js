@@ -133,6 +133,7 @@ telescope({
           'slinky.oracle.v1',
           'elys.stablestake',
           'elys.amm',
+          'elys.masterchef',
           'pryzm.amm.v1',
           'pryzm.amm.v2',
           'pryzm.assets.v1',
