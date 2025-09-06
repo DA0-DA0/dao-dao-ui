@@ -473,13 +473,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             )
           )
 
-          if (!pubkey) {
-            return {
-              type: 'error',
-              error: 'Pubkey not found.',
-            }
-          }
-
           return {
             type: 'success',
             value: {
@@ -620,13 +613,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             )
           )
 
-          if (!pubkey) {
-            return {
-              type: 'error',
-              error: 'Pubkey not found.',
-            }
-          }
-
           return {
             type: 'success',
             value: {
@@ -735,13 +721,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               })
             )
           )
-
-          if (!pubkey) {
-            return {
-              type: 'error',
-              error: 'Pubkey not found.',
-            }
-          }
 
           return {
             type: 'success',
