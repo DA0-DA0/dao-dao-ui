@@ -291,6 +291,9 @@ export const daoProposalMultipleQueries = {
               args: {
                 id: args.proposalId,
               },
+              // Throw on server so if the indexer is behind but the proposal
+              // exists, we make sure to fallback to the contract query.
+              throwOnServer: true,
             })
           )
         } catch (error) {

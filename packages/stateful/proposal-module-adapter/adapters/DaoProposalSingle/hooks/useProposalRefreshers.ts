@@ -1,19 +1,15 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  DaoPreProposeApprovalSingleSelectors,
-  DaoProposalSingleCommonSelectors,
   daoPreProposeApprovalSingleQueries,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoading,
-  useDependencyTrackedQueryClient,
-} from '@dao-dao/stateless'
+import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 import { ProposalRefreshers } from '@dao-dao/types'
 
+import { useQueryLoadingData } from '../../../../hooks'
 import { useProposalModuleAdapterContext } from '../../../react/context'
 
 export const useProposalRefreshers = (): ProposalRefreshers => {
@@ -85,37 +81,21 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     setRefreshProposalsId((id) => id + 1)
   }, [refreshProposal, setRefreshProposalsId])
 
-  const loadingProposal = useCachedLoading(
+  const loadingProposal = useQueryLoadingData(
     !isApprovalProposal
-      ? DaoProposalSingleCommonSelectors.proposalSelector({
-          contractAddress: proposalModule.address,
-          chainId: proposalModule.chainId,
-          params: [
-            {
-              proposalId: proposalNumber,
-            },
-          ],
+      ? proposalModule.getProposalQuery({
+          proposalId: proposalNumber,
         })
-      : constSelector(undefined),
+      : undefined,
     undefined
   )
 
-  const loadingApprovalProposal = useCachedLoading(
+  const loadingApprovalProposal = useQueryLoadingData(
     isApprovalProposal && proposalModule.prePropose
-      ? DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
-          chainId: proposalModule.chainId,
-          contractAddress: proposalModule.prePropose.address,
-          params: [
-            {
-              msg: {
-                proposal: {
-                  id: proposalNumber,
-                },
-              },
-            },
-          ],
+      ? proposalModule.getApprovalProposalQuery({
+          proposalId: proposalNumber,
         })
-      : constSelector(undefined),
+      : undefined,
     undefined
   )
 
