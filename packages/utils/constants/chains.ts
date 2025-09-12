@@ -252,8 +252,8 @@ const BASE_SUPPORTED_CHAINS: Omit<
         factoryContractAddress:
           'thor1d8thneasuuhrflhel59hcvj77rj5vf6vjmz3njsu5n3ss94jjh5s73xqh5',
         explorerUrlTemplates: {
-          tx: 'https://runescan.io/tx/REPLACE',
-          wallet: 'https://runescan.io/address/REPLACE',
+          tx: 'https://thorchain.net/tx/REPLACE',
+          wallet: 'https://thorchain.net/address/REPLACE',
         },
         latestVersion: ContractVersion.V271,
       },
