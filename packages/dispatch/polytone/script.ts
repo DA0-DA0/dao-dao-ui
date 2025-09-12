@@ -9,12 +9,7 @@ import chalk from 'chalk'
 import { Command } from 'commander'
 import toml from 'toml'
 
-import {
-  chainQueries,
-  makeGetSignerOptions,
-  makeReactQueryClient,
-  skipQueries,
-} from '@dao-dao/state'
+import { chainQueries, makeGetSignerOptions, skipQueries } from '@dao-dao/state'
 import { MsgUpdateInstantiateConfig } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/tx'
 import { AccessType } from '@dao-dao/types/protobuf/codegen/cosmwasm/wasm/v1/types'
 import {
@@ -30,6 +25,7 @@ import {
   getRpcForChainId,
   ibcProtoRpcClientRouter,
   isErrorWithSubstring,
+  makeDependencyTrackedQueryClient,
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
@@ -112,7 +108,7 @@ if (!mnemonic) {
 }
 
 const main = async () => {
-  const queryClient = await makeReactQueryClient()
+  const queryClient = await makeDependencyTrackedQueryClient()
 
   const { noteCodeId, listenerCodeId } =
     chains[srcChainId as keyof typeof chains] || {}

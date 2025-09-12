@@ -7,13 +7,18 @@ import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import chalk from 'chalk'
 import { Command } from 'commander'
 
+import { chainQueries, makeGetSignerOptions } from '@dao-dao/state'
 import {
-  chainQueries,
-  makeGetSignerOptions,
-  makeReactQueryClient,
-} from '@dao-dao/state'
-import { ContractVersion, SupportedChainConfig } from '@dao-dao/types'
-import { getChainForChainId, getRpcForChainId, retry } from '@dao-dao/utils'
+  ContractVersion,
+  SupportedChainConfig,
+  SupportedChainIndexerMode,
+} from '@dao-dao/types'
+import {
+  getChainForChainId,
+  getRpcForChainId,
+  makeDependencyTrackedQueryClient,
+  retry,
+} from '@dao-dao/utils'
 
 import { getDispatchConfig } from '../config'
 import { instantiateContract } from '../utils'
@@ -134,7 +139,7 @@ if (!Object.values(Mode).includes(mode)) {
 }
 
 const main = async () => {
-  const queryClient = await makeReactQueryClient()
+  const queryClient = await makeDependencyTrackedQueryClient()
 
   if (!mnemonic) {
     log(chalk.red(`Mnemonic with name "${mnemonicName}" not found in config.`))
@@ -393,6 +398,9 @@ const main = async () => {
       chainId,
       name: chainName,
       mainnet,
+      indexer: indexer
+        ? SupportedChainIndexerMode.Tx
+        : SupportedChainIndexerMode.None,
       accentColor: 'ACCENT_COLOR',
       factoryContractAddress: adminFactoryAddress,
       explorerUrlTemplates: {
