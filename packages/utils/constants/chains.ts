@@ -534,14 +534,14 @@ const BASE_SUPPORTED_CHAINS: Omit<
         noTokenCreation: true,
         accentColor: '#53b878',
         factoryContractAddress:
-          'regen18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3qz4kya2',
+          'regen1gg4etmpcvnk49fwxn0tuvn2cw7txvhcrkmgltnxur7r6gc2xl5fsdz2kut',
         explorerUrlTemplates: {
           tx: 'https://explorer.chainroot.io/regen/transactions/REPLACE',
           gov: 'https://explorer.chainroot.io/regen/proposals',
           govProp: 'https://explorer.chainroot.io/regen/proposals/REPLACE',
           wallet: 'https://explorer.chainroot.io/regen/accounts/REPLACE',
         },
-        latestVersion: ContractVersion.V271,
+        latestVersion: ContractVersion.V280Alpha2,
       },
       {
         chainId: ChainId.RegenTestnet,
@@ -550,7 +550,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         indexer: SupportedChainIndexerMode.None,
         accentColor: '#53b878',
         factoryContractAddress:
-          'regen1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysp76v39',
+          'regen1cpewugrc7gx9lx9qf63ahxsslhs004zvdfuagdunfpfqzxn3fnyq5drgqn',
         explorerUrlTemplates: {
           tx: 'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/tx/REPLACE',
           gov: 'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/gov',
@@ -559,7 +559,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
           wallet:
             'https://explorer-regen-upgrade.vitwit.com/regen-upgrade/account/REPLACE',
         },
-        latestVersion: ContractVersion.V280Beta,
+        latestVersion: ContractVersion.V280Alpha2,
       },
     ]
 
