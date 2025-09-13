@@ -4,6 +4,7 @@ import {
   Module,
   ModuleDisplayLocation,
   ModuleId,
+  ModuleType,
   ModuleVisibilityContext,
 } from '@dao-dao/types'
 
@@ -13,6 +14,7 @@ import { MintNftData } from './types'
 
 export const MintNftModule: Module<MintNftData> = {
   id: ModuleId.MintNft,
+  type: ModuleType.External,
   title: 'Mint NFT',
   description: 'Display an NFT collection with a button to mint new NFTs.',
   Icon: ImageOutlined,

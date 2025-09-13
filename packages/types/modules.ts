@@ -20,6 +20,20 @@ export enum ModuleId {
   RetroactiveCompensation = 'retroactive',
   VestingPayments = 'vesting',
   VoteDelegation = 'vote_delegation',
+  SingleChoiceProposalModule = 'single_choice_proposal',
+  MultipleChoiceProposalModule = 'multiple_choice_proposal',
+  RoleBasedAuthorizationModule = 'rbam',
+}
+
+export enum ModuleType {
+  /**
+   * A proposal module installed in the DAO core contract.
+   */
+  Proposal = 'proposal',
+  /**
+   * An external module that is associated with the DAO in some way.
+   */
+  External = 'external',
 }
 
 /**
@@ -224,6 +238,24 @@ export type Module<
     actionMakers?: ActionMaker<any>[]
     categoryMakers: ActionCategoryMaker[]
   }
+} & (ModuleConfigExternal | ModuleConfigProposal)
+
+export type ModuleConfigExternal = {
+  /**
+   * The type of the module.
+   */
+  type: ModuleType.External
+}
+
+export type ModuleConfigProposal = {
+  /**
+   * The type of the module.
+   */
+  type: ModuleType.Proposal
+  /**
+   * The contract name or names to match.
+   */
+  contractName: string | string[]
 }
 
 /**
@@ -232,7 +264,12 @@ export type Module<
  * the values for the module's variables so that it can be rendered.
  */
 export type DaoModule<Data extends Record<string, unknown> = any> = {
+  /**
+   * For external modules, this is the ID of the module. For proposal modules,
+   * this is the contract name.
+   */
   id: string
+  type: ModuleType
   values?: Data
 }
 

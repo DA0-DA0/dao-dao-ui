@@ -215,7 +215,8 @@ export class CwDao extends DaoBase {
           this,
           this.chainId,
           proposalModule.address,
-          proposalModule.prefix
+          proposalModule.prefix,
+          proposalModule.info
         )
       })
     }

@@ -41,7 +41,6 @@ import {
   findWasmAttributeValue,
   isFeatureSupportedByVersion,
   mustGetSupportedChainConfig,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -50,7 +49,6 @@ import {
   DaoProposalSingleV2Client,
 } from '../../contracts'
 import {
-  contractQueries,
   cwProposalSingleV1Queries,
   daoPreProposeApprovalSingleQueries,
   daoPreProposeSingleQueries,
@@ -198,22 +196,9 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
       return
     }
 
-    // Load contract info with version.
-    const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info({
-        chainId: this.chainId,
-        address: this.address,
-      })
-    )
-
-    this._version =
-      (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
-
-    this._contractName = info?.contract || ''
-
     await Promise.all([
       // Load pre-propose module.
-      isFeatureSupportedByVersion(Feature.PrePropose, this._version)
+      isFeatureSupportedByVersion(Feature.PrePropose, this.version)
         ? this.queryClient
             .fetchQuery(
               daoProposalSingleV2Queries.proposalCreationPolicy({
@@ -244,7 +229,7 @@ export class SingleChoiceProposalModule extends ProposalModuleBase<
             })
         : undefined,
       // Load veto config.
-      isFeatureSupportedByVersion(Feature.Veto, this._version)
+      isFeatureSupportedByVersion(Feature.Veto, this.version)
         ? this.queryClient
             .fetchQuery(
               daoProposalSingleV2Queries.config({

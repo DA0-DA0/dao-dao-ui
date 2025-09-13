@@ -147,7 +147,8 @@ export class SecretCwDao extends CwDao {
           this,
           this.chainId,
           proposalModule.address,
-          proposalModule.prefix
+          proposalModule.prefix,
+          proposalModule.info
         )
       })
     }

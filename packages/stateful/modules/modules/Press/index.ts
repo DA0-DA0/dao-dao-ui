@@ -6,6 +6,7 @@ import {
   Module,
   ModuleDisplayLocation,
   ModuleId,
+  ModuleType,
   ModuleVisibilityContext,
 } from '@dao-dao/types'
 import { mustGetSupportedChainConfig } from '@dao-dao/utils'
@@ -19,6 +20,7 @@ import { PressData } from './types'
 
 export const PressModule: Module<PressData> = {
   id: ModuleId.Press,
+  type: ModuleType.External,
   title: 'Press',
   description: "Publish posts to your DAO's press page.",
   Icon: ArticleOutlined,

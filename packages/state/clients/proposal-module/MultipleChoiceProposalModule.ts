@@ -40,7 +40,6 @@ import {
   findWasmAttributeValue,
   isFeatureSupportedByVersion,
   mustGetSupportedChainConfig,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -48,7 +47,6 @@ import {
   DaoProposalMultipleClient,
 } from '../../contracts'
 import {
-  contractQueries,
   daoPreProposeApprovalMultipleQueries,
   daoPreProposeMultipleQueries,
   daoProposalMultipleQueries,
@@ -252,22 +250,9 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
       return
     }
 
-    // Load contract info with version.
-    const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info({
-        chainId: this.chainId,
-        address: this.address,
-      })
-    )
-
-    this._version =
-      (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
-
-    this._contractName = info?.contract || ''
-
     await Promise.all([
       // Load pre-propose module.
-      isFeatureSupportedByVersion(Feature.PrePropose, this._version)
+      isFeatureSupportedByVersion(Feature.PrePropose, this.version)
         ? this.queryClient
             .fetchQuery(
               daoProposalMultipleQueries.proposalCreationPolicy({
@@ -298,7 +283,7 @@ export class MultipleChoiceProposalModule extends ProposalModuleBase<
             })
         : undefined,
       // Load veto config.
-      isFeatureSupportedByVersion(Feature.Veto, this._version)
+      isFeatureSupportedByVersion(Feature.Veto, this.version)
         ? this.queryClient
             .fetchQuery(
               daoProposalMultipleQueries.config({

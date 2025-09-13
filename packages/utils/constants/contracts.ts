@@ -9,6 +9,7 @@ export enum ContractName {
   // This contract left out the `crates.io:` prefix.
   CwTokenfactoryIssuer = 'cw-tokenfactory-issuer',
   DaoProposalSingle = 'crates.io:dao-proposal-single',
+  DaoRbam = 'crates.io:dao-rbam',
   DaoVotingCw4 = 'crates.io:dao-voting-cw4',
   DaoVotingTokenStaked = 'crates.io:dao-voting-token-staked',
   PolytoneProxy = 'crates.io:polytone-proxy',

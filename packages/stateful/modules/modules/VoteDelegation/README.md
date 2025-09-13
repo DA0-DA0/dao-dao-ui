@@ -5,10 +5,9 @@ contract](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/delegatio
 
 ## Layout
 
-| Location                   | Summary                                                 |
-| -------------------------- | ------------------------------------------------------- |
-| [actions](./actions)       | Actions to manage vote delegation.                      |
-| [components](./components) | React components used in both the actions and Renderer. |
-| [Renderer](./Renderer)     | Component and state that renders the module.            |
-| [index.ts](./index.ts)     | Module definition.                                      |
-| [types.ts](./types.ts)     | Local module type definitions.                          |
+| Location                      | Summary                                                                |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| [actions](./actions)          | Actions to manage vote delegation.                                     |
+| [editAction](./editAction.ts) | Additional action logic for editing/setting up/configuring the module. |
+| [Editor](./Editor.tsx)        | Component to edit the config.                                          |
+| [index.ts](./index.ts)        | Module definition.                                                     |

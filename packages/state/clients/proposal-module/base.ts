@@ -5,6 +5,7 @@ import {
   CheckedDepositInfo,
   Coin,
   ContractVersion,
+  ContractVersionInfo,
   Duration,
   Feature,
   IDaoBase,
@@ -18,6 +19,7 @@ import { RegistrationResponse } from '@dao-dao/types/contracts/DaoVoteDelegation
 import {
   SupportedSigningCosmWasmClient,
   isFeatureSupportedByVersion,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { daoVoteDelegationQueries } from '../../query'
@@ -55,16 +57,6 @@ export abstract class ProposalModuleBase<
   protected _initialized: boolean = false
 
   /**
-   * Contract version.
-   */
-  protected _version: ContractVersion = ContractVersion.Unknown
-
-  /**
-   * Contract name.
-   */
-  protected _contractName: string = ''
-
-  /**
    * Pre-propose module, or null if none.
    */
   protected _prePropose: PreProposeModule | null = null
@@ -94,7 +86,11 @@ export abstract class ProposalModuleBase<
     /**
      * Proposal module prefix in the DAO.
      */
-    public readonly prefix: string
+    public readonly prefix: string,
+    /**
+     * Info for the proposal module.
+     */
+    public readonly info: ContractVersionInfo
   ) {}
 
   /**
@@ -117,20 +113,14 @@ export abstract class ProposalModuleBase<
    * Contract version.
    */
   get version(): ContractVersion {
-    if (!this.initialized) {
-      throw new Error('Not initialized')
-    }
-    return this._version
+    return parseContractVersion(this.info.version)
   }
 
   /**
    * Contract name.
    */
   get contractName(): string {
-    if (!this.initialized) {
-      throw new Error('Not initialized')
-    }
-    return this._contractName
+    return this.info.contract
   }
 
   /**

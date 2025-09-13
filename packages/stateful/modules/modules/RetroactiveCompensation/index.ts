@@ -4,6 +4,7 @@ import {
   Module,
   ModuleDisplayLocation,
   ModuleId,
+  ModuleType,
   ModuleVisibilityContext,
 } from '@dao-dao/types'
 
@@ -11,6 +12,7 @@ import { Renderer } from './Renderer'
 
 export const RetroactiveCompensationModule: Module = {
   id: ModuleId.RetroactiveCompensation,
+  type: ModuleType.External,
   title: 'Retroactive Compensation',
   description:
     "Reward contributors for work they've already done. Vote on how to distribute payments in regular cycles.",

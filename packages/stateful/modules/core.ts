@@ -4,12 +4,16 @@ import {
   IDaoBase,
   Module,
   ModuleFilterOptions,
+  ModuleType,
 } from '@dao-dao/types'
 import { versionGte } from '@dao-dao/utils'
 
 import {
+  MultipleChoiceProposalModule,
   PressModule,
   RetroactiveCompensationModule,
+  RoleBasedAuthorizationModule,
+  SingleChoiceProposalModule,
   VestingPaymentsModule,
   VoteDelegationModule,
 } from './modules'
@@ -24,6 +28,9 @@ export const getModules = (options?: ModuleFilterOptions): readonly Module[] =>
     RetroactiveCompensationModule,
     VoteDelegationModule,
     PressModule,
+    SingleChoiceProposalModule,
+    MultipleChoiceProposalModule,
+    RoleBasedAuthorizationModule,
     // Add modules here.
   ].filter(
     (module) =>
@@ -90,7 +97,14 @@ export const getDaoModules = (
   })
 
   return dao.modules.flatMap((daoModule) => {
-    const existingModule = modules.find((module) => module.id === daoModule.id)
+    const existingModule = modules.find((module) =>
+      daoModule.type === ModuleType.External
+        ? module.type === ModuleType.External && module.id === daoModule.id
+        : daoModule.type === ModuleType.Proposal
+          ? module.type === ModuleType.Proposal &&
+            [module.contractName].flat().includes(daoModule.id)
+          : false
+    )
     if (!existingModule) {
       return []
     }

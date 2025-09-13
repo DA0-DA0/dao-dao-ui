@@ -7,6 +7,7 @@ import {
   Module,
   ModuleDisplayLocation,
   ModuleId,
+  ModuleType,
   ModuleVisibilityContext,
   VoteDelegationModuleData,
 } from '@dao-dao/types'
@@ -20,6 +21,7 @@ export const VoteDelegationModule: Module<
   VoteDelegationModuleExtraData
 > = {
   id: ModuleId.VoteDelegation,
+  type: ModuleType.External,
   title: 'Vote Delegation',
   description: 'Allow members to delegate their voting power within the DAO.',
   Icon: EscalatorWarningRounded,

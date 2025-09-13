@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
-import { ContractVersion } from '@dao-dao/types'
+import { ContractVersion, ModuleType } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../components'
 import { PressModule, getModules } from '../../../../modules'
@@ -35,6 +35,7 @@ Default.args = {
     existingModules: [
       {
         id: PressModule.id,
+        type: ModuleType.External,
         values: PressModule.defaultValues,
       },
     ],

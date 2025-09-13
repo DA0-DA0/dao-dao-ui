@@ -5,6 +5,7 @@ import {
   Module,
   ModuleDisplayLocation,
   ModuleId,
+  ModuleType,
   ModuleVisibilityContext,
   VestingPaymentsModuleData,
 } from '@dao-dao/types'
@@ -18,6 +19,7 @@ export const VestingPaymentsModule: Module<
   VestingPaymentsModuleExtraData
 > = {
   id: ModuleId.VestingPayments,
+  type: ModuleType.External,
   title: 'Vesting Payments',
   description:
     'Vest funds to contributors at a constant rate, similar to a salary.',

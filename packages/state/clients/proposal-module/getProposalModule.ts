@@ -55,11 +55,19 @@ export const getProposalModule = async ({
   chainId: string
   address: string
 }): Promise<IProposalModuleBase> => {
-  const ProposalModuleType = await getProposalModuleType({
-    queryClient,
-    chainId,
-    address,
-  })
+  const [{ info }, ProposalModuleType] = await Promise.all([
+    queryClient.fetchQuery(
+      contractQueries.info({
+        chainId,
+        address,
+      })
+    ),
+    getProposalModuleType({
+      queryClient,
+      chainId,
+      address,
+    }),
+  ])
 
   const daoAddress = await queryClient.fetchQuery(
     ProposalModuleType.getDaoAddressQuery({
@@ -86,7 +94,8 @@ export const getProposalModule = async ({
       address,
       // No prefix since the DAO doesn't seem to have this proposal module
       // registered.
-      ''
+      '',
+      info
     )
   )
 }

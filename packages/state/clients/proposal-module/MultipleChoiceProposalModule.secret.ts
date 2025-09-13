@@ -3,7 +3,6 @@ import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 import {
   CheckedDepositInfo,
   Coin,
-  ContractVersion,
   Duration,
   Feature,
   MultipleChoiceNewProposalData,
@@ -32,7 +31,6 @@ import {
   findWasmAttributeValue,
   isFeatureSupportedByVersion,
   mustGetSupportedChainConfig,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -40,7 +38,6 @@ import {
   SecretDaoProposalMultipleClient,
 } from '../../contracts'
 import {
-  contractQueries,
   proposalQueries,
   secretDaoPreProposeMultipleQueries,
   secretDaoProposalMultipleQueries,
@@ -151,21 +148,8 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
       return
     }
 
-    // Load contract info with version.
-    const { info } = await this.queryClient.fetchQuery(
-      contractQueries.info({
-        chainId: this.chainId,
-        address: this.address,
-      })
-    )
-
-    this._version =
-      (info && parseContractVersion(info.version)) ?? ContractVersion.Unknown
-
-    this._contractName = info?.contract || ''
-
     // Load pre-propose module.
-    if (isFeatureSupportedByVersion(Feature.PrePropose, this._version)) {
+    if (isFeatureSupportedByVersion(Feature.PrePropose, this.version)) {
       const creationPolicy = await this.queryClient
         .fetchQuery(
           secretDaoProposalMultipleQueries.proposalCreationPolicy({
@@ -194,7 +178,7 @@ export class SecretMultipleChoiceProposalModule extends ProposalModuleBase<
     }
 
     // Load veto config.
-    if (isFeatureSupportedByVersion(Feature.Veto, this._version)) {
+    if (isFeatureSupportedByVersion(Feature.Veto, this.version)) {
       this._veto =
         (
           await this.queryClient

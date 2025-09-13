@@ -15,6 +15,7 @@ import {
   IQueryClient,
   IVotingModuleBase,
   ModuleId,
+  ModuleType,
 } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,
@@ -149,23 +150,37 @@ export abstract class DaoBase implements IDaoBase {
    * DAO modules.
    */
   get modules(): readonly DaoModule[] {
-    return (
-      getFilteredDaoItemsByPrefix(this.info.items, getModuleStorageItemKey(''))
-        .map(([id, moduleJson]): DaoModule | undefined => {
-          try {
-            return {
-              id,
-              values: (moduleJson && JSON.parse(moduleJson)) || {},
-            }
-          } catch (err) {
-            // Ignore module format error but log to console for debugging.
-            console.error(`Invalid module JSON: ${moduleJson}`, err)
-            return
-          }
-        })
-        // Validate module structure.
-        .filter((module): module is DaoModule => !!module)
+    const proposalModules = this.proposalModules.map(
+      ({ contractName, address }) => ({
+        id: contractName,
+        type: ModuleType.Proposal,
+        values: {
+          address,
+        },
+      })
     )
+
+    const externalModules = getFilteredDaoItemsByPrefix(
+      this.info.items,
+      getModuleStorageItemKey('')
+    )
+      .map(([id, moduleJson]): DaoModule | undefined => {
+        try {
+          return {
+            id,
+            type: ModuleType.External,
+            values: (moduleJson && JSON.parse(moduleJson)) || {},
+          }
+        } catch (err) {
+          // Ignore module format error but log to console for debugging.
+          console.error(`Invalid module JSON: ${moduleJson}`, err)
+          return
+        }
+      })
+      // Validate module structure.
+      .filter((module): module is DaoModule => !!module)
+
+    return [...proposalModules, ...externalModules]
   }
 
   /**
