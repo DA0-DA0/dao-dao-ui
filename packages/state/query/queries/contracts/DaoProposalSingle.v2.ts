@@ -422,10 +422,6 @@ export const daoProposalSingleV2Queries = {
             ),
           }
         } catch (error) {
-          if (isErrorWithSubstring(error, 'not found')) {
-            throw error
-          }
-
           console.error(error)
         }
 
