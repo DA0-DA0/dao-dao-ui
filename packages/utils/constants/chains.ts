@@ -47,7 +47,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.CosmosHubMainnet,
         name: 'cosmos',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#5064fb',
         factoryContractAddress:
           'cosmos19jjaejvhfyqzjlgc6l2xa7w3gwwtvx4qvgad2gkw5dynxx2lmpxq9s5g3y',
@@ -170,7 +170,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.TerraMainnet,
         name: 'terra',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         overrideChainImageUrl: '/chains/terra.png',
         accentColor: '#113da5',
         factoryContractAddress:
@@ -227,7 +227,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.KujiraMainnet,
         name: 'kujira',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#e53935',
         // Permissioned, only Kujira governance can create DAOs.
         factoryContractAddress:
@@ -246,7 +246,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         name: 'thorchain',
         mainnet: true,
         noGov: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         createSubDaoViaDao: true,
         accentColor: '#00eed1',
         factoryContractAddress:
