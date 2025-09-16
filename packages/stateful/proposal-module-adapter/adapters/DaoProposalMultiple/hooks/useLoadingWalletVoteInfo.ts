@@ -91,7 +91,6 @@ export const useLoadingWalletVoteInfo = ():
 
   if (
     loadingProposal.loading ||
-    walletVoteLoading.loading ||
     walletVotingPowerWhenProposalCreatedLoading.loading ||
     totalVotingPowerWhenProposalCreatedLoading.loading ||
     unvotedDelegatedVotingPowerLoading.loading ||
@@ -104,7 +103,9 @@ export const useLoadingWalletVoteInfo = ():
 
   const proposal = loadingProposal.data
   const walletVote =
-    (!walletVoteLoading.errored && walletVoteLoading.data?.vote?.vote) ||
+    (!walletVoteLoading.loading &&
+      !walletVoteLoading.errored &&
+      walletVoteLoading.data?.vote?.vote) ||
     undefined
   const individualVotingPower =
     walletVotingPowerWhenProposalCreatedLoading.errored
@@ -120,7 +121,12 @@ export const useLoadingWalletVoteInfo = ():
       : HugeDecimal.from(totalVotingPowerWhenProposalCreatedLoading.data.power)
 
   const canVote =
-    couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)
+    couldVote &&
+    proposal.votingOpen &&
+    ((!walletVoteLoading.loading &&
+      !walletVoteLoading.errored &&
+      !walletVote) ||
+      proposal.allow_revoting)
 
   const votingPower = individualVotingPower.plus(unvotedDelegatedVotingPower)
 
@@ -130,6 +136,7 @@ export const useLoadingWalletVoteInfo = ():
 
   return {
     loading: false,
+    updating: walletVoteLoading.loading || walletVoteLoading.updating,
     data: {
       vote: walletVote,
       // If wallet could vote when this was open.
