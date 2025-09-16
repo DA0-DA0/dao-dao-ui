@@ -156,7 +156,7 @@ export class CodeIdConfig {
   /**
    * Set code ID in the indexer config.
    */
-  private async setCodeIdIndexerConfig({
+  public async setCodeIdIndexerConfig({
     chainId,
     name,
     codeId,

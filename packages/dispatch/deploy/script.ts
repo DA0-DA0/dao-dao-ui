@@ -250,6 +250,15 @@ const main = async () => {
               )
             )
 
+            // If indexer, make sure the code ID is set in the indexer config.
+            if (indexer) {
+              await codeIds.setCodeIdIndexerConfig({
+                chainId,
+                name: contract.name,
+                codeId: existingCodeId,
+              })
+            }
+
             continue
           } else {
             const latest = await codeIds.getLatestCodeId({
@@ -316,6 +325,16 @@ const main = async () => {
                 )}${existingCodeId} (already set)`
               )
             )
+
+            // If indexer, make sure the code ID is set in the indexer config.
+            if (indexer) {
+              await codeIds.setCodeIdIndexerConfig({
+                chainId,
+                name: contract.name,
+                codeId: existingCodeId,
+              })
+            }
+
             continue
           } else {
             // Otherwise, upload the contract.

@@ -547,7 +547,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.RegenTestnet,
         name: 'regen',
         mainnet: false,
-        indexer: SupportedChainIndexerMode.None,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#53b878',
         factoryContractAddress:
           'regen1cpewugrc7gx9lx9qf63ahxsslhs004zvdfuagdunfpfqzxn3fnyq5drgqn',
