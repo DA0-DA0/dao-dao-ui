@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { indexerQueries } from '@dao-dao/state/query'
+import { daoVotingCw20StakedExtraQueries } from '@dao-dao/state/query'
 import {
   MembersTab as StatelessMembersTab,
   useVotingModule,
@@ -22,19 +22,17 @@ export const MembersTab = () => {
   const { governanceToken } = useGovernanceTokenInfo()
 
   const members = useQueryLoadingDataWithError(
-    indexerQueries.queryContract({
+    daoVotingCw20StakedExtraQueries.topStakers({
       chainId: votingModule.chainId,
-      contractAddress: votingModule.address,
-      formula: 'daoVotingCw20Staked/topStakers',
-      noFallback: true,
+      address: votingModule.address,
     }),
     (data) =>
-      data?.map(
+      data.map(
         ({
           address,
           balance,
           votingPowerPercent,
-        }: any): StatefulDaoMemberCardProps => ({
+        }): StatefulDaoMemberCardProps => ({
           address,
           balanceLabel: t('title.staked'),
           balance: {
