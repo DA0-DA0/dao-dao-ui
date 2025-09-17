@@ -36,12 +36,12 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     // Invalidate indexer queries first, then invalidate the contract queries.
 
     if (isApprovalProposal && proposalModule.prePropose) {
-      queryClient.refetch(
+      queryClient.invalidate(
         proposalModule.getApprovalProposalQuery({
           proposalId: proposalNumber,
         })
       )
-      queryClient.refetch(
+      queryClient.invalidate(
         daoPreProposeApprovalSingleQueries.queryExtension({
           chainId: proposalModule.chainId,
           contractAddress: proposalModule.prePropose!.address,
@@ -55,13 +55,13 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
         })
       )
     } else {
-      queryClient.refetch(
+      queryClient.invalidate(
         proposalModule.getVoteQuery({
           proposalId: proposalNumber,
           voter: undefined,
         })
       )
-      queryClient.refetch(
+      queryClient.invalidate(
         proposalModule.getProposalQuery({
           proposalId: proposalNumber,
         })

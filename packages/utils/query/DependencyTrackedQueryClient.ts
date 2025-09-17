@@ -375,7 +375,7 @@ export class DependencyTrackedQueryClient implements IQueryClient {
 
         // Refetch in grouped dependency order.
         for (const queryHashes of dependencyTree) {
-          await Promise.all(
+          await Promise.allSettled(
             queryHashes.map((queryHash) =>
               this.queryClient.refetchQueries(
                 { predicate: (query) => query.queryHash === queryHash },
@@ -394,7 +394,7 @@ export class DependencyTrackedQueryClient implements IQueryClient {
 
           // Refetch the consumers of the query bottom up.
           for (const queryHashes of consumerTree) {
-            await Promise.all(
+            await Promise.allSettled(
               queryHashes.map((queryHash) =>
                 this.queryClient.refetchQueries(
                   {
@@ -448,7 +448,7 @@ export class DependencyTrackedQueryClient implements IQueryClient {
 
         // Invalidate in grouped dependency order.
         for (const queryHashes of dependencyTree) {
-          await Promise.all(
+          await Promise.allSettled(
             queryHashes.map((queryHash) =>
               this.queryClient.invalidateQueries(
                 { predicate: (query) => query.queryHash === queryHash },
@@ -467,7 +467,7 @@ export class DependencyTrackedQueryClient implements IQueryClient {
 
           // Invalidate the consumers of the query bottom up.
           for (const queryHashes of consumerTree) {
-            await Promise.all(
+            await Promise.allSettled(
               queryHashes.map((queryHash) =>
                 this.queryClient.invalidateQueries(
                   { predicate: (query) => query.queryHash === queryHash },
@@ -524,15 +524,15 @@ export class DependencyTrackedQueryClient implements IQueryClient {
    * @returns The query key or value with undefined values removed recursively.
    */
   private removeUndefinedFromQueryKey = (value: unknown): unknown =>
-    typeof value === 'object' && value !== null
-      ? Object.fromEntries(
-          Object.entries(value).flatMap(([k, v]) =>
-            v === undefined ? [] : [[k, this.removeUndefinedFromQueryKey(v)]]
-          )
+    value && Array.isArray(value)
+      ? value.map((v) =>
+          v === undefined ? null : this.removeUndefinedFromQueryKey(v)
         )
-      : Array.isArray(value)
-        ? value.flatMap((v) =>
-            v === undefined ? [] : [this.removeUndefinedFromQueryKey(v)]
+      : typeof value === 'object' && value !== null
+        ? Object.fromEntries(
+            Object.entries(value).flatMap(([k, v]) =>
+              v === undefined ? [] : [[k, this.removeUndefinedFromQueryKey(v)]]
+            )
           )
         : value
 
