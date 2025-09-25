@@ -29,6 +29,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'Neutron',
+    imageUrl: '/apps/neutron.png',
+    url: 'https://app.neutron.org',
+    chainIdFilter: {
+      exclude: [ChainId.ThorchainMainnet],
+    },
+  },
+  {
     name: 'Astroport',
     imageUrl: 'https://app.astroport.fi/thumbnail.jpg',
     url: 'https://app.astroport.fi/swap',

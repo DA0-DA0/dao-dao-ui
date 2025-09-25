@@ -2066,10 +2066,10 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.108.tgz#6980e9b169bb75d644a99587bb31f7654cbf49e8"
   integrity sha512-FRSQZI6e1tVJ6OvEI2HFTa0RcrJjGATEJ0EBr3asPFEln4Yjpj67vjI9MjhOZwhf1HI2DYfjqUTWeZrvqLu8+g==
 
-"@chain-registry/types@^0.50.185":
-  version "0.50.185"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.185.tgz#b1e2b63aaf6b3787303d2dfc1e0590fc370159ea"
-  integrity sha512-kgih8xqbYSmuVbfKHm/ryUck7c5NFNqnHv5bWHGNwWem46Kw9Akp5BTFULC4GneYmZlbu1fPy+/jGD5mXxbyYA==
+"@chain-registry/types@^0.50.217":
+  version "0.50.217"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.217.tgz#b50d8a729dfca86be5295664c22fd946e53b78a8"
+  integrity sha512-kC/E/JFZq5fabtDJueWo+VE95/KIBdi8X/c0dJlEFA6V+YkixC21NP3OyhtfYZXq5i+rmqT3C8cT/5we9l/OkQ==
 
 "@chain-registry/utils@^1.17.0", "@chain-registry/utils@^1.47.11", "@chain-registry/utils@^1.51.108":
   version "1.51.108"
@@ -12692,12 +12692,12 @@ chai@^5.1.2, chai@^5.2.0:
     loupe "^3.1.0"
     pathval "^2.0.0"
 
-chain-registry@^1.69.294:
-  version "1.69.294"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.69.294.tgz#e1fc06824ddbd45bbdfcbf74ca47d356a235964e"
-  integrity sha512-CAzgjWJzSGQNgLWxE7iZyHDklkM6a1vb4rAQxL1C6KGBeB/M0K4cdJRTv1ssiS80Q1aRSMJ9ytHStE95GCyLhg==
+chain-registry@^1.69.349:
+  version "1.69.349"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.69.349.tgz#74878f22301e174cb88ee55a8debe9e7bd8cf128"
+  integrity sha512-/uZTv+D6GyqbOi5pyMZIbGL/Gdrmz8xTrkm9L9TwyTcf9xFNOTHRaLMYmEDMa5SBfNba6drVzgDkH8y74hNUDw==
   dependencies:
-    "@chain-registry/types" "^0.50.185"
+    "@chain-registry/types" "^0.50.217"
 
 chalk@3.0.0:
   version "3.0.0"

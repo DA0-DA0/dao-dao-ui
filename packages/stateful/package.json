@@ -75,7 +75,7 @@
     "wagmi": "^2.14.7"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.50.185",
+    "@chain-registry/types": "^0.50.217",
     "@cosmjs/amino": "0.33.1",
     "@dao-dao/config": "2.7.1-rc.5",
     "@dao-dao/cosmiframe": "0.1.0",
