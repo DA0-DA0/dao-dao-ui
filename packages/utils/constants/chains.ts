@@ -109,7 +109,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.NeutronMainnet,
         name: 'neutron',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#000000',
         factoryContractAddress:
           'neutron1asszs9mjglv2rzpeu8fzlsa0cy55th0jkv27hsw3ulddt7f74gpsrqhatg',
