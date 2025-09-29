@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { TokenStakedVotingModule } from '@dao-dao/state/clients'
-import { indexerQueries } from '@dao-dao/state/query'
+import { NativeStakedVotingModule } from '@dao-dao/state/clients'
+import { daoVotingTokenStakedExtraQueries } from '@dao-dao/state/query'
 import {
   MembersTab as StatelessMembersTab,
   useVotingModule,
@@ -23,14 +23,10 @@ export const MembersTab = () => {
   const { governanceToken } = useGovernanceTokenInfo()
 
   const members = useQueryLoadingDataWithError(
-    indexerQueries.queryContract({
+    daoVotingTokenStakedExtraQueries.topStakers({
       chainId: votingModule.chainId,
-      contractAddress: votingModule.address,
-      formula:
-        votingModule instanceof TokenStakedVotingModule
-          ? 'daoVotingTokenStaked/topStakers'
-          : 'daoVotingNativeStaked/topStakers',
-      noFallback: true,
+      address: votingModule.address,
+      legacyNativeStaked: votingModule instanceof NativeStakedVotingModule,
     }),
     (data) =>
       data?.map(
