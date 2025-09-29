@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { indexerQueries } from '@dao-dao/state'
-import { TokenStakedVotingModule } from '@dao-dao/state/clients'
+import { daoVotingTokenStakedExtraQueries } from '@dao-dao/state'
+import { NativeStakedVotingModule } from '@dao-dao/state/clients'
 import { TokenAmountDisplay, useVotingModule } from '@dao-dao/stateless'
 import { DaoInfoCard } from '@dao-dao/types'
 import {
@@ -31,14 +31,10 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
   } = useGovernanceTokenInfo()
 
   const loadingMembers = useQueryLoadingDataWithError(
-    indexerQueries.queryContract({
+    daoVotingTokenStakedExtraQueries.topStakers({
       chainId: votingModule.chainId,
-      contractAddress: votingModule.address,
-      formula:
-        votingModule instanceof TokenStakedVotingModule
-          ? 'daoVotingTokenStaked/topStakers'
-          : 'daoVotingNativeStaked/topStakers',
-      noFallback: true,
+      address: votingModule.address,
+      legacyNativeStaked: votingModule instanceof NativeStakedVotingModule,
     })
   )
 

@@ -53,61 +53,6 @@ export const fetchOraichainProxySnapshotConfig = async (
   })
 }
 
-/**
- * Fetch cw20-stake top stakers.
- */
-export const fetchCw20StakeTopStakers = async (
-  queryClient: QueryClient,
-  {
-    chainId,
-    address,
-    limit,
-  }: {
-    chainId: string
-    address: string
-    limit?: number
-  }
-): Promise<
-  {
-    address: string
-    balance: string
-  }[]
-> => {
-  // If Oraichain proxy, get staking token and pass to indexer query.
-  let oraichainStakingToken: string | undefined
-  const isOraichainProxy = await queryClient.fetchQuery(
-    cw20StakeExtraQueries.isOraichainProxySnapshotContract({
-      chainId,
-      address,
-    })
-  )
-  if (isOraichainProxy) {
-    oraichainStakingToken = (
-      await queryClient.fetchQuery(
-        cw20StakeExtraQueries.oraichainProxySnapshotConfig({
-          chainId,
-          address,
-        })
-      )
-    ).asset_key
-  }
-
-  return (
-    (await queryClient.fetchQuery(
-      indexerQueries.queryContract({
-        chainId,
-        contractAddress: address,
-        formula: 'cw20Stake/topStakers',
-        args: {
-          ...(limit && { args: { limit } }),
-          oraichainStakingToken,
-        },
-        noFallback: true,
-      })
-    )) || []
-  )
-}
-
 export const cw20StakeExtraQueries = {
   /**
    * The Oraichain cw20-staking-proxy-snapshot contract is used as the staking
@@ -131,13 +76,5 @@ export const cw20StakeExtraQueries = {
     queryOptions({
       queryKey: ['cw20StakeExtra', 'oraichainProxySnapshotConfig', options],
       queryFn: (ctx) => fetchOraichainProxySnapshotConfig(ctx.client, options),
-    }),
-  /**
-   * Fetch cw20-stake top stakers.
-   */
-  topStakers: (options: Parameters<typeof fetchCw20StakeTopStakers>[1]) =>
-    queryOptions({
-      queryKey: ['cw20StakeExtra', 'topStakers', options],
-      queryFn: (ctx) => fetchCw20StakeTopStakers(ctx.client, options),
     }),
 }
