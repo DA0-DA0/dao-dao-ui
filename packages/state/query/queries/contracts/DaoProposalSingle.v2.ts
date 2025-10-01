@@ -17,10 +17,7 @@ import {
   VoteListResponse,
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import {
-  getCosmWasmClientForChainId,
-  isErrorWithSubstring,
-} from '@dao-dao/utils'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../../../contracts/DaoProposalSingle.v2'
 import { contractQueries } from '../contract'
@@ -299,10 +296,6 @@ export const daoProposalSingleV2Queries = {
             })
           )
         } catch (error) {
-          if (isErrorWithSubstring(error, 'not found')) {
-            throw error
-          }
-
           console.error(error)
         }
 
