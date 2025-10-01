@@ -282,7 +282,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OmniflixHubMainnet,
         name: 'omniflixhub',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#d71d6a',
         factoryContractAddress:
           'omniflix1rg5jtk5984e3um65l92pagexxj9z6xrkkaw2lrrkhfeyq4376rlsf6j04f',
