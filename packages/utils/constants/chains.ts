@@ -90,7 +90,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OsmosisMainnet,
         name: 'osmosis',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#5604e8',
         factoryContractAddress:
           'osmo1qpszqk458arkkdff5z4vrqlqv4k2n9a0tjme23vn00uyt30nrr7sfe87cv',
