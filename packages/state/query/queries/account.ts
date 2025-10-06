@@ -4,6 +4,7 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 import {
   Account,
   AccountType,
+  ChainId,
   CryptographicMultisigAccount,
   Cw1WhitelistAccount,
   Cw3MultisigAccount,
@@ -184,13 +185,16 @@ export const fetchAccountList = async (
     }
   })
 
-  // Get valence accounts controlled by all non-valence accounts.
+  // Get valence accounts controlled by all non-valence Neutron accounts.
   const valenceAccounts = (
     await p.time(
       'valence_accounts',
       Promise.allSettled(
         allAccounts
-          .filter(({ type }) => type !== AccountType.Valence)
+          .filter(
+            ({ type, chainId }) =>
+              chainId === ChainId.NeutronMainnet && type !== AccountType.Valence
+          )
           .map(({ chainId, address }) =>
             p.time(
               `valence_account_${address}`,
