@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { Addr, WithChainId } from '@dao-dao/types'
+import { Addr, SupportedChainIndexerMode, WithChainId } from '@dao-dao/types'
 import {
   Config,
   HooksResponse,
@@ -110,6 +110,10 @@ export const proposalSelector = selectorFamily<
             id: params[0].proposalId,
           },
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (proposalResponse) {

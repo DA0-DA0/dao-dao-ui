@@ -6,6 +6,7 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
+import { SupportedChainIndexerMode } from '@dao-dao/types'
 import {
   ConfigResponse,
   InfoResponse,
@@ -210,6 +211,10 @@ export const cwProposalSingleV1Queries = {
               contractAddress,
               formula: 'daoProposalSingle/proposal',
               args: { id: args.proposalId },
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
         } catch (error) {

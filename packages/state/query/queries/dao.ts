@@ -17,6 +17,7 @@ import {
   InfoResponse,
   LazyDaoCardProps,
   StatefulProposalLineProps,
+  SupportedChainIndexerMode,
 } from '@dao-dao/types'
 import {
   ProposalModuleWithInfo,
@@ -779,6 +780,10 @@ export const fetchProposalModules = async (
         contractAddress: coreAddress,
         formula: 'daoCore/activeProposalModules',
         ttl: 1,
+        allowedModes: [
+          SupportedChainIndexerMode.Tx,
+          SupportedChainIndexerMode.All,
+        ],
       })
     )
   } catch (err) {

@@ -6,7 +6,7 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
-import { IndexerDumpState } from '@dao-dao/types'
+import { IndexerDumpState, SupportedChainIndexerMode } from '@dao-dao/types'
 import {
   Addr,
   AdminNominationResponse,
@@ -473,6 +473,10 @@ export const daoDaoCoreQueries = {
               chainId,
               contractAddress,
               formula: 'daoCore/dumpState',
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
           if (state) {
@@ -567,6 +571,10 @@ export const daoDaoCoreQueries = {
               contractAddress,
               formula: 'daoCore/listItems',
               ttl: 1,
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
           if (indexerItems) {

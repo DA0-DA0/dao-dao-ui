@@ -3,7 +3,11 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { BlockHeader } from '@cosmjs/stargate'
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
-import { ContractSummary, InfoResponse } from '@dao-dao/types'
+import {
+  ContractSummary,
+  InfoResponse,
+  SupportedChainIndexerMode,
+} from '@dao-dao/types'
 import {
   ArrayOfVestingContract,
   VestingContract,
@@ -50,6 +54,10 @@ export const fetchContractInfo = async (
           contractAddress: address,
           formula: 'info',
           ttl: 60,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       ),
     }
@@ -302,6 +310,10 @@ export const fetchContractInstantiationTime = async (
           // This never changes, and the fallback is unreliable, so attempt to
           // query even if the indexer is behind.
           noFallback: true,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
     ).getTime()

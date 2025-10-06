@@ -6,6 +6,7 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query'
 
+import { SupportedChainIndexerMode } from '@dao-dao/types'
 import {
   Addr,
   Config,
@@ -294,6 +295,10 @@ export const daoProposalMultipleQueries = {
               // Throw on server so if the indexer is behind but the proposal
               // exists, we make sure to fallback to the contract query.
               throwOnServer: true,
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
         } catch (error) {
