@@ -20,7 +20,7 @@
     "starship:get-pods": "npm run starship -- get-pods"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.50.217",
+    "@chain-registry/types": "^0.50.224",
     "@dao-dao/config": "2.7.1-rc.5",
     "@dao-dao/dispatch": "2.7.1-rc.5",
     "@dao-dao/types": "2.7.1-rc.5",
