@@ -40,7 +40,7 @@ import {
   Cw20BaseSelectors,
   Cw20StakeSelectors,
   DaoDaoCoreSelectors,
-  DaoVotingNativeStakedSelectors,
+  DaoVotingTokenStakedSelectors,
 } from './contracts'
 import { queryGenericIndexerSelector, querySnapperSelector } from './indexer'
 import { skipAssetSelector } from './skip'
@@ -772,7 +772,7 @@ export const tokenDaosWithStakedBalanceSelector = selectorFamily<
                     },
                   ],
                 })
-              : DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
+              : DaoVotingTokenStakedSelectors.votingPowerAtHeightSelector({
                   contractAddress: stakingContractAddress,
                   chainId,
                   params: [

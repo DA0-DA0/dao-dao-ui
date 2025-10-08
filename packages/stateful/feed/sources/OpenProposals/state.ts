@@ -13,6 +13,7 @@ import {
   FeedSourceItem,
   IQueryClient,
   ProfileChain,
+  SupportedChainIndexerMode,
 } from '@dao-dao/types'
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
@@ -95,6 +96,10 @@ export const fetchFeedOpenProposals = async (
                   formula: 'daoCore/openProposals',
                   args: { address: profileAddress },
                   noFallback: true,
+                  allowedModes: [
+                    SupportedChainIndexerMode.Tx,
+                    SupportedChainIndexerMode.All,
+                  ],
                 })
               )
             )?.map(async ({ proposalModuleAddress, proposals }) => ({

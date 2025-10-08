@@ -1,10 +1,5 @@
-import { DaoDaoCoreSelectors } from '@dao-dao/state'
-import {
-  ActionBase,
-  WrenchEmoji,
-  useActionOptions,
-  useCachedLoadingWithError,
-} from '@dao-dao/stateless'
+import { daoDaoCoreQueries } from '@dao-dao/state'
+import { ActionBase, WrenchEmoji, useActionOptions } from '@dao-dao/stateless'
 import { Feature, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -19,6 +14,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import {
   ManageStorageItemsData,
   ManageStorageItemsComponent as StatelessManageStorageItemsComponent,
@@ -32,8 +28,8 @@ const Component: ActionComponent<undefined, ManageStorageItemsData> = (
     chain: { chainId },
   } = useActionOptions()
 
-  const existingItems = useCachedLoadingWithError(
-    DaoDaoCoreSelectors.listAllItemsSelector({
+  const existingItems = useQueryLoadingDataWithError(
+    daoDaoCoreQueries.listAllItems({
       contractAddress: address,
       chainId,
     })

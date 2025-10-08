@@ -253,6 +253,10 @@ export const cwProposalSingleV1Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/listProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -293,6 +297,10 @@ export const cwProposalSingleV1Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/reverseProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -370,6 +378,10 @@ export const cwProposalSingleV1Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/vote',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }

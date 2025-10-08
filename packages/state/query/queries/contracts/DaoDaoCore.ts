@@ -651,6 +651,10 @@ export const daoDaoCoreQueries = {
               formula: 'daoCore/proposalModules',
               args,
               ttl: 1,
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
         } catch (error) {
@@ -690,6 +694,10 @@ export const daoDaoCoreQueries = {
               formula: 'daoCore/activeProposalModules',
               args,
               ttl: 1,
+              allowedModes: [
+                SupportedChainIndexerMode.Tx,
+                SupportedChainIndexerMode.All,
+              ],
             })
           )
         } catch (error) {

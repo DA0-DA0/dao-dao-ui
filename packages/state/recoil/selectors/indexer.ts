@@ -289,6 +289,10 @@ export const openProposalsSelector = selectorFamily<
           id,
           args: { address },
           noFallback: true,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       return openProposals ?? []

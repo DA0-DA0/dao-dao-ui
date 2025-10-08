@@ -337,6 +337,10 @@ export const daoProposalMultipleQueries = {
                 contractAddress,
                 formula: 'daoProposalMultiple/listProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -377,6 +381,10 @@ export const daoProposalMultipleQueries = {
                 contractAddress,
                 formula: 'daoProposalMultiple/reverseProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -417,6 +425,10 @@ export const daoProposalMultipleQueries = {
                 contractAddress,
                 formula: 'daoProposalMultiple/vote',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }

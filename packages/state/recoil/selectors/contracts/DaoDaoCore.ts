@@ -12,7 +12,6 @@ import {
   ChainId,
   GenericTokenBalance,
   GenericTokenBalanceWithOwner,
-  IndexerDumpState,
   PolytoneProxies,
   TokenType,
   WithChainId,
@@ -20,20 +19,11 @@ import {
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   Addr,
-  AdminNominationResponse,
   ArrayOfAddr,
-  ArrayOfProposalModule,
-  ArrayOfSubDao,
   Config,
   Cw20BalanceResponse,
   Cw20BalancesResponse,
-  DaoURIResponse,
-  DumpStateResponse,
-  GetItemResponse,
   ListItemsResponse,
-  PauseInfoResponse,
-  TotalPowerAtHeightResponse,
-  VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   CW20_ITEM_KEY_PREFIX,
@@ -57,7 +47,6 @@ import {
 import { daoQueries } from '../../../query'
 import {
   queryClientAtom,
-  refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
@@ -108,58 +97,6 @@ export const executeClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export const adminSelector = selectorFamily<
-  Addr,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['admin']>
-  }
->({
-  key: 'daoDaoCoreAdmin',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const admin = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/admin',
-        })
-      )
-      // Null when indexer fails. Undefined if no admin.
-      if (admin !== null) {
-        return admin || null
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.admin(...params)
-    },
-})
-export const adminNominationSelector = selectorFamily<
-  AdminNominationResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['adminNomination']>
-  }
->({
-  key: 'daoDaoCoreAdminNomination',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const nomination = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/adminNomination',
-        })
-      )
-      // Null when indexer fails. Undefined if no nomination.
-      if (nomination !== null) {
-        return { nomination: nomination || null }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.adminNomination(...params)
-    },
-})
 export const configSelector = selectorFamily<
   Config,
   QueryClientParams & {
@@ -235,66 +172,6 @@ export const _cw721TokenListSelector = selectorFamily<
       return await client.cw721TokenList(...params)
     },
 })
-// Reduced to only the necessary subset which can be provided by both the
-// indexer and chain.
-export const dumpStateSelector = selectorFamily<
-  DumpStateResponse | IndexerDumpState | undefined,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['dumpState']>
-  }
->({
-  key: 'daoDaoCoreDumpState',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const state = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/dumpState',
-        })
-      )
-      if (state) {
-        return state
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      try {
-        return await client.dumpState(...params)
-      } catch (err) {
-        // Ignore errors. An undefined response is sometimes used to indicate
-        // that this contract is not a DAO.
-        console.error(err)
-      }
-    },
-})
-export const getItemSelector = selectorFamily<
-  GetItemResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['getItem']>
-  }
->({
-  key: 'daoDaoCoreGetItem',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const item = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/item',
-          args: params[0],
-        })
-      )
-      // Null when indexer fails. Undefined if no item.
-      if (item !== null) {
-        return { item: item || null }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.getItem(...params)
-    },
-})
 // Use listAllItemsSelector as it uses the indexer and implements pagination for
 // chain queries.
 export const _listItemsSelector = selectorFamily<
@@ -309,81 +186,6 @@ export const _listItemsSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       return await client.listItems(...params)
-    },
-})
-export const proposalModulesSelector = selectorFamily<
-  ArrayOfProposalModule,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['proposalModules']>
-  }
->({
-  key: 'daoDaoCoreProposalModules',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const proposalModules = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/proposalModules',
-        })
-      )
-      if (proposalModules) {
-        return proposalModules
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.proposalModules(...params)
-    },
-})
-export const activeProposalModulesSelector = selectorFamily<
-  ArrayOfProposalModule,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['activeProposalModules']>
-  }
->({
-  key: 'daoDaoCoreActiveProposalModules',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const activeProposalModules = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/activeProposalModules',
-        })
-      )
-      if (activeProposalModules) {
-        return activeProposalModules
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.activeProposalModules(...params)
-    },
-})
-export const pauseInfoSelector = selectorFamily<
-  PauseInfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['pauseInfo']>
-  }
->({
-  key: 'daoDaoCorePauseInfo',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const paused = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/pauseInfo',
-        })
-      )
-      if (paused) {
-        return paused
-      }
-
-      // If indexer fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.pauseInfo(...params)
     },
 })
 export const votingModuleSelector = selectorFamily<
@@ -409,111 +211,6 @@ export const votingModuleSelector = selectorFamily<
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.votingModule(...params)
-    },
-})
-export const listSubDaosSelector = selectorFamily<
-  ArrayOfSubDao,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['listSubDaos']>
-  }
->({
-  key: 'daoDaoCoreListSubDaos',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-      return await client.listSubDaos(...params)
-    },
-})
-export const daoURISelector = selectorFamily<
-  DaoURIResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['daoURI']>
-  }
->({
-  key: 'daoDaoCoreDaoURI',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const daoUri = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/daoUri',
-        })
-      )
-      // Null when indexer fails. Undefined if no URI.
-      if (daoUri !== null) {
-        return daoUri || null
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.daoURI(...params)
-    },
-})
-export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['votingPowerAtHeight']>
-  }
->({
-  key: 'daoDaoCoreVotingPowerAtHeight',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const id = get(
-        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
-      )
-
-      const votingPowerAtHeight = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/votingPowerAtHeight',
-          args: {
-            address: params[0].address,
-          },
-          block: params[0].height ? { height: params[0].height } : undefined,
-          id,
-        })
-      )
-      if (votingPowerAtHeight) {
-        return votingPowerAtHeight
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.votingPowerAtHeight(...params)
-    },
-})
-export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse,
-  QueryClientParams & {
-    params: Parameters<DaoDaoCoreQueryClient['totalPowerAtHeight']>
-  }
->({
-  key: 'daoDaoCoreTotalPowerAtHeight',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const id = get(
-        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
-      )
-
-      const totalPowerAtHeight = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoCore/totalPowerAtHeight',
-          block: params[0].height ? { height: params[0].height } : undefined,
-          id,
-        })
-      )
-      if (totalPowerAtHeight) {
-        return totalPowerAtHeight
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.totalPowerAtHeight(...params)
     },
 })
 

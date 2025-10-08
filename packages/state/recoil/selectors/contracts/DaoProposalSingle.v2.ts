@@ -146,6 +146,10 @@ export const listProposalsSelector = selectorFamily<
           formula: 'daoProposalSingle/listProposals',
           args: params[0],
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (proposals) {
@@ -175,6 +179,10 @@ export const reverseProposalsSelector = selectorFamily<
           formula: 'daoProposalSingle/reverseProposals',
           args: params[0],
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (proposals) {
@@ -234,6 +242,10 @@ export const getVoteSelector = selectorFamily<
           formula: 'daoProposalSingle/vote',
           args: params[0],
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       // Null when indexer fails. Undefined when no vote exists.

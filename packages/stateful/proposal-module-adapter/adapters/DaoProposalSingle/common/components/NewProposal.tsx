@@ -6,13 +6,12 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { DaoDaoCoreSelectors } from '@dao-dao/state'
+import { daoDaoCoreQueries } from '@dao-dao/state'
 import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
   useActionsContext,
-  useCachedLoadable,
   useDao,
   useProcessTQ,
 } from '@dao-dao/stateless'
@@ -33,7 +32,11 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionEncodeContext } from '../../../../../actions'
-import { useMembership, useWallet } from '../../../../../hooks'
+import {
+  useMembership,
+  useQueryLoadingDataWithError,
+  useWallet,
+} from '../../../../../hooks'
 import { makeGetProposalInfo } from '../../functions'
 import { UsePublishProposal } from '../../types'
 import { NewProposalMain } from './NewProposalMain'
@@ -66,19 +69,18 @@ export const NewProposal = ({
 
   const { isMember = false, loading: membershipLoading } = useMembership()
 
-  // Info about if the DAO is paused. This selector depends on blockHeight,
-  // which is refreshed periodically, so use a loadable to avoid unnecessary
-  // re-renders.
-  const pauseInfo = useCachedLoadable(
-    DaoDaoCoreSelectors.pauseInfoSelector({
+  // Info about if the DAO is paused. This depends on blockHeight, which is
+  // refreshed periodically, so use a loadable to avoid unnecessary re-renders.
+  const pauseInfo = useQueryLoadingDataWithError(
+    daoDaoCoreQueries.pauseInfo({
       chainId: proposalModule.chainId,
       contractAddress: coreAddress,
-      params: [],
     })
   )
   const isPaused =
-    pauseInfo.state === 'hasValue' &&
-    ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
+    !pauseInfo.loading &&
+    !pauseInfo.errored &&
+    ('paused' in pauseInfo.data || 'Paused' in pauseInfo.data)
 
   const processTQ = useProcessTQ()
 

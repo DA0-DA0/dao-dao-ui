@@ -336,6 +336,10 @@ export const daoProposalSingleV2Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/listProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -376,6 +380,10 @@ export const daoProposalSingleV2Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/reverseProposals',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
@@ -416,6 +424,10 @@ export const daoProposalSingleV2Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/vote',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
