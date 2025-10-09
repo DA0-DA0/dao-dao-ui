@@ -483,11 +483,11 @@ export const useTxRelayState = ({
     return () => clearInterval(interval)
   }, [anyPending, refreshIbcData])
 
-  const executedOverOneMinuteAgo =
-    (context.type === 'proposal' || context.type === 'dao_initial_actions') &&
-    !!context.executedAt &&
-    // If executed over 1 minute ago...
-    Date.now() - context.executedAt.getTime() > 1 * 60 * 1000
+  // const executedOverOneMinuteAgo =
+  //   executed &&
+  //   !!context.executedAt &&
+  //   // If executed over 1 minute ago...
+  //   Date.now() - context.executedAt.getTime() > 1 * 60 * 1000
   const messagesNeedingSelfRelay =
     unreceivedPackets.loading ||
     unreceivedAcks.loading ||
@@ -501,11 +501,13 @@ export const useTxRelayState = ({
             packet.data.chainId !== ChainId.InjectiveMainnet &&
             // Not yet relayed.
             states.pending.some((p) => p.packet === packet) &&
-            // Executed a few minutes ago and still has not been relayed, or the
-            // Polytone connection needs self-relay.
-            (executedOverOneMinuteAgo ||
-              (packet.type === 'polytone' &&
-                !!packet.data.polytoneConnection.needsSelfRelay))
+            // Executed.
+            executed
+          // Executed a few minutes ago and still has not been relayed, or the
+          // Polytone connection needs self-relay.
+          // (executed ||
+          //   (packet.type === 'polytone' &&
+          //     !!packet.data.polytoneConnection.needsSelfRelay))
         )
   const hasCrossChainMessagesNeedingSelfRelay =
     !!messagesNeedingSelfRelay?.length
