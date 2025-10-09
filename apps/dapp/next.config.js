@@ -42,6 +42,7 @@ const config = {
     return config
   },
   i18n,
+  staticPageGenerationTimeout: 300,
   /*
     The reactStrictMode flag is set to false
     to allow for the proposal JSON editor to show.
