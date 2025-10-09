@@ -4,7 +4,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { daoQueries, miscQueries } from '@dao-dao/state'
+import { miscQueries } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
 import { AccountTabId } from '@dao-dao/types'
 import {
@@ -12,7 +12,6 @@ import {
   getDaoInfoForChainId,
   getSupportedChains,
   makeDependencyTrackedQueryClient,
-  retry,
 } from '@dao-dao/utils'
 
 export default Home
@@ -58,16 +57,6 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
       miscQueries.homePageStats({
         chainId,
       })
-    ),
-
-    // Pre-fetch featured DAOs.
-    retry(3, () => queryClient.fetchQuery(daoQueries.listFeatured())).then(
-      (featured) =>
-        Promise.all(
-          featured?.map((dao) =>
-            retry(5, () => queryClient.fetchQuery(daoQueries.info(dao)))
-          ) || []
-        )
     ),
   ])
 
