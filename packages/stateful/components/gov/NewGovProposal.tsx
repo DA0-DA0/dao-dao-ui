@@ -79,6 +79,7 @@ import {
   getNullWalletForChain,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
+  isErrorWithSubstring,
   makeEmptyUnifiedProfile,
   objectMatchesStructure,
   processError,
@@ -405,10 +406,9 @@ const InnerNewGovProposal = ({
         return
       }
 
-      setLoading(true)
-      try {
+      const doSubmit = async (direct: boolean) => {
         const signingClient = await getSigningClient(
-          holdingAltForDirectSign ? 'direct' : 'amino'
+          direct ? 'direct' : 'amino'
         )
 
         const { events } = await signingClient.signAndBroadcast(
@@ -416,6 +416,30 @@ const InnerNewGovProposal = ({
           [encodeObject],
           CHAIN_GAS_MULTIPLIER
         )
+
+        return events
+      }
+
+      setLoading(true)
+      try {
+        let events
+        try {
+          events = await doSubmit(holdingAltForDirectSign)
+        } catch (err) {
+          // If signature verification failed with amino, try direct sign.
+          if (
+            !holdingAltForDirectSign &&
+            isErrorWithSubstring(err, 'signature verification failed')
+          ) {
+            console.log(
+              'Signature verification failed with amino, trying direct sign...'
+            )
+            events = await doSubmit(true)
+          } else {
+            // Otherwise, throw the original error.
+            throw err
+          }
+        }
 
         const proposalId = Number(
           events

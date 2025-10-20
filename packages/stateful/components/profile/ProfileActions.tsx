@@ -23,6 +23,7 @@ import {
 import {
   CHAIN_GAS_MULTIPLIER,
   decodeJsonFromBase64,
+  isErrorWithSubstring,
   objectMatchesStructure,
   processError,
 } from '@dao-dao/utils'
@@ -114,9 +115,9 @@ export const ProfileActions = ({
       setError('')
       setTxHash('')
 
-      try {
+      const doExecute = async (direct: boolean) => {
         const signingCosmWasmClient = await getSigningClient(
-          holdingAltForDirectSign ? 'direct' : 'amino'
+          direct ? 'direct' : 'amino'
         )
 
         const encodeObjects = data.map((msg) =>
@@ -130,6 +131,26 @@ export const ProfileActions = ({
 
         toast.success(t('success.transactionExecuted'))
         setTxHash(tx.transactionHash)
+      }
+
+      try {
+        try {
+          await doExecute(holdingAltForDirectSign)
+        } catch (err) {
+          // If signature verification failed with amino, try direct sign.
+          if (
+            !holdingAltForDirectSign &&
+            isErrorWithSubstring(err, 'signature verification failed')
+          ) {
+            console.log(
+              'Signature verification failed with amino, trying direct sign...'
+            )
+            await doExecute(true)
+          } else {
+            // Otherwise, throw the original error.
+            throw err
+          }
+        }
       } catch (err) {
         console.error(err)
         const error = processError(err)
