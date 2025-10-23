@@ -10,7 +10,7 @@ import PlausibleProvider from 'next-plausible'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
@@ -192,4 +192,5 @@ const Sda = (props: AppProps<DaoPageWrapperProps>) => {
   )
 }
 
-export default appWithTranslation(Sda)
+const App: FC<AppProps> = appWithTranslation(Sda)
+export default App
