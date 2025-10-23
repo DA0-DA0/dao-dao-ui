@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "lerna": "^6.4.1",
-    "turbo": "latest",
-    "turbo-ignore": "latest",
+    "turbo": "^2.5.8",
+    "turbo-ignore": "^2.5.8",
     "vitest": "^3.1.1"
   },
   "engines": {

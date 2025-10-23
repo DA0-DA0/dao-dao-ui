@@ -29,10 +29,10 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(encoding@0.1.13)
       turbo:
-        specifier: latest
+        specifier: ^2.5.8
         version: 2.5.8
       turbo-ignore:
-        specifier: latest
+        specifier: ^2.5.8
         version: 2.5.8
       vitest:
         specifier: ^3.1.1
@@ -81,7 +81,7 @@ importers:
         version: 5.10.3(@mui/material@5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@17.0.47)(react@18.2.0)
       '@sentry/nextjs':
         specifier: ^7.80.0
-        version: 7.80.0(encoding@0.1.13)(next@13.5.11(@babel/core@7.23.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
+        version: 7.80.0(encoding@0.1.13)(next@13.5.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
       '@tanstack/react-query':
         specifier: 5.83.1
         version: 5.83.1(react@18.2.0)
@@ -223,7 +223,7 @@ importers:
         version: 5.10.3(@mui/material@5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@17.0.47)(react@18.2.0)
       '@sentry/nextjs':
         specifier: ^7.80.0
-        version: 7.80.0(encoding@0.1.13)(next@13.5.11(@babel/core@7.23.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
+        version: 7.80.0(encoding@0.1.13)(next@13.5.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
       '@types/formidable':
         specifier: ^2.0.5
         version: 2.0.5
@@ -1371,7 +1371,7 @@ importers:
         version: link:../types
       '@sentry/nextjs':
         specifier: ^7.7.0
-        version: 7.80.0(encoding@0.1.13)(next@13.5.11(@babel/core@7.23.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
+        version: 7.80.0(encoding@0.1.13)(next@13.5.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)
       '@tanstack/react-query':
         specifier: 5.83.1
         version: 5.83.1(react@18.2.0)
@@ -15989,8 +15989,8 @@ snapshots:
       '@aws-crypto/sha1-browser': 3.0.0
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.587.0
@@ -16051,8 +16051,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16094,11 +16094,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.592.0':
+  '@aws-sdk/client-sso-oidc@3.592.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16137,6 +16137,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.592.0':
@@ -16182,11 +16183,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)':
+  '@aws-sdk/client-sts@3.592.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16225,7 +16226,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.592.0':
@@ -16259,7 +16259,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.587.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16317,7 +16317,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/types': 3.0.0
@@ -16433,7 +16433,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/shared-ini-file-loader': 3.1.0
@@ -22262,7 +22262,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 17.0.47
 
-  '@mui/styled-engine@5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react@18.2.0))(react@18.2.0)':
+  '@mui/styled-engine@5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.27.0
       '@emotion/cache': 11.10.3
@@ -22277,7 +22277,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.27.0
       '@mui/private-theming': 5.10.3(@types/react@17.0.47)(react@18.2.0)
-      '@mui/styled-engine': 5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(@types/react@17.0.47)(react@18.2.0))(@types/react@17.0.47)(react@18.2.0))(react@18.2.0)
+      '@mui/styled-engine': 5.10.3(@emotion/react@11.10.4(@babel/core@7.23.3)(react@18.2.0))(@emotion/styled@11.10.4(@babel/core@7.23.3)(@emotion/react@11.10.4(@babel/core@7.23.3)(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@mui/types': 7.2.0(@types/react@17.0.47)
       '@mui/utils': 5.10.3(react@18.2.0)
       clsx: 1.2.1
@@ -23103,7 +23103,7 @@ snapshots:
       '@sentry/utils': 7.80.0
       localforage: 1.10.0
 
-  '@sentry/nextjs@7.80.0(encoding@0.1.13)(next@13.5.11(@babel/core@7.23.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)':
+  '@sentry/nextjs@7.80.0(encoding@0.1.13)(next@13.5.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.91.0)':
     dependencies:
       '@rollup/plugin-commonjs': 24.0.0(rollup@2.78.0)
       '@sentry/core': 7.80.0
