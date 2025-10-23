@@ -11,11 +11,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ProposalModuleAdapterBothProviders,
-  ProposalModuleAdapterProvider,
-  useProposalModuleAdapterContext,
-} from '@dao-dao/stateful/proposal-module-adapter'
-import {
   Popup,
   Proposal,
   ProposalNotFound,
@@ -33,6 +28,11 @@ import {
 import { isSecretNetwork } from '@dao-dao/utils'
 
 import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
+import {
+  ProposalModuleAdapterBothProviders,
+  ProposalModuleAdapterProvider,
+  useProposalModuleAdapterContext,
+} from '../../proposal-module-adapter'
 import { useProposalModuleAdapterCommonContext } from '../../proposal-module-adapter/react/context'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'

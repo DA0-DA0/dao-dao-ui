@@ -13,13 +13,12 @@ import {
 import {
   ImageSelectorModal,
   ModalLoader,
-  ModalProps,
   NoContent,
   ProfileImage,
   Tooltip,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { ChainId } from '@dao-dao/types'
+import { ChainId, ModalProps } from '@dao-dao/types'
 import {
   InstantiateMsg,
   MintMsgForNullable_Empty,

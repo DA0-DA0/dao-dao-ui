@@ -57,7 +57,6 @@ export const Querier = () => {
         })
       : undefined
   )
-  console.log(contractSummary, contractSummary)
 
   // Load from prefill query.
   const router = useRouter()

@@ -2,13 +2,12 @@ import clsx from 'clsx'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ButtonLink,
-  InfoLineCard,
-  InputLabel,
-  RawJsonDisplay,
-} from '@dao-dao/stateless'
 import { ProposalExecutionMetadata } from '@dao-dao/types'
+
+import { ButtonLink } from '../buttons'
+import { InfoLineCard } from '../InfoLineCard'
+import { InputLabel } from '../inputs'
+import { RawJsonDisplay } from '../RawJsonDisplay'
 
 export type ProposalExecutionMetadataRendererProps = {
   /**

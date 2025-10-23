@@ -10,8 +10,6 @@ import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 
-export * from '@dao-dao/types/components/Modal'
-
 // This component renders a modal above the page content with a dim backdrop.
 //
 // Ideally, it is not conditionally rendered, but instead is always rendered and
@@ -121,7 +119,7 @@ export const Modal = ({
                 className={clsx(
                   'flex shrink-0 flex-col gap-1 p-6',
                   // If children, add bottom border.
-                  children && 'border-b border-border-base',
+                  !!children && 'border-b border-border-base',
                   headerContainerClassName
                 )}
               >

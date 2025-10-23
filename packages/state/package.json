@@ -19,6 +19,7 @@
     "@cosmjs/proto-signing": "0.33.1",
     "@cosmjs/stargate": "0.33.1",
     "@cosmjs/tendermint-rpc": "0.33.1",
+    "@cosmos-kit/core": "^2.16.6",
     "@dao-dao/math": "workspace:*",
     "@dao-dao/utils": "workspace:*",
     "@tanstack/react-query": "5.83.1",
@@ -29,6 +30,7 @@
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
     "meilisearch": "^0.30.0",
+    "nanoid": "^5.0.7",
     "pusher-js": "^7.6.0",
     "recoil": "^0.7.2",
     "secretjs": "^1.15.1"

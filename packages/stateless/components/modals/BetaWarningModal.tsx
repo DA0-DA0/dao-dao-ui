@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
 
+import { ModalProps } from '@dao-dao/types'
+
 import { Button } from '../buttons'
-import { Modal, ModalProps } from './Modal'
+import { Modal } from './Modal'
 
 export type BetaWarningModalProps = Pick<ModalProps, 'visible' | 'onClose'>
 

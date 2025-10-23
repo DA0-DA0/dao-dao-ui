@@ -3,13 +3,15 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { FilterableItemPopup, InputThemedText } from '@dao-dao/stateless'
 import { ButtonifierProps, DaoRewardDistribution } from '@dao-dao/types'
 import {
   getFallbackImage,
   getHumanReadableRewardDistributionLabel,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
+
+import { InputThemedText } from '../inputs'
+import { FilterableItemPopup } from '../popup'
 
 export type DaoRewardDistributionPickerProps<T extends DaoRewardDistribution> =
   {

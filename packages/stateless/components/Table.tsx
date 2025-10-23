@@ -71,7 +71,9 @@ export const Table = ({
               header.className
           )}
         >
-          {header}
+          {header && typeof header === 'object' && 'value' in header
+            ? header.value
+            : header}
         </div>
       ))}
 
@@ -94,7 +96,9 @@ export const Table = ({
                 item.className
             )}
           >
-            {item}
+            {item && typeof item === 'object' && 'value' in item
+              ? item.value
+              : item}
           </div>
         ))
       )}

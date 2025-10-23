@@ -6,10 +6,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { HugeDecimal } from '@dao-dao/math'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
-  GovernanceTokenType,
-  CreatorData as TokenBasedCreatorData,
-} from '@dao-dao/stateful/creators/TokenBased/types'
-import {
   AddressInput,
   FormSwitchCard,
   InputErrorMessage,
@@ -38,6 +34,11 @@ import {
   isValidBech32Address,
   makeValidateAddress,
 } from '@dao-dao/utils'
+
+import {
+  GovernanceTokenType,
+  CreatorData as TokenBasedCreatorData,
+} from '../../../creators/TokenBased/types'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 

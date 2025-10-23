@@ -3,11 +3,11 @@ import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { UnstakingTask } from '@dao-dao/types'
+import { ModalProps, UnstakingTask } from '@dao-dao/types'
 import { expirationToDate } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
-import { Modal, ModalProps } from '../modals/Modal'
+import { Modal } from '../modals/Modal'
 import { NoContent } from '../NoContent'
 import { UnstakingLine } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'

@@ -3,8 +3,10 @@ import { ComponentType, useEffect, useState } from 'react'
 import Confetti from 'react-confetti'
 import { useTranslation } from 'react-i18next'
 
+import { ModalProps } from '@dao-dao/types'
+
 import { CopyToClipboard } from '../CopyToClipboard'
-import { Modal, ModalProps } from './Modal'
+import { Modal } from './Modal'
 
 export interface ItemCreatedModalProps<T> {
   modalProps: Omit<ModalProps, 'header' | 'children' | 'visible'>

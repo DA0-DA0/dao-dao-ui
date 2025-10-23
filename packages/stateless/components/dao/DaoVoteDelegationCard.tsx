@@ -103,6 +103,18 @@ export const DaoVoteDelegationCard = ({
     }
   }, [walletVotingPower, percent])
 
+  const power =
+    registration.loading || registration.errored || totalVotingPower.loading
+      ? '...'
+      : totalVotingPower.errored
+        ? HugeDecimal.from(registration.data.power).toFormattedString()
+        : HugeDecimal.from(registration.data.power)
+            .div(totalVotingPower.data)
+            .times(100)
+            .toFormattedString({
+              maxNonZeroDecimals: 3,
+            }) + '%'
+
   return (
     <>
       <div
@@ -120,23 +132,15 @@ export const DaoVoteDelegationCard = ({
         ) : registration.data.registered ? (
           <>
             <p className="body-text text-text-secondary break-all -mt-2">
-              <Trans i18nKey="info.delegatedVotingPower">
+              <Trans
+                i18nKey="info.delegatedVotingPower"
+                values={{
+                  power,
+                }}
+              >
                 You have been delegated{' '}
                 <span className="text-text-brand-secondary font-mono">
-                  {{
-                    power: totalVotingPower.loading
-                      ? '...'
-                      : totalVotingPower.errored
-                        ? HugeDecimal.from(
-                            registration.data.power
-                          ).toFormattedString()
-                        : HugeDecimal.from(registration.data.power)
-                            .div(totalVotingPower.data)
-                            .times(100)
-                            .toFormattedString({
-                              maxNonZeroDecimals: 3,
-                            }) + '%',
-                  }}
+                  {power}
                 </span>{' '}
                 of the total voting power.
               </Trans>

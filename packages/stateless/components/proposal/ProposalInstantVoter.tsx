@@ -2,8 +2,10 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { InputLabel, ProposalVoteButton, Switch } from '@dao-dao/stateless'
 import { ProposalVoteOption } from '@dao-dao/types'
+
+import { InputLabel, Switch } from '../inputs'
+import { ProposalVoteButton } from './ProposalVoteButton'
 
 export type ProposalInstantVoterProps<Vote> = {
   /**

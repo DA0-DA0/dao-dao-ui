@@ -3,20 +3,20 @@ import clsx from 'clsx'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ChainId, ProposalExecutionMetadataEditorData } from '@dao-dao/types'
+import { validateJSON, validateRequired } from '@dao-dao/utils'
+
+import { useChain } from '../../contexts'
+import { Button, ButtonLink } from '../buttons'
+import { IconButton } from '../icon_buttons'
 import {
-  Button,
-  ButtonLink,
   CodeMirrorInput,
   FormSwitch,
-  IconButton,
   InputErrorMessage,
   InputLabel,
   TextInput,
-  Tooltip,
-  useChain,
-} from '@dao-dao/stateless'
-import { ChainId, ProposalExecutionMetadataEditorData } from '@dao-dao/types'
-import { validateJSON, validateRequired } from '@dao-dao/utils'
+} from '../inputs'
+import { Tooltip } from '../tooltip'
 
 export type ProposalExecutionMetadataEditorProps = {
   /**

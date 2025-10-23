@@ -35,7 +35,7 @@ export const InputErrorMessage = ({
         className
       )}
     >
-      {message}
+      {message && typeof message === 'string' ? message : String(message)}
     </span>
   ) : null
 }
