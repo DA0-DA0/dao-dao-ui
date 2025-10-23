@@ -21,7 +21,7 @@ becoming a contributor.
 ```bash
 git clone https://github.com/DA0-DA0/dao-dao-ui
 cd dao-dao-ui
-yarn
+pnpm i
 ```
 
 ### Setup environment variables
@@ -34,11 +34,11 @@ Copy `.env.testnet` instead if you want to run testnet.
 ### Run dev server
 
 If you're here to work on any other part of the app, likely accessing live chain
-data, run the `yarn dev` script (equivalent to running `yarn dev` from the
+data, run the `pnpm dev` script (equivalent to running `pnpm dev` from the
 [`./apps/dapp`](./apps/dapp) package) to run the main app in development mode.
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 ### Storybook
@@ -52,7 +52,7 @@ instructions.
 To start the Storybook server, run this command from the root of this monorepo:
 
 ```bash
-yarn storybook start
+pnpm storybook start
 ```
 
 If something is misconfigured, check out the docs for

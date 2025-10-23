@@ -7,7 +7,7 @@ Email templates to generate DAO DAO emails.
 ### Render template
 
 ```bash
-yarn render
+pnpm render
 ```
 
 This will render all emails in the [`emails`](./emails) directory and output a
@@ -21,7 +21,7 @@ This script manages templates stored in AWS SES. To set it up, create a `.env`
 file based on the `.env.example` file, and fill in the credentials.
 
 ```bash
-$ yarn ses -h
+$ pnpm ses -h
 
 Usage: ses [options]
 

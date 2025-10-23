@@ -1,7 +1,7 @@
-// `yarn storybook:generate` to generate all missing storybook files for `.tsx`
+// `pnpm storybook:generate` to generate all missing storybook files for `.tsx`
 // files that exist as descendants of a `ui` folder.
 
-// `yarn storybook:generate <glob>` to generate just the missing storybook files
+// `pnpm storybook:generate <glob>` to generate just the missing storybook files
 // for the matching files. The argument will automatically be prefixed with
 // `../**/*` if it does not start with `.`, `/`, or `*`, and suffixed with
 // `*.tsx` if it does not end with `.tsx`.

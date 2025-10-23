@@ -31,7 +31,7 @@
       "name": "Next.js: debug full stack",
       "type": "node-terminal",
       "request": "launch",
-      "command": "yarn dapp dev",
+      "command": "pnpm dapp dev",
       "serverReadyAction": {
         "pattern": "started server on .+, url: (https?://.+)",
         "uriFormat": "%s",

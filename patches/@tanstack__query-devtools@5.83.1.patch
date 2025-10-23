@@ -1,11 +1,7 @@
-diff --git a/node_modules/@tanstack/query-devtools/build/.DS_Store b/node_modules/@tanstack/query-devtools/build/.DS_Store
-new file mode 100644
-index 0000000..8070def
-Binary files /dev/null and b/node_modules/@tanstack/query-devtools/build/.DS_Store differ
-diff --git a/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js b/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
-index 71d7560..9db7cb3 100644
---- a/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
-+++ b/node_modules/@tanstack/query-devtools/build/chunk/CXOMC62J.js
+diff --git a/build/chunk/CXOMC62J.js b/build/chunk/CXOMC62J.js
+index 71d756010d07d765a144cf4cd7af2072feccd7c6..9db7cb378533d7745b876000186777429f73c31b 100644
+--- a/build/chunk/CXOMC62J.js
++++ b/build/chunk/CXOMC62J.js
 @@ -2590,7 +2590,7 @@ function getQueryStatusColor({
    observerCount,
    isStale
@@ -15,10 +11,10 @@ index 71d7560..9db7cb3 100644
  }
  function getMutationStatusColor({
    status,
-diff --git a/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js b/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
-index 6167ae7..0dd4d87 100644
---- a/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
-+++ b/node_modules/@tanstack/query-devtools/build/chunk/EIDV623S.js
+diff --git a/build/chunk/EIDV623S.js b/build/chunk/EIDV623S.js
+index 6167ae7a424ee1b3f968188e30d6573988afab41..0dd4d87a1b61f07b33bea601bbefae13d42764e3 100644
+--- a/build/chunk/EIDV623S.js
++++ b/build/chunk/EIDV623S.js
 @@ -2589,7 +2589,7 @@ function getQueryStatusColor({
    observerCount,
    isStale
@@ -28,10 +24,10 @@ index 6167ae7..0dd4d87 100644
  }
  function getMutationStatusColor({
    status,
-diff --git a/node_modules/@tanstack/query-devtools/src/utils.tsx b/node_modules/@tanstack/query-devtools/src/utils.tsx
-index 9a826cd..a8dd24b 100644
---- a/node_modules/@tanstack/query-devtools/src/utils.tsx
-+++ b/node_modules/@tanstack/query-devtools/src/utils.tsx
+diff --git a/src/utils.tsx b/src/utils.tsx
+index 9a826cd21e3e19b694b73a452e49fef7350b3b57..a8dd24b26d5a5a1dcc2dd1e86d5d287fdcf71729 100644
+--- a/src/utils.tsx
++++ b/src/utils.tsx
 @@ -35,11 +35,11 @@ export function getQueryStatusColor({
    observerCount: number
    isStale: boolean

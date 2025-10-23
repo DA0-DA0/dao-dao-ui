@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Install dependencies
-yarn install
+pnpm install
 
 # install starship deps
-yarn starship install
+pnpm starship install
 
 # set kubernetes context to Docker Desktop
 kubectl config use-context docker-desktop
 
 # setup starship
-yarn starship setup
+pnpm starship setup

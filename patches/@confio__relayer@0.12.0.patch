@@ -1,7 +1,7 @@
-diff --git a/node_modules/@confio/relayer/build/lib/ibcclient.d.ts b/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
-index 97a818a..9c12fde 100644
---- a/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
-+++ b/node_modules/@confio/relayer/build/lib/ibcclient.d.ts
+diff --git a/build/lib/ibcclient.d.ts b/build/lib/ibcclient.d.ts
+index 97a818ac5c0c9cf94afba53a06b55e1d5e87152f..9c12fde58c4c1d69d3c92b40b218bceef75e4aa9 100644
+--- a/build/lib/ibcclient.d.ts
++++ b/build/lib/ibcclient.d.ts
 @@ -52,6 +52,7 @@ export declare type IbcClientOptions = SigningStargateClientOptions & {
      gasPrice: GasPrice;
      estimatedBlockTime: number;
@@ -18,10 +18,10 @@ index 97a818a..9c12fde 100644
      static connectWithSigner(endpoint: string, signer: OfflineSigner, senderAddress: string, options: IbcClientOptions): Promise<IbcClient>;
      private constructor();
      revisionHeight(height: number): Height;
-diff --git a/node_modules/@confio/relayer/build/lib/ibcclient.js b/node_modules/@confio/relayer/build/lib/ibcclient.js
-index 1bf85dc..e5d6f50 100644
---- a/node_modules/@confio/relayer/build/lib/ibcclient.js
-+++ b/node_modules/@confio/relayer/build/lib/ibcclient.js
+diff --git a/build/lib/ibcclient.js b/build/lib/ibcclient.js
+index 1bf85dcd4e59f3a9ceb28554059eda7c986a9cf3..e5d6f5042ca5b473939cf9a3d3c9ad51048b4c3f 100644
+--- a/build/lib/ibcclient.js
++++ b/build/lib/ibcclient.js
 @@ -77,6 +77,7 @@ class IbcClient {
          this.logger = options.logger ?? new logger_1.NoopLogger();
          this.estimatedBlockTime = options.estimatedBlockTime;

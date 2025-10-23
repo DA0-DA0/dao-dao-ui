@@ -2,16 +2,16 @@
 
 # sanity check
 kubectl get nodes
-yarn starship get-pods
+pnpm starship get-pods
 
 # deploy starship
-yarn starship deploy
+pnpm starship deploy
 
 # wait til STATUS=Running
-yarn starship get-pods
+pnpm starship get-pods
 
 # port forwarding
-yarn starship start-ports
+pnpm starship start-ports
 
 # check pids
-yarn starship port-pids
+pnpm starship port-pids

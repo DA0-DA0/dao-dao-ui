@@ -363,7 +363,7 @@ const main = async () => {
     }
 
     // Format the code IDs file.
-    execSync(`cd ${path.join(__dirname, '../../utils')} && yarn format`)
+    execSync(`cd ${path.join(__dirname, '../../utils')} && pnpm format`)
   }
 
   // Instantiate admin factory.

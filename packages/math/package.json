@@ -11,7 +11,7 @@
     "bignumber.js": "^9.1.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.7.1-rc.5",
+    "@dao-dao/config": "workspace:*",
     "typescript": "5.4.5",
     "vitest": "^3.1.1"
   },

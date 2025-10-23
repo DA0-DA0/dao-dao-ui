@@ -8,10 +8,10 @@
     "generate": "tsx ./scripts/generate.ts"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.7.1-rc.5",
-    "@dao-dao/i18n": "2.7.1-rc.5",
-    "@dao-dao/types": "2.7.1-rc.5",
-    "@dao-dao/utils": "2.7.1-rc.5",
+    "@dao-dao/config": "workspace:*",
+    "@dao-dao/i18n": "workspace:*",
+    "@dao-dao/types": "workspace:*",
+    "@dao-dao/utils": "workspace:*",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-links": "^6.5.12",
@@ -46,9 +46,9 @@
     "typescript": "5.4.5"
   },
   "peerDependencies": {
-    "@dao-dao/state": "2.7.1-rc.5",
-    "@dao-dao/stateful": "2.7.1-rc.5",
-    "@dao-dao/stateless": "2.7.1-rc.5"
+    "@dao-dao/state": "workspace:*",
+    "@dao-dao/stateful": "workspace:*",
+    "@dao-dao/stateless": "workspace:*"
   },
   "prettier": "@dao-dao/config/prettier",
   "publishConfig": {

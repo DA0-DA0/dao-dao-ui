@@ -1,7 +1,7 @@
-diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts b/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
-index bb2e8b6..ce111cd 100644
---- a/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
-+++ b/node_modules/@cosmjs/cosmwasm-stargate/build/index.d.ts
+diff --git a/build/index.d.ts b/build/index.d.ts
+index bb2e8b692e47d2de9e59408df68ff844144973ee..ce111cde959692fa320ffef02657dd9140fc4fe1 100644
+--- a/build/index.d.ts
++++ b/build/index.d.ts
 @@ -2,6 +2,6 @@ export { Code, CodeDetails, Contract, ContractCodeHistoryEntry, CosmWasmClient }
  export { fromBinary, toBinary } from "./encoding";
  export { _instantiate2AddressIntermediate, instantiate2Address } from "./instantiate2";
@@ -10,10 +10,10 @@ index bb2e8b6..ce111cd 100644
 +export { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClient, SigningCosmWasmClientOptions, UploadResult, CustomTxOptions, } from "./signingcosmwasmclient";
  export { Attribute, DeliverTxResponse, Event, IndexedTx } from "@cosmjs/stargate";
  export { HttpEndpoint } from "@cosmjs/tendermint-rpc";
-diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
-index 398df4c..27f7067 100644
---- a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
-+++ b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.d.ts
+diff --git a/build/signingcosmwasmclient.d.ts b/build/signingcosmwasmclient.d.ts
+index 398df4c7b16e43f69b28d6a893ddfdd5061365f2..27f7067af30ba3c78200b354001bf423c0ad3548 100644
+--- a/build/signingcosmwasmclient.d.ts
++++ b/build/signingcosmwasmclient.d.ts
 @@ -98,6 +98,19 @@ export interface ExecuteResult {
      readonly gasWanted: bigint;
      readonly gasUsed: bigint;
@@ -83,10 +83,10 @@ index 398df4c..27f7067 100644
      private signAmino;
      private signDirect;
  }
-diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
-index 6eb95bb..867e0cf 100644
---- a/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
-+++ b/node_modules/@cosmjs/cosmwasm-stargate/build/signingcosmwasmclient.js
+diff --git a/build/signingcosmwasmclient.js b/build/signingcosmwasmclient.js
+index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee4715088c 100644
+--- a/build/signingcosmwasmclient.js
++++ b/build/signingcosmwasmclient.js
 @@ -86,15 +86,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
          this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
          this.gasPrice = options.gasPrice;

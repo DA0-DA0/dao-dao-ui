@@ -3,7 +3,6 @@
   "version": "2.7.1-rc.5",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "postinstall": "cd ../../ && npm run postinstall",
     "analyze": "ANALYZE=true next build",
     "prebuild": "cd ../../packages/state && npm run build:gql",
     "build": "next build --debug",
@@ -16,12 +15,12 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
-    "@dao-dao/i18n": "2.7.1-rc.5",
-    "@dao-dao/state": "2.7.1-rc.5",
-    "@dao-dao/stateful": "2.7.1-rc.5",
-    "@dao-dao/stateless": "2.7.1-rc.5",
-    "@dao-dao/types": "2.7.1-rc.5",
-    "@dao-dao/utils": "2.7.1-rc.5",
+    "@dao-dao/i18n": "workspace:*",
+    "@dao-dao/state": "workspace:*",
+    "@dao-dao/stateful": "workspace:*",
+    "@dao-dao/stateless": "workspace:*",
+    "@dao-dao/types": "workspace:*",
+    "@dao-dao/utils": "workspace:*",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@keplr-wallet/common": "^0.11.49",
@@ -47,7 +46,7 @@
     "sharp": "^0.31.1"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.7.1-rc.5",
+    "@dao-dao/config": "workspace:*",
     "@next/bundle-analyzer": "^12.1.0",
     "@sentry/cli": "^2.21.3",
     "@solana/web3.js": "^1.75.0",

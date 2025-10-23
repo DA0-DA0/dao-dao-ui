@@ -1,7 +1,7 @@
-diff --git a/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts b/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
-index 804d654..9423be6 100644
---- a/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
-+++ b/node_modules/@cosmjs/stargate/build/modules/tx/queries.d.ts
+diff --git a/build/modules/tx/queries.d.ts b/build/modules/tx/queries.d.ts
+index 804d654fecf857549a0600da263129cddb25f224..9423be6b46695886e2e1f5487cc422ad8adcc512 100644
+--- a/build/modules/tx/queries.d.ts
++++ b/build/modules/tx/queries.d.ts
 @@ -5,7 +5,7 @@ import { QueryClient } from "../../queryclient";
  export interface TxExtension {
      readonly tx: {
@@ -11,10 +11,10 @@ index 804d654..9423be6 100644
      };
  }
  export declare function setupTxExtension(base: QueryClient): TxExtension;
-diff --git a/node_modules/@cosmjs/stargate/build/modules/tx/queries.js b/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
-index 6a78179..831afd7 100644
---- a/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
-+++ b/node_modules/@cosmjs/stargate/build/modules/tx/queries.js
+diff --git a/build/modules/tx/queries.js b/build/modules/tx/queries.js
+index 6a78179d5857a820acf2a32ff72cecca454663e0..831afd7bc0b3bfd4427f948340b5fb547b758b61 100644
+--- a/build/modules/tx/queries.js
++++ b/build/modules/tx/queries.js
 @@ -20,7 +20,7 @@ function setupTxExtension(base) {
                  const response = await queryService.GetTx(request);
                  return response;

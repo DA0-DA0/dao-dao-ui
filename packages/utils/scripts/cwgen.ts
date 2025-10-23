@@ -239,6 +239,6 @@ codegen({
   fs.rmSync(TMP_FOLDER, { recursive: true })
 
   // format the generated files
-  execSync(`cd ${path.join(__dirname, '../../types')} && yarn format`)
-  execSync(`cd ${path.join(__dirname, '../../state')} && yarn format`)
+  execSync(`cd ${path.join(__dirname, '../../types')} && pnpm format`)
+  execSync(`cd ${path.join(__dirname, '../../state')} && pnpm format`)
 })

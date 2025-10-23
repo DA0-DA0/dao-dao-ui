@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "@aws-sdk/client-ses": "^3.592.0",
-    "@dao-dao/config": "2.7.1-rc.5",
-    "@dao-dao/types": "2.7.1-rc.5",
+    "@dao-dao/config": "workspace:*",
+    "@dao-dao/types": "workspace:*",
     "@react-email/components": "^0.0.7",
     "@react-email/render": "0.0.7",
     "commander": "^11.0.0",

@@ -64,7 +64,7 @@ export default defineConfig({
 
   /* Build and run server before starting the tests */
   webServer: {
-    command: 'cd ../../apps/dapp && yarn start',
+    command: 'cd ../../apps/dapp && pnpm start',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     // allow 10 minutes for the server to build

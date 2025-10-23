@@ -1,4 +1,4 @@
-// `yarn remove-unused` to remove all i18n translation keys from the JSON locale
+// `pnpm remove-unused` to remove all i18n translation keys from the JSON locale
 // files that don't exist in the code. Config options are below.
 
 const path = require('path')

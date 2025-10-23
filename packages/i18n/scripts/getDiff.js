@@ -1,9 +1,9 @@
-// `yarn get-diff a.json b.json` to view all differences between a.json and
+// `pnpm get-diff a.json b.json` to view all differences between a.json and
 // b.json.
 
 // 4 arguments: [node getDiff.js a b]
 if (process.argv.length !== 4) {
-  console.log('Usage: yarn get-diff <localePathA> <localePathB>')
+  console.log('Usage: pnpm get-diff <localePathA> <localePathB>')
   process.exit(1)
 }
 

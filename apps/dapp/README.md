@@ -6,7 +6,7 @@ Web application for creating and managing multiple DAOs. Live in production at
 ## Development
 
 ```bash
-yarn dev
+pnpm dev
 # or
 npm run dev
 ```
@@ -27,18 +27,18 @@ environment is [Juno Testnet](#testnet).
 Note: you can get Juno Testnet tokens ($JUNOX) from the #faucet channel in the
 main [Juno Discord](https://discord.com/invite/QcWPfK4gJ2). Testnet environment
 variables are in `.env.development` and available by default when running the
-`yarn dev` command.
+`pnpm dev` command.
 
 ```bash
-yarn dev # starts nextjs dev server
+pnpm dev # starts nextjs dev server
 ```
 
 ### Advanced: Other environments
 
-By default `yarn dev` connects to the testnet. For developing against localhost
+By default `pnpm dev` connects to the testnet. For developing against localhost
 or mainnet, copy the appropriate `.env` file to `.env.local`. Having a
 `.env.local` file will override the default `.env.development` file when running
-`yarn dev`.
+`pnpm dev`.
 
 #### Mainnet
 

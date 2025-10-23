@@ -13,11 +13,11 @@ monorepo.
 ## Running
 
 ```bash
-yarn start
+pnpm start
 
 # OR, from the root of this monorepo:
 
-yarn storybook start
+pnpm storybook start
 ```
 
 This will launch the storybook server, accessible via a web browser at [http://localhost:6006](http://localhost:6006).
@@ -25,17 +25,17 @@ This will launch the storybook server, accessible via a web browser at [http://l
 ## Story Generator
 
 ```bash
-yarn generate <glob>
+pnpm generate <glob>
 ```
 
 To automatically generate a storybook file for a component, you have a few
 options.
 
 The command above will work assuming the root is this folder
-(`packages/storybook`). For example, `yarn generate **/MyComponent.tsx` will
+(`packages/storybook`). For example, `pnpm generate **/MyComponent.tsx` will
 generate storybook files for any file named `MyComponent.tsx` that is a
 descendant of `packages/storybook` at any level. You may also use something like
-`yarn generate ../**/MyComponent.tsx` to generate storybook files for any file
+`pnpm generate ../**/MyComponent.tsx` to generate storybook files for any file
 named `MyComponent.tsx` in any of the packages.
 
 ### Optimizations
@@ -57,21 +57,21 @@ targeting.
 
 ```bash
 # All files that lives somewhere inside the `packages` folder with a name that starts with `ILoveMyNewHome`, such as a new component in the stateless package at `packages/stateless/components/ILoveMyNewHomeInTheUiPackage.tsx`.
-yarn generate ILoveMyNewHome
+pnpm generate ILoveMyNewHome
 
 # All files that live somewhere inside the `packages` folder and are immediate children of any folder that ends with `dao`, such as `packages/stateless/components/dao/*.tsx` or `packages/stateless/components/some_dao/*.tsx`
-yarn generate dao/
+pnpm generate dao/
 
 # All files named `MyComponent.tsx` that are descendants of `packages/storybook` at any level
-yarn generate "**/MyComponent.tsx"
+pnpm generate "**/MyComponent.tsx"
 # (quotes in case your shell performs automatic parameter expansion/globbing of unquoted text such as fish)
 
 # A relative path, starting from the storybook package root
-yarn generate ../../apps/dapp/components/IShouldProbablyLiveInTheUiPackage.tsx
+pnpm generate ../../apps/dapp/components/IShouldProbablyLiveInTheUiPackage.tsx
 
 # An absolute path
-yarn generate /Users/me/Developer/dao-dao-ui/apps/dapp/components/WhyDoILiveHere.tsx
-yarn generate ~/Developer/dao-dao-ui/apps/dapp/components/SeriouslyMoveMePlease.tsx
+pnpm generate /Users/me/Developer/dao-dao-ui/apps/dapp/components/WhyDoILiveHere.tsx
+pnpm generate ~/Developer/dao-dao-ui/apps/dapp/components/SeriouslyMoveMePlease.tsx
 ```
 
 ## Support

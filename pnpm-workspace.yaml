@@ -1,0 +1,30 @@
+packages:
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@cosmology/protobufjs'
+  - '@parcel/watcher'
+  - '@sentry/cli'
+  - bigint-buffer
+  - bufferutil
+  - core-js
+  - core-js-pure
+  - es5-ext
+  - esbuild
+  - fsevents
+  - keccak
+  - nx
+  - protobufjs
+  - secp256k1
+  - secretjs
+  - sharp
+  - tiny-secp256k1
+  - utf-8-validate
+
+patchedDependencies:
+  '@confio/relayer@0.12.0': patches/@confio__relayer@0.12.0.patch
+  '@cosmjs/cosmwasm-stargate@0.33.1': patches/@cosmjs__cosmwasm-stargate@0.33.1.patch
+  '@cosmjs/stargate@0.33.1': patches/@cosmjs__stargate@0.33.1.patch
+  '@tanstack/query-core@5.83.1': patches/@tanstack__query-core@5.83.1.patch
+  '@tanstack/query-devtools@5.83.1': patches/@tanstack__query-devtools@5.83.1.patch

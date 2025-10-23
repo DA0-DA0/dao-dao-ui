@@ -11,16 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
-      - run: yarn install
+          cache: 'pnpm'
+      - run: pnpm install
       # Run linter and store output.
       - name: Lint
         id: lint
         run: |
-          output="$(yarn i18n lint-missing-keys)"
+          output="$(pnpm i18n lint-missing-keys)"
           echo "LINT_OUTPUT<<EOF" >> $GITHUB_ENV
           echo "$output" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV

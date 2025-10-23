@@ -17,7 +17,7 @@ through. The mnemonic in the `.env` is the grantee authorized to execute on
 behalf of the granter you pass to `-a`.
 
 ```
-Usage: yarn deploy [options]
+Usage: pnpm deploy [options]
 
 Options:
   -c, --chain <ID>              chain ID
@@ -36,7 +36,7 @@ contracts and setting up an IBC channel.
 You can use an existing IBC connection or create a new one.
 
 ```
-Usage: yarn polytone [options]
+Usage: pnpm polytone [options]
 
 Options:
   -s, --src <chain ID>                       source chain ID

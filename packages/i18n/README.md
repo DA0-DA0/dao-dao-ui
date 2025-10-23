@@ -14,12 +14,12 @@ Keep it precise and pithy, in that order; people's businesses depend on understa
 ## Comparing diffs
 
 To compare two translation files to see what keys have been added, removed, and
-modified, run `yarn get-diff <locale1.json> <locale2.json>`. For example, to see
+modified, run `pnpm get-diff <locale1.json> <locale2.json>`. For example, to see
 what is missing from the Spanish translation that exists in the English
 translation, run the following command from this folder:
 
 ```bash
-yarn get-diff locales/es/translation.json locales/en/translation.json
+pnpm get-diff locales/es/translation.json locales/en/translation.json
 ```
 
 When comparing two different languages, the added and removed keys will be

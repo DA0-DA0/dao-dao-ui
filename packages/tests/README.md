@@ -11,19 +11,19 @@ DAO DAO Tests
 3. Set up Starship:
 
 ```bash
-yarn starship:setup
-yarn starship:start
+pnpm starship:setup
+pnpm starship:start
 ```
 
 4. Run the tests:
 
 ```bash
-yarn test:starship
+pnpm test:starship
 ```
 
 Sometimes port forwarding doesn't work, and you have to manually run the port
 forward command again once the servers are running:
 
 ```bash
-yarn starship:start-ports
+pnpm starship:start-ports
 ```
