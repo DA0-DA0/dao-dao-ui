@@ -33,7 +33,6 @@
     "@cosmos-kit/shell": "^2.14.6",
     "@cosmos-kit/station": "^2.13.6",
     "@cosmos-kit/trust": "^2.14.6",
-    "@cosmos-kit/vultisig-extension": "file:../../../cosmos-kit/wallets/vultisig-extension",
     "@cosmos-kit/web3auth": "^2.16.6",
     "@dao-dao/i18n": "workspace:*",
     "@dao-dao/math": "workspace:*",

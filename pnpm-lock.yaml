@@ -714,9 +714,6 @@ importers:
       '@cosmos-kit/trust':
         specifier: ^2.14.6
         version: 2.14.6(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.33.1)(@walletconnect/types@2.17.2)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      '@cosmos-kit/vultisig-extension':
-        specifier: file:../../../cosmos-kit/wallets/vultisig-extension
-        version: file:../cosmos-kit/wallets/vultisig-extension(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.33.1)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/web3auth':
         specifier: ^2.16.6
         version: 2.16.6(@babel/runtime@7.27.0)(@chain-registry/types@0.50.224)(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.33.1)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.9.0)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
@@ -2936,12 +2933,6 @@ packages:
 
   '@cosmos-kit/trust@2.14.6':
     resolution: {integrity: sha512-0T89uphE8NEjQPBGQZEbjH/26PSEskVwJqik8e2xQh7Nawqid3YfoG0D+j2g8XL/qeAgd+AJtoy6+KUbmXNe+w==}
-
-  '@cosmos-kit/vultisig-extension@file:../cosmos-kit/wallets/vultisig-extension':
-    resolution: {directory: ../cosmos-kit/wallets/vultisig-extension, type: directory}
-    peerDependencies:
-      '@cosmjs/amino': '>=0.32.3'
-      '@cosmjs/proto-signing': '>=0.32.3'
 
   '@cosmos-kit/walletconnect@2.13.6':
     resolution: {integrity: sha512-BP1+pmuQWBzs4ly9bAJkzibsyzmuAVRqiy4a74UtPvyFzQVeJXTig4ui8cJU3TEaxLF+1DG8SrY8mRUILsfYYA==}
@@ -19757,32 +19748,6 @@ snapshots:
       - '@upstash/redis'
       - '@vercel/kv'
       - '@walletconnect/types'
-      - bufferutil
-      - debug
-      - encoding
-      - ioredis
-      - supports-color
-      - uWebSockets.js
-      - utf-8-validate
-
-  '@cosmos-kit/vultisig-extension@file:../cosmos-kit/wallets/vultisig-extension(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.33.1)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@cosmjs/amino': 0.33.1
-      '@cosmjs/proto-signing': 0.33.1
-      '@cosmos-kit/core': 2.16.6(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@react-native-async-storage/async-storage'
-      - '@upstash/redis'
-      - '@vercel/kv'
       - bufferutil
       - debug
       - encoding
