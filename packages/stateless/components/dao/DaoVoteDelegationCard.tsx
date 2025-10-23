@@ -86,8 +86,10 @@ export const DaoVoteDelegationCard = ({
 
     // Smallest percent delegation is determined by the voting power unit.
     const smallestPercentDelegation =
-      !walletVotingPower.loading && !walletVotingPower.errored
-        ? HugeDecimal.from(100).div(walletVotingPower.data).toFormattedString({
+      !totalVotingPower.loading &&
+      !totalVotingPower.errored &&
+      !totalVotingPower.data.isZero()
+        ? HugeDecimal.from(100).div(totalVotingPower.data).toFormattedString({
             showFullAmount: true,
             maxNonZeroDecimals: DECIMAL_PLACES,
           })
@@ -101,7 +103,7 @@ export const DaoVoteDelegationCard = ({
       smallestPercentDelegation,
       smallestPercentDelegationDoesNotTerminate,
     }
-  }, [walletVotingPower, percent])
+  }, [walletVotingPower, percent, totalVotingPower])
 
   const power =
     registration.loading || registration.errored || totalVotingPower.loading
