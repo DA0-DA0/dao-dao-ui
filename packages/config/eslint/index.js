@@ -129,11 +129,6 @@ const eslintConfig = {
               message:
                 '`animate-spin` is too fast. Use `animate-spin-medium` for a chiller vibe.',
             },
-            {
-              regex: '\\b(FC|FunctionComponent)\\b',
-              message:
-                "Using React's FunctionComponent is discouraged. Type the props explicitly: `export const Component = (props: ComponentProps) => { ... }`",
-            },
             // Make sure GNU AGPLv3 header is not in the packages. This may
             // happen if code gets copied from an app to a package. The packages
             // use a different license than the apps.
