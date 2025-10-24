@@ -29,7 +29,7 @@ jobs:
       - name: Install packages
         run: pnpm install
       - name: Install Playwright browsers
-        run: pnpm playwright install --with-deps
+        run: pnpm tests playwright:install
       - name: Set up testnet environment
         run: cp apps/dapp/.env.mainnet apps/dapp/.env.local
       - name: Build dApp

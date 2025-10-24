@@ -7,6 +7,7 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "pretest:playwright": "cp ../../apps/dapp/.env.mainnet ../../apps/dapp/.env.local",
+    "playwright:install": "playwright install --with-deps",
     "test:playwright": "playwright test",
     "pretest:starship": "npm run starship:start-ports",
     "test:starship": "vitest --clearScreen=false tests/starship/",
