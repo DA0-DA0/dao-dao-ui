@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "lerna": "^6.4.1",
+    "prettier": "^3.4.2",
     "turbo": "^2.5.8",
     "turbo-ignore": "^2.5.8",
     "vitest": "^3.1.1"
