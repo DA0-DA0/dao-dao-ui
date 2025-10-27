@@ -1,6 +1,6 @@
 // Separate file so it's loaded only on the server.
 
-import { CreateClientReturn } from 'next-i18next'
+import { CreateClientReturn, SSRConfig, TFunction } from 'next-i18next'
 // @ts-ignore
 import { createConfig } from 'next-i18next/dist/commonjs/config/createConfig'
 // @ts-ignore
@@ -11,13 +11,13 @@ import { serverSideTranslations as _serverSideTranslations } from 'next-i18next/
 export const serverSideTranslations = async (
   initialLocale?: string,
   namespacesRequired?: string[] | undefined
-) => _serverSideTranslations(initialLocale ?? 'en', namespacesRequired)
+): Promise<SSRConfig> => _serverSideTranslations(initialLocale ?? 'en', namespacesRequired)
 
 // Create t function for use in server side props loading.
 export const serverSideTranslationsWithServerT = async (
   initialLocale?: string,
   namespacesRequired?: string[] | undefined
-) => {
+): Promise<{ i18nProps: SSRConfig; serverT: TFunction }> => {
   const i18nProps = await serverSideTranslations(
     initialLocale,
     namespacesRequired
