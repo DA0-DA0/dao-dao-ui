@@ -97,7 +97,7 @@ const DappContextProvider = ({
       () => makeGenericContext
     )
   const setRootCommandContextMaker = useCallback(
-    (maker) =>
+    (maker: CommandModalContextMaker) =>
       // See comment above for an explanation on why we pass a function here.
       _setRootCommandContextMaker(() => maker),
     []

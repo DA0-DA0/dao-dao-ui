@@ -19,7 +19,6 @@ const Template: ComponentStory<typeof SelectInput> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   fieldName: 'two' as any,
-  placeholder: 'Enter some text',
   children: (
     <>
       <option value="1">Option 1</option>

@@ -60,7 +60,7 @@ export const CommandModalContextView = ({
 
   // Navigate on keypress.
   const handleKeyPress = useCallback(
-    (event) => {
+    (event: KeyboardEvent) => {
       // Do nothing if no items.
       if (itemsWithSection.length === 0 || !selectedItemWithSection) {
         return

@@ -91,7 +91,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { isMac } = usePlatform()
   // Handle keypress to show command modal or not.
   const handleKeyPress = useCallback(
-    (event) => {
+    (event: KeyboardEvent) => {
       if ((!isMac && event.ctrlKey) || event.metaKey) {
         if (event.key === 'k') {
           setCommandModalVisible((showSearch) => !showSearch)
