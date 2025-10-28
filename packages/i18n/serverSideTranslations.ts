@@ -1,7 +1,10 @@
 // Separate file so it's loaded only on the server.
 
-import i18next from 'i18next'
-import { SSRConfig, TFunction } from 'next-i18next'
+import { CreateClientReturn, SSRConfig, TFunction } from 'next-i18next'
+// @ts-ignore
+import { createConfig } from 'next-i18next/dist/commonjs/config/createConfig'
+// @ts-ignore
+import { default as createClient } from 'next-i18next/dist/commonjs/createClient/node'
 import { serverSideTranslations as _serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 // Use English as default locale.
@@ -26,19 +29,16 @@ export const serverSideTranslationsWithServerT = async (
   // For some reason, the T function on the server is not immediately loaded
   // after awaiting serverSideTranslations, so let's manually instantiate our
   // own version of the client given the config that was loaded by the library.
-  // https://github.com/i18next/next-i18next/issues/1698#issuecomment-3008006028
-  const i18nLocal = i18next.createInstance()
-  await i18nLocal.init({
-    lng: initialLocale,
-    fallbackLng: 'en',
-    ns: namespacesRequired ?? ['translation'],
-    defaultNS: namespacesRequired?.[0] ?? 'translation',
-    resources: i18nProps._nextI18Next.initialI18nStore,
-    interpolation: { escapeValue: false },
+  // https://github.com/i18next/next-i18next/issues/1698#issuecomment-1046754181
+  const internalConfig = createConfig({
+    ...i18nProps._nextI18Next.userConfig,
+    lng: i18nProps._nextI18Next.initialLocale,
   })
+  const client: CreateClientReturn = await createClient(internalConfig)
+  const serverT = await client.i18n.init(await client.initPromise)
 
   return {
     i18nProps,
-    serverT: i18nLocal.t,
+    serverT,
   }
 }
