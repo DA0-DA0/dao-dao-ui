@@ -3,7 +3,7 @@
   "version": "2.7.1-rc.5",
   "scripts": {
     "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
-    "build:no-apps": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\" --filter=\"!@dao-dao/sda\"",
+    "build:no-apps": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\" --filter=\"!@dao-dao/sda\" --only",
     "dev": "pnpm dapp dev",
     "start": "pnpm dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
