@@ -7,7 +7,7 @@
     "dev": "pnpm dapp dev",
     "start": "pnpm dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
-    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
+    "lint": "turbo run lint --continue --parallel",
     "test": "vitest",
     "test:playwright": "pnpm tests test:playwright",
     "cwgen": "pnpm utils cwgen",
