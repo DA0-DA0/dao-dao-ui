@@ -4,8 +4,9 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
-    "prebuild": "cd ../../packages/state && npm run build:gql",
+    "prebuild": "npm run build:i18n && cd ../../packages/state && npm run build:gql",
     "build": "next build --debug",
+    "build:i18n": "cp -r ../../packages/i18n/locales public/locales",
     "dev": "next dev",
     "format": "eslint . --fix",
     "lint": "eslint .",

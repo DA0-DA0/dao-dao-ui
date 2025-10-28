@@ -21,14 +21,10 @@ const config = {
     localeDetection: false,
   },
   lowerCaseLng: true,
-  localePath: path.resolve('../../packages/i18n/locales'),
+  localePath: path.resolve('./public/locales'),
   defaultNS: 'translation',
   ns: ['translation'],
   reloadOnPrerender: process.env.NODE_ENV === 'development',
 }
-
-console.log('I18N CWD', process.cwd())
-console.log('I18N __dirname', __dirname)
-console.log('I18N LOCALE PATH', path.resolve('../../packages/i18n/locales'))
 
 module.exports = config
