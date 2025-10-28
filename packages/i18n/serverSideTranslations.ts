@@ -9,9 +9,7 @@ export const serverSideTranslations = async (
   initialLocale?: string,
   namespacesRequired?: string[] | undefined
 ): Promise<SSRConfig> =>
-  import('./next-i18next.config').then(({ default: config }) =>
-    _serverSideTranslations(initialLocale ?? 'en', namespacesRequired, config)
-  )
+  _serverSideTranslations(initialLocale ?? 'en', namespacesRequired)
 
 // Create t function for use in server side props loading.
 export const serverSideTranslationsWithServerT = async (
