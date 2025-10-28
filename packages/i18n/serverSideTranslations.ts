@@ -29,7 +29,7 @@ export const serverSideTranslationsWithServerT = async (
   // https://github.com/i18next/next-i18next/issues/1698#issuecomment-3008006028
   const i18nLocal = i18next.createInstance()
   await i18nLocal.init({
-    lng: initialLocale,
+    lng: initialLocale ?? 'en',
     fallbackLng: 'en',
     ns: namespacesRequired ?? ['translation'],
     defaultNS: namespacesRequired?.[0] ?? 'translation',
