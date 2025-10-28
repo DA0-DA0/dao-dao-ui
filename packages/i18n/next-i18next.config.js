@@ -21,7 +21,10 @@ const config = {
     localeDetection: false,
   },
   lowerCaseLng: true,
-  localePath: path.resolve('./public/locales'),
+  localePath:
+    typeof window === 'undefined'
+      ? require('path').resolve('./public/locales')
+      : '/public/locales',
   defaultNS: 'translation',
   ns: ['translation'],
   reloadOnPrerender: process.env.NODE_ENV === 'development',

@@ -38,6 +38,8 @@ import {
   SITE_URL,
 } from '@dao-dao/utils'
 
+import nextI18NextConfig from '../next-i18next.config'
+
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
 
@@ -175,5 +177,5 @@ const DApp = (props: AppProps) => (
   </>
 )
 
-const App: FC<AppProps> = appWithTranslation(DApp)
+const App: FC<AppProps> = appWithTranslation(DApp, nextI18NextConfig)
 export default App
