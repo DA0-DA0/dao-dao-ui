@@ -25,20 +25,20 @@ import * as _128 from "./stablestake/pool";
 import * as _129 from "./stablestake/query";
 import * as _130 from "./stablestake/tx";
 import * as _131 from "./stablestake/types";
-import * as _624 from "./amm/tx.amino";
-import * as _625 from "./masterchef/tx.amino";
-import * as _626 from "./stablestake/tx.amino";
-import * as _627 from "./amm/tx.registry";
-import * as _628 from "./masterchef/tx.registry";
-import * as _629 from "./stablestake/tx.registry";
-import * as _630 from "./amm/query.rpc.Query";
-import * as _631 from "./masterchef/query.rpc.Query";
-import * as _632 from "./stablestake/query.rpc.Query";
-import * as _633 from "./amm/tx.rpc.msg";
-import * as _634 from "./masterchef/tx.rpc.msg";
-import * as _635 from "./stablestake/tx.rpc.msg";
-import * as _910 from "./rpc.query";
-import * as _911 from "./rpc.tx";
+import * as _610 from "./amm/tx.amino";
+import * as _611 from "./masterchef/tx.amino";
+import * as _612 from "./stablestake/tx.amino";
+import * as _613 from "./amm/tx.registry";
+import * as _614 from "./masterchef/tx.registry";
+import * as _615 from "./stablestake/tx.registry";
+import * as _616 from "./amm/query.rpc.Query";
+import * as _617 from "./masterchef/query.rpc.Query";
+import * as _618 from "./stablestake/query.rpc.Query";
+import * as _619 from "./amm/tx.rpc.msg";
+import * as _620 from "./masterchef/tx.rpc.msg";
+import * as _621 from "./stablestake/tx.rpc.msg";
+import * as _892 from "./rpc.query";
+import * as _893 from "./rpc.tx";
 export namespace elys {
   export const amm = {
     ..._105,
@@ -52,10 +52,10 @@ export namespace elys {
     ..._113,
     ..._114,
     ..._115,
-    ..._624,
-    ..._627,
-    ..._630,
-    ..._633
+    ..._610,
+    ..._613,
+    ..._616,
+    ..._619
   };
   export const commitment = {
     ..._116
@@ -69,10 +69,10 @@ export namespace elys {
     ..._122,
     ..._123,
     ..._124,
-    ..._625,
-    ..._628,
-    ..._631,
-    ..._634
+    ..._611,
+    ..._614,
+    ..._617,
+    ..._620
   };
   export const stablestake = {
     ..._125,
@@ -82,13 +82,13 @@ export namespace elys {
     ..._129,
     ..._130,
     ..._131,
-    ..._626,
-    ..._629,
-    ..._632,
-    ..._635
+    ..._612,
+    ..._615,
+    ..._618,
+    ..._621
   };
   export const ClientFactory = {
-    ..._910,
-    ..._911
+    ..._892,
+    ..._893
   };
 }
