@@ -145,7 +145,6 @@ telescope({
           'pryzm.treasury.v1',
           'pryzm.ystaking.v1',
           'umee.leverage.v1',
-          'stride.stakeibc',
 
           // interferes with v1beta1 MsgSubmitProposal amino encoders since the
           // type names overlap

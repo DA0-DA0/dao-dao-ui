@@ -50,8 +50,6 @@ export * from "./secret/bundle";
 export * from "./secret/client";
 export * from "./slinky/bundle";
 export * from "./slinky/client";
-export * from "./stride/bundle";
-export * from "./stride/client";
 export * from "./Switcheo/bundle";
 export * from "./Switcheo/client";
 export * from "./noble/bundle";
