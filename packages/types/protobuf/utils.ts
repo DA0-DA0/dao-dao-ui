@@ -105,6 +105,20 @@ import {
 export const cwMsgToProtobuf = (
   ...params: Parameters<typeof cwMsgToEncodeObject>
 ): Any => {
+  // If already encoded as stargate Any, don't decode and re-encode, in case
+  // type doesn't exist in registry.
+  if (
+    'stargate' in params[1] &&
+    'type_url' in params[1].stargate &&
+    'value' in params[1].stargate &&
+    typeof params[1].stargate.value === 'string'
+  ) {
+    return {
+      typeUrl: params[1].stargate.type_url,
+      value: fromBase64(params[1].stargate.value),
+    }
+  }
+
   const { typeUrl, value } = cwMsgToEncodeObject(...params)
   return {
     typeUrl,
