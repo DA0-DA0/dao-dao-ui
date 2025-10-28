@@ -7,11 +7,13 @@ import { createConfig } from 'next-i18next/dist/commonjs/config/createConfig'
 import { default as createClient } from 'next-i18next/dist/commonjs/createClient/node'
 import { serverSideTranslations as _serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
+import config from './next-i18next.config'
+
 // Use English as default locale.
 export const serverSideTranslations = async (
   initialLocale?: string,
   namespacesRequired?: string[] | undefined
-): Promise<SSRConfig> => _serverSideTranslations(initialLocale ?? 'en', namespacesRequired)
+): Promise<SSRConfig> => _serverSideTranslations(initialLocale ?? 'en', namespacesRequired, config)
 
 // Create t function for use in server side props loading.
 export const serverSideTranslationsWithServerT = async (
