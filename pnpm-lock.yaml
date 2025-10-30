@@ -16,7 +16,7 @@ patchedDependencies:
     hash: 1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464
     path: patches/@cosmjs__cosmwasm-stargate@0.37.0.patch
   '@cosmjs/stargate@0.37.0':
-    hash: 02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e
+    hash: 8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df
     path: patches/@cosmjs__stargate@0.37.0.patch
   '@tanstack/query-core@5.83.1':
     hash: 9d8ff498085c7df0d62ab0b0b31601d94da926966f43c1f5717cfb0af0e53723
@@ -409,7 +409,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc':
         specifier: 0.37.0
         version: 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -577,7 +577,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc':
         specifier: 0.37.0
         version: 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -668,7 +668,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmos-kit/compass':
         specifier: ^2.14.7
         version: 2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -788,7 +788,7 @@ importers:
         version: 6.6.2
       graz:
         specifier: ^0.1.31
-        version: 0.1.31(@cosmjs/amino@0.37.0)(@cosmjs/cosmwasm-stargate@0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.37.0)(@cosmjs/stargate@0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/tendermint-rpc@0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@leapwallet/cosmos-social-login-capsule-provider@0.0.41(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(fp-ts@2.1.1))(@terra-money/feather.js@1.2.1)(@types/react@18.3.26)(axios@1.6.8)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(starknet@6.24.1(encoding@0.1.13))(utf-8-validate@5.0.10)
+        version: 0.1.31(@cosmjs/amino@0.37.0)(@cosmjs/cosmwasm-stargate@0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.37.0)(@cosmjs/stargate@0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/tendermint-rpc@0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@leapwallet/cosmos-social-login-capsule-provider@0.0.41(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(fp-ts@2.1.1))(@terra-money/feather.js@1.2.1)(@types/react@18.3.26)(axios@1.6.8)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(starknet@6.24.1(encoding@0.1.13))(utf-8-validate@5.0.10)
       i18next:
         specifier: ^21.8.10
         version: 21.8.11
@@ -1292,7 +1292,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc':
         specifier: 0.37.0
         version: 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1383,7 +1383,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc':
         specifier: 0.37.0
         version: 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1462,7 +1462,7 @@ importers:
         version: 0.37.0
       '@cosmjs/stargate':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc':
         specifier: 0.37.0
         version: 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -16157,8 +16157,8 @@ snapshots:
       '@aws-crypto/sha1-browser': 3.0.0
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.587.0
@@ -16219,8 +16219,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16262,11 +16262,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.592.0':
+  '@aws-sdk/client-sso-oidc@3.592.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16305,6 +16305,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.592.0':
@@ -16350,11 +16351,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)':
+  '@aws-sdk/client-sts@3.592.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16393,7 +16394,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.592.0':
@@ -16427,7 +16427,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.587.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16485,7 +16485,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/types': 3.0.0
@@ -16601,7 +16601,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/shared-ini-file-loader': 3.1.0
@@ -18442,7 +18442,7 @@ snapshots:
       '@cosmjs/encoding': 0.37.0
       '@cosmjs/math': 0.37.0
       '@cosmjs/proto-signing': 0.37.0
-      '@cosmjs/stargate': 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@cosmjs/stargate': 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc': 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/utils': 0.37.0
       cosmjs-types: 0.10.1
@@ -18691,7 +18691,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@cosmjs/stargate@0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@cosmjs/stargate@0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@cosmjs/amino': 0.37.0
       '@cosmjs/encoding': 0.37.0
@@ -31252,13 +31252,13 @@ snapshots:
 
   graphql@16.8.1: {}
 
-  graz@0.1.31(@cosmjs/amino@0.37.0)(@cosmjs/cosmwasm-stargate@0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.37.0)(@cosmjs/stargate@0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/tendermint-rpc@0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@leapwallet/cosmos-social-login-capsule-provider@0.0.41(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(fp-ts@2.1.1))(@terra-money/feather.js@1.2.1)(@types/react@18.3.26)(axios@1.6.8)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(starknet@6.24.1(encoding@0.1.13))(utf-8-validate@5.0.10):
+  graz@0.1.31(@cosmjs/amino@0.37.0)(@cosmjs/cosmwasm-stargate@0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.37.0)(@cosmjs/stargate@0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@cosmjs/tendermint-rpc@0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@leapwallet/cosmos-social-login-capsule-provider@0.0.41(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(fp-ts@2.1.1))(@terra-money/feather.js@1.2.1)(@types/react@18.3.26)(axios@1.6.8)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(starknet@6.24.1(encoding@0.1.13))(utf-8-validate@5.0.10):
     dependencies:
       '@cosmjs/amino': 0.37.0
       '@cosmjs/cosmwasm-stargate': 0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/launchpad': 0.27.1
       '@cosmjs/proto-signing': 0.37.0
-      '@cosmjs/stargate': 0.37.0(patch_hash=02148bced30d9a41d11c0d83bb21589af8a5a5092390984cad81b9a86994972e)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@cosmjs/stargate': 0.37.0(patch_hash=8c61476c436dd8ff9c5d9c4140b226b45b2bbcc8f1e076647f98efeffbaee3df)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/tendermint-rpc': 0.37.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmsnap/snapper': 0.1.29
       '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)

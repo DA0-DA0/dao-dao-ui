@@ -12,7 +12,7 @@ index 804d654fecf857549a0600da263129cddb25f224..9423be6b46695886e2e1f5487cc422ad
  }
  export declare function setupTxExtension(base: QueryClient): TxExtension;
 diff --git a/build/modules/tx/queries.js b/build/modules/tx/queries.js
-index f905e43532c0125367c16c2984c1bb875aa7d400..26607b8206f00022b0156b0051cc3ddd8295f998 100644
+index f905e43532c0125367c16c2984c1bb875aa7d400..1c0d92ba4c9fffcd8430fa7ed783d4cd81614508 100644
 --- a/build/modules/tx/queries.js
 +++ b/build/modules/tx/queries.js
 @@ -20,7 +20,7 @@ function setupTxExtension(base) {
@@ -28,7 +28,7 @@ index f905e43532c0125367c16c2984c1bb875aa7d400..26607b8206f00022b0156b0051cc3ddd
                      body: tx_1.TxBody.fromPartial({
                          messages: Array.from(messages),
                          memo: memo,
-+                        nonCriticalExtensionOptions: Array.from(nonCriticalExtensionOptions),
++                        nonCriticalExtensionOptions,
                      }),
                      signatures: [new Uint8Array()],
                  });
