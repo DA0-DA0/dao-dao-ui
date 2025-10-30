@@ -699,9 +699,6 @@ importers:
       '@cosmos-kit/leap-metamask-cosmos-snap':
         specifier: ^0.15.7
         version: 0.15.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      '@cosmos-kit/ledger':
-        specifier: ^2.14.7
-        version: 2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/crypto@0.37.0)(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/okxwallet':
         specifier: ^2.12.7
         version: 2.12.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -2918,14 +2915,6 @@ packages:
   '@cosmos-kit/leap@2.15.7':
     resolution: {integrity: sha512-bVbuSWJruXQ/To7bXxI8i4R7XXf30hMO7SxBWWkoceor5pxBF8MaOG/iJzhMB3yu7/rno9CH8iaHDj3ayFYnGg==}
 
-  '@cosmos-kit/ledger@2.14.7':
-    resolution: {integrity: sha512-B1LGg/oh2B6zhk5q3AHnDiyLzZcMvr0RbVEw8uUZn3sRAYiEvaNU2/yRdIrqJCs6eZtPLsKmTCyBgVtih6NCUA==}
-    peerDependencies:
-      '@cosmjs/amino': '>=0.32.4'
-      '@cosmjs/crypto': '>=0.32.4'
-      '@cosmjs/encoding': '>=0.32.4'
-      '@cosmjs/proto-signing': '>=0.32.4'
-
   '@cosmos-kit/okxwallet-extension@2.14.7':
     resolution: {integrity: sha512-TGPP+KKWocVJy6a3VSuJ1DwUu1eJNSI2Q3/sdl5zd1CiIArBqg7D8bAJOHj54GyZ7/s0Ft3ls+WeGqaZRir4zg==}
     peerDependencies:
@@ -4144,27 +4133,6 @@ packages:
 
   '@leapwallet/cosmos-social-login-core@0.0.1':
     resolution: {integrity: sha512-hGJrBYR8CQAVvmOOCvK2RmZ5ykSjxueXZfsRBXGNFyBw6YEo2oRXedJ2g4X9MDAL7pqQ6ExkltTbSkr+ea2uKg==}
-
-  '@ledgerhq/devices@8.4.4':
-    resolution: {integrity: sha512-sz/ryhe/R687RHtevIE9RlKaV8kkKykUV4k29e7GAVwzHX1gqG+O75cu1NCJUHLbp3eABV5FdvZejqRUlLis9A==}
-
-  '@ledgerhq/errors@6.19.1':
-    resolution: {integrity: sha512-75yK7Nnit/Gp7gdrJAz0ipp31CCgncRp+evWt6QawQEtQKYEDfGo10QywgrrBBixeRxwnMy1DP6g2oCWRf1bjw==}
-
-  '@ledgerhq/hw-app-cosmos@6.31.0':
-    resolution: {integrity: sha512-vCOo6/xCGHYKSNcjM4qIm7xxZlj1N3nrjMIqHSmpYp65CAOC6r/mjjjTljiNUyr2GKlj0yf3EJmZI4w+guHf9w==}
-
-  '@ledgerhq/hw-transport-webhid@6.30.0':
-    resolution: {integrity: sha512-HoTzjmYwO7+TVwK+GNbglRepUoDywBL6vjhKnhGqJSUPqAqJJyEXcnKnFDBMN7Phqm55O+YHDYfpcHGBNg5XlQ==}
-
-  '@ledgerhq/hw-transport-webusb@6.29.4':
-    resolution: {integrity: sha512-HoGF1LlBT9HEGBQy2XeCHrFdv/FEOZU0+J+yfKcgAQIAiASr2MLvdzwoJbUS8h6Gn+vc+/BjzBSO3JNn7Loqbg==}
-
-  '@ledgerhq/hw-transport@6.31.4':
-    resolution: {integrity: sha512-6c1ir/cXWJm5dCWdq55NPgCJ3UuKuuxRvf//Xs36Bq9BwkV2YaRQhZITAkads83l07NAdR16hkTWqqpwFMaI6A==}
-
-  '@ledgerhq/logs@6.12.0':
-    resolution: {integrity: sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==}
 
   '@lerna/add@6.4.1':
     resolution: {integrity: sha512-YSRnMcsdYnQtQQK0NSyrS9YGXvB3jzvx183o+JTH892MKzSlBqwpBHekCknSibyxga1HeZ0SNKQXgsHAwWkrRw==}
@@ -7778,9 +7746,6 @@ packages:
 
   bintrees@1.0.2:
     resolution: {integrity: sha512-VOMgTMwjAaUG580SXn3LacVgjurrbMme7ZZNYGSSV7mmtY6QQRh0Eg3pwIcntQ77DErK1L0NxkbetjcoXzVwKw==}
-
-  bip32-path@0.4.2:
-    resolution: {integrity: sha512-ZBMCELjJfcNMkz5bDuJ1WrYvjlhEF5k6mQ8vUr4N7MbVRsXei7ZOg8VhhwMfNiW68NWmLkgkc6WvTickrLGprQ==}
 
   bip32@2.0.6:
     resolution: {integrity: sha512-HpV5OMLLGTjSVblmrtYRfFFKuQB+GArM0+XP8HGWfJ5vxYBqo+DesvJwOdC2WJ3bCkZShGf0QIfoIpeomVzVdA==}
@@ -16189,8 +16154,8 @@ snapshots:
       '@aws-crypto/sha1-browser': 3.0.0
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.587.0
@@ -16251,8 +16216,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16294,11 +16259,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.592.0':
+  '@aws-sdk/client-sso-oidc@3.592.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16337,6 +16302,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.592.0':
@@ -16382,11 +16348,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)':
+  '@aws-sdk/client-sts@3.592.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16425,7 +16391,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.592.0':
@@ -16459,7 +16424,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.592.0(@aws-sdk/client-sso-oidc@3.592.0)(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.587.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16517,7 +16482,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.592.0(@aws-sdk/client-sso-oidc@3.592.0)
+      '@aws-sdk/client-sts': 3.592.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/types': 3.0.0
@@ -16633,7 +16598,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.592.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.592.0
+      '@aws-sdk/client-sso-oidc': 3.592.0(@aws-sdk/client-sts@3.592.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.0
       '@smithy/shared-ini-file-loader': 3.1.0
@@ -19484,36 +19449,6 @@ snapshots:
       - webpack-bundle-analyzer
       - webpack-dev-server
 
-  '@cosmos-kit/ledger@2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/crypto@0.37.0)(@cosmjs/encoding@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@cosmjs/amino': 0.37.0
-      '@cosmjs/crypto': 0.37.0
-      '@cosmjs/encoding': 0.37.0
-      '@cosmjs/proto-signing': 0.37.0
-      '@cosmos-kit/core': 2.16.7(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      '@ledgerhq/hw-app-cosmos': 6.31.0
-      '@ledgerhq/hw-transport-webhid': 6.30.0
-      '@ledgerhq/hw-transport-webusb': 6.29.4
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@react-native-async-storage/async-storage'
-      - '@upstash/redis'
-      - '@vercel/kv'
-      - bufferutil
-      - encoding
-      - ioredis
-      - supports-color
-      - uWebSockets.js
-      - utf-8-validate
-
   '@cosmos-kit/okxwallet-extension@2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
       '@cosmjs/amino': 0.37.0
@@ -21632,44 +21567,6 @@ snapshots:
       '@cosmjs/amino': 0.31.3
       '@cosmjs/proto-signing': 0.31.3
       typescript: 5.4.5
-
-  '@ledgerhq/devices@8.4.4':
-    dependencies:
-      '@ledgerhq/errors': 6.19.1
-      '@ledgerhq/logs': 6.12.0
-      rxjs: 7.8.2
-      semver: 7.7.2
-
-  '@ledgerhq/errors@6.19.1': {}
-
-  '@ledgerhq/hw-app-cosmos@6.31.0':
-    dependencies:
-      '@ledgerhq/errors': 6.19.1
-      '@ledgerhq/hw-transport': 6.31.4
-      bip32-path: 0.4.2
-
-  '@ledgerhq/hw-transport-webhid@6.30.0':
-    dependencies:
-      '@ledgerhq/devices': 8.4.4
-      '@ledgerhq/errors': 6.19.1
-      '@ledgerhq/hw-transport': 6.31.4
-      '@ledgerhq/logs': 6.12.0
-
-  '@ledgerhq/hw-transport-webusb@6.29.4':
-    dependencies:
-      '@ledgerhq/devices': 8.4.4
-      '@ledgerhq/errors': 6.19.1
-      '@ledgerhq/hw-transport': 6.31.4
-      '@ledgerhq/logs': 6.12.0
-
-  '@ledgerhq/hw-transport@6.31.4':
-    dependencies:
-      '@ledgerhq/devices': 8.4.4
-      '@ledgerhq/errors': 6.19.1
-      '@ledgerhq/logs': 6.12.0
-      events: 3.3.0
-
-  '@ledgerhq/logs@6.12.0': {}
 
   '@lerna/add@6.4.1':
     dependencies:
@@ -28223,8 +28120,6 @@ snapshots:
       file-uri-to-path: 1.0.0
 
   bintrees@1.0.2: {}
-
-  bip32-path@0.4.2: {}
 
   bip32@2.0.6:
     dependencies:

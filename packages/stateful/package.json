@@ -25,7 +25,6 @@
     "@cosmos-kit/keplr-extension": "^2.15.8",
     "@cosmos-kit/leap": "^2.15.7",
     "@cosmos-kit/leap-metamask-cosmos-snap": "^0.15.7",
-    "@cosmos-kit/ledger": "^2.14.7",
     "@cosmos-kit/okxwallet": "^2.12.7",
     "@cosmos-kit/omni": "^2.13.7",
     "@cosmos-kit/owallet": "^2.15.7",

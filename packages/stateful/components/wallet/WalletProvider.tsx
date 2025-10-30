@@ -8,7 +8,7 @@ import { wallets as keplrWallets } from '@cosmos-kit/keplr'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
-import { wallets as ledgerWallets } from '@cosmos-kit/ledger'
+// import { wallets as ledgerWallets } from '@cosmos-kit/ledger'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { wallets as owalletWallets } from '@cosmos-kit/owallet'
@@ -153,7 +153,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           ...compassWallets,
           ...cosmosExtensionMetamaskWallets,
           ...exodusWallets,
-          ...ledgerWallets,
+          // ...ledgerWallets,
           ...owalletWallets,
           ...vultisigWallets,
         ].sort((a, b) =>
