@@ -4,8 +4,12 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 import { fromBech32, toBase64, toBech32 } from '@cosmjs/encoding'
-import { Coin, DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate'
-import { parseRawLog } from '@cosmjs/stargate/build/logs'
+import {
+  Coin,
+  DeliverTxResponse,
+  isDeliverTxFailure,
+  logs,
+} from '@cosmjs/stargate'
 import { toUtf8 } from 'secretjs'
 
 import { HugeDecimal } from '@dao-dao/math'
@@ -264,7 +268,7 @@ export const executeSmartContracts = async ({
     }
 
     return {
-      logs: parseRawLog(result.rawLog),
+      logs: logs.parseRawLog(result.rawLog),
       height: result.height,
       transactionHash: result.transactionHash,
       events: result.events,

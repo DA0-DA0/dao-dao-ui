@@ -1,17 +1,18 @@
 diff --git a/build/index.d.ts b/build/index.d.ts
-index bb2e8b692e47d2de9e59408df68ff844144973ee..ce111cde959692fa320ffef02657dd9140fc4fe1 100644
+index f360bcc3448ef6197790c4bc04fc2dfd5f0f7039..053ec16a58f3860842436a967b1a133054965639 100644
 --- a/build/index.d.ts
 +++ b/build/index.d.ts
-@@ -2,6 +2,6 @@ export { Code, CodeDetails, Contract, ContractCodeHistoryEntry, CosmWasmClient }
- export { fromBinary, toBinary } from "./encoding";
+@@ -4,7 +4,7 @@ export { fromBinary, toBinary } from "./encoding";
  export { _instantiate2AddressIntermediate, instantiate2Address } from "./instantiate2";
- export { createWasmAminoConverters, isMsgClearAdminEncodeObject, isMsgExecuteEncodeObject, isMsgInstantiateContract2EncodeObject, isMsgInstantiateContractEncodeObject, isMsgMigrateEncodeObject, isMsgStoreCodeEncodeObject, isMsgUpdateAdminEncodeObject, JsonObject, MsgClearAdminEncodeObject, MsgExecuteContractEncodeObject, MsgInstantiateContract2EncodeObject, MsgInstantiateContractEncodeObject, MsgMigrateContractEncodeObject, MsgStoreCodeEncodeObject, MsgUpdateAdminEncodeObject, setupWasmExtension, WasmExtension, wasmTypes, } from "./modules";
--export { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClient, SigningCosmWasmClientOptions, UploadResult, } from "./signingcosmwasmclient";
-+export { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClient, SigningCosmWasmClientOptions, UploadResult, CustomTxOptions, } from "./signingcosmwasmclient";
- export { Attribute, DeliverTxResponse, Event, IndexedTx } from "@cosmjs/stargate";
- export { HttpEndpoint } from "@cosmjs/tendermint-rpc";
+ export type { JsonObject, MsgClearAdminEncodeObject, MsgExecuteContractEncodeObject, MsgInstantiateContract2EncodeObject, MsgInstantiateContractEncodeObject, MsgMigrateContractEncodeObject, MsgStoreCodeEncodeObject, MsgUpdateAdminEncodeObject, WasmExtension, } from "./modules";
+ export { createWasmAminoConverters, isMsgClearAdminEncodeObject, isMsgExecuteEncodeObject, isMsgInstantiateContract2EncodeObject, isMsgInstantiateContractEncodeObject, isMsgMigrateEncodeObject, isMsgStoreCodeEncodeObject, isMsgUpdateAdminEncodeObject, setupWasmExtension, wasmTypes, } from "./modules";
+-export type { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClientOptions, UploadResult, } from "./signingcosmwasmclient";
++export type { ChangeAdminResult, ExecuteInstruction, ExecuteResult, InstantiateOptions, InstantiateResult, MigrateResult, SigningCosmWasmClientOptions, UploadResult, CustomTxOptions, } from "./signingcosmwasmclient";
+ export { SigningCosmWasmClient } from "./signingcosmwasmclient";
+ export type { Attribute, DeliverTxResponse, Event, IndexedTx } from "@cosmjs/stargate";
+ export type { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 diff --git a/build/signingcosmwasmclient.d.ts b/build/signingcosmwasmclient.d.ts
-index 398df4c7b16e43f69b28d6a893ddfdd5061365f2..27f7067af30ba3c78200b354001bf423c0ad3548 100644
+index 425555c6ef817a417c264fd4a53572d17b7149ee..1bf508b2e6869c73e52c0de774fc1c53e13e2fdf 100644
 --- a/build/signingcosmwasmclient.d.ts
 +++ b/build/signingcosmwasmclient.d.ts
 @@ -98,6 +98,19 @@ export interface ExecuteResult {
@@ -84,10 +85,10 @@ index 398df4c7b16e43f69b28d6a893ddfdd5061365f2..27f7067af30ba3c78200b354001bf423
      private signDirect;
  }
 diff --git a/build/signingcosmwasmclient.js b/build/signingcosmwasmclient.js
-index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee4715088c 100644
+index fb435d0c039d7c22e15edd09cdbcaff9f53481f6..156104221689a8ab7d081d350decb525b41edb7e 100644
 --- a/build/signingcosmwasmclient.js
 +++ b/build/signingcosmwasmclient.js
-@@ -86,15 +86,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -88,15 +88,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
          this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
          this.gasPrice = options.gasPrice;
      }
@@ -106,7 +107,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          (0, utils_1.assertDefined)(gasInfo);
          return math_1.Uint53.fromString(gasInfo.gasUsed.toString()).toNumber();
      }
-@@ -252,18 +253,18 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -254,18 +255,18 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
              gasUsed: result.gasUsed,
          };
      }
@@ -128,7 +129,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          const msgs = instructions.map((i) => ({
              typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
              value: tx_4.MsgExecuteContract.fromPartial({
-@@ -273,7 +274,7 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -275,7 +276,7 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
                  funds: [...(i.funds || [])],
              }),
          }));
@@ -137,7 +138,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          if ((0, stargate_1.isDeliverTxFailure)(result)) {
              throw new Error(createDeliverTxResponseErrorMessage(result));
          }
-@@ -326,19 +327,20 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -328,19 +329,20 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
       * @param fee
       * @param memo
       * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
@@ -161,7 +162,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          const txBytes = tx_3.TxRaw.encode(txRaw).finish();
          return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
      }
-@@ -354,25 +356,26 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -356,25 +358,26 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
       * @param fee
       * @param memo
       * @param timeoutHeight (optional) timeout height to prevent the tx from being committed past a certain height
@@ -192,7 +193,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          let signerData;
          if (explicitSignerData) {
              signerData = explicitSignerData;
-@@ -386,11 +389,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -388,11 +391,16 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
                  chainId: chainId,
              };
          }
@@ -212,7 +213,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
          (0, utils_1.assert)(!(0, proto_signing_1.isOfflineDirectSigner)(this.signer));
          const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
          if (!accountFromSigner) {
-@@ -401,12 +409,14 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -403,12 +411,14 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
          const msgs = messages.map((msg) => this.aminoTypes.toAmino(msg));
          const signDoc = (0, amino_1.makeSignDoc)(msgs, fee, chainId, memo, accountNumber, sequence, timeoutHeight);
          const { signature, signed } = await this.signer.signAmino(signerAddress, signDoc);
@@ -227,7 +228,7 @@ index 6eb95bb672698df8feba51dc5a06d33bbed616c5..867e0cf1994d1742b4d5480f856482ee
              },
          };
          const signedTxBodyBytes = this.registry.encode(signedTxBody);
-@@ -419,19 +429,21 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
+@@ -421,19 +431,21 @@ class SigningCosmWasmClient extends cosmwasmclient_1.CosmWasmClient {
              signatures: [(0, encoding_1.fromBase64)(signature.signature)],
          });
      }

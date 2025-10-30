@@ -9,7 +9,6 @@
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "module": "esnext",
-    "moduleResolution": "node",
     "noEmit": true,
     "resolveJsonModule": true,
     "strict": false,

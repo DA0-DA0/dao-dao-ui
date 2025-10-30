@@ -12,7 +12,7 @@ index 804d654fecf857549a0600da263129cddb25f224..9423be6b46695886e2e1f5487cc422ad
  }
  export declare function setupTxExtension(base: QueryClient): TxExtension;
 diff --git a/build/modules/tx/queries.js b/build/modules/tx/queries.js
-index 6a78179d5857a820acf2a32ff72cecca454663e0..831afd7bc0b3bfd4427f948340b5fb547b758b61 100644
+index f905e43532c0125367c16c2984c1bb875aa7d400..26607b8206f00022b0156b0051cc3ddd8295f998 100644
 --- a/build/modules/tx/queries.js
 +++ b/build/modules/tx/queries.js
 @@ -20,7 +20,7 @@ function setupTxExtension(base) {
@@ -24,16 +24,11 @@ index 6a78179d5857a820acf2a32ff72cecca454663e0..831afd7bc0b3bfd4427f948340b5fb54
                  const tx = tx_1.Tx.fromPartial({
                      authInfo: tx_1.AuthInfo.fromPartial({
                          fee: tx_1.Fee.fromPartial({}),
-@@ -35,10 +35,11 @@ function setupTxExtension(base) {
+@@ -35,6 +35,7 @@ function setupTxExtension(base) {
                      body: tx_1.TxBody.fromPartial({
                          messages: Array.from(messages),
                          memo: memo,
-+                        nonCriticalExtensionOptions,
++                        nonCriticalExtensionOptions: Array.from(nonCriticalExtensionOptions),
                      }),
                      signatures: [new Uint8Array()],
                  });
--                const request = service_1.SimulateRequest.fromPartial({
-+            const request = service_1.SimulateRequest.fromPartial({
-                     txBytes: tx_1.Tx.encode(tx).finish(),
-                 });
-                 const response = await queryService.Simulate(request);

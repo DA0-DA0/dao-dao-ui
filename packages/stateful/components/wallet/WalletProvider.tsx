@@ -16,7 +16,7 @@ import { ChainProvider } from '@cosmos-kit/react-lite'
 import { wallets as shellWallets } from '@cosmos-kit/shell'
 import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
-// import { wallets as vultisigExtensionWallets } from '@cosmos-kit/vultisig-extension'
+import { wallets as vultisigWallets } from '@cosmos-kit/vultisig'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
 import { useQueryClient } from '@tanstack/react-query'
 import { PropsWithChildren, ReactNode, useEffect, useMemo, useRef } from 'react'
@@ -155,7 +155,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           ...exodusWallets,
           ...ledgerWallets,
           ...owalletWallets,
-          // ...vultisigExtensionWallets,
+          ...vultisigWallets,
         ].sort((a, b) =>
           a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
         ),

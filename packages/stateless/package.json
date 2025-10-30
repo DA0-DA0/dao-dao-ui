@@ -8,8 +8,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@cosmjs/encoding": "0.33.1",
-    "@cosmos-kit/keplr-extension": "^2.15.7",
+    "@cosmjs/encoding": "0.37.0",
+    "@cosmos-kit/keplr-extension": "^2.15.8",
     "@dao-dao/math": "workspace:*",
     "@dao-dao/types": "workspace:*",
     "@dao-dao/utils": "workspace:*",
@@ -40,7 +40,7 @@
     "react-confetti": "^6.1.0",
     "react-csv": "^2.2.2",
     "react-datetime-picker": "^6.0.1",
-    "react-hook-form": "7.20.4",
+    "react-hook-form": "7.31.3",
     "react-hot-toast": "^2.1.1",
     "react-intersection-observer": "^9.4.1",
     "react-markdown": "^8.0.0",
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.50.224",
-    "@cosmos-kit/core": "^2.16.6",
+    "@cosmos-kit/core": "^2.16.7",
     "@dao-dao/config": "workspace:*",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",

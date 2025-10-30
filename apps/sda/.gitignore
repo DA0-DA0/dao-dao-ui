@@ -1,2 +1,5 @@
 # Sentry
 .sentryclirc
+
+# translations copied from packages/i18n
+public/locales/

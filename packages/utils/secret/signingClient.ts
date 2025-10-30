@@ -26,7 +26,6 @@ import {
   defaultRegistryTypes as defaultStargateTypes,
   logs,
 } from '@cosmjs/stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { CometClient, HttpEndpoint, connectComet } from '@cosmjs/tendermint-rpc'
 import { assert } from '@cosmjs/utils'
 import {
@@ -380,7 +379,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
     }
 
     const parsedLogs = logs.parseRawLog(result.rawLog)
-    const codeIdAttr = findAttribute(parsedLogs, 'store_code', 'code_id')
+    const codeIdAttr = logs.findAttribute(parsedLogs, 'store_code', 'code_id')
 
     // compression used by secretjs
     const compressed = pako.gzip(wasmCode, { level: 9 })
@@ -437,7 +436,7 @@ export class SecretSigningCosmWasmClient extends SigningCosmWasmClient {
 
     const parsedLogs = logs.parseRawLog(result.rawLog)
 
-    const contractAddressAttr = findAttribute(
+    const contractAddressAttr = logs.findAttribute(
       parsedLogs,
       'instantiate',
       '_contract_address'
