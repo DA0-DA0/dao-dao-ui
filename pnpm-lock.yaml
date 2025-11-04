@@ -628,8 +628,8 @@ importers:
         version: 1.15.1(encoding@0.1.13)
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@dao-dao/config':
         specifier: workspace:*
         version: link:../config
@@ -719,7 +719,7 @@ importers:
         version: 2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/station':
         specifier: ^2.13.7
-        version: 2.13.7(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
+        version: 2.13.7(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/trust':
         specifier: ^2.14.7
         version: 2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@walletconnect/types@2.17.2)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -728,7 +728,7 @@ importers:
         version: 2.14.7(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/web3auth':
         specifier: ^2.16.7
-        version: 2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+        version: 2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
       '@dao-dao/i18n':
         specifier: workspace:*
         version: link:../i18n
@@ -869,8 +869,8 @@ importers:
         version: 2.14.7(@tanstack/query-core@5.83.1(patch_hash=9d8ff498085c7df0d62ab0b0b31601d94da926966f43c1f5717cfb0af0e53723))(@tanstack/react-query@5.83.1(react@18.2.0))(@types/react@18.3.26)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.26.0(bufferutil@4.0.9)(typescript@5.4.5)(utf-8-validate@5.0.10))
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@cosmjs/amino':
         specifier: 0.37.0
         version: 0.37.0
@@ -1083,8 +1083,8 @@ importers:
         version: 1.8.1(react@18.2.0)
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@cosmos-kit/core':
         specifier: ^2.16.7
         version: 2.16.7(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -1313,8 +1313,8 @@ importers:
         version: 4.1.2
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@dao-dao/config':
         specifier: workspace:*
         version: link:../config
@@ -1364,8 +1364,8 @@ importers:
   packages/types:
     dependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@cosmjs/amino':
         specifier: 0.37.0
         version: 0.37.0
@@ -1395,7 +1395,7 @@ importers:
         version: 2.16.7(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@cosmos-kit/web3auth':
         specifier: ^2.16.7
-        version: 2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+        version: 2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
       '@dao-dao/math':
         specifier: workspace:*
         version: link:../math
@@ -1515,8 +1515,8 @@ importers:
         specifier: ^8.11.0
         version: 8.12.0
       chain-registry:
-        specifier: ^1.69.361
-        version: 1.69.361
+        specifier: ^1.69.389
+        version: 1.69.389
       formidable:
         specifier: ^2.0.1
         version: 2.0.1
@@ -1567,8 +1567,8 @@ importers:
         version: 7.7.2
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.50.224
-        version: 0.50.224
+        specifier: ^0.50.246
+        version: 0.50.246
       '@cosmjs/proto-signing':
         specifier: 0.37.0
         version: 0.37.0
@@ -2604,8 +2604,8 @@ packages:
   '@chain-registry/types@0.46.15':
     resolution: {integrity: sha512-gzf+pkAbEZ7fKuTuwmrEAEcx1K/BNrKuCnB9s+WwSo9Ad/3s+GV5LOXcOOxjjHh9Mrs9kvnxKvzKjOwWu8gDJw==}
 
-  '@chain-registry/types@0.50.224':
-    resolution: {integrity: sha512-I6RYLPjAANzxfgsNtxN+k3+Jh9L5HnId5LJsbyszFxk7ECDqkerF5NTUvscf0apCUON/oKRGNOpykZdJpnat2Q==}
+  '@chain-registry/types@0.50.246':
+    resolution: {integrity: sha512-xV+J7fNel3bqR5SOzUZA89zZ/qWgT2EtKN3ntS4gWrHYVGBmHWz3iNt5H7A2YKiR0b/nYMzxZ3xMmwYPQ/30DA==}
 
   '@chain-registry/utils@1.51.108':
     resolution: {integrity: sha512-nQJgFT95XsfPTmeKYjt0s27qkPBqg0skQmTWblIcwRU3MuANk6NJedEMM3B9VgtjC7ZqIKb0toQSE30OGI1RSQ==}
@@ -8005,8 +8005,8 @@ packages:
     resolution: {integrity: sha512-mCuXncKXk5iCLhfhwTc0izo0gtEmpz5CtG2y8GiOINBlMVS6v8TMRc5TaLWKS6692m9+dVVfzgeVxR5UxWHTYw==}
     engines: {node: '>=12'}
 
-  chain-registry@1.69.361:
-    resolution: {integrity: sha512-FHXxY57jQAQKb4h8pjqcRDoSKjtjQJkHyNeRYtm5wJqyxp3Bkkw5YArquxW++vrjCop/Y4U2sbl9sZGJAdzKaQ==}
+  chain-registry@1.69.389:
+    resolution: {integrity: sha512-YlD8GbL3hH93mv96LUm2Jq7fQZsFQ8RVd/V/+EA1Fr0FuXNsmgGE7aHVABJ8APNRbrQcRgPdCI/zxC6eImkALA==}
 
   chalk@0.4.0:
     resolution: {integrity: sha512-sQfYDlfv2DGVtjdoQqxS0cEZDroyG8h6TamA6rvxwlrU5BaSLDx9xhatBYl2pxZ7gmpNaPFVwBtdGdu5rQ+tYQ==}
@@ -18237,7 +18237,7 @@ snapshots:
 
   '@chain-registry/client@1.53.108(encoding@0.1.13)':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       '@chain-registry/utils': 1.51.108
       bfs-path: 1.0.2
       cross-fetch: 3.2.0(encoding@0.1.13)
@@ -18252,7 +18252,7 @@ snapshots:
 
   '@chain-registry/cosmostation@1.72.176':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       '@chain-registry/utils': 1.51.108
       '@cosmostation/extension-client': 0.1.15
 
@@ -18265,7 +18265,7 @@ snapshots:
 
   '@chain-registry/keplr@1.74.176':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.7.2
@@ -18280,11 +18280,11 @@ snapshots:
 
   '@chain-registry/types@0.46.15': {}
 
-  '@chain-registry/types@0.50.224': {}
+  '@chain-registry/types@0.50.246': {}
 
   '@chain-registry/utils@1.51.108':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       bignumber.js: 9.1.2
       sha.js: 2.4.11
 
@@ -19721,9 +19721,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station-extension@2.14.7(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station-extension@2.14.7(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       '@cosmjs/amino': 0.37.0
       '@cosmjs/proto-signing': 0.37.0
       '@cosmos-kit/core': 2.16.7(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -19753,9 +19753,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station@2.13.7(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station@2.13.7(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/station-extension': 2.14.7(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
+      '@cosmos-kit/station-extension': 2.14.7(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@terra-money/terra.js@3.1.10)(axios@1.6.8)(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -19940,9 +19940,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/web3auth@2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.224)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/web3auth@2.16.7(@babel/runtime@7.27.0)(@chain-registry/types@0.50.246)(@cosmjs/amino@0.37.0)(@cosmjs/proto-signing@0.37.0)(@keplr-wallet/cosmos@0.12.156(starknet@6.24.1(encoding@0.1.13)))(bufferutil@4.0.9)(cosmjs-types@0.10.1)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
       '@cosmjs/amino': 0.37.0
       '@cosmjs/proto-signing': 0.37.0
       '@cosmos-kit/core': 2.16.7(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
@@ -28521,9 +28521,9 @@ snapshots:
       loupe: 3.1.3
       pathval: 2.0.0
 
-  chain-registry@1.69.361:
+  chain-registry@1.69.389:
     dependencies:
-      '@chain-registry/types': 0.50.224
+      '@chain-registry/types': 0.50.246
 
   chalk@0.4.0:
     dependencies:
