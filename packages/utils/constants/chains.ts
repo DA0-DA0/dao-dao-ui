@@ -261,7 +261,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.BitsongMainnet,
         name: 'bitsong',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.Tx,
         accentColor: '#c53381',
         factoryContractAddress:
           'bitsong1glrutywr7268g9ew0uwj6xq5z5hv7rv0t7pum9gyvpkj7egty5cqzf7rdt',
