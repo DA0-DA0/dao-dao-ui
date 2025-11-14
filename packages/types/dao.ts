@@ -225,6 +225,7 @@ export type ProposalDraft<FormData = any> = {
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<CreatorData extends FieldValues = any> {
+  newDao: NewDao<CreatorData>
   form: UseFormReturn<NewDao<CreatorData>>
   instantiateMsg:
     | DaoDaoCoreInstantiateMsg

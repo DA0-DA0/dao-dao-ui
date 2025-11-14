@@ -14,7 +14,7 @@ import { RawJsonDisplay } from '../../../RawJsonDisplay'
 import { DaoInfoCards } from '../../DaoInfoCards'
 
 export const CreateDaoReview = ({
-  form: { watch },
+  newDao,
   commonVotingConfig,
   creator,
   proposalModuleDaoCreationAdapters,
@@ -23,7 +23,6 @@ export const CreateDaoReview = ({
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
-  const newDao = watch()
   const {
     creator: { data: creatorData },
     proposalModuleAdapters,

@@ -9,6 +9,7 @@ import { FormCheckbox } from '../../../inputs/Checkbox'
 import { DaoCreateConfigInputCard } from '../DaoCreateConfigInputCard'
 
 export const CreateDaoVoting = ({
+  newDao,
   form: {
     formState: { errors },
     register,
@@ -26,7 +27,6 @@ export const CreateDaoVoting = ({
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
-  const newDao = watch()
   const {
     creator: { data: creatorData },
     proposalModuleAdapters,

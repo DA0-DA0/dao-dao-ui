@@ -33,6 +33,7 @@ import {
   getChainAssets,
   isValidBech32Address,
   makeValidateAddress,
+  tokensEqual,
 } from '@dao-dao/utils'
 
 import {
@@ -114,7 +115,11 @@ const ProposalDepositInput = ({
     // Update token info so we can use symbol and decimals later.
     if (
       tokenLoadable.state === 'hasValue' &&
-      token !== tokenLoadable.contents
+      ((!token && tokenLoadable.contents) ||
+        (token && !tokenLoadable.contents) ||
+        (token &&
+          tokenLoadable.contents &&
+          !tokensEqual(token, tokenLoadable.contents)))
     ) {
       setValue('proposalDeposit.token', tokenLoadable.contents)
     }

@@ -1099,6 +1099,7 @@ export const InnerCreateDaoForm = ({
   }
 
   const createDaoContext: CreateDaoContext = {
+    newDao,
     form,
     instantiateMsg,
     instantiateMsgError,
