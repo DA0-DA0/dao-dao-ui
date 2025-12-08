@@ -468,6 +468,10 @@ export const daoProposalSingleV2Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/listVotes',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }

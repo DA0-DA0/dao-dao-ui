@@ -280,6 +280,10 @@ export const listVotesSelector = selectorFamily<
           formula: 'daoProposalMultiple/listVotes',
           args: params[0],
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (votes) {
@@ -400,6 +404,10 @@ export const listAllVotesSelector = selectorFamily<
             proposalId,
           },
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (indexerVotes) {

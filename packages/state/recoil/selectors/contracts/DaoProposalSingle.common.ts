@@ -1,6 +1,10 @@
 import { selectorFamily } from 'recoil'
 
-import { ContractVersion, WithChainId } from '@dao-dao/types'
+import {
+  ContractVersion,
+  SupportedChainIndexerMode,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   ConfigResponse as ConfigV1Response,
   ReverseProposalsResponse as ReverseProposalsV1Response,
@@ -135,6 +139,10 @@ export const listAllVotesSelector = selectorFamily<
             proposalId,
           },
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (indexerVotes) {

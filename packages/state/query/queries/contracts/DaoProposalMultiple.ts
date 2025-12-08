@@ -469,6 +469,10 @@ export const daoProposalMultipleQueries = {
                 contractAddress,
                 formula: 'daoProposalMultiple/listVotes',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }

@@ -295,6 +295,10 @@ export const listVotesSelector = selectorFamily<
           formula: 'daoProposalSingle/listVotes',
           args: params[0],
           id,
+          allowedModes: [
+            SupportedChainIndexerMode.Tx,
+            SupportedChainIndexerMode.All,
+          ],
         })
       )
       if (votes) {

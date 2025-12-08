@@ -422,6 +422,10 @@ export const cwProposalSingleV1Queries = {
                 contractAddress,
                 formula: 'daoProposalSingle/listVotes',
                 args,
+                allowedModes: [
+                  SupportedChainIndexerMode.Tx,
+                  SupportedChainIndexerMode.All,
+                ],
               })
             ),
           }
