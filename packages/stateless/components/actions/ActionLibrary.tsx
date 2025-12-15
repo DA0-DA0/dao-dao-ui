@@ -305,7 +305,7 @@ export const ActionLibrary = ({
             <Button
               key={category.key}
               className={clsx(
-                'shrink-0 rounded-b-none border-b border-transparent !py-1 !px-2 md:w-full md:rounded-b-md md:!border-b-0 md:!py-2 md:!px-3 md:text-left',
+                'shrink-0 rounded-none border-b border-transparent !py-1 !px-2 md:w-full md:rounded-md md:!border-b-0 md:!py-2 md:!px-3 md:text-left',
                 categoryKeySelected === category.key &&
                   '!border-icon-primary md:bg-background-interactive-selected'
               )}
