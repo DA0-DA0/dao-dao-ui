@@ -664,8 +664,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://cosmos-testnet-api.polkachu.com',
   },
   [ChainId.TerraMainnet]: {
-    rpc: 'https://terra-rpc.polkachu.com',
-    rest: 'https://terra-api.polkachu.com',
+    rpc: 'https://rpc.phoenix-foundation.dev',
+    rest: 'https://lcd.phoenix-foundation.dev,
   },
   [ChainId.TerraClassicMainnet]: {
     rpc: 'https://terra-classic-rpc.publicnode.com',
