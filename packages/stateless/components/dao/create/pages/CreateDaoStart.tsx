@@ -24,6 +24,7 @@ export const CreateDaoStart = ({
     formState: { errors },
     register,
     watch,
+    setValue,
     resetField,
     reset,
   },
@@ -32,10 +33,10 @@ export const CreateDaoStart = ({
   ImportMultisigModal,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
-  const daoChainId = watch('chainId')
   const { config: chainConfig } = useSupportedChainContext()
 
   const data = watch()
+  const daoChainId = data.chainId
 
   const [importMultisigVisible, setImportMultisigVisible] = useState(false)
 
@@ -135,15 +136,17 @@ export const CreateDaoStart = ({
               description={t(descriptionI18nKey)}
               membership={t(membershipI18nKey)}
               name={t(nameI18nKey)}
-              onSelect={() =>
+              onSelect={() => {
+                const newCreator = {
+                  id,
+                  data: makeDefaultConfig(chainConfig),
+                }
+                setValue('creator', cloneDeep(newCreator))
                 resetField('creator', {
-                  defaultValue: {
-                    id,
-                    data: cloneDeep(makeDefaultConfig(chainConfig)),
-                  },
+                  defaultValue: cloneDeep(newCreator),
                 })
-              }
-              selected={watch('creator.id') === id}
+              }}
+              selected={data.creator?.id === id}
               supplies={t(suppliesI18nKey)}
               underDevelopment={
                 chainConfig.daoCreatorDisabled?.[id] === 'underDevelopment'
