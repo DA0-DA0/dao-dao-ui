@@ -14,10 +14,7 @@ import {
   DaoMemberCard,
   EntityDisplay,
 } from '../../../../components'
-import {
-  useEntityNameMap,
-  useQueryLoadingDataWithError,
-} from '../../../../hooks'
+import { useEntityMap, useQueryLoadingDataWithError } from '../../../../hooks'
 import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
 
 export const MembersTab = () => {
@@ -55,7 +52,7 @@ export const MembersTab = () => {
       ) ?? []
   )
 
-  const { map: memberNameMap } = useEntityNameMap({
+  const { map: entityMap } = useEntityMap({
     addresses:
       members.loading || members.errored
         ? []
@@ -66,7 +63,7 @@ export const MembersTab = () => {
     <StatelessMembersTab
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
-      memberNameMap={memberNameMap}
+      entityMap={entityMap}
       members={members}
       topVoters={{
         show: true,
