@@ -26,7 +26,14 @@ import { VotingPowerDistribution } from '../../VotingPowerDistribution'
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
+  /**
+   * The members of the DAO.
+   */
   members: LoadingDataWithError<StatefulDaoMemberCardProps[]>
+  /**
+   * Optional map of member to name for the CSV download.
+   */
+  memberNameMap?: Record<string, string | null | undefined>
   /**
    * URL to add a new member. Probably a prefilled proposal URL.
    */
@@ -61,6 +68,7 @@ const MEMBERS_PER_PAGE = 100
 export const MembersTab = ({
   DaoMemberCard,
   members,
+  memberNameMap,
   isMember,
   addMemberHref,
   ButtonLink,
@@ -287,6 +295,7 @@ export const MembersTab = ({
             data={[
               [
                 'Member',
+                'Name',
                 members.data.length
                   ? members.data[0].balanceLabel +
                     (!members.data[0].balance.loading &&
@@ -299,6 +308,7 @@ export const MembersTab = ({
               ...members.data.map(
                 ({ address, balance, votingPowerPercent }) => [
                   address,
+                  memberNameMap?.[address] ?? '',
                   balance.loading
                     ? '...'
                     : HugeDecimal.from(

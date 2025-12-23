@@ -12,7 +12,10 @@ import {
   DaoMemberCard,
   EntityDisplay,
 } from '../../../../components'
-import { useQueryLoadingDataWithError } from '../../../../hooks'
+import {
+  useEntityNameMap,
+  useQueryLoadingDataWithError,
+} from '../../../../hooks'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
@@ -46,10 +49,18 @@ export const MembersTab = () => {
       ) ?? []
   )
 
+  const { map: memberNameMap } = useEntityNameMap({
+    addresses:
+      members.loading || members.errored
+        ? []
+        : members.data.map((member) => member.address),
+  })
+
   return (
     <StatelessMembersTab
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
+      memberNameMap={memberNameMap}
       members={members}
       topVoters={{
         show: true,
