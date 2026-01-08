@@ -4,6 +4,8 @@ export enum ContractName {
   Cw3FixedMultisig = 'crates.io:cw3-fixed-multisig',
   Cw3FlexMultisig = 'crates.io:cw3-flex-multisig',
   CwTokenSwap = 'crates.io:cw-token-swap',
+  CwPayrollFactory = 'crates.io:cw-payroll-factory',
+  CwVesting = 'crates.io:cw-vesting',
   // This contract left out the `crates.io:` prefix.
   CwTokenfactoryIssuer = 'cw-tokenfactory-issuer',
   DaoProposalSingle = 'crates.io:dao-proposal-single',

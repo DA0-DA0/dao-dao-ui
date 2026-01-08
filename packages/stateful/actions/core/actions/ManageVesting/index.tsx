@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   chainQueries,
+  contractQueries,
   cw1WhitelistExtraQueries,
   cwPayrollFactoryQueries,
   cwVestingExtraQueries,
@@ -45,6 +46,7 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
+  ContractName,
   chainIsIndexed,
   convertDurationWithUnitsToSeconds,
   convertSecondsToDurationWithUnits,
@@ -878,11 +880,27 @@ export class ManageVestingAction extends ActionBase<ManageVestingData> {
     }
   }
 
-  match([message]: ProcessedMessage[]): ActionMatch {
+  async match([message]: ProcessedMessage[]): Promise<ActionMatch> {
     const { isNativeBegin, isCw20Begin, isRegisterSlash, isCancel } =
       this.breakDownMessage(message)
 
-    return isNativeBegin || isCw20Begin || isRegisterSlash || isCancel
+    if (!(isNativeBegin || isCw20Begin || isRegisterSlash || isCancel)) {
+      return false
+    }
+
+    // Ensure it is the expected contract.
+    return await this.options.queryClient.fetchQuery(
+      contractQueries.isContract({
+        chainId: message.account.chainId,
+        address: isCw20Begin
+          ? message.decodedMessage.wasm.execute.msg.send.contract
+          : message.decodedMessage.wasm.execute.contract_addr,
+        nameOrNames:
+          isNativeBegin || isCw20Begin
+            ? ContractName.CwPayrollFactory
+            : ContractName.CwVesting,
+      })
+    )
   }
 
   async decode([message]: ProcessedMessage[]): Promise<
