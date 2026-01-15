@@ -38,6 +38,10 @@ export const getModules = (options?: ModuleFilterOptions): readonly Module[] =>
       ((!module.isChainSupported || module.isChainSupported(options.chainId)) &&
         (!module.minVersion ||
           versionGte(options.version, module.minVersion)) &&
+        (!options.type?.include ||
+          options.type.include.includes(module.type)) &&
+        (!options.type?.exclude ||
+          !options.type.exclude.includes(module.type)) &&
         (!options.isDaoCreation || module.supportsDaoCreation))
   )
 

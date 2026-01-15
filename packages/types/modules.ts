@@ -295,6 +295,13 @@ export type ModuleFilterOptions = {
    */
   version: ContractVersion
   /**
+   * Types to filter by. If not provided, all types will be included.
+   */
+  type?: {
+    include?: ModuleType[]
+    exclude?: ModuleType[]
+  }
+  /**
    * Whether or not we're in the DAO creation context. Defaults to false.
    */
   isDaoCreation?: boolean

@@ -6,7 +6,7 @@ import {
   PuzzlePieceEmoji,
   useDao,
 } from '@dao-dao/stateless'
-import { IDaoBase, UnifiedCosmosMsg } from '@dao-dao/types'
+import { IDaoBase, ModuleType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -32,6 +32,9 @@ const Component: ActionComponent = (props) => {
       getModules({
         chainId: dao.chainId,
         version: dao.coreVersion,
+        type: {
+          include: [ModuleType.External],
+        },
       }),
     [dao]
   )
