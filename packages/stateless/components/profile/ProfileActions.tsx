@@ -1,13 +1,16 @@
 import {
   ArrowOutwardRounded,
+  Check,
   ClearRounded,
+  CopyAll,
   Key,
   Save,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useCallback, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import {
   SubmitErrorHandler,
   SubmitHandler,
@@ -39,6 +42,7 @@ import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../inputs'
+import { SmallLoader } from '../logo'
 import { Modal } from '../modals'
 import { Tooltip } from '../tooltip'
 
@@ -60,6 +64,10 @@ export type ProfileActionsProps = {
   WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
   actionEncodeContext: ActionEncodeContext
   actionsReadOnlyMode?: boolean
+  /**
+   * Optionally show a button that copies a link to the current actions.
+   */
+  copyDraftLink?: () => Promise<void>
 }
 
 export const ProfileActions = ({
@@ -75,6 +83,7 @@ export const ProfileActions = ({
   WalletChainSwitcher,
   actionEncodeContext,
   actionsReadOnlyMode,
+  copyDraftLink: _copyDraftLink,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
@@ -95,6 +104,30 @@ export const ProfileActions = ({
   const [submitError, setSubmitError] = useState('')
 
   const holdingShiftForForce = useHoldingKey({ key: 'shift' })
+
+  // Copy draft link state.
+  const [copied, setCopied] = useState(false)
+  // Clear copied after 2 seconds.
+  useEffect(() => {
+    const timeout = setTimeout(() => setCopied(false), 2000)
+    return () => clearTimeout(timeout)
+  }, [copied])
+
+  const [copying, setCopying] = useState(false)
+  const copyDraftLink =
+    _copyDraftLink &&
+    (async () => {
+      setCopying(true)
+      try {
+        await _copyDraftLink()
+        setCopied(true)
+      } catch (error) {
+        console.error(error)
+        toast.error(processError(error))
+      } finally {
+        setCopying(false)
+      }
+    })
 
   const [loading, setLoading] = useState(false)
 
@@ -197,12 +230,32 @@ export const ProfileActions = ({
   return (
     <div className="flex flex-col gap-8">
       {!actionsReadOnlyMode && (
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row items-center justify-between gap-4">
           <p className="secondary-text">
             {t('info.transactionBuilderDescription')}
           </p>
 
-          <WalletChainSwitcher headerMode type="configured" />
+          <div className="flex flex-row items-center gap-2">
+            {copyDraftLink && (
+              <Tooltip
+                title={
+                  copying
+                    ? t('info.copying')
+                    : t('button.copyLinkToActionsDraft')
+                }
+              >
+                <IconButton
+                  Icon={copying ? SmallLoader : copied ? Check : CopyAll}
+                  circular
+                  disabled={copying}
+                  onClick={copyDraftLink}
+                  variant="ghost"
+                />
+              </Tooltip>
+            )}
+
+            <WalletChainSwitcher headerMode type="configured" />
+          </div>
         </div>
       )}
 

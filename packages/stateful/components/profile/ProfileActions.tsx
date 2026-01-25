@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { meTransactionAtom } from '@dao-dao/state'
+import { meTransactionAtom, walletChainIdAtom } from '@dao-dao/state'
 import {
   ProfileActionsProps,
   ProfileActions as StatelessProfileActions,
@@ -22,7 +22,9 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
+  SITE_URL,
   decodeJsonFromBase64,
+  getActionBuilderPrefillPath,
   isErrorWithSubstring,
   objectMatchesStructure,
   processError,
@@ -68,6 +70,7 @@ export const ProfileActions = ({
 
   // Load from prefill query.
   const router = useRouter()
+  const setWalletChainId = useSetRecoilState(walletChainIdAtom)
   useEffect(() => {
     const potentialPrefill = router.query.prefill
     if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
@@ -97,9 +100,14 @@ export const ProfileActions = ({
         actions: {},
       })
     ) {
+      // Switch chain if chainId is specified in prefill data.
+      if (typeof prefillData.chainId === 'string') {
+        setWalletChainId(prefillData.chainId)
+      }
+
       formMethods.reset(prefillData)
     }
-  }, [formMethods, router.query])
+  }, [formMethods, router.query, setWalletChainId])
 
   const holdingAltForDirectSign = useHoldingKey({ key: 'alt' })
 
@@ -238,6 +246,15 @@ export const ProfileActions = ({
 
   const actionEncodeContext = useActionEncodeContext()
 
+  // Copy draft link function.
+  const copyDraftLink = useCallback(async () => {
+    const actions = formMethods.getValues('actions')
+    const url =
+      SITE_URL + getActionBuilderPrefillPath(actions, chain.chainId)
+    navigator.clipboard.writeText(url)
+    toast.success(t('info.copiedLinkToClipboard'))
+  }, [chain.chainId, formMethods, t])
+
   return (
     <FormProvider {...formMethods}>
       <StatelessProfileActions
@@ -245,6 +262,7 @@ export const ProfileActions = ({
         WalletChainSwitcher={WalletChainSwitcher}
         actionEncodeContext={actionEncodeContext}
         actionsReadOnlyMode={actionsReadOnlyMode}
+        copyDraftLink={copyDraftLink}
         deleteSave={deleteSave}
         error={error}
         execute={execute}

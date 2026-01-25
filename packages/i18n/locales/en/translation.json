@@ -121,6 +121,7 @@
     "copyChainAddress": "Copy {{chain}} address",
     "copyDaoAddress": "Copy DAO address",
     "copyIdToClipboard": "Copy ID to clipboard",
+    "copyLinkToActionsDraft": "Copy link to actions draft",
     "copyLinkToProposalDraft": "Copy link to proposal draft",
     "copyToClipboard": "Copy to clipboard",
     "create": "Create",
