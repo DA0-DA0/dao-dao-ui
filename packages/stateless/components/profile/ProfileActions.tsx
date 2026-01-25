@@ -44,6 +44,7 @@ import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../inputs'
 import { SmallLoader } from '../logo'
 import { Modal } from '../modals'
+import { StatusCard } from '../StatusCard'
 import { Tooltip } from '../tooltip'
 
 enum SubmitValue {
@@ -68,6 +69,10 @@ export type ProfileActionsProps = {
    * Optionally show a button that copies a link to the current actions.
    */
   copyDraftLink?: () => Promise<void>
+  /**
+   * If true, shows a warning that actions were loaded from a shared URL.
+   */
+  loadedFromPrefill?: boolean
 }
 
 export const ProfileActions = ({
@@ -84,6 +89,7 @@ export const ProfileActions = ({
   actionEncodeContext,
   actionsReadOnlyMode,
   copyDraftLink: _copyDraftLink,
+  loadedFromPrefill,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
@@ -257,6 +263,13 @@ export const ProfileActions = ({
             <WalletChainSwitcher headerMode type="configured" />
           </div>
         </div>
+      )}
+
+      {loadedFromPrefill && (
+        <StatusCard
+          content={t('info.actionsLoadedFromUrlWarning')}
+          style="warning"
+        />
       )}
 
       <form

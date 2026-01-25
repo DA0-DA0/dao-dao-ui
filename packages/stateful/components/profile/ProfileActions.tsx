@@ -71,6 +71,7 @@ export const ProfileActions = ({
   // Load from prefill query.
   const router = useRouter()
   const setWalletChainId = useSetRecoilState(walletChainIdAtom)
+  const [loadedFromPrefill, setLoadedFromPrefill] = useState(false)
   useEffect(() => {
     const potentialPrefill = router.query.prefill
     if (typeof potentialPrefill !== 'string' || !potentialPrefill) {
@@ -106,6 +107,7 @@ export const ProfileActions = ({
       }
 
       formMethods.reset(prefillData)
+      setLoadedFromPrefill(true)
     }
   }, [formMethods, router.query, setWalletChainId])
 
@@ -267,6 +269,7 @@ export const ProfileActions = ({
         error={error}
         execute={execute}
         holdingAltForDirectSign={holdingAltForDirectSign}
+        loadedFromPrefill={loadedFromPrefill}
         save={save}
         saves={savesLoading}
         saving={saving}
