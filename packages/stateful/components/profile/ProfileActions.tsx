@@ -251,8 +251,7 @@ export const ProfileActions = ({
   // Copy draft link function.
   const copyDraftLink = useCallback(async () => {
     const actions = formMethods.getValues('actions')
-    const url =
-      SITE_URL + getActionBuilderPrefillPath(actions, chain.chainId)
+    const url = SITE_URL + getActionBuilderPrefillPath(actions, chain.chainId)
     navigator.clipboard.writeText(url)
     toast.success(t('info.copiedLinkToClipboard'))
   }, [chain.chainId, formMethods, t])
