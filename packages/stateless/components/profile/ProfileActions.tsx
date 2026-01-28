@@ -1,6 +1,5 @@
 import {
   ArrowOutwardRounded,
-  Check,
   ClearRounded,
   CopyAll,
   Key,
@@ -9,7 +8,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
   SubmitHandler,
@@ -111,14 +110,6 @@ export const ProfileActions = ({
 
   const holdingShiftForForce = useHoldingKey({ key: 'shift' })
 
-  // Copy draft link state.
-  const [copied, setCopied] = useState(false)
-  // Clear copied after 2 seconds.
-  useEffect(() => {
-    const timeout = setTimeout(() => setCopied(false), 2000)
-    return () => clearTimeout(timeout)
-  }, [copied])
-
   const [copying, setCopying] = useState(false)
   const copyDraftLink =
     _copyDraftLink &&
@@ -126,7 +117,6 @@ export const ProfileActions = ({
       setCopying(true)
       try {
         await _copyDraftLink()
-        setCopied(true)
       } catch (error) {
         console.error(error)
         toast.error(processError(error))
@@ -251,7 +241,7 @@ export const ProfileActions = ({
                 }
               >
                 <IconButton
-                  Icon={copying ? SmallLoader : copied ? Check : CopyAll}
+                  Icon={copying ? SmallLoader : CopyAll}
                   circular
                   disabled={copying}
                   onClick={copyDraftLink}
