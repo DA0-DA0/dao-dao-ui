@@ -1,6 +1,7 @@
 import {
   ArrowOutwardRounded,
   ClearRounded,
+  CopyAll,
   Key,
   Save,
   Visibility,
@@ -14,6 +15,7 @@ import {
   useForm,
   useFormContext,
 } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -39,7 +41,9 @@ import { Button, ButtonLink } from '../buttons'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../inputs'
+import { SmallLoader } from '../logo'
 import { Modal } from '../modals'
+import { StatusCard } from '../StatusCard'
 import { Tooltip } from '../tooltip'
 
 enum SubmitValue {
@@ -60,6 +64,14 @@ export type ProfileActionsProps = {
   WalletChainSwitcher: ComponentType<WalletChainSwitcherProps>
   actionEncodeContext: ActionEncodeContext
   actionsReadOnlyMode?: boolean
+  /**
+   * Optionally show a button that copies a link to the current actions.
+   */
+  copyDraftLink?: () => Promise<void>
+  /**
+   * If true, shows a warning that actions were loaded from a shared URL.
+   */
+  loadedFromPrefill?: boolean
 }
 
 export const ProfileActions = ({
@@ -75,6 +87,8 @@ export const ProfileActions = ({
   WalletChainSwitcher,
   actionEncodeContext,
   actionsReadOnlyMode,
+  copyDraftLink: _copyDraftLink,
+  loadedFromPrefill,
 }: ProfileActionsProps) => {
   const { t } = useTranslation()
   const { config } = useChainContext()
@@ -95,6 +109,21 @@ export const ProfileActions = ({
   const [submitError, setSubmitError] = useState('')
 
   const holdingShiftForForce = useHoldingKey({ key: 'shift' })
+
+  const [copying, setCopying] = useState(false)
+  const copyDraftLink =
+    _copyDraftLink &&
+    (async () => {
+      setCopying(true)
+      try {
+        await _copyDraftLink()
+      } catch (error) {
+        console.error(error)
+        toast.error(processError(error))
+      } finally {
+        setCopying(false)
+      }
+    })
 
   const [loading, setLoading] = useState(false)
 
@@ -197,13 +226,40 @@ export const ProfileActions = ({
   return (
     <div className="flex flex-col gap-8">
       {!actionsReadOnlyMode && (
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row items-center justify-between gap-4">
           <p className="secondary-text">
             {t('info.transactionBuilderDescription')}
           </p>
 
-          <WalletChainSwitcher headerMode type="configured" />
+          <div className="flex flex-row items-center gap-2">
+            {copyDraftLink && (
+              <Tooltip
+                title={
+                  copying
+                    ? t('info.copying')
+                    : t('button.copyLinkToActionsDraft')
+                }
+              >
+                <IconButton
+                  Icon={copying ? SmallLoader : CopyAll}
+                  circular
+                  disabled={copying}
+                  onClick={copyDraftLink}
+                  variant="ghost"
+                />
+              </Tooltip>
+            )}
+
+            <WalletChainSwitcher headerMode type="configured" />
+          </div>
         </div>
+      )}
+
+      {loadedFromPrefill && (
+        <StatusCard
+          content={t('info.actionsLoadedFromUrlWarning')}
+          style="warning"
+        />
       )}
 
       <form

@@ -52,7 +52,8 @@ export const getAccountPath = (
 // Create a path for the profile transaction builder with a pre-filled
 // transaction form.
 export const getActionBuilderPrefillPath = (
-  actions: ActionKeyAndDataNoId[]
+  actions: ActionKeyAndDataNoId[],
+  chainId?: string
 ) => {
   const base = '/actions'
   const query = `?${queryString.stringify({
@@ -61,6 +62,7 @@ export const getActionBuilderPrefillPath = (
         _id: index.toString(),
         ...action,
       })),
+      ...(chainId && { chainId }),
     }),
   })}`
 
