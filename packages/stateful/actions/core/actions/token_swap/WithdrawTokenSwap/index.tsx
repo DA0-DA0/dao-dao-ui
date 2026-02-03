@@ -25,23 +25,16 @@ import {
 
 import { SuspenseLoader } from '../../../../../components'
 import { ChooseExistingTokenSwap } from '../stateful/ChooseExistingTokenSwap'
-import { WithdrawTokenSwap } from './Component'
-
-export interface WithdrawTokenSwapData {
-  // Whether or not the contract has been chosen. When this is `false`, shows
-  // form allowing user to enter an existing address. When `true`, it shows the
-  // status of the swap. `tokenSwapContractAddress` should be defined and valid
-  // when this is `true`.
-  contractChosen: boolean
-  tokenSwapContractAddress?: string
-}
+import { WithdrawTokenSwap, WithdrawTokenSwapData } from './Component'
 
 const Component: ActionComponent<undefined, WithdrawTokenSwapData> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { watch, setValue, register } = useFormContext()
-  const contractChosen = watch(props.fieldNamePrefix + 'contractChosen')
+  const { watch, setValue, register } = useFormContext<WithdrawTokenSwapData>()
+  const contractChosen = watch(
+    (props.fieldNamePrefix + 'contractChosen') as 'contractChosen'
+  )
 
   const [mounted, setMounted] = useState(false)
   // If `contractChosen` is true on mount during creation, this must have been
@@ -49,7 +42,10 @@ const Component: ActionComponent<undefined, WithdrawTokenSwapData> = (
   // has to confirm again.
   useEffect(() => {
     if (contractChosen && props.isCreating) {
-      setValue(props.fieldNamePrefix + 'contractChosen', false)
+      setValue(
+        (props.fieldNamePrefix + 'contractChosen') as 'contractChosen',
+        false
+      )
     }
     setMounted(true)
     // Only run on mount.
@@ -58,7 +54,7 @@ const Component: ActionComponent<undefined, WithdrawTokenSwapData> = (
 
   // Manually validate to ensure contract has been chosen.
   useEffect(() => {
-    register(props.fieldNamePrefix + 'contractChosen', {
+    register((props.fieldNamePrefix + 'contractChosen') as 'contractChosen', {
       validate: (value) => !!value || t('error.tokenSwapContractNotChosen'),
     })
   }, [props.fieldNamePrefix, register, t])

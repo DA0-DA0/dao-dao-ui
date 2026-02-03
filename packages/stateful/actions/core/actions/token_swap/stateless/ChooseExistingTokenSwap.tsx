@@ -11,7 +11,7 @@ import {
 import { ActionComponent } from '@dao-dao/types'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
-import { ChooseExistingTokenSwapOptions } from '../types'
+import { ChooseExistingTokenSwapOptions, PerformTokenSwapData } from '../types'
 
 // Displayed when entering an existing token swap.
 export const ChooseExistingTokenSwap: ActionComponent<
@@ -25,7 +25,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
   const {
     chain: { bech32Prefix },
   } = useActionOptions()
-  const { register } = useFormContext()
+  const { register } = useFormContext<PerformTokenSwapData>()
 
   return (
     <div className="flex flex-col gap-4">
@@ -36,7 +36,10 @@ export const ChooseExistingTokenSwap: ActionComponent<
 
         <AddressInput
           error={errors?.tokenSwapContractAddress}
-          fieldName={fieldNamePrefix + 'tokenSwapContractAddress'}
+          fieldName={
+            (fieldNamePrefix +
+              'tokenSwapContractAddress') as 'tokenSwapContractAddress'
+          }
           register={register}
           type="contract"
           validation={[validateRequired, makeValidateAddress(bech32Prefix)]}

@@ -6,6 +6,7 @@ import { ActionComponent } from '@dao-dao/types'
 
 import { useTokenSwapStatusInfoForContract } from '../../../../../hooks/useTokenSwapStatusInfoForContract'
 import { ExistingTokenSwap } from '../stateless/ExistingTokenSwap'
+import { PerformTokenSwapData } from '../types'
 
 export const PerformTokenSwapComponent: ActionComponent = (props) => {
   const { t } = useTranslation()
@@ -14,10 +15,12 @@ export const PerformTokenSwapComponent: ActionComponent = (props) => {
     chain: { chainId },
   } = useActionOptions()
 
-  const { watch } = useFormContext()
-  const tokenSwapContractAddress: string | undefined = watch(
-    props.fieldNamePrefix + 'tokenSwapContractAddress'
-  )
+  const { watch } = useFormContext<PerformTokenSwapData>()
+  const tokenSwapContractAddress =
+    watch(
+      (props.fieldNamePrefix +
+        'tokenSwapContractAddress') as 'tokenSwapContractAddress'
+    ) || ''
 
   if (!tokenSwapContractAddress) {
     throw new Error(t('error.loadingData'))

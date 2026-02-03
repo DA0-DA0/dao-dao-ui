@@ -16,7 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { InstantiateTokenSwapOptions } from '../types'
+import { InstantiateTokenSwapOptions, PerformTokenSwapData } from '../types'
 
 // Form displayed when the user is instantiating a new token swap.
 export const InstantiateTokenSwap: ActionComponent<
@@ -37,13 +37,16 @@ export const InstantiateTokenSwap: ActionComponent<
   const {
     chain: { bech32Prefix },
   } = useActionOptions()
-  const { register, watch, setValue, getValues, trigger } = useFormContext()
+  const { register, watch, setValue, getValues, trigger } =
+    useFormContext<PerformTokenSwapData>()
 
-  const selfParty = watch(fieldNamePrefix + 'selfParty')
-  const counterparty = watch(fieldNamePrefix + 'counterparty')
+  const selfParty = watch((fieldNamePrefix + 'selfParty') as 'selfParty')
+  const counterparty = watch(
+    (fieldNamePrefix + 'counterparty') as 'counterparty'
+  )
 
   const selfToken = selfPartyTokenBalances.find(
-    ({ token }) => selfParty.denomOrAddress === token.denomOrAddress
+    ({ token }) => selfParty?.denomOrAddress === token.denomOrAddress
   )
   const selfDecimals = selfToken?.token.decimals ?? 0
   const selfMax = HugeDecimal.from(selfToken?.balance ?? 0)
@@ -52,14 +55,14 @@ export const InstantiateTokenSwap: ActionComponent<
   const counterpartyToken = counterpartyTokenBalances.loading
     ? undefined
     : counterpartyTokenBalances.data.find(
-        ({ token }) => counterparty.denomOrAddress === token.denomOrAddress
+        ({ token }) => counterparty?.denomOrAddress === token.denomOrAddress
       )
   const counterpartyDecimals = counterpartyToken?.token.decimals ?? 0
   const counterpartyMax = HugeDecimal.from(counterpartyToken?.balance ?? 0)
   const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =
-    !!counterparty.address &&
+    !!counterparty?.address &&
     isValidBech32Address(counterparty.address, bech32Prefix)
 
   return (
@@ -80,7 +83,9 @@ export const InstantiateTokenSwap: ActionComponent<
 
         <AddressInput
           error={errors?.counterparty?.address}
-          fieldName={fieldNamePrefix + 'counterparty.address'}
+          fieldName={
+            (fieldNamePrefix + 'counterparty.address') as 'counterparty.address'
+          }
           register={register}
           validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
@@ -104,7 +109,8 @@ export const InstantiateTokenSwap: ActionComponent<
             setValue,
             getValues,
             register,
-            fieldName: fieldNamePrefix + 'counterparty.amount',
+            fieldName: (fieldNamePrefix +
+              'counterparty.amount') as 'counterparty.amount',
             error: errors?.counterparty?.amount,
             min: HugeDecimal.one.toHumanReadableNumber(counterpartyDecimals),
             step: HugeDecimal.one.toHumanReadableNumber(counterpartyDecimals),
@@ -112,12 +118,20 @@ export const InstantiateTokenSwap: ActionComponent<
           disabled={!counterpartyAddressValid}
           onSelectToken={({ type, denomOrAddress, decimals }) => {
             // Update type, denomOrAddress, and decimals.
-            setValue(fieldNamePrefix + 'counterparty.type', type)
             setValue(
-              fieldNamePrefix + 'counterparty.denomOrAddress',
+              (fieldNamePrefix + 'counterparty.type') as 'counterparty.type',
+              type
+            )
+            setValue(
+              (fieldNamePrefix +
+                'counterparty.denomOrAddress') as 'counterparty.denomOrAddress',
               denomOrAddress
             )
-            setValue(fieldNamePrefix + 'counterparty.decimals', decimals)
+            setValue(
+              (fieldNamePrefix +
+                'counterparty.decimals') as 'counterparty.decimals',
+              decimals
+            )
           }}
           selectedToken={counterpartyToken?.token}
           tokens={
@@ -139,7 +153,7 @@ export const InstantiateTokenSwap: ActionComponent<
         {/* Warn if counterparty does not have the requested amount. */}
         {counterpartyMax
           .toHumanReadable(counterpartyDecimals)
-          .lt(counterparty.amount) && (
+          .lt(counterparty?.amount ?? 0) && (
           <p className="caption-text text-text-interactive-warning-body">
             {t('error.counterpartyBalanceInsufficient', {
               amount: counterpartyMax.toFormattedString({
@@ -169,7 +183,8 @@ export const InstantiateTokenSwap: ActionComponent<
             setValue,
             getValues,
             register,
-            fieldName: fieldNamePrefix + 'selfParty.amount',
+            fieldName: (fieldNamePrefix +
+              'selfParty.amount') as 'selfParty.amount',
             error: errors?.selfParty?.amount,
             min: HugeDecimal.one.toHumanReadableNumber(selfDecimals),
             step: HugeDecimal.one.toHumanReadableNumber(selfDecimals),
@@ -187,12 +202,19 @@ export const InstantiateTokenSwap: ActionComponent<
           }}
           onSelectToken={({ type, denomOrAddress, decimals }) => {
             // Update type, denomOrAddress, and decimals.
-            setValue(fieldNamePrefix + 'selfParty.type', type)
             setValue(
-              fieldNamePrefix + 'selfParty.denomOrAddress',
+              (fieldNamePrefix + 'selfParty.type') as 'selfParty.type',
+              type
+            )
+            setValue(
+              (fieldNamePrefix +
+                'selfParty.denomOrAddress') as 'selfParty.denomOrAddress',
               denomOrAddress
             )
-            setValue(fieldNamePrefix + 'selfParty.decimals', decimals)
+            setValue(
+              (fieldNamePrefix + 'selfParty.decimals') as 'selfParty.decimals',
+              decimals
+            )
           }}
           selectedToken={selfToken?.token}
           tokens={{
@@ -211,8 +233,8 @@ export const InstantiateTokenSwap: ActionComponent<
         onClick={async () => {
           // Manually validate just the instantiation fields.
           const valid = await trigger([
-            fieldNamePrefix + 'selfParty',
-            fieldNamePrefix + 'counterparty',
+            (fieldNamePrefix + 'selfParty') as 'selfParty',
+            (fieldNamePrefix + 'counterparty') as 'counterparty',
           ])
           valid && onInstantiate()
         }}

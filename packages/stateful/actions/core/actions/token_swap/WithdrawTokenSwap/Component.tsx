@@ -7,6 +7,15 @@ import { ActionComponent } from '@dao-dao/types'
 import { useTokenSwapStatusInfoForContract } from '../../../../../hooks/useTokenSwapStatusInfoForContract'
 import { ExistingTokenSwap } from '../stateless/ExistingTokenSwap'
 
+export interface WithdrawTokenSwapData {
+  // Whether or not the contract has been chosen. When this is `false`, shows
+  // form allowing user to enter an existing address. When `true`, it shows the
+  // status of the swap. `tokenSwapContractAddress` should be defined and valid
+  // when this is `true`.
+  contractChosen: boolean
+  tokenSwapContractAddress?: string
+}
+
 export const WithdrawTokenSwap: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
@@ -14,10 +23,12 @@ export const WithdrawTokenSwap: ActionComponent = (props) => {
     chain: { chainId },
   } = useActionOptions()
 
-  const { watch } = useFormContext()
-  const tokenSwapContractAddress: string | undefined = watch(
-    props.fieldNamePrefix + 'tokenSwapContractAddress'
-  )
+  const { watch } = useFormContext<WithdrawTokenSwapData>()
+  const tokenSwapContractAddress =
+    watch(
+      (props.fieldNamePrefix +
+        'tokenSwapContractAddress') as 'tokenSwapContractAddress'
+    ) || ''
 
   if (!tokenSwapContractAddress) {
     throw new Error(t('error.loadingData'))

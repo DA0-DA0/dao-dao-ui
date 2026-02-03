@@ -9,6 +9,8 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent, TokenSwapStatusProps } from '@dao-dao/types'
 
+import { PerformTokenSwapData } from '../types'
+
 export type ExistingTokenSwapOptions = {
   tokenSwapStatusProps: TokenSwapStatusProps
   status: string
@@ -20,11 +22,13 @@ export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
   options: { tokenSwapStatusProps, status },
 }) => {
   const { t } = useTranslation()
-  const { watch } = useFormContext()
+  const { watch } = useFormContext<PerformTokenSwapData>()
 
-  const tokenSwapContractAddress = watch(
-    fieldNamePrefix + 'tokenSwapContractAddress'
-  )
+  const tokenSwapContractAddress =
+    watch(
+      (fieldNamePrefix +
+        'tokenSwapContractAddress') as 'tokenSwapContractAddress'
+    ) || ''
 
   return (
     <>

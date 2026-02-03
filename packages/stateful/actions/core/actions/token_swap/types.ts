@@ -39,7 +39,7 @@ export interface InstantiateTokenSwapOptions {
   counterpartyTokenBalances: LoadingData<GenericTokenBalance[]>
 
   Trans: ComponentType<TransProps>
-  AddressInput: ComponentType<AddressInputProps>
+  AddressInput: ComponentType<AddressInputProps<PerformTokenSwapData>>
 }
 
 export interface ChooseExistingTokenSwapOptions {
