@@ -347,6 +347,9 @@ export const deploySets: DeploySet[] = [
         ChainId.TerraMainnet,
 
         ChainId.DaodiseoTestnet,
+
+        ChainId.CosmosHubMainnet,
+        ChainId.CosmosHubProviderTestnet,
       ],
     }
   ),

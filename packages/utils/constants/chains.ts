@@ -57,8 +57,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
           govProp: 'https://mintscan.io/cosmos/proposals/REPLACE',
           wallet: 'https://mintscan.io/cosmos/account/REPLACE',
         },
-        // Disable token creation.
-        noTokenFactory: true,
         latestVersion: ContractVersion.V271,
       },
       {
@@ -308,8 +306,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
           govProp: 'https://explorer.polypore.xyz/provider/gov/REPLACE',
           wallet: 'https://explorer.polypore.xyz/provider/account/REPLACE',
         },
-        // Disable token creation.
-        noTokenFactory: true,
         latestVersion: ContractVersion.V271,
       },
       {
