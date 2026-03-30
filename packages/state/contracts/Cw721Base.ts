@@ -221,9 +221,19 @@ export class Cw721BaseQueryClient implements Cw721BaseReadOnlyInterface {
     })
   }
   contractInfo = async (): Promise<ContractInfoResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      contract_info: {},
-    })
+    try {
+      return await this.client.queryContractSmart(this.contractAddress, {
+        contract_info: {},
+      })
+    } catch {
+      // Newer cw721 contracts deprecated contract_info in favor of
+      // get_collection_info_and_extension.
+      const response = await this.client.queryContractSmart(
+        this.contractAddress,
+        { get_collection_info_and_extension: {} }
+      )
+      return { name: response.name, symbol: response.symbol }
+    }
   }
   nftInfo = async ({
     tokenId,
