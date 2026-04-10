@@ -1,31 +1,10 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { GetStaticProps, NextPage } from 'next'
-import { NextSeo } from 'next-seo'
+import type { GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Querier, SuspenseLoader } from '@dao-dao/stateful'
-import { PageLoader } from '@dao-dao/stateless'
-import { SITE_URL } from '@dao-dao/utils'
-
-const QuerierPage: NextPage = () => (
-  <>
-    <NextSeo
-      description="Query any CosmWasm smart contract."
-      openGraph={{
-        url: SITE_URL + '/querier',
-        title: 'Querier',
-        description: 'Query any CosmWasm smart contract.',
-      }}
-      title="Querier"
-    />
-
-    <SuspenseLoader fallback={<PageLoader />}>
-      <Querier />
-    </SuspenseLoader>
-  </>
-)
+import { QuerierPage } from '@dao-dao/stateful'
 
 export default QuerierPage
 
