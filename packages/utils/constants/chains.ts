@@ -720,8 +720,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://babylon-testnet-api.polkachu.com',
   },
   [ChainId.ThorchainMainnet]: {
-    rpc: 'https://rpc.ninerealms.com',
-    rest: 'https://thornode.ninerealms.com',
+    rpc: 'https://gateway.liquify.com/chain/thorchain_rpc',
+    rest: 'https://gateway.liquify.com/chain/thorchain_api',
   },
   [ChainId.ThorchainStagenet]: {
     rpc: 'https://stagenet-rpc.ninerealms.com',

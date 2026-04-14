@@ -119,12 +119,12 @@ const thorchainMainnetChainRegistry = chains.find(
 thorchainMainnetChainRegistry.apis = {
   rpc: [
     {
-      address: 'https://thornode-mainnet-rpc.bryanlabs.net',
+      address: 'https://gateway.liquify.com/chain/thorchain_rpc',
     },
   ],
   rest: [
     {
-      address: 'https://thornode-mainnet-api.bryanlabs.net',
+      address: 'https://gateway.liquify.com/chain/thorchain_api',
     },
   ],
 }
