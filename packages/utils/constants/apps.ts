@@ -79,6 +79,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'Solid Protocol',
+    imageUrl: 'https://app.solidcapa.com/logo.svg',
+    url: 'https://app.solidcapa.com',
+    chainIdFilter: {
+      include: [ChainId.TerraMainnet],
+    },
+  },
+  {
     name: 'Calculated Finance',
     imageUrl: '/apps/calcfi.jpg',
     url: 'https://app.calculated.fi/?chain=osmosis-1',
