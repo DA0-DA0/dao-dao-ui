@@ -103,6 +103,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'Sundial',
+    imageUrl: 'https://sundial.markets/logo.svg',
+    url: 'https://sundial.markets',
+    chainIdFilter: {
+      include: [ChainId.TerraMainnet],
+    },
+  },
+  {
     name: 'Calculated Finance',
     imageUrl: '/apps/calcfi.jpg',
     url: 'https://app.calculated.fi/?chain=osmosis-1',
