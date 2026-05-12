@@ -87,6 +87,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'Atrium',
+    imageUrl: 'https://atrium.markets/img/atrium-favicon.svg',
+    url: 'https://atrium.markets',
+    chainIdFilter: {
+      include: [ChainId.TerraMainnet],
+    },
+  },
+  {
     name: 'The Backroom · Quarters',
     imageUrl: 'https://the-backroom.xyz/apple-touch-icon.svg',
     url: 'https://the-backroom.xyz/marketplace',
