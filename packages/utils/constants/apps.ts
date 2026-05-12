@@ -87,6 +87,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'Atrium',
+    imageUrl: 'https://atrium.markets/img/atrium-favicon.svg',
+    url: 'https://atrium.markets',
+    chainIdFilter: {
+      include: [ChainId.TerraMainnet],
+    },
+  },
+  {
     name: 'Calculated Finance',
     imageUrl: '/apps/calcfi.jpg',
     url: 'https://app.calculated.fi/?chain=osmosis-1',
