@@ -95,6 +95,14 @@ export const APPS: App[] = [
     },
   },
   {
+    name: 'The Backroom · Quarters',
+    imageUrl: 'https://the-backroom.xyz/apple-touch-icon.svg',
+    url: 'https://the-backroom.xyz/marketplace',
+    chainIdFilter: {
+      include: [ChainId.TerraMainnet],
+    },
+  },
+  {
     name: 'Calculated Finance',
     imageUrl: '/apps/calcfi.jpg',
     url: 'https://app.calculated.fi/?chain=osmosis-1',
