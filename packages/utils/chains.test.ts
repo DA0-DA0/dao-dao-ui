@@ -12,3 +12,12 @@ test('Neutron chains do not redirect chain governance to a DAO contract', () => 
     getSupportedChainConfig(ChainId.NeutronTestnet)?.govContractAddress
   ).toBeUndefined()
 })
+
+test('Neutron chains do not include subDAO entries', () => {
+  expect(
+    getSupportedChainConfig(ChainId.NeutronMainnet)?.subDaos
+  ).toBeUndefined()
+  expect(
+    getSupportedChainConfig(ChainId.NeutronTestnet)?.subDaos
+  ).toBeUndefined()
+})

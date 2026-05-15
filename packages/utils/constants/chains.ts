@@ -110,10 +110,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
         accentColor: '#000000',
         factoryContractAddress:
           'neutron1asszs9mjglv2rzpeu8fzlsa0cy55th0jkv27hsw3ulddt7f74gpsrqhatg',
-        subDaos: [
-          'neutron1fuyxwxlsgjkfjmxfthq8427dm2am3ya3cwcdr8gls29l7jadtazsuyzwcc',
-          'neutron1zjdv3u6svlazlydmje2qcp44yqkt0059chz8gmyl5yrklmgv6fzq9chelu',
-        ],
         explorerUrlTemplates: {
           tx: 'https://neutron.celat.one/neutron-1/txs/REPLACE',
           wallet: 'https://neutron.celat.one/neutron-1/accounts/REPLACE',
