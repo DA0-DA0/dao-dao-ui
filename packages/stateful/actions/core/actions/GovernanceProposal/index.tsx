@@ -20,14 +20,12 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
-  AccountType,
   ActionComponent,
   ActionComponentProps,
   ActionContextType,
   ActionKey,
   ActionMatch,
   ActionOptions,
-  ChainId,
   GOVERNANCE_PROPOSAL_TYPES,
   GovProposalVersion,
   GovernanceProposalActionData,
@@ -281,19 +279,7 @@ export class GovernanceProposalAction extends ActionBase<GovernanceProposalActio
       description: options.t('info.submitGovernanceProposalDescription'),
     })
 
-    const defaultChainId =
-      // Neutron does not use the x/gov module. If this is a DAO on Neutron, see
-      // if it has polytone accounts on any other chain. If it does, default to
-      // one of them. Otherwise, hide the action since it cannot be used.
-      options.chain.chainId === ChainId.NeutronMainnet ||
-      options.chain.chainId === ChainId.NeutronTestnet
-        ? options.context.type === ActionContextType.Dao
-          ? options.context.dao.accounts.find(
-              (a) => a.type === AccountType.Polytone
-            )?.chainId
-          : undefined
-        : // If not on Neutron, default to current chain.
-          options.chain.chainId
+    const defaultChainId = options.chain.chainId
 
     if (!defaultChainId) {
       throw new Error('Could not find chain to vote on.')
