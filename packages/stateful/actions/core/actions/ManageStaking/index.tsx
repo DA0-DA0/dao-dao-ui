@@ -65,6 +65,7 @@ import {
   ManageStakingComponent as StatelessManageStakingComponent,
   getStakeActions,
 } from './Component'
+import { isManageStakingAllowedInGovContext } from './utils'
 
 const InnerComponent: ActionComponent = (props) => {
   const { t } = useTranslation()
@@ -272,8 +273,13 @@ export class ManageStakingAction extends ActionBase<ManageStakingData> {
   public readonly Component = Component
 
   constructor(options: ActionOptions) {
-    // x/gov cannot stake.
-    if (options.context.type === ActionContextType.Gov) {
+    // Neutron now uses native x/gov for chain governance, and its governance
+    // module can execute staking messages. Keep the historical x/gov guard for
+    // other chains until they are explicitly verified.
+    if (
+      options.context.type === ActionContextType.Gov &&
+      !isManageStakingAllowedInGovContext(options.chain.chainId)
+    ) {
       throw new Error('Chain governance cannot stake assets')
     }
 
