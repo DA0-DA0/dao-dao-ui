@@ -126,22 +126,22 @@ const BASE_SUPPORTED_CHAINS: Omit<
             'neutron1zgqhpaynwlfsgvlugjhv2wahdkfpfsvfl7x0n70syl680vx8ca0qzq6u9w',
         },
       },
-      {
-        chainId: ChainId.StargazeMainnet,
-        name: 'stargaze',
-        mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
-        accentColor: '#8ac3cc',
-        factoryContractAddress:
-          'stars1rncaxmp9n0cw6l5uw9qjwzptqjckdrk99hewh857j72pr3gv7tzqv5s88r',
-        explorerUrlTemplates: {
-          tx: 'https://mintscan.io/stargaze/txs/REPLACE',
-          gov: 'https://mintscan.io/stargaze/proposals',
-          govProp: 'https://mintscan.io/stargaze/proposals/REPLACE',
-          wallet: 'https://mintscan.io/stargaze/account/REPLACE',
-        },
-        latestVersion: ContractVersion.V270,
-      },
+      // {
+      //   chainId: ChainId.StargazeMainnet,
+      //   name: 'stargaze',
+      //   mainnet: true,
+      //   indexer: SupportedChainIndexerMode.Tx,
+      //   accentColor: '#8ac3cc',
+      //   factoryContractAddress:
+      //     'stars1rncaxmp9n0cw6l5uw9qjwzptqjckdrk99hewh857j72pr3gv7tzqv5s88r',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://mintscan.io/stargaze/txs/REPLACE',
+      //     gov: 'https://mintscan.io/stargaze/proposals',
+      //     govProp: 'https://mintscan.io/stargaze/proposals/REPLACE',
+      //     wallet: 'https://mintscan.io/stargaze/account/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V270,
+      // },
       {
         chainId: ChainId.MigalooMainnet,
         name: 'migaloo',
@@ -334,22 +334,22 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V270,
       },
-      {
-        chainId: ChainId.StargazeTestnet,
-        name: 'stargaze',
-        mainnet: false,
-        indexer: SupportedChainIndexerMode.None,
-        accentColor: '#8ac3cc',
-        factoryContractAddress:
-          'stars1ezkctzcnrvnwy94d6vjp2zkg68z272qndw688crzhh9nn4ud0q6sw8z03f',
-        explorerUrlTemplates: {
-          tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
-          gov: 'https://testnet.ping.pub/stargaze/gov',
-          govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
-          wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
-        },
-        latestVersion: ContractVersion.V270,
-      },
+      // {
+      //   chainId: ChainId.StargazeTestnet,
+      //   name: 'stargaze',
+      //   mainnet: false,
+      //   indexer: SupportedChainIndexerMode.None,
+      //   accentColor: '#8ac3cc',
+      //   factoryContractAddress:
+      //     'stars1ezkctzcnrvnwy94d6vjp2zkg68z272qndw688crzhh9nn4ud0q6sw8z03f',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
+      //     gov: 'https://testnet.ping.pub/stargaze/gov',
+      //     govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
+      //     wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V270,
+      // },
       {
         chainId: ChainId.MigalooTestnet,
         name: 'migaloo',
@@ -628,14 +628,14 @@ export const CHAIN_ENDPOINTS: Partial<
     rpc: 'https://osmosis-testnet-rpc.polkachu.com',
     rest: 'https://osmosis-testnet-api.polkachu.com',
   },
-  [ChainId.StargazeMainnet]: {
-    rpc: 'https://stargaze-rpc.polkachu.com',
-    rest: 'https://stargaze-api.polkachu.com',
-  },
-  [ChainId.StargazeTestnet]: {
-    rpc: 'https://stargaze-testnet-rpc.polkachu.com',
-    rest: 'https://stargaze-testnet-api.polkachu.com',
-  },
+  // [ChainId.StargazeMainnet]: {
+  //   rpc: 'https://stargaze-rpc.polkachu.com',
+  //   rest: 'https://stargaze-api.polkachu.com',
+  // },
+  // [ChainId.StargazeTestnet]: {
+  //   rpc: 'https://stargaze-testnet-rpc.polkachu.com',
+  //   rest: 'https://stargaze-testnet-api.polkachu.com',
+  // },
   [ChainId.NeutronMainnet]: {
     rpc: 'https://rpc-lb.neutron.org',
     rest: 'https://rest-lb.neutron.org',
