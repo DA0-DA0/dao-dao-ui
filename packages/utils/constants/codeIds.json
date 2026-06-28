@@ -825,6 +825,7 @@
       "Cw20Stake": 4875,
       "Cw4Group": 1992,
       "Cw721Base": 1994,
+      "Cw721Roles": 5123,
       "CwAdminFactory": 4859,
       "CwPayrollFactory": 4860,
       "CwTokenSwap": 4861,
@@ -843,6 +844,7 @@
       "DaoVoteDelegation": 4871,
       "DaoVotingCw20Staked": 4876,
       "DaoVotingCw4": 4872,
+      "DaoVotingCw721Roles": 5124,
       "DaoVotingCw721Staked": 4877,
       "DaoVotingTokenStaked": 4879
     }
