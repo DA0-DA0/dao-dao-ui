@@ -1,4 +1,5 @@
 import {
+  Cw721RolesVotingModule,
   Cw721StakedVotingModule,
   OnftStakedVotingModule,
 } from '@dao-dao/state/clients'
@@ -9,17 +10,62 @@ import {
   isSecretNetwork,
 } from '@dao-dao/utils'
 
-import { CreatorData } from './types'
+import { CreatorData, GovernanceTokenType, NftVotingModuleType } from './types'
 
 export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
   chainConfig: { chainId },
-  data: {
+  data,
+}) => {
+  const isOmniFlix =
+    chainId === ChainId.OmniflixHubMainnet ||
+    chainId === ChainId.OmniflixHubTestnet
+
+  if (data.votingModuleType === NftVotingModuleType.Roles) {
+    if (isSecretNetwork(chainId)) {
+      throw new Error(
+        'CW721 roles voting module is not supported on Secret Network'
+      )
+    }
+
+    if (isOmniFlix) {
+      throw new Error('CW721 roles voting module is not supported on OmniFlix')
+    }
+
+    return Cw721RolesVotingModule.generateModuleInstantiateInfo(chainId, {
+      nft:
+        data.tokenType === GovernanceTokenType.Existing
+          ? {
+              existing: {
+                address: data.existingGovernanceNftCollectionAddress,
+              },
+            }
+          : {
+              new: {
+                name: data.newInfo.name,
+                symbol: data.newInfo.symbol,
+                initialNfts: data.initialNfts.map(
+                  ({ owner, tokenId, tokenUri, role, weight }) => ({
+                    owner,
+                    token_id: tokenId,
+                    token_uri: tokenUri?.trim() || null,
+                    extension: {
+                      role: role?.trim() || null,
+                      weight: Number(weight),
+                    },
+                  })
+                ),
+              },
+            },
+    })
+  }
+
+  const {
     existingGovernanceNftCollectionAddress,
     secretCodeHash,
     unstakingDuration,
     activeThreshold,
-  },
-}) => {
+  } = data
+
   const commonConfig = {
     activeThreshold: activeThreshold?.enabled
       ? !activeThreshold.type || activeThreshold.type === 'percent'
@@ -55,10 +101,7 @@ export const getInstantiateInfo: DaoCreatorGetInstantiateInfo<CreatorData> = ({
         },
       }
     )
-  } else if (
-    chainId === ChainId.OmniflixHubMainnet ||
-    chainId === ChainId.OmniflixHubTestnet
-  ) {
+  } else if (isOmniFlix) {
     return OnftStakedVotingModule.generateModuleInstantiateInfo(chainId, {
       ...commonConfig,
       onft: {

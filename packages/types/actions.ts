@@ -42,6 +42,7 @@ export enum ActionKey {
   CreateNftCollection = 'createNftCollection',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
+  MintCw721Role = 'mintCw721Role',
   BurnNft = 'burnNft',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',

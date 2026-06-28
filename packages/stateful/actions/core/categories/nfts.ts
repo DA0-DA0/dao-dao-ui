@@ -25,6 +25,7 @@ export const makeManageNftsActionCategory: ActionCategoryMaker = ({
         actionKeys: [
           ActionKey.CreateNftCollection,
           ActionKey.MintNft,
+          ActionKey.MintCw721Role,
           ActionKey.TransferNft,
           ActionKey.BurnNft,
           ActionKey.ManageCw721,

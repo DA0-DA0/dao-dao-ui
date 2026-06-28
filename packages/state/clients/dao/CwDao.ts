@@ -31,6 +31,7 @@ import { SingleChoiceProposalModule } from '../proposal-module/SingleChoicePropo
 import {
   Cw20StakedVotingModule,
   Cw4VotingModule,
+  Cw721RolesVotingModule,
   Cw721StakedVotingModule,
   FallbackVotingModule,
   NativeStakedVotingModule,
@@ -44,6 +45,7 @@ import { DaoBase } from './base'
 export const getVotingModuleBases = () => [
   Cw4VotingModule,
   Cw20StakedVotingModule,
+  Cw721RolesVotingModule,
   Cw721StakedVotingModule,
   NativeStakedVotingModule,
   TokenStakedVotingModule,

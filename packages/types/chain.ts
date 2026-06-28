@@ -316,6 +316,7 @@ export type CodeIdConfig = {
   Cw4Group: number
   // https://github.com/CosmWasm/cw-nfts
   Cw721Base?: number
+  Cw721Roles?: number
 
   // https://github.com/DA0-DA0/dao-contracts
   CwAdminFactory?: number
@@ -334,6 +335,7 @@ export type CodeIdConfig = {
   DaoRewardsDistributor: number
   DaoVoteDelegation: number
   DaoVotingCw4: number
+  DaoVotingCw721Roles?: number
   DaoVotingCw721Staked: number
   DaoVotingTokenStaked: number
 
