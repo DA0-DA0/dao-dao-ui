@@ -1,8 +1,14 @@
 import { queryOptions } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
+import { fetchNftMetadataFromUri } from '@dao-dao/state/query'
 import { useVotingModule } from '@dao-dao/stateless'
-import { getCosmWasmClientForChainId } from '@dao-dao/utils'
+import { NftCardInfo, NftUriData } from '@dao-dao/types'
+import {
+  getCosmWasmClientForChainId,
+  getNftKey,
+  parseNftMetadata,
+} from '@dao-dao/utils'
 
 import {
   useDaoGovernanceToken,
@@ -14,6 +20,26 @@ export type Cw721RolesMember = {
   tokenCount: number
   weight: HugeDecimal
   roles: string[]
+  nfts: Cw721RolesNft[]
+}
+
+export type Cw721RolesNft = Pick<
+  NftCardInfo,
+  | 'chainId'
+  | 'collectionAddress'
+  | 'collectionName'
+  | 'description'
+  | 'externalLink'
+  | 'imageUrl'
+  | 'key'
+  | 'metadata'
+  | 'name'
+  | 'tokenId'
+> & {
+  owner: string
+  role?: string
+  weight: HugeDecimal
+  tokenUri?: string | null
 }
 
 const PAGE_LIMIT = 100
@@ -40,6 +66,9 @@ export const useCw721RolesMembers = () => {
 
         const client = await getCosmWasmClientForChainId(votingModule.chainId)
         const collection = token.denomOrAddress
+        const collectionInfo = await client.queryContractSmart(collection, {
+          contract_info: {},
+        })
 
         const tokenIds: string[] = []
         let startAfter: string | undefined
@@ -61,7 +90,12 @@ export const useCw721RolesMembers = () => {
           startAfter = tokens[tokens.length - 1]
         }
 
-        const members = await Promise.all(
+        const nfts: {
+          owner: string
+          role?: string
+          weight: HugeDecimal
+          nft: Cw721RolesNft
+        }[] = await Promise.all(
           tokenIds.map(async (tokenId) => {
             const { access, info } = await client.queryContractSmart(
               collection,
@@ -72,19 +106,52 @@ export const useCw721RolesMembers = () => {
               }
             )
 
+            const tokenUri = info.token_uri as string | null | undefined
+            const extension =
+              info.extension && typeof info.extension === 'object'
+                ? (info.extension as Record<string, any>)
+                : undefined
+            const metadataFromUri = tokenUri
+              ? await fetchNftMetadataFromUri({ tokenUri }).catch(
+                  () => undefined
+                )
+              : undefined
+            const metadata: NftUriData | undefined =
+              metadataFromUri ||
+              (extension && parseNftMetadata(extension as any))
+
+            const role = (extension?.role ?? undefined) as string | undefined
+
             return {
               owner: access.owner as string,
-              role: (info.extension?.role ?? undefined) as string | undefined,
-              weight: HugeDecimal.from(info.extension?.weight ?? 0),
+              role,
+              weight: HugeDecimal.from(extension?.weight ?? 0),
+              nft: {
+                chainId: votingModule.chainId,
+                collectionAddress: collection,
+                collectionName: collectionInfo.name as string,
+                description: metadata?.description,
+                externalLink: metadata?.externalLink,
+                imageUrl: metadata?.imageUrl || tokenUri || undefined,
+                key: getNftKey(votingModule.chainId, collection, tokenId),
+                metadata,
+                name: metadata?.name || role || '',
+                owner: access.owner as string,
+                role,
+                tokenId,
+                tokenUri,
+                weight: HugeDecimal.from(extension?.weight ?? 0),
+              } satisfies Cw721RolesNft,
             }
           })
         )
 
         return Object.values(
-          members.reduce(
-            (acc, { owner, role, weight }) => {
+          nfts.reduce(
+            (acc, { owner, role, weight, nft }) => {
               acc[owner] ||= {
                 address: owner,
+                nfts: [],
                 tokenCount: 0,
                 weight: HugeDecimal.zero,
                 roles: [],
@@ -92,6 +159,7 @@ export const useCw721RolesMembers = () => {
 
               acc[owner].tokenCount += 1
               acc[owner].weight = acc[owner].weight.plus(weight)
+              acc[owner].nfts.push(nft)
 
               if (role && !acc[owner].roles.includes(role)) {
                 acc[owner].roles.push(role)
