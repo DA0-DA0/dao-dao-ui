@@ -1,7 +1,11 @@
-import { VotingModuleAdapter } from '@dao-dao/types'
+import { PeopleAltOutlined, PeopleAltRounded } from '@mui/icons-material'
+
+import { MainDaoInfoCardsTokenLoader } from '@dao-dao/stateless'
+import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 import { DAO_VOTING_CW721_ROLES_CONTRACT_NAMES } from '@dao-dao/utils'
 
-const Placeholder = () => null
+import { MembersTab, ProfileCardMemberInfo } from './components'
+import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
 
 export const DaoVotingCw721RolesAdapter: VotingModuleAdapter = {
   id: 'DaoVotingCw721Roles',
@@ -10,16 +14,24 @@ export const DaoVotingCw721RolesAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useMainDaoInfoCards: () => [],
-      useVotingModuleRelevantAddresses: () => [],
+      useMainDaoInfoCards,
+      useVotingModuleRelevantAddresses,
     },
 
     // Components
     components: {
-      // TODO(cw721-roles): add role-aware Members and NFT Collection tabs once
-      // generated dao-voting-cw721-roles query bindings exist.
-      MainDaoInfoCardsLoader: Placeholder,
-      ProfileCardMemberInfo: Placeholder,
+      extraTabs: [
+        {
+          id: DaoTabId.Members,
+          labelI18nKey: 'title.members',
+          Component: MembersTab,
+          Icon: PeopleAltOutlined,
+          IconFilled: PeopleAltRounded,
+        },
+      ],
+
+      MainDaoInfoCardsLoader: MainDaoInfoCardsTokenLoader,
+      ProfileCardMemberInfo,
     },
 
     // Functions
