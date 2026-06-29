@@ -164,3 +164,5 @@ export {
   DaoVoteDelegationClient,
   DaoVoteDelegationQueryClient,
 } from './DaoVoteDelegation'
+export { Cw721RolesClient, Cw721RolesQueryClient } from './Cw721Roles'
+export { DaoVotingCw721RolesQueryClient } from './DaoVotingCw721Roles'

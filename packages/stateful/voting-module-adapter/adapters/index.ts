@@ -1,5 +1,6 @@
 export * from './DaoVotingCw4'
 export * from './DaoVotingCw20Staked'
+export * from './DaoVotingCw721Roles'
 export * from './DaoVotingCw721Staked'
 export * from './DaoVotingOnftStaked'
 export * from './DaoVotingSgCommunityNft'

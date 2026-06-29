@@ -1,6 +1,7 @@
 export * from './Cw4VotingModule'
 export * from './Cw4VotingModule.secret'
 export * from './Cw20StakedVotingModule'
+export * from './Cw721RolesVotingModule'
 export * from './Cw721StakedVotingModule'
 export * from './FallbackVotingModule'
 export * from './NativeStakedVotingModule'
