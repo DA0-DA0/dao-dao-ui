@@ -1,19 +1,6 @@
-import { useFormContext } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-
+import { ActionBase, PersonRaisingHandEmoji } from '@dao-dao/stateless'
+import { type GenericToken, TokenType, UnifiedCosmosMsg } from '@dao-dao/types'
 import {
-  ActionBase,
-  AddressInput,
-  DaoSupportedChainPickerInput,
-  InputErrorMessage,
-  InputLabel,
-  NumericInput,
-  PersonRaisingHandEmoji,
-  TextInput,
-} from '@dao-dao/stateless'
-import { UnifiedCosmosMsg } from '@dao-dao/types'
-import {
-  ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMatch,
@@ -22,14 +9,12 @@ import {
 } from '@dao-dao/types/actions'
 import {
   getChainAddressForActionOptions,
-  getChainForChainId,
   makeExecuteSmartContractMessage,
-  makeValidateAddress,
   maybeMakePolytoneExecuteMessages,
   objectMatchesStructure,
-  validatePositive,
-  validateRequired,
 } from '@dao-dao/utils'
+
+import { MintCw721RoleComponent } from './Component'
 
 export type MintCw721RoleData = {
   chainId: string
@@ -45,133 +30,9 @@ export type MintCw721RoleData = {
   }
 }
 
-const validatePositiveInteger = (value: string | number) =>
-  Number.isSafeInteger(Number(value)) && Number(value) > 0
-    ? true
-    : 'Must be a positive safe integer.'
-
-const Component: ActionComponent = ({
-  fieldNamePrefix,
-  errors,
-  isCreating,
-}) => {
-  const { t } = useTranslation()
-  const { register, watch } = useFormContext<MintCw721RoleData>()
-
-  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
-  const { bech32Prefix } = getChainForChainId(chainId)
-
-  return (
-    <>
-      <p className="secondary-text max-w-prose">
-        {t('form.cw721RolesMintInstructions')}
-      </p>
-
-      <DaoSupportedChainPickerInput
-        className="mb-2"
-        disabled={!isCreating}
-        fieldName={fieldNamePrefix + 'chainId'}
-        onlyDaoChainIds
-      />
-
-      <div className="flex flex-col gap-1">
-        <InputLabel name={t('form.nftCollectionAddress')} />
-        <AddressInput
-          disabled={!isCreating}
-          error={errors?.collectionAddress}
-          fieldName={
-            (fieldNamePrefix + 'collectionAddress') as 'collectionAddress'
-          }
-          register={register}
-          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
-        />
-        <InputErrorMessage error={errors?.collectionAddress} />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('form.uniqueTokenId')} />
-          <TextInput
-            disabled={!isCreating}
-            error={errors?.mintMsg?.token_id}
-            fieldName={
-              (fieldNamePrefix + 'mintMsg.token_id') as 'mintMsg.token_id'
-            }
-            register={register}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors?.mintMsg?.token_id} />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('title.owner')} />
-          <AddressInput
-            disabled={!isCreating}
-            error={errors?.mintMsg?.owner}
-            fieldName={(fieldNamePrefix + 'mintMsg.owner') as 'mintMsg.owner'}
-            register={register}
-            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
-          />
-          <InputErrorMessage error={errors?.mintMsg?.owner} />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('form.roleOptional')} />
-          <TextInput
-            disabled={!isCreating}
-            error={errors?.mintMsg?.extension?.role}
-            fieldName={
-              (fieldNamePrefix +
-                'mintMsg.extension.role') as 'mintMsg.extension.role'
-            }
-            register={register}
-          />
-          <InputErrorMessage error={errors?.mintMsg?.extension?.role} />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('form.weight')} />
-          <NumericInput
-            disabled={!isCreating}
-            error={errors?.mintMsg?.extension?.weight}
-            fieldName={
-              (fieldNamePrefix +
-                'mintMsg.extension.weight') as 'mintMsg.extension.weight'
-            }
-            min={1}
-            register={register}
-            step={1}
-            validation={[
-              validateRequired,
-              validatePositive,
-              validatePositiveInteger,
-            ]}
-          />
-          <InputErrorMessage error={errors?.mintMsg?.extension?.weight} />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <InputLabel name={t('form.tokenUriOptional')} />
-        <TextInput
-          disabled={!isCreating}
-          error={errors?.mintMsg?.token_uri}
-          fieldName={
-            (fieldNamePrefix + 'mintMsg.token_uri') as 'mintMsg.token_uri'
-          }
-          register={register}
-        />
-        <InputErrorMessage error={errors?.mintMsg?.token_uri} />
-      </div>
-    </>
-  )
-}
-
 export class MintCw721RoleAction extends ActionBase<MintCw721RoleData> {
   public readonly key = ActionKey.MintCw721Role
-  public readonly Component = Component
+  public readonly Component = MintCw721RoleComponent
 
   constructor(options: ActionOptions) {
     if (options.context.type !== ActionContextType.Dao) {
@@ -199,6 +60,37 @@ export class MintCw721RoleAction extends ActionBase<MintCw721RoleData> {
           weight: '1',
         },
       },
+    }
+  }
+
+  async setup() {
+    const context = this.options.context
+
+    if (context.type !== ActionContextType.Dao) {
+      throw new Error('Not DAO context')
+    }
+
+    const { dao } = context
+
+    if (!dao.votingModule.getGovernanceTokenQuery) {
+      return
+    }
+
+    try {
+      const governanceToken = (await this.options.queryClient.fetchQuery(
+        dao.votingModule.getGovernanceTokenQuery()
+      )) as GenericToken
+
+      if (governanceToken.type === TokenType.Cw721) {
+        this.defaults = {
+          ...this.defaults,
+          chainId: governanceToken.chainId,
+          collectionAddress: governanceToken.denomOrAddress,
+        }
+      }
+    } catch {
+      // Keep the action available even if auto-detecting the DAO's cw721 roles
+      // collection fails. The user can still paste the collection address.
     }
   }
 

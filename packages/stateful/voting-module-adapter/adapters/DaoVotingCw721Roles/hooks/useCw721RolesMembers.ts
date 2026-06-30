@@ -1,14 +1,10 @@
 import { queryOptions } from '@tanstack/react-query'
 
 import { HugeDecimal } from '@dao-dao/math'
-import { fetchNftMetadataFromUri } from '@dao-dao/state/query'
+import { nftQueries } from '@dao-dao/state/query'
 import { useVotingModule } from '@dao-dao/stateless'
-import { NftCardInfo, NftUriData } from '@dao-dao/types'
-import {
-  getCosmWasmClientForChainId,
-  getNftKey,
-  parseNftMetadata,
-} from '@dao-dao/utils'
+import { NftCardInfo } from '@dao-dao/types'
+import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import {
   useDaoGovernanceToken,
@@ -59,16 +55,14 @@ export const useCw721RolesMembers = () => {
           votingModule: votingModule.address,
         },
       ],
-      queryFn: async (): Promise<Cw721RolesMember[]> => {
+      queryFn: async (ctx): Promise<Cw721RolesMember[]> => {
         if (!token) {
           return []
         }
 
+        const queryClient = ctx.client
         const client = await getCosmWasmClientForChainId(votingModule.chainId)
         const collection = token.denomOrAddress
-        const collectionInfo = await client.queryContractSmart(collection, {
-          contract_info: {},
-        })
 
         const tokenIds: string[] = []
         let startAfter: string | undefined
@@ -106,41 +100,48 @@ export const useCw721RolesMembers = () => {
               }
             )
 
-            const tokenUri = info.token_uri as string | null | undefined
             const extension =
               info.extension && typeof info.extension === 'object'
                 ? (info.extension as Record<string, any>)
                 : undefined
-            const metadataFromUri = tokenUri
-              ? await fetchNftMetadataFromUri({ tokenUri }).catch(
-                  () => undefined
-                )
-              : undefined
-            const metadata: NftUriData | undefined =
-              metadataFromUri ||
-              (extension && parseNftMetadata(extension as any))
-
             const role = (extension?.role ?? undefined) as string | undefined
+            const weight = HugeDecimal.from(extension?.weight ?? 0)
+
+            // Resolve the image, name, and collection metadata via the same
+            // shared fetcher every other NFT card in the app uses, so roles
+            // NFTs load images from their token URI exactly like cw721 staking
+            // DAOs do.
+            const cardInfo = await queryClient.fetchQuery(
+              nftQueries.cardInfoMaybeFromUri({
+                chainId: votingModule.chainId,
+                collection,
+                tokenId,
+                tokenUri: info.token_uri,
+              })
+            )
 
             return {
               owner: access.owner as string,
               role,
-              weight: HugeDecimal.from(extension?.weight ?? 0),
+              weight,
               nft: {
-                chainId: votingModule.chainId,
-                collectionAddress: collection,
-                collectionName: collectionInfo.name as string,
-                description: metadata?.description,
-                externalLink: metadata?.externalLink,
-                imageUrl: metadata?.imageUrl || tokenUri || undefined,
-                key: getNftKey(votingModule.chainId, collection, tokenId),
-                metadata,
-                name: metadata?.name || role || '',
+                chainId: cardInfo.chainId,
+                collectionAddress: cardInfo.collectionAddress,
+                collectionName: cardInfo.collectionName,
+                description: cardInfo.description,
+                externalLink: cardInfo.externalLink,
+                imageUrl: cardInfo.imageUrl,
+                key: cardInfo.key,
+                metadata: cardInfo.metadata,
+                // Falls back to the collection name and token ID (via
+                // `getNftName`) when the metadata has no name, rather than
+                // echoing the role.
+                name: cardInfo.name,
                 owner: access.owner as string,
                 role,
                 tokenId,
-                tokenUri,
-                weight: HugeDecimal.from(extension?.weight ?? 0),
+                tokenUri: info.token_uri ?? null,
+                weight,
               } satisfies Cw721RolesNft,
             }
           })
