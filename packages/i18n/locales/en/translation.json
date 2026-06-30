@@ -1998,6 +1998,7 @@
     "manageVesting": "Manage Vesting",
     "manageVetoableDaos": "Manage Vetoable DAOs",
     "maxSlippage": "Maximum slippage",
+    "member": "Member",
     "memberOfDao": "Member of {{daoName}}",
     "members": "Members",
     "membership": "Membership",

@@ -150,6 +150,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   alt={t('info.nftImage')}
                   className="h-full w-full object-cover"
                   fill
+                  onError={() => setImageLoading(false)}
                   onLoadingComplete={() => setImageLoading(false)}
                   // NFTs tend to be shown in the `GridCardContainer` component,
                   // which shows 1 column until 640px, 2 columns until 768px,
