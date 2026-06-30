@@ -866,7 +866,11 @@ export const daoDaoCoreQueries = {
             })
           )
         } catch (error) {
-          console.error(error)
+          // New voting modules may not be recognized by the indexer yet. This is
+          // expected and the contract query fallback below handles it.
+          if (!`${error}`.includes('unrecognized voting module')) {
+            console.error(error)
+          }
         }
 
         // If indexer query fails, fallback to contract query.
@@ -906,7 +910,11 @@ export const daoDaoCoreQueries = {
             })
           )
         } catch (error) {
-          console.error(error)
+          // New voting modules may not be recognized by the indexer yet. This is
+          // expected and the contract query fallback below handles it.
+          if (!`${error}`.includes('unrecognized voting module')) {
+            console.error(error)
+          }
         }
 
         // If indexer query fails, fallback to contract query.
