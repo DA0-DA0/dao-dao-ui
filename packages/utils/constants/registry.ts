@@ -33,6 +33,30 @@ const chainsToRemove = [
 ]
 chains = chains.filter((chain) => !chainsToRemove.includes(chain.chainName))
 
+const neutronChain = chains.find(
+  (chain) => chain.chainId === ChainId.NeutronMainnet
+)
+if (neutronChain?.chainRegistry) {
+  neutronChain.chainRegistry.apis = {
+    ...neutronChain.chainRegistry.apis,
+    rpc: [
+      {
+        address: 'https://rpc.neutron.solva.solutions:443',
+      },
+    ],
+    rest: [
+      {
+        address: 'https://rest.neutron.solva.solutions:443',
+      },
+    ],
+    grpc: [
+      {
+        address: 'grpc.neutron.solva.solutions:443',
+      },
+    ],
+  }
+}
+
 // BitSong Testnet: halted indefinitely
 // const bitSongTestnetChain = convertChainRegistryChainToAnyChain({
 //   ...chains.find((c) => c.chainId === ChainId.BitsongMainnet)!.chainRegistry!,
