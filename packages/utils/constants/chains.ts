@@ -609,6 +609,7 @@ export const CHAIN_ENDPOINTS: Partial<
     {
       rpc: string
       rest: string
+      grpc?: string
     }
   >
 > = {
@@ -637,8 +638,9 @@ export const CHAIN_ENDPOINTS: Partial<
   //   rest: 'https://stargaze-testnet-api.polkachu.com',
   // },
   [ChainId.NeutronMainnet]: {
-    rpc: 'https://rpc-lb.neutron.org',
-    rest: 'https://rest-lb.neutron.org',
+    rpc: 'https://rpc.neutron.solva.solutions:443',
+    rest: 'https://rest.neutron.solva.solutions:443',
+    grpc: 'grpc.neutron.solva.solutions:443',
   },
   [ChainId.NeutronTestnet]: {
     rpc: 'https://rpc-lb-pion.ntrn.tech',
