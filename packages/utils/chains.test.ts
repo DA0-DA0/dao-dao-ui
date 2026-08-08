@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { ChainId } from '@dao-dao/types'
+import { ChainId, SupportedChainIndexerMode } from '@dao-dao/types'
 
 import { getSupportedChainConfig } from './chain'
 
@@ -20,4 +20,10 @@ test('Neutron chains do not include subDAO entries', () => {
   expect(
     getSupportedChainConfig(ChainId.NeutronTestnet)?.subDaos
   ).toBeUndefined()
+})
+
+test('THORChain mainnet does not use an indexer', () => {
+  expect(getSupportedChainConfig(ChainId.ThorchainMainnet)?.indexer).toBe(
+    SupportedChainIndexerMode.None
+  )
 })

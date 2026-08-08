@@ -238,7 +238,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         name: 'thorchain',
         mainnet: true,
         noGov: true,
-        indexer: SupportedChainIndexerMode.Tx,
+        indexer: SupportedChainIndexerMode.None,
         createSubDaoViaDao: true,
         accentColor: '#00eed1',
         factoryContractAddress:
