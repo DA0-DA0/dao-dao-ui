@@ -23,7 +23,13 @@ import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { CwProposalSingleV1QueryClient } from '../../../contracts/CwProposalSingle.v1'
 import { contractQueries } from '../contract'
+import { isIndexerQuerySupported } from '../../../indexer'
 import { indexerQueries } from '../indexer'
+
+const PROPOSAL_INDEXER_MODES = [
+  SupportedChainIndexerMode.Tx,
+  SupportedChainIndexerMode.All,
+]
 
 export const cwProposalSingleV1QueryKeys = {
   contract: [
@@ -211,10 +217,7 @@ export const cwProposalSingleV1Queries = {
               contractAddress,
               formula: 'daoProposalSingle/proposal',
               args: { id: args.proposalId },
-              allowedModes: [
-                SupportedChainIndexerMode.Tx,
-                SupportedChainIndexerMode.All,
-              ],
+              allowedModes: PROPOSAL_INDEXER_MODES,
             })
           )
         } catch (error) {
@@ -244,24 +247,30 @@ export const cwProposalSingleV1Queries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            proposals: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const proposals = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/listProposals',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (proposals != null) {
+              return { proposals }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -288,24 +297,30 @@ export const cwProposalSingleV1Queries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            proposals: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const proposals = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/reverseProposals',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (proposals != null) {
+              return { proposals }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -369,24 +384,28 @@ export const cwProposalSingleV1Queries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            vote: await ctx.client.fetchQuery(
-              indexerQueries.queryContract({
-                chainId,
-                contractAddress,
-                formula: 'daoProposalSingle/vote',
-                args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
-              })
-            ),
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            return {
+              vote: await ctx.client.fetchQuery(
+                indexerQueries.queryContract({
+                  chainId,
+                  contractAddress,
+                  formula: 'daoProposalSingle/vote',
+                  args,
+                  allowedModes: PROPOSAL_INDEXER_MODES,
+                })
+              ),
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -413,24 +432,30 @@ export const cwProposalSingleV1Queries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            votes: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const votes = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalSingle/listVotes',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (votes != null) {
+              return { votes }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -488,48 +513,58 @@ export interface CwProposalSingleV1ReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
-export interface CwProposalSingleV1InfoQuery<TData>
-  extends CwProposalSingleV1ReactQuery<InfoResponse, TData> {}
-export interface CwProposalSingleV1VoteHooksQuery<TData>
-  extends CwProposalSingleV1ReactQuery<VoteHooksResponse, TData> {}
-export interface CwProposalSingleV1ProposalHooksQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ProposalHooksResponse, TData> {}
-export interface CwProposalSingleV1ListVotesQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ListVotesResponse, TData> {
+export interface CwProposalSingleV1InfoQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<InfoResponse, TData> {}
+export interface CwProposalSingleV1VoteHooksQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<VoteHooksResponse, TData> {}
+export interface CwProposalSingleV1ProposalHooksQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ProposalHooksResponse, TData> {}
+export interface CwProposalSingleV1ListVotesQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ListVotesResponse, TData> {
   args: {
     limit?: number
     proposalId: number
     startAfter?: string
   }
 }
-export interface CwProposalSingleV1VoteQuery<TData>
-  extends CwProposalSingleV1ReactQuery<VoteResponse, TData> {
+export interface CwProposalSingleV1VoteQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<VoteResponse, TData> {
   args: {
     proposalId: number
     voter: string
   }
 }
-export interface CwProposalSingleV1ProposalCountQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ProposalCountResponse, TData> {}
-export interface CwProposalSingleV1ReverseProposalsQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ReverseProposalsResponse, TData> {
+export interface CwProposalSingleV1ProposalCountQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ProposalCountResponse, TData> {}
+export interface CwProposalSingleV1ReverseProposalsQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ReverseProposalsResponse, TData> {
   args: {
     limit?: number
     startBefore?: number
   }
 }
-export interface CwProposalSingleV1ListProposalsQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ListProposalsResponse, TData> {
+export interface CwProposalSingleV1ListProposalsQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ListProposalsResponse, TData> {
   args: {
     limit?: number
     startAfter?: number
   }
 }
-export interface CwProposalSingleV1ProposalQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ProposalResponse, TData> {
+export interface CwProposalSingleV1ProposalQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ProposalResponse, TData> {
   args: {
     proposalId: number
   }
 }
-export interface CwProposalSingleV1ConfigQuery<TData>
-  extends CwProposalSingleV1ReactQuery<ConfigResponse, TData> {}
+export interface CwProposalSingleV1ConfigQuery<
+  TData,
+> extends CwProposalSingleV1ReactQuery<ConfigResponse, TData> {}

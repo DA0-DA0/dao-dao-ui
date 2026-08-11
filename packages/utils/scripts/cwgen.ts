@@ -131,7 +131,12 @@ codegen({
         [
           "import { getCosmWasmClientForChainId } from '@dao-dao/utils'",
           "import { contractQueries } from '../contract'",
-          ...(indexer ? ["import { indexerQueries } from '../indexer'"] : []),
+          ...(indexer
+            ? [
+                "import { isIndexerQuerySupported } from '../../../indexer'",
+                "import { indexerQueries } from '../indexer'",
+              ]
+            : []),
           '\nexport const',
         ].join('\n')
       )
@@ -186,18 +191,20 @@ codegen({
         indexer
           ? `
     queryFn: async (ctx) => {
-      try {
-        // Attempt to fetch data from the indexer.
-        return await ctx.client.fetchQuery(
-          indexerQueries.queryContract({
-            chainId,
-            contractAddress,
-            formula: '${camelCasedContractName}/$1',
-            args,
-          })
-        )
-      } catch (error) {
-        console.error(error)
+      if (isIndexerQuerySupported({ chainId })) {
+        try {
+          // Attempt to fetch data from the indexer.
+          return await ctx.client.fetchQuery(
+            indexerQueries.queryContract({
+              chainId,
+              contractAddress,
+              formula: '${camelCasedContractName}/$1',
+              args,
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
       }
 
       // If indexer query fails, fallback to contract query.
