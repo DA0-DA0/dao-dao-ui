@@ -41,6 +41,12 @@ export type QueryIndexerOptions = WithChainId<
   )
 >
 
+export const isIndexerQuerySupported = ({
+  chainId,
+  allowedModes = [SupportedChainIndexerMode.All],
+}: Pick<QueryIndexerOptions, 'chainId' | 'allowedModes'>): boolean =>
+  chainIsIndexed(chainId, ...allowedModes)
+
 export const queryIndexer = async <T = any>({
   type,
   address = '_',
@@ -52,7 +58,7 @@ export const queryIndexer = async <T = any>({
   // ttl,
   allowedModes = [SupportedChainIndexerMode.All],
 }: QueryIndexerOptions): Promise<T | undefined> => {
-  if (!chainIsIndexed(chainId, ...allowedModes)) {
+  if (!isIndexerQuerySupported({ chainId, allowedModes })) {
     throw new Error(CommonError.NoIndexerForChain)
   }
 

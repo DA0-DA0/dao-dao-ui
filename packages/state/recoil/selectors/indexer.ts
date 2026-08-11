@@ -21,6 +21,7 @@ import {
   QueryIndexerOptions,
   QuerySnapperOptions,
   SearchDaoProposalsOptions,
+  isIndexerQuerySupported,
   queryIndexer,
   queryIndexerUpStatus,
   querySnapper,
@@ -49,6 +50,10 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
   get:
     (options) =>
     async ({ get }) => {
+      if (!isIndexerQuerySupported(options)) {
+        return null
+      }
+
       try {
         const indexerUp = get(
           indexerUpStatusSelector({
