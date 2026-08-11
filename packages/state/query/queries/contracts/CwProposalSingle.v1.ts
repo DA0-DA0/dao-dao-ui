@@ -513,58 +513,48 @@ export interface CwProposalSingleV1ReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
-export interface CwProposalSingleV1InfoQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<InfoResponse, TData> {}
-export interface CwProposalSingleV1VoteHooksQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<VoteHooksResponse, TData> {}
-export interface CwProposalSingleV1ProposalHooksQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ProposalHooksResponse, TData> {}
-export interface CwProposalSingleV1ListVotesQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ListVotesResponse, TData> {
+export interface CwProposalSingleV1InfoQuery<TData>
+  extends CwProposalSingleV1ReactQuery<InfoResponse, TData> {}
+export interface CwProposalSingleV1VoteHooksQuery<TData>
+  extends CwProposalSingleV1ReactQuery<VoteHooksResponse, TData> {}
+export interface CwProposalSingleV1ProposalHooksQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ProposalHooksResponse, TData> {}
+export interface CwProposalSingleV1ListVotesQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ListVotesResponse, TData> {
   args: {
     limit?: number
     proposalId: number
     startAfter?: string
   }
 }
-export interface CwProposalSingleV1VoteQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<VoteResponse, TData> {
+export interface CwProposalSingleV1VoteQuery<TData>
+  extends CwProposalSingleV1ReactQuery<VoteResponse, TData> {
   args: {
     proposalId: number
     voter: string
   }
 }
-export interface CwProposalSingleV1ProposalCountQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ProposalCountResponse, TData> {}
-export interface CwProposalSingleV1ReverseProposalsQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ReverseProposalsResponse, TData> {
+export interface CwProposalSingleV1ProposalCountQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ProposalCountResponse, TData> {}
+export interface CwProposalSingleV1ReverseProposalsQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ReverseProposalsResponse, TData> {
   args: {
     limit?: number
     startBefore?: number
   }
 }
-export interface CwProposalSingleV1ListProposalsQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ListProposalsResponse, TData> {
+export interface CwProposalSingleV1ListProposalsQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ListProposalsResponse, TData> {
   args: {
     limit?: number
     startAfter?: number
   }
 }
-export interface CwProposalSingleV1ProposalQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ProposalResponse, TData> {
+export interface CwProposalSingleV1ProposalQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ProposalResponse, TData> {
   args: {
     proposalId: number
   }
 }
-export interface CwProposalSingleV1ConfigQuery<
-  TData,
-> extends CwProposalSingleV1ReactQuery<ConfigResponse, TData> {}
+export interface CwProposalSingleV1ConfigQuery<TData>
+  extends CwProposalSingleV1ReactQuery<ConfigResponse, TData> {}

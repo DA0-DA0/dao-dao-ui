@@ -690,70 +690,56 @@ export interface DaoProposalMultipleReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
-export interface DaoProposalMultipleNextProposalIdQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<number, TData> {}
-export interface DaoProposalMultipleInfoQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<InfoResponse, TData> {}
-export interface DaoProposalMultipleDaoQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<Addr, TData> {}
-export interface DaoProposalMultipleVoteHooksQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<HooksResponse, TData> {}
-export interface DaoProposalMultipleProposalHooksQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<HooksResponse, TData> {}
-export interface DaoProposalMultipleProposalCreationPolicyQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<ProposalCreationPolicy, TData> {}
-export interface DaoProposalMultipleProposalCountQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<number, TData> {}
-export interface DaoProposalMultipleListVotesQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<VoteListResponse, TData> {
+export interface DaoProposalMultipleNextProposalIdQuery<TData>
+  extends DaoProposalMultipleReactQuery<number, TData> {}
+export interface DaoProposalMultipleInfoQuery<TData>
+  extends DaoProposalMultipleReactQuery<InfoResponse, TData> {}
+export interface DaoProposalMultipleDaoQuery<TData>
+  extends DaoProposalMultipleReactQuery<Addr, TData> {}
+export interface DaoProposalMultipleVoteHooksQuery<TData>
+  extends DaoProposalMultipleReactQuery<HooksResponse, TData> {}
+export interface DaoProposalMultipleProposalHooksQuery<TData>
+  extends DaoProposalMultipleReactQuery<HooksResponse, TData> {}
+export interface DaoProposalMultipleProposalCreationPolicyQuery<TData>
+  extends DaoProposalMultipleReactQuery<ProposalCreationPolicy, TData> {}
+export interface DaoProposalMultipleProposalCountQuery<TData>
+  extends DaoProposalMultipleReactQuery<number, TData> {}
+export interface DaoProposalMultipleListVotesQuery<TData>
+  extends DaoProposalMultipleReactQuery<VoteListResponse, TData> {
   args: {
     limit?: number
     proposalId: number
     startAfter?: string
   }
 }
-export interface DaoProposalMultipleGetVoteQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<VoteResponse, TData> {
+export interface DaoProposalMultipleGetVoteQuery<TData>
+  extends DaoProposalMultipleReactQuery<VoteResponse, TData> {
   args: {
     proposalId: number
     voter: string
   }
 }
-export interface DaoProposalMultipleReverseProposalsQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<ProposalListResponse, TData> {
+export interface DaoProposalMultipleReverseProposalsQuery<TData>
+  extends DaoProposalMultipleReactQuery<ProposalListResponse, TData> {
   args: {
     limit?: number
     startBefore?: number
   }
 }
-export interface DaoProposalMultipleListProposalsQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<ProposalListResponse, TData> {
+export interface DaoProposalMultipleListProposalsQuery<TData>
+  extends DaoProposalMultipleReactQuery<ProposalListResponse, TData> {
   args: {
     limit?: number
     startAfter?: number
   }
 }
-export interface DaoProposalMultipleProposalQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<ProposalResponse, TData> {
+export interface DaoProposalMultipleProposalQuery<TData>
+  extends DaoProposalMultipleReactQuery<ProposalResponse, TData> {
   args: {
     proposalId: number
   }
 }
-export interface DaoProposalMultipleConfigQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<Config, TData> {}
-export interface DaoProposalMultipleDelegationModuleQuery<
-  TData,
-> extends DaoProposalMultipleReactQuery<Addr | null, TData> {}
+export interface DaoProposalMultipleConfigQuery<TData>
+  extends DaoProposalMultipleReactQuery<Config, TData> {}
+export interface DaoProposalMultipleDelegationModuleQuery<TData>
+  extends DaoProposalMultipleReactQuery<Addr | null, TData> {}

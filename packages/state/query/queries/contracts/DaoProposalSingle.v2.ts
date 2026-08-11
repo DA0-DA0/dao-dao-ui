@@ -689,70 +689,56 @@ export interface DaoProposalSingleV2ReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined
   }
 }
-export interface DaoProposalSingleV2NextProposalIdQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<number, TData> {}
-export interface DaoProposalSingleV2InfoQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<InfoResponse, TData> {}
-export interface DaoProposalSingleV2DaoQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<Addr, TData> {}
-export interface DaoProposalSingleV2VoteHooksQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<HooksResponse, TData> {}
-export interface DaoProposalSingleV2ProposalHooksQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<HooksResponse, TData> {}
-export interface DaoProposalSingleV2ProposalCreationPolicyQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<ProposalCreationPolicy, TData> {}
-export interface DaoProposalSingleV2ProposalCountQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<number, TData> {}
-export interface DaoProposalSingleV2ListVotesQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<VoteListResponse, TData> {
+export interface DaoProposalSingleV2NextProposalIdQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<number, TData> {}
+export interface DaoProposalSingleV2InfoQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<InfoResponse, TData> {}
+export interface DaoProposalSingleV2DaoQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<Addr, TData> {}
+export interface DaoProposalSingleV2VoteHooksQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<HooksResponse, TData> {}
+export interface DaoProposalSingleV2ProposalHooksQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<HooksResponse, TData> {}
+export interface DaoProposalSingleV2ProposalCreationPolicyQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<ProposalCreationPolicy, TData> {}
+export interface DaoProposalSingleV2ProposalCountQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<number, TData> {}
+export interface DaoProposalSingleV2ListVotesQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<VoteListResponse, TData> {
   args: {
     limit?: number
     proposalId: number
     startAfter?: string
   }
 }
-export interface DaoProposalSingleV2GetVoteQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<VoteResponse, TData> {
+export interface DaoProposalSingleV2GetVoteQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<VoteResponse, TData> {
   args: {
     proposalId: number
     voter: string
   }
 }
-export interface DaoProposalSingleV2ReverseProposalsQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<ProposalListResponse, TData> {
+export interface DaoProposalSingleV2ReverseProposalsQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<ProposalListResponse, TData> {
   args: {
     limit?: number
     startBefore?: number
   }
 }
-export interface DaoProposalSingleV2ListProposalsQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<ProposalListResponse, TData> {
+export interface DaoProposalSingleV2ListProposalsQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<ProposalListResponse, TData> {
   args: {
     limit?: number
     startAfter?: number
   }
 }
-export interface DaoProposalSingleV2ProposalQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<ProposalResponse, TData> {
+export interface DaoProposalSingleV2ProposalQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<ProposalResponse, TData> {
   args: {
     proposalId: number
   }
 }
-export interface DaoProposalSingleV2ConfigQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<Config, TData> {}
-export interface DaoProposalSingleV2DelegationModuleQuery<
-  TData,
-> extends DaoProposalSingleV2ReactQuery<Addr | null, TData> {}
+export interface DaoProposalSingleV2ConfigQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<Config, TData> {}
+export interface DaoProposalSingleV2DelegationModuleQuery<TData>
+  extends DaoProposalSingleV2ReactQuery<Addr | null, TData> {}

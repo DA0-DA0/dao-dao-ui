@@ -169,6 +169,21 @@ describe.each(families)('%s indexer selection', (_, queries) => {
     }
   })
 
+  test('falls back to the direct query when an indexed request fails', async () => {
+    mocks.queryContractSmart.mockResolvedValue({ proposals: ['direct'] })
+
+    await expect(
+      run(
+        queries.reverseProposals({
+          chainId: ChainId.JunoMainnet,
+          contractAddress,
+          args: { limit: 7, startBefore: 44 },
+        }),
+        vi.fn().mockRejectedValue(new Error('indexer unavailable'))
+      )
+    ).resolves.toEqual({ proposals: ['direct'] })
+  })
+
   test('propagates direct query failures', async () => {
     mocks.queryContractSmart.mockRejectedValue(
       new Error('THORChain RPC unavailable')
