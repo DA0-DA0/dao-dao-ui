@@ -22,7 +22,13 @@ import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoProposalMultipleQueryClient } from '../../../contracts/DaoProposalMultiple'
 import { contractQueries } from '../contract'
+import { isIndexerQuerySupported } from '../../../indexer'
 import { indexerQueries } from '../indexer'
+
+const PROPOSAL_INDEXER_MODES = [
+  SupportedChainIndexerMode.Tx,
+  SupportedChainIndexerMode.All,
+]
 
 export const daoProposalMultipleQueryKeys = {
   contract: [
@@ -295,10 +301,7 @@ export const daoProposalMultipleQueries = {
               // Throw on server so if the indexer is behind but the proposal
               // exists, we make sure to fallback to the contract query.
               throwOnServer: true,
-              allowedModes: [
-                SupportedChainIndexerMode.Tx,
-                SupportedChainIndexerMode.All,
-              ],
+              allowedModes: PROPOSAL_INDEXER_MODES,
             })
           )
         } catch (error) {
@@ -328,24 +331,30 @@ export const daoProposalMultipleQueries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            proposals: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const proposals = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalMultiple/listProposals',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (proposals != null) {
+              return { proposals }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -372,24 +381,30 @@ export const daoProposalMultipleQueries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            proposals: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const proposals = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalMultiple/reverseProposals',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (proposals != null) {
+              return { proposals }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -416,24 +431,28 @@ export const daoProposalMultipleQueries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            vote: await ctx.client.fetchQuery(
-              indexerQueries.queryContract({
-                chainId,
-                contractAddress,
-                formula: 'daoProposalMultiple/vote',
-                args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
-              })
-            ),
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            return {
+              vote: await ctx.client.fetchQuery(
+                indexerQueries.queryContract({
+                  chainId,
+                  contractAddress,
+                  formula: 'daoProposalMultiple/vote',
+                  args,
+                  allowedModes: PROPOSAL_INDEXER_MODES,
+                })
+              ),
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
@@ -460,24 +479,30 @@ export const daoProposalMultipleQueries = {
         args
       ),
       queryFn: async (ctx) => {
-        try {
-          // Attempt to fetch data from the indexer.
-          return {
-            votes: await ctx.client.fetchQuery(
+        if (
+          isIndexerQuerySupported({
+            chainId,
+            allowedModes: PROPOSAL_INDEXER_MODES,
+          })
+        ) {
+          try {
+            // Attempt to fetch data from the indexer.
+            const votes = await ctx.client.fetchQuery(
               indexerQueries.queryContract({
                 chainId,
                 contractAddress,
                 formula: 'daoProposalMultiple/listVotes',
                 args,
-                allowedModes: [
-                  SupportedChainIndexerMode.Tx,
-                  SupportedChainIndexerMode.All,
-                ],
+                allowedModes: PROPOSAL_INDEXER_MODES,
               })
-            ),
+            )
+
+            if (votes != null) {
+              return { votes }
+            }
+          } catch (error) {
+            console.error(error)
           }
-        } catch (error) {
-          console.error(error)
         }
 
         // If indexer query fails, fallback to contract query.
