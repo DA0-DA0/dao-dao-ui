@@ -199,4 +199,69 @@ describe.each(families)('%s indexer selection', (_, queries) => {
       )
     ).rejects.toThrow('THORChain RPC unavailable')
   })
+
+  test('falls back to direct query when indexer is stale on the first reverseProposals page', async () => {
+    // Indexer's highest known proposal is #41, but on-chain count is 44.
+    mocks.queryContractSmart.mockResolvedValueOnce(44) // proposalCount
+    mocks.queryContractSmart.mockResolvedValueOnce({
+      proposals: [{ id: 44 }],
+    }) // direct reverseProposals fallback
+
+    await expect(
+      run(
+        queries.reverseProposals({
+          chainId: ChainId.JunoMainnet,
+          contractAddress,
+          args: { limit: 7 },
+        }),
+        vi.fn().mockResolvedValue([{ id: 41 }, { id: 40 }])
+      )
+    ).resolves.toEqual({ proposals: [{ id: 44 }] })
+  })
+
+  test('trusts indexer data on the first reverseProposals page when up to date', async () => {
+    mocks.queryContractSmart.mockResolvedValueOnce(41) // proposalCount
+
+    await expect(
+      run(
+        queries.reverseProposals({
+          chainId: ChainId.JunoMainnet,
+          contractAddress,
+          args: { limit: 7 },
+        }),
+        vi.fn().mockResolvedValue([{ id: 41 }, { id: 40 }])
+      )
+    ).resolves.toEqual({ proposals: [{ id: 41 }, { id: 40 }] })
+  })
+
+  test('trusts indexer data on the first reverseProposals page when staleness check fails', async () => {
+    mocks.queryContractSmart.mockRejectedValueOnce(
+      new Error('RPC unavailable')
+    )
+
+    await expect(
+      run(
+        queries.reverseProposals({
+          chainId: ChainId.JunoMainnet,
+          contractAddress,
+          args: { limit: 7 },
+        }),
+        vi.fn().mockResolvedValue([{ id: 41 }, { id: 40 }])
+      )
+    ).resolves.toEqual({ proposals: [{ id: 41 }, { id: 40 }] })
+  })
+
+  test('does not run staleness check on paginated reverseProposals pages', async () => {
+    await expect(
+      run(
+        queries.reverseProposals({
+          chainId: ChainId.JunoMainnet,
+          contractAddress,
+          args: { limit: 7, startBefore: 40 },
+        }),
+        vi.fn().mockResolvedValue([{ id: 39 }, { id: 38 }])
+      )
+    ).resolves.toEqual({ proposals: [{ id: 39 }, { id: 38 }] })
+    expect(mocks.queryContractSmart).not.toHaveBeenCalled()
+  })
 })
