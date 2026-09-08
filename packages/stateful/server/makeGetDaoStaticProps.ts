@@ -23,6 +23,7 @@ import {
   ProposalV1Beta1,
 } from '@dao-dao/types'
 import {
+  CommonError,
   ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -96,6 +97,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         : undefined
 
     const queryClient = makeDependencyTrackedQueryClient()
+    const networkErrors = new Set<unknown>()
 
     const getForChainId = async (
       chainId: string
@@ -258,6 +260,25 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
         console.error(error)
 
+        // Report to Sentry.
+        const processedError = processError(error, {
+          tags: {
+            chainId,
+            coreAddress,
+          },
+          extra: { context },
+          overrideCapture: {
+            [CommonError.Network]: true,
+          },
+        })
+
+        // Let Next preserve the last successful ISR value when a transient
+        // network error occurs instead of caching an error page.
+        if (processedError === CommonError.Network) {
+          networkErrors.add(error)
+          throw error
+        }
+
         // Return error in props to trigger client-side 500 error.
         return {
           props: {
@@ -265,14 +286,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             title: serverT('title.500'),
             description: '',
             dehydratedQueryClientState: queryClient.dehydrate(),
-            // Report to Sentry.
-            error: processError(error, {
-              tags: {
-                chainId,
-                coreAddress,
-              },
-              extra: { context },
-            }),
+            error: processedError,
           },
           // Regenerate the page at most once per second. Serves cached copy and
           // refreshes in background.
@@ -315,24 +329,40 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         decodedChainIds.map((c) => getForChainId(c))
       )
 
-      // If all errored, throw first error.
-      if (results.every((p) => p.status === 'rejected')) {
-        throw new Error(
-          results[0].status === 'rejected'
-            ? results[0].reason
-            : 'Failed to find chain'
-        )
-      }
-
       const fulfilledResults = results.flatMap((p) =>
         p.status === 'fulfilled' ? p.value : []
       )
 
-      // Get first result that found DAO info successfully. Otherwise, use first
-      // result (probably DAO not found).
-      result =
-        fulfilledResults.find((r) => 'props' in r && r.props.info) ||
-        fulfilledResults[0]
+      // Prefer the first result that found DAO info successfully.
+      const successfulResult = fulfilledResults.find(
+        (r) => 'props' in r && r.props.info
+      )
+      if (successfulResult) {
+        result = successfulResult
+      } else {
+        // Preserve an original Network error when no candidate prefix found a
+        // DAO. This lets Next handle it as failed ISR regeneration without
+        // losing the error's identity, stack, or cause.
+        const networkRejection = results.find(
+          (p) => p.status === 'rejected' && networkErrors.has(p.reason)
+        )
+        if (networkRejection?.status === 'rejected') {
+          throw networkRejection.reason
+        }
+
+        // Preserve the existing all-rejected behavior for other errors.
+        if (results.every((p) => p.status === 'rejected')) {
+          throw new Error(
+            results[0].status === 'rejected'
+              ? results[0].reason
+              : 'Failed to find chain'
+          )
+        }
+
+        // No result found DAO info, so use the first result (probably DAO not
+        // found).
+        result = fulfilledResults[0]
+      }
     }
 
     return result
