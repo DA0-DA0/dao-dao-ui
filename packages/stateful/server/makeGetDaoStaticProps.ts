@@ -23,6 +23,7 @@ import {
   ProposalV1Beta1,
 } from '@dao-dao/types'
 import {
+  CommonError,
   ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -258,6 +259,24 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
         console.error(error)
 
+        // Report to Sentry.
+        const processedError = processError(error, {
+          tags: {
+            chainId,
+            coreAddress,
+          },
+          extra: { context },
+          overrideCapture: {
+            [CommonError.Network]: true,
+          },
+        })
+
+        // Let Next preserve the last successful ISR value when a transient
+        // network error occurs instead of caching an error page.
+        if (processedError === CommonError.Network) {
+          throw error
+        }
+
         // Return error in props to trigger client-side 500 error.
         return {
           props: {
@@ -265,14 +284,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             title: serverT('title.500'),
             description: '',
             dehydratedQueryClientState: queryClient.dehydrate(),
-            // Report to Sentry.
-            error: processError(error, {
-              tags: {
-                chainId,
-                coreAddress,
-              },
-              extra: { context },
-            }),
+            error: processedError,
           },
           // Regenerate the page at most once per second. Serves cached copy and
           // refreshes in background.

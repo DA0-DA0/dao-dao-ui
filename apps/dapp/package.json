@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "prettier:write": "prettier --write .",
     "start": "next start",
+    "test:isr": "node --test tests/isr/stale-if-error.mjs",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
   },
