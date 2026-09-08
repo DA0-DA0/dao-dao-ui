@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   daoInit: vi.fn(),
   dehydrate: vi.fn(() => ({ dehydrated: true })),
   fetchQuery: vi.fn(),
+  getChainIdsForAddress: vi.fn(() => ['thorchain-1']),
   getDao: vi.fn(),
   processError: vi.fn(),
   networkError:
@@ -44,7 +45,7 @@ vi.mock('@dao-dao/utils', () => ({
   cosmosSdkVersionIs46OrHigher: vi.fn(),
   decodeGovProposal: vi.fn(),
   getChainForChainId: vi.fn(() => ({ chainId: 'thorchain-1' })),
-  getChainIdsForAddress: vi.fn(() => ['thorchain-1']),
+  getChainIdsForAddress: mocks.getChainIdsForAddress,
   getConfiguredGovChainByName: vi.fn(),
   getDaoPath: vi.fn(),
   isErrorWithSubstring: (error: unknown, substrings: string | string[]) => {
@@ -81,6 +82,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.spyOn(console, 'error').mockImplementation(() => undefined)
   mocks.fetchQuery.mockResolvedValue(undefined)
+  mocks.getChainIdsForAddress.mockReturnValue(['thorchain-1'])
   mocks.getDao.mockReturnValue({
     description: 'DAO description',
     info: { items: {} },
@@ -95,7 +97,7 @@ describe('makeGetDaoStaticProps', () => {
     mocks.daoInit.mockRejectedValue(networkError)
     mocks.processError.mockReturnValue(mocks.networkError)
 
-    await expect(getStaticProps()).rejects.toThrow('THORChain RPC fetch failed')
+    await expect(getStaticProps()).rejects.toBe(networkError)
     expect(mocks.processError).toHaveBeenCalledOnce()
     expect(mocks.processError).toHaveBeenCalledWith(networkError, {
       tags: {
@@ -106,6 +108,64 @@ describe('makeGetDaoStaticProps', () => {
       overrideCapture: {
         [mocks.networkError]: true,
       },
+    })
+  })
+
+  it('propagates a Network error when another prefix returns no DAO', async () => {
+    const networkError = new Error('THORChain RPC fetch failed')
+    const missingContractError = new Error('contract: not found')
+    mocks.getChainIdsForAddress.mockReturnValue([
+      'network-chain',
+      'missing-chain',
+    ])
+    mocks.getDao.mockImplementation(({ chainId }) => ({
+      init: vi
+        .fn()
+        .mockRejectedValue(
+          chainId === 'network-chain' ? networkError : missingContractError
+        ),
+    }))
+    mocks.processError.mockReturnValue(mocks.networkError)
+
+    await expect(getStaticProps()).rejects.toBe(networkError)
+    expect(mocks.processError).toHaveBeenCalledOnce()
+    expect(mocks.processError).toHaveBeenCalledWith(
+      networkError,
+      expect.objectContaining({
+        tags: {
+          chainId: 'network-chain',
+          coreAddress,
+        },
+      })
+    )
+  })
+
+  it('prefers a successful DAO result over another prefix Network error', async () => {
+    const networkError = new Error('THORChain RPC fetch failed')
+    mocks.getChainIdsForAddress.mockReturnValue([
+      'network-chain',
+      'successful-chain',
+    ])
+    mocks.getDao.mockImplementation(({ chainId }) =>
+      chainId === 'network-chain'
+        ? {
+            init: vi.fn().mockRejectedValue(networkError),
+          }
+        : {
+            description: 'DAO description',
+            info: { items: {} },
+            init: vi.fn().mockResolvedValue(undefined),
+            name: 'DAO name',
+          }
+    )
+    mocks.processError.mockReturnValue(mocks.networkError)
+
+    await expect(getStaticProps()).resolves.toMatchObject({
+      props: {
+        info: { items: {} },
+        title: 'DAO name',
+      },
+      revalidate: 60,
     })
   })
 

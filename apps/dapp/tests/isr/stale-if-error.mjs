@@ -4,17 +4,19 @@
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
-import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises'
+import { cp, mkdtemp, rm, unlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { after, before, test } from 'node:test'
 
-const fixtureDir = join(dirname(fileURLToPath(import.meta.url)), 'fixture')
+const testDir = dirname(fileURLToPath(import.meta.url))
+const fixtureSourceDir = join(testDir, 'fixture')
 const nextBin = fileURLToPath(import.meta.resolve('next/dist/bin/next'))
 const sleep = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds))
 
+let fixtureDir
 let stateDir
 let server
 let serverOutput = ''
@@ -90,21 +92,23 @@ const stopServer = async () => {
     return
   }
 
+  const exited = new Promise((resolve) => server.once('exit', resolve))
   server.kill('SIGTERM')
-  await Promise.race([
-    new Promise((resolve) => server.once('exit', resolve)),
-    sleep(5_000).then(() => {
-      if (server.exitCode === null) {
-        server.kill('SIGKILL')
-      }
-    }),
+  const stoppedGracefully = await Promise.race([
+    exited.then(() => true),
+    sleep(5_000).then(() => false),
   ])
+  if (!stoppedGracefully) {
+    server.kill('SIGKILL')
+    await exited
+  }
 }
 
 before(async () => {
   stateDir = await mkdtemp(join(tmpdir(), 'dao-dao-isr-'))
+  fixtureDir = await mkdtemp(join(testDir, '.fixture-run-'))
+  await cp(fixtureSourceDir, fixtureDir, { recursive: true })
   await writeFile(join(stateDir, 'value'), 'v1')
-  await rm(join(fixtureDir, '.next'), { force: true, recursive: true })
 
   const env = { ISR_FIXTURE_STATE_DIR: stateDir }
   await runNext(['build', fixtureDir], env)
@@ -150,7 +154,9 @@ before(async () => {
 after(async () => {
   await stopServer()
   await Promise.all([
-    rm(join(fixtureDir, '.next'), { force: true, recursive: true }),
+    fixtureDir
+      ? rm(fixtureDir, { force: true, recursive: true })
+      : Promise.resolve(),
     stateDir
       ? rm(stateDir, { force: true, recursive: true })
       : Promise.resolve(),
@@ -196,6 +202,8 @@ test('keeps stale content after a failed regeneration and replaces it after reco
 })
 
 test('does not cache a failed cold generation and succeeds after recovery', async () => {
+  await rm(join(stateDir, 'fail'), { force: true })
+  await writeFile(join(stateDir, 'value'), 'v2')
   await writeFile(join(stateDir, 'fail'), '')
 
   const failed = await request('/cold', {

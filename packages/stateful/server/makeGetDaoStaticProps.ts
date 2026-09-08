@@ -97,6 +97,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         : undefined
 
     const queryClient = makeDependencyTrackedQueryClient()
+    const networkErrors = new Set<unknown>()
 
     const getForChainId = async (
       chainId: string
@@ -274,6 +275,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         // Let Next preserve the last successful ISR value when a transient
         // network error occurs instead of caching an error page.
         if (processedError === CommonError.Network) {
+          networkErrors.add(error)
           throw error
         }
 
@@ -327,24 +329,40 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         decodedChainIds.map((c) => getForChainId(c))
       )
 
-      // If all errored, throw first error.
-      if (results.every((p) => p.status === 'rejected')) {
-        throw new Error(
-          results[0].status === 'rejected'
-            ? results[0].reason
-            : 'Failed to find chain'
-        )
-      }
-
       const fulfilledResults = results.flatMap((p) =>
         p.status === 'fulfilled' ? p.value : []
       )
 
-      // Get first result that found DAO info successfully. Otherwise, use first
-      // result (probably DAO not found).
-      result =
-        fulfilledResults.find((r) => 'props' in r && r.props.info) ||
-        fulfilledResults[0]
+      // Prefer the first result that found DAO info successfully.
+      const successfulResult = fulfilledResults.find(
+        (r) => 'props' in r && r.props.info
+      )
+      if (successfulResult) {
+        result = successfulResult
+      } else {
+        // Preserve an original Network error when no candidate prefix found a
+        // DAO. This lets Next handle it as failed ISR regeneration without
+        // losing the error's identity, stack, or cause.
+        const networkRejection = results.find(
+          (p) => p.status === 'rejected' && networkErrors.has(p.reason)
+        )
+        if (networkRejection?.status === 'rejected') {
+          throw networkRejection.reason
+        }
+
+        // Preserve the existing all-rejected behavior for other errors.
+        if (results.every((p) => p.status === 'rejected')) {
+          throw new Error(
+            results[0].status === 'rejected'
+              ? results[0].reason
+              : 'Failed to find chain'
+          )
+        }
+
+        // No result found DAO info, so use the first result (probably DAO not
+        // found).
+        result = fulfilledResults[0]
+      }
     }
 
     return result
