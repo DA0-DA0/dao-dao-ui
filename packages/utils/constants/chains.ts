@@ -215,24 +215,25 @@ const BASE_SUPPORTED_CHAINS: Omit<
         tokenDaoType: TokenType.Cw20,
         latestVersion: ContractVersion.V270,
       },
-      {
-        chainId: ChainId.KujiraMainnet,
-        name: 'kujira',
-        mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
-        accentColor: '#e53935',
-        // Permissioned, only Kujira governance can create DAOs.
-        factoryContractAddress:
-          'kujira1d4zzt4y0meqr9m3k55w0k0zztpfwm8dulvv4zsnap8cd2na9uhdqemhppe',
-        createViaGovernance: true,
-        explorerUrlTemplates: {
-          tx: 'https://finder.kujira.network/kaiyo-1/tx/REPLACE',
-          gov: 'https://kujira.network/govern',
-          govProp: 'https://kujira.network/govern/REPLACE',
-          wallet: 'https://finder.kujira.network/kaiyo-1/address/REPLACE',
-        },
-        latestVersion: ContractVersion.V250,
-      },
+      // Kujira is no longer supported
+      // {
+      //   chainId: ChainId.KujiraMainnet,
+      //   name: 'kujira',
+      //   mainnet: true,
+      //   indexer: SupportedChainIndexerMode.Tx,
+      //   accentColor: '#e53935',
+      //   // Permissioned, only Kujira governance can create DAOs.
+      //   factoryContractAddress:
+      //     'kujira1d4zzt4y0meqr9m3k55w0k0zztpfwm8dulvv4zsnap8cd2na9uhdqemhppe',
+      //   createViaGovernance: true,
+      //   explorerUrlTemplates: {
+      //     tx: 'https://finder.kujira.network/kaiyo-1/tx/REPLACE',
+      //     gov: 'https://kujira.network/govern',
+      //     govProp: 'https://kujira.network/govern/REPLACE',
+      //     wallet: 'https://finder.kujira.network/kaiyo-1/address/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V250,
+      // },
       {
         chainId: ChainId.ThorchainMainnet,
         name: 'thorchain',
@@ -249,43 +250,45 @@ const BASE_SUPPORTED_CHAINS: Omit<
         },
         latestVersion: ContractVersion.V271,
       },
-      {
-        chainId: ChainId.BitsongMainnet,
-        name: 'bitsong',
-        mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
-        accentColor: '#c53381',
-        factoryContractAddress:
-          'bitsong1glrutywr7268g9ew0uwj6xq5z5hv7rv0t7pum9gyvpkj7egty5cqzf7rdt',
-        tokenCreationFactoryAddress:
-          'bitsong16jp4jd68hzpc9a88mqcg3mnktjhgrlyv96shx4zvt522zzq99afsdldd04',
-        subDaos: [
-          'bitsong1qfwdjcmxgjr9jwa2grhf7pce87afx57j2664tvhh29j7r68a9tgqj9kuf3',
-        ],
-        explorerUrlTemplates: {
-          tx: 'https://explorer.chainroot.io/bitsong/transactions/REPLACE',
-          gov: 'https://explorer.chainroot.io/bitsong/proposals',
-          govProp: 'https://explorer.chainroot.io/bitsong/proposals/REPLACE',
-          wallet: 'https://explorer.chainroot.io/bitsong/accounts/REPLACE',
-        },
-        latestVersion: ContractVersion.V270,
-      },
-      {
-        chainId: ChainId.OmniflixHubMainnet,
-        name: 'omniflixhub',
-        mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
-        accentColor: '#d71d6a',
-        factoryContractAddress:
-          'omniflix1rg5jtk5984e3um65l92pagexxj9z6xrkkaw2lrrkhfeyq4376rlsf6j04f',
-        explorerUrlTemplates: {
-          tx: 'https://mintscan.io/omniflix/txs/REPLACE',
-          gov: 'https://mintscan.io/omniflix/proposals',
-          govProp: 'https://mintscan.io/omniflix/proposals/REPLACE',
-          wallet: 'https://mintscan.io/omniflix/account/REPLACE',
-        },
-        latestVersion: ContractVersion.V270,
-      },
+      // BitSong is no longer supported
+      // {
+      //   chainId: ChainId.BitsongMainnet,
+      //   name: 'bitsong',
+      //   mainnet: true,
+      //   indexer: SupportedChainIndexerMode.Tx,
+      //   accentColor: '#c53381',
+      //   factoryContractAddress:
+      //     'bitsong1glrutywr7268g9ew0uwj6xq5z5hv7rv0t7pum9gyvpkj7egty5cqzf7rdt',
+      //   tokenCreationFactoryAddress:
+      //     'bitsong16jp4jd68hzpc9a88mqcg3mnktjhgrlyv96shx4zvt522zzq99afsdldd04',
+      //   subDaos: [
+      //     'bitsong1qfwdjcmxgjr9jwa2grhf7pce87afx57j2664tvhh29j7r68a9tgqj9kuf3',
+      //   ],
+      //   explorerUrlTemplates: {
+      //     tx: 'https://explorer.chainroot.io/bitsong/transactions/REPLACE',
+      //     gov: 'https://explorer.chainroot.io/bitsong/proposals',
+      //     govProp: 'https://explorer.chainroot.io/bitsong/proposals/REPLACE',
+      //     wallet: 'https://explorer.chainroot.io/bitsong/accounts/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V270,
+      // },
+      // OmniFlix Hub is no longer supported
+      // {
+      //   chainId: ChainId.OmniflixHubMainnet,
+      //   name: 'omniflixhub',
+      //   mainnet: true,
+      //   indexer: SupportedChainIndexerMode.Tx,
+      //   accentColor: '#d71d6a',
+      //   factoryContractAddress:
+      //     'omniflix1rg5jtk5984e3um65l92pagexxj9z6xrkkaw2lrrkhfeyq4376rlsf6j04f',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://mintscan.io/omniflix/txs/REPLACE',
+      //     gov: 'https://mintscan.io/omniflix/proposals',
+      //     govProp: 'https://mintscan.io/omniflix/proposals/REPLACE',
+      //     wallet: 'https://mintscan.io/omniflix/account/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V270,
+      // },
       {
         chainId: ChainId.CosmosHubProviderTestnet,
         name: 'cosmosprovider',
@@ -412,22 +415,23 @@ const BASE_SUPPORTED_CHAINS: Omit<
       //     'bitsong13ackt4dv4ngt4jpngnvyyecjhu33w6gge3mad3n9vc0qkqcrk6cqzfm9vx',
       //   latestVersion: ContractVersion.V260,
       // },
-      {
-        chainId: ChainId.OmniflixHubTestnet,
-        name: 'omniflixhub',
-        mainnet: false,
-        indexer: SupportedChainIndexerMode.None,
-        accentColor: '#d71d6a',
-        factoryContractAddress:
-          'omniflix1dlz906ww79sq49yykjvvlkf9fu0tv4u94gywfd7ldrtyjd8873hqufdvuc',
-        explorerUrlTemplates: {
-          tx: 'https://testnet.ping.pub/omniflix/tx/REPLACE',
-          gov: 'https://testnet.ping.pub/omniflix/gov',
-          govProp: 'https://testnet.ping.pub/omniflix/gov/REPLACE',
-          wallet: 'https://testnet.ping.pub/omniflix/account/REPLACE',
-        },
-        latestVersion: ContractVersion.V270,
-      },
+      // OmniFlix Hub Testnet is no longer supported
+      // {
+      //   chainId: ChainId.OmniflixHubTestnet,
+      //   name: 'omniflixhub',
+      //   mainnet: false,
+      //   indexer: SupportedChainIndexerMode.None,
+      //   accentColor: '#d71d6a',
+      //   factoryContractAddress:
+      //     'omniflix1dlz906ww79sq49yykjvvlkf9fu0tv4u94gywfd7ldrtyjd8873hqufdvuc',
+      //   explorerUrlTemplates: {
+      //     tx: 'https://testnet.ping.pub/omniflix/tx/REPLACE',
+      //     gov: 'https://testnet.ping.pub/omniflix/gov',
+      //     govProp: 'https://testnet.ping.pub/omniflix/gov/REPLACE',
+      //     wallet: 'https://testnet.ping.pub/omniflix/account/REPLACE',
+      //   },
+      //   latestVersion: ContractVersion.V270,
+      // },
       {
         chainId: ChainId.SecretTestnet,
         name: 'secret',
