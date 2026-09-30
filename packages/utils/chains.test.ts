@@ -17,6 +17,11 @@ afterAll(() => {
   vi.resetModules()
 })
 
+test('Neutron chains are supported', () => {
+  expect(getSupportedChainConfig(ChainId.NeutronMainnet)).toBeDefined()
+  expect(getSupportedChainConfig(ChainId.NeutronTestnet)).toBeDefined()
+})
+
 test('Neutron chains do not redirect chain governance to a DAO contract', () => {
   expect(
     getSupportedChainConfig(ChainId.NeutronMainnet)?.govContractAddress
@@ -37,6 +42,12 @@ test('Neutron chains do not include subDAO entries', () => {
 
 test('THORChain mainnet does not use an indexer', () => {
   expect(getSupportedChainConfig(ChainId.ThorchainMainnet)?.indexer).toBe(
+    SupportedChainIndexerMode.None
+  )
+})
+
+test('Neutron mainnet does not use an indexer', () => {
+  expect(getSupportedChainConfig(ChainId.NeutronMainnet)?.indexer).toBe(
     SupportedChainIndexerMode.None
   )
 })
