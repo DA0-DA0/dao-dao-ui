@@ -400,14 +400,49 @@ export const daoProposalMultipleQueries = {
             )
 
             if (proposals != null) {
-              return { proposals }
+              // For the first page (no startBefore) with results, verify
+              // the indexer is not stale by comparing the highest proposal
+              // ID against the on-chain proposal count. If the indexer is
+              // behind, fall back to a direct contract query so newly
+              // created proposals are visible. Empty results are trusted
+              // as-is (handled by the isIndexerQuerySupported/null checks
+              // above).
+              if (args.startBefore || proposals.length === 0) {
+                return { proposals }
+              }
+              try {
+                const onChainCount = await new DaoProposalMultipleQueryClient(
+                  await getCosmWasmClientForChainId(chainId),
+                  contractAddress
+                ).proposalCount()
+                const indexerHighestId = Math.max(
+                  ...proposals.map((p: { id?: number }) => p.id ?? 0)
+                )
+                if (indexerHighestId < onChainCount) {
+                  console.warn(
+                    `Indexer is stale (highest: ${indexerHighestId}, on-chain count: ${onChainCount}), falling back to contract query for reverseProposals`
+                  )
+                  // Fall through to direct contract query below.
+                } else {
+                  return { proposals }
+                }
+              } catch (error) {
+                // If the staleness check itself fails, trust the indexer
+                // data rather than blocking on an unrelated RPC issue.
+                console.error(
+                  'Failed to verify indexer freshness, using indexer data',
+                  error
+                )
+                return { proposals }
+              }
             }
           } catch (error) {
             console.error(error)
           }
         }
 
-        // If indexer query fails, fallback to contract query.
+        // If indexer query fails, is stale, or is unsupported, fallback to
+        // contract query.
         return new DaoProposalMultipleQueryClient(
           await getCosmWasmClientForChainId(chainId),
           contractAddress
