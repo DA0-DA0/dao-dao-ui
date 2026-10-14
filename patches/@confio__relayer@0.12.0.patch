@@ -174,3 +174,56 @@ index 1bf85dcd4e59f3a9ceb28554059eda7c986a9cf3..e5d6f5042ca5b473939cf9a3d3c9ad51
          if ((0, stargate_1.isDeliverTxFailure)(result)) {
              throw new Error((0, utils_2.createDeliverTxFailureMessage)(result));
          }
+diff --git a/build/lib/utils.js b/build/lib/utils.js
+index 7b7a1cdaf83d26f233d126e77e20baf7e0c3b5d9..2f6e5e9dfbb8e017837cab600d9ca7709d337580 100644
+--- a/build/lib/utils.js
++++ b/build/lib/utils.js
+@@ -183,6 +183,21 @@ function parseHeightAttribute(attribute) {
+     return { revisionHeight, revisionNumber };
+ }
+ exports.parseHeightAttribute = parseHeightAttribute;
++/**
++ * Decode a bytes-valued IBC event attribute. ibc-go v10 removed the deprecated
++ * UTF-8 attributes (e.g. `packet_data`, `packet_ack`) and only emits the hex
++ * encoded variants (`packet_data_hex`, `packet_ack_hex`). Prefer the hex
++ * attribute since it is lossless, falling back to the deprecated one for older
++ * chains.
++ */
++function parseBytesAttribute(attributesObj, key) {
++    const hex = attributesObj[`${key}_hex`];
++    if (hex) {
++        return (0, encoding_1.fromHex)(hex);
++    }
++    const utf8 = attributesObj[key];
++    return utf8 ? (0, encoding_1.toUtf8)(utf8) : undefined;
++}
+ function parsePacket({ type, attributes }) {
+     if (type !== "send_packet") {
+         throw new Error(`Cannot parse event of type ${type}`);
+@@ -202,9 +217,7 @@ function parsePacket({ type, attributes }) {
+         /** identifies the channel end on the receiving chain. */
+         destinationChannel: attributesObj.packet_dst_channel,
+         /** actual opaque bytes transferred directly to the application module */
+-        data: attributesObj.packet_data
+-            ? (0, encoding_1.toUtf8)(attributesObj.packet_data)
+-            : undefined,
++        data: parseBytesAttribute(attributesObj, "packet_data"),
+         /** block height after which the packet times out */
+         timeoutHeight: parseHeightAttribute(attributesObj.packet_timeout_height),
+         /** block timestamp (in nanoseconds) after which the packet times out */
+@@ -237,13 +250,13 @@ function parseAck({ type, attributes }) {
+         /** identifies the channel end on the receiving chain. */
+         destinationChannel: attributesObj.packet_dst_channel,
+         /** actual opaque bytes transferred directly to the application module */
+-        data: (0, encoding_1.toUtf8)(attributesObj.packet_data ?? ""),
++        data: parseBytesAttribute(attributesObj, "packet_data") ?? new Uint8Array(),
+         /** block height after which the packet times out */
+         timeoutHeight: parseHeightAttribute(attributesObj.packet_timeout_height),
+         /** block timestamp (in nanoseconds) after which the packet times out */
+         timeoutTimestamp: may(BigInt, attributesObj.packet_timeout_timestamp),
+     });
+-    const acknowledgement = (0, encoding_1.toUtf8)(attributesObj.packet_ack ?? "");
++    const acknowledgement = parseBytesAttribute(attributesObj, "packet_ack") ?? new Uint8Array();
+     return {
+         acknowledgement,
+         originalPacket,
