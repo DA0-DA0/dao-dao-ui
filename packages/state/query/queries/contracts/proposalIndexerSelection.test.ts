@@ -1,15 +1,37 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { ChainId } from '@dao-dao/types'
+import { ChainId, SupportedChainIndexerMode } from '@dao-dao/types'
 
 const mocks = vi.hoisted(() => ({
   queryContractSmart: vi.fn(),
   getCosmWasmClientForChainId: vi.fn(),
 }))
 
+// SUPPORTED_CHAINS is empty when NODE_ENV is 'test' (see TEST_ENV), so no chain
+// would be indexed. Mirror the production indexer modes of the chains used
+// below: Juno mainnet is fully indexed, THORChain mainnet has no indexer.
+const CHAIN_INDEXER_MODES: Partial<Record<string, SupportedChainIndexerMode>> =
+  {
+    [ChainId.JunoMainnet]: SupportedChainIndexerMode.All,
+    [ChainId.ThorchainMainnet]: SupportedChainIndexerMode.None,
+  }
+
 vi.mock('@dao-dao/utils', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@dao-dao/utils')>()),
   getCosmWasmClientForChainId: mocks.getCosmWasmClientForChainId,
+  chainIsIndexed: (
+    chainId: string,
+    ...allowedModes: SupportedChainIndexerMode[]
+  ) => {
+    const mode = CHAIN_INDEXER_MODES[chainId]
+    return (
+      mode !== undefined &&
+      (allowedModes.length
+        ? allowedModes
+        : [SupportedChainIndexerMode.All]
+      ).includes(mode)
+    )
+  },
 }))
 
 import { cwProposalSingleV1Queries } from './CwProposalSingle.v1'

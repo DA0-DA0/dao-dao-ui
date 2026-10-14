@@ -21,8 +21,8 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoProposalMultipleQueryClient } from '../../../contracts/DaoProposalMultiple'
-import { contractQueries } from '../contract'
 import { isIndexerQuerySupported } from '../../../indexer'
+import { contractQueries } from '../contract'
 import { indexerQueries } from '../indexer'
 
 const PROPOSAL_INDEXER_MODES = [
@@ -349,7 +349,7 @@ export const daoProposalMultipleQueries = {
               })
             )
 
-            if (proposals != null) {
+            if (proposals !== null && proposals !== undefined) {
               return { proposals }
             }
           } catch (error) {
@@ -399,7 +399,7 @@ export const daoProposalMultipleQueries = {
               })
             )
 
-            if (proposals != null) {
+            if (proposals !== null && proposals !== undefined) {
               return { proposals }
             }
           } catch (error) {
@@ -497,7 +497,7 @@ export const daoProposalMultipleQueries = {
               })
             )
 
-            if (votes != null) {
+            if (votes !== null && votes !== undefined) {
               return { votes }
             }
           } catch (error) {
