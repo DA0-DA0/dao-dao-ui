@@ -59,9 +59,7 @@ const Cw721RolesMemberCard = ({
       <NftCard
         {...representativeNft}
         banner={
-          tokenCount > 1
-            ? t('title.numNfts', { count: tokenCount })
-            : undefined
+          tokenCount > 1 ? t('title.numNfts', { count: tokenCount }) : undefined
         }
         className="rounded-b-none"
         hideCollection

@@ -21,8 +21,8 @@ import {
 import { getCosmWasmClientForChainId } from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../../../contracts/DaoProposalSingle.v2'
-import { contractQueries } from '../contract'
 import { isIndexerQuerySupported } from '../../../indexer'
+import { contractQueries } from '../contract'
 import { indexerQueries } from '../indexer'
 
 const PROPOSAL_INDEXER_MODES = [
@@ -348,7 +348,7 @@ export const daoProposalSingleV2Queries = {
               })
             )
 
-            if (proposals != null) {
+            if (proposals !== null && proposals !== undefined) {
               return { proposals }
             }
           } catch (error) {
@@ -398,7 +398,7 @@ export const daoProposalSingleV2Queries = {
               })
             )
 
-            if (proposals != null) {
+            if (proposals !== null && proposals !== undefined) {
               return { proposals }
             }
           } catch (error) {
@@ -496,7 +496,7 @@ export const daoProposalSingleV2Queries = {
               })
             )
 
-            if (votes != null) {
+            if (votes !== null && votes !== undefined) {
               return { votes }
             }
           } catch (error) {

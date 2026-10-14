@@ -30,7 +30,7 @@ import {
   secretCosmWasmClientRouter,
 } from '@dao-dao/utils'
 
-import { cwVestingQueries } from './contracts'
+import { cwVestingQueries } from './contracts/CwVesting'
 import { indexerQueries } from './indexer'
 
 /**
