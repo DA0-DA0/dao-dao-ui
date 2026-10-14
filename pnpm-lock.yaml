@@ -10,7 +10,7 @@ overrides:
 
 patchedDependencies:
   '@confio/relayer@0.12.0':
-    hash: dc8cedbae6a585374a28a6483daf81ca333c00e339eee14036d12f41ffe339b1
+    hash: 80e29864435dab7eb24118e5b5deb1536c535ed67c4f5226054cc252915601b2
     path: patches/@confio__relayer@0.12.0.patch
   '@cosmjs/cosmwasm-stargate@0.37.0':
     hash: 1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464
@@ -419,7 +419,7 @@ importers:
     devDependencies:
       '@confio/relayer':
         specifier: ^0.12.0
-        version: 0.12.0(patch_hash=dc8cedbae6a585374a28a6483daf81ca333c00e339eee14036d12f41ffe339b1)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.12.0(patch_hash=80e29864435dab7eb24118e5b5deb1536c535ed67c4f5226054cc252915601b2)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@dao-dao/config':
         specifier: workspace:*
         version: link:../config
@@ -556,7 +556,7 @@ importers:
         version: 3.8.8(graphql-ws@5.14.2(graphql@16.8.1))(graphql@16.8.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@confio/relayer':
         specifier: ^0.12.0
-        version: 0.12.0(patch_hash=dc8cedbae6a585374a28a6483daf81ca333c00e339eee14036d12f41ffe339b1)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.12.0(patch_hash=80e29864435dab7eb24118e5b5deb1536c535ed67c4f5226054cc252915601b2)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/amino':
         specifier: 0.37.0
         version: 0.37.0
@@ -656,7 +656,7 @@ importers:
     dependencies:
       '@confio/relayer':
         specifier: ^0.12.0
-        version: 0.12.0(patch_hash=dc8cedbae6a585374a28a6483daf81ca333c00e339eee14036d12f41ffe339b1)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 0.12.0(patch_hash=80e29864435dab7eb24118e5b5deb1536c535ed67c4f5226054cc252915601b2)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/cosmwasm-stargate':
         specifier: 0.37.0
         version: 0.37.0(patch_hash=1a5afadf1c6f60353779bb19688b5ec648eb2855f827f2003309aa7a47807464)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -18340,7 +18340,7 @@ snapshots:
       '@noble/hashes': 1.7.1
       protobufjs: 6.11.4
 
-  '@confio/relayer@0.12.0(patch_hash=dc8cedbae6a585374a28a6483daf81ca333c00e339eee14036d12f41ffe339b1)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@confio/relayer@0.12.0(patch_hash=80e29864435dab7eb24118e5b5deb1536c535ed67c4f5226054cc252915601b2)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@cosmjs/cosmwasm-stargate': 0.32.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmjs/crypto': 0.32.4
