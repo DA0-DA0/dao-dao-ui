@@ -11,10 +11,7 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import {
-  DAO_VOTING_CW721_STAKED_CONTRACT_NAMES,
-  isSecretNetwork,
-} from '@dao-dao/utils'
+import { DAO_VOTING_CW721_STAKED_CONTRACT_NAMES } from '@dao-dao/utils'
 
 import { UpdateStakingConfigAction } from './actions'
 import {
@@ -23,6 +20,7 @@ import {
   ProfileCardMemberInfo,
 } from './components'
 import { useMainDaoInfoCards, useVotingModuleRelevantAddresses } from './hooks'
+import { canListCw721StakedMembers } from './utils'
 
 export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingCw721Staked',
@@ -38,8 +36,9 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
     // Components
     components: {
       extraTabs: [
-        // Can't view members on Secret Network.
-        ...(isSecretNetwork(chainId)
+        // Members can only be listed via the indexer, and not on Secret
+        // Network.
+        ...(!canListCw721StakedMembers(chainId)
           ? []
           : [
               {
