@@ -21,6 +21,7 @@ import {
   ActionOptions,
 } from '@dao-dao/types/actions'
 import {
+  chainIsIndexed,
   getDaoRewardDistributors,
   getRewardDistributionKey,
   parseContractVersion,
@@ -156,7 +157,11 @@ export class FixRewardDistributorAction extends ActionBase<FixRewardDistributorD
       version === ContractVersion.V250 ? { id, address } : []
     )
 
-    this.metadata.hideFromPicker = this.distributors.length === 0
+    // Recovery info is loaded from the indexer, so keep this action hidden on
+    // chains without one.
+    this.metadata.hideFromPicker =
+      this.distributors.length === 0 ||
+      !chainIsIndexed(this.options.chain.chainId)
 
     this.defaults = {
       step: undefined,

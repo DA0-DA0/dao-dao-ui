@@ -37,6 +37,7 @@ import {
 import { Config as SecretSingleChoiceConfig } from '@dao-dao/types/contracts/SecretDaoProposalSingle'
 import {
   DaoProposalSingleAdapterId,
+  chainIsIndexed,
   decodeJsonFromBase64,
   encodeJsonToBase64,
   makeCombineQueryResultsIntoLoadingDataWithError,
@@ -132,6 +133,10 @@ export class BecomeApproverAction extends ActionBase<BecomeApproverData> {
       Icon: PersonRaisingHandEmoji,
       label: options.t('title.becomeApprover'),
       description: options.t('info.becomeApproverDescription'),
+      // Potential approval DAOs are loaded from the indexer, so hide this
+      // action on chains without one. Existing actions still render since they
+      // only use contract queries.
+      hideFromPicker: !chainIsIndexed(options.chain.chainId),
     })
   }
 
