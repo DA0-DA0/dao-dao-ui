@@ -25,6 +25,7 @@ vi.mock('@dao-dao/state', () => ({
     info: vi.fn(() => ({ queryKey: ['contractInfo'] })),
   },
   getDao: mocks.getDao,
+  isIndexerQuerySupported: vi.fn(() => false),
   polytoneQueries: {},
   queryIndexer: vi.fn(),
 }))
