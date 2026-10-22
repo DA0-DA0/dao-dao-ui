@@ -8,6 +8,7 @@ import {
   ChainXGovDao,
   contractQueries,
   getDao,
+  isIndexerQuerySupported,
   polytoneQueries,
   queryIndexer,
 } from '@dao-dao/state'
@@ -415,20 +416,22 @@ export const makeGetDaoProposalStaticProps = ({
 
         let proposal: GovProposalWithDecodedContent | null = null
         try {
-          // Try to load from indexer first.
+          // Try to load from indexer first, if the chain has one.
           const indexerProposal:
             | {
                 id: string
                 data: string
               }
-            | undefined = await queryIndexer({
-            chainId: chain.chainId,
-            type: 'generic',
-            formula: 'gov/proposal',
-            args: {
-              id: proposalId,
-            },
-          })
+            | undefined = isIndexerQuerySupported({ chainId: chain.chainId })
+            ? await queryIndexer({
+                chainId: chain.chainId,
+                type: 'generic',
+                formula: 'gov/proposal',
+                args: {
+                  id: proposalId,
+                },
+              })
+            : undefined
 
           if (indexerProposal) {
             if (supportsV1Gov) {

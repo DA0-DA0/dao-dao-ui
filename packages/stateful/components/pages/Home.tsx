@@ -29,10 +29,12 @@ import {
   LoadingData,
   LoadingDataWithError,
   StatefulDaoCardProps,
+  SupportedChainIndexerMode,
 } from '@dao-dao/types'
 import {
   SITE_TITLE,
   SITE_URL,
+  chainIsIndexed,
   getFallbackImage,
   getSupportedChainConfig,
   parseContractVersion,
@@ -99,6 +101,14 @@ export const Home: NextPage<StatefulHomeProps> = ({
     param: 'q',
     defaultValue: '',
   })
+  // DAO search is backed by the indexer, so only show it on indexed chains.
+  const searchEnabled =
+    !!chainId &&
+    chainIsIndexed(
+      chainId,
+      SupportedChainIndexerMode.Tx,
+      SupportedChainIndexerMode.All
+    )
   const searchOptions: SearchDaosOptions = {
     chainId: chainId || '',
     query: search,
@@ -113,7 +123,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
       })
       return typeof queryFn === 'function' ? queryFn(ctx) : queryFn
     },
-    enabled: !!chainId,
+    enabled: searchEnabled,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage &&
@@ -134,7 +144,8 @@ export const Home: NextPage<StatefulHomeProps> = ({
       : undefined
   const infiniteScrollOptions = useInfiniteScroll({
     loadMore: searchQuery.fetchNextPage,
-    disabled: !chainId || !searchQuery.hasNextPage || searchQuery.isFetching,
+    disabled:
+      !searchEnabled || !searchQuery.hasNextPage || searchQuery.isFetching,
   })
   const searchedDaos: LoadingDataWithError<LazyDaoCardProps[]> =
     searchQuery.isPending
@@ -328,7 +339,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
             featuredDaos={featuredDaos}
             openSearch={openSearch}
             search={
-              chainId
+              searchEnabled
                 ? {
                     LazyDaoCard,
                     searchedDaos,

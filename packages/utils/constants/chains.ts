@@ -62,7 +62,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.JunoMainnet,
         name: 'juno',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.All,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#f74a49',
         factoryContractAddress:
           'juno1f3xxy7cw5lvljf38ehhcxavxlawpmkezq7qtrhesvympfudjvlaqzz6exr',

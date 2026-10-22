@@ -18,6 +18,7 @@ import {
 import { ProposalStatus } from '@dao-dao/types/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   FollowingDaosKvpkClient,
+  chainIsIndexed,
   getDaoProposalPath,
   isConfiguredChainName,
 } from '@dao-dao/utils'
@@ -75,33 +76,40 @@ export const fetchFeedOpenProposals = async (
             })
           ),
           openProposals: await Promise.all(
-            (
-              await queryClient.fetchQuery(
-                indexerQueries.queryContract<
-                  | {
-                      proposalModuleAddress: string
-                      proposals: {
-                        id: number
-                        proposal: {
-                          start_height: number
-                          expiration: Expiration
-                        }
-                        voted?: boolean
+            // Open proposals are loaded from the indexer, so skip DAOs on
+            // chains without one instead of failing the whole feed.
+            (!chainIsIndexed(
+              dao.chainId,
+              SupportedChainIndexerMode.Tx,
+              SupportedChainIndexerMode.All
+            )
+              ? null
+              : await queryClient.fetchQuery(
+                  indexerQueries.queryContract<
+                    | {
+                        proposalModuleAddress: string
+                        proposals: {
+                          id: number
+                          proposal: {
+                            start_height: number
+                            expiration: Expiration
+                          }
+                          voted?: boolean
+                        }[]
                       }[]
-                    }[]
-                  | null
-                >({
-                  chainId: dao.chainId,
-                  contractAddress: dao.coreAddress,
-                  formula: 'daoCore/openProposals',
-                  args: { address: profileAddress },
-                  noFallback: true,
-                  allowedModes: [
-                    SupportedChainIndexerMode.Tx,
-                    SupportedChainIndexerMode.All,
-                  ],
-                })
-              )
+                    | null
+                  >({
+                    chainId: dao.chainId,
+                    contractAddress: dao.coreAddress,
+                    formula: 'daoCore/openProposals',
+                    args: { address: profileAddress },
+                    noFallback: true,
+                    allowedModes: [
+                      SupportedChainIndexerMode.Tx,
+                      SupportedChainIndexerMode.All,
+                    ],
+                  })
+                )
             )?.map(async ({ proposalModuleAddress, proposals }) => ({
               proposalModuleAddress,
               proposals: await Promise.all(

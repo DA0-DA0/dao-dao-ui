@@ -52,6 +52,12 @@ test('Neutron mainnet does not use an indexer', () => {
   )
 })
 
+test('Juno mainnet does not use an indexer', () => {
+  expect(getSupportedChainConfig(ChainId.JunoMainnet)?.indexer).toBe(
+    SupportedChainIndexerMode.None
+  )
+})
+
 test('Kujira, BitSong and OmniFlix Hub are not supported chains', () => {
   for (const chainId of [
     ChainId.KujiraMainnet,
