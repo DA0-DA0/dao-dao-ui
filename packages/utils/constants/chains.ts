@@ -46,7 +46,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.CosmosHubMainnet,
         name: 'cosmos',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#5064fb',
         factoryContractAddress:
           'cosmos19jjaejvhfyqzjlgc6l2xa7w3gwwtvx4qvgad2gkw5dynxx2lmpxq9s5g3y',
@@ -87,7 +87,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
         chainId: ChainId.OsmosisMainnet,
         name: 'osmosis',
         mainnet: true,
-        indexer: SupportedChainIndexerMode.Tx,
+        indexer: SupportedChainIndexerMode.None,
         accentColor: '#5604e8',
         factoryContractAddress:
           'osmo1qpszqk458arkkdff5z4vrqlqv4k2n9a0tjme23vn00uyt30nrr7sfe87cv',

@@ -6,10 +6,10 @@ import { DaoInfoCard } from '@dao-dao/types'
 import {
   convertDurationToHumanReadableString,
   formatPercentOf100,
-  isSecretNetwork,
 } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError } from '../../../../hooks'
+import { canListCw721StakedMembers } from '../utils'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
 
@@ -29,16 +29,19 @@ export const useMainDaoInfoCards = (): DaoInfoCard[] => {
     collectionInfo: { symbol, totalSupply },
   } = useGovernanceCollectionInfo()
 
+  const canListMembers = canListCw721StakedMembers(votingModule.chainId)
   const loadingMembers = useQueryLoadingDataWithError(
-    daoVotingCw721StakedExtraQueries.topStakers({
-      chainId: votingModule.chainId,
-      address: votingModule.address,
-    })
+    canListMembers
+      ? daoVotingCw721StakedExtraQueries.topStakers({
+          chainId: votingModule.chainId,
+          address: votingModule.address,
+        })
+      : undefined
   )
 
   return [
-    // Can't view members on Secret Network.
-    ...(isSecretNetwork(votingModule.chainId)
+    // Members can only be listed via the indexer, and not on Secret Network.
+    ...(!canListMembers
       ? []
       : [
           {
