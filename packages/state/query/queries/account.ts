@@ -16,6 +16,10 @@ import {
 } from '@dao-dao/types'
 import { ListItemsResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import {
+  IdentifiedChannel,
+  Order,
+} from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
 import { PubKey as Secp256k1PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/secp256k1/keys'
@@ -234,27 +238,6 @@ export const fetchRemoteIcaAddress = async (
     destChainId: string
   }
 ): Promise<string | null> => {
-  // Attempt to load from Snapper.
-  try {
-    const cached = await queryClient.fetchQuery(
-      indexerQueries.snapper({
-        query: 'ica-remote-address',
-        parameters: {
-          srcChainId,
-          address,
-          destChainId,
-        },
-      })
-    )
-
-    if (cached) {
-      return cached
-    }
-  } catch (err) {
-    console.error('Failed to load ICA address from Snapper:', err)
-    // If Snapper fails, continue to attempt to load from IBC.
-  }
-
   const {
     sourceChain: { connection_id },
   } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
@@ -284,6 +267,56 @@ export const fetchRemoteIcaAddress = async (
     // Rethrow all other errors.
     throw err
   }
+}
+
+/** Find the controller channel, including closed channels when reopening an ICA. */
+export const fetchIcaChannel = async ({
+  srcChainId,
+  destChainId,
+  address,
+}: Parameters<
+  typeof fetchRemoteIcaAddress
+>[1]): Promise<IdentifiedChannel | null> => {
+  const {
+    sourceChain: { connection_id },
+  } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
+  const client = await ibcProtoRpcClientRouter.connect(srcChainId)
+  let key = new Uint8Array()
+  const seen = new Set<string>()
+  let match: IdentifiedChannel | null = null
+  for (let page = 0; page < 100; page++) {
+    const result = await client.core.channel.v1.connectionChannels({
+      connection: connection_id,
+      pagination: {
+        key,
+        limit: 100n,
+        offset: 0n,
+        countTotal: false,
+        reverse: false,
+      },
+    })
+    for (const channel of result.channels) {
+      if (
+        channel.portId !== 'icacontroller-' + address ||
+        !channel.connectionHops.includes(connection_id)
+      )
+        continue
+      if (
+        ![Order.ORDER_ORDERED, Order.ORDER_UNORDERED].includes(
+          channel.ordering
+        ) ||
+        (match && channel.ordering !== match.ordering)
+      )
+        throw new Error('Cannot verify existing ICA channel ordering')
+      match = channel
+    }
+    key = new Uint8Array(result.pagination?.nextKey || [])
+    if (!key.length) return match
+    const cursor = toHex(key)
+    if (seen.has(cursor)) throw new Error('Repeated ICA channel pagination')
+    seen.add(cursor)
+  }
+  throw new Error('ICA channel pagination budget exceeded')
 }
 
 /**
@@ -642,6 +675,12 @@ export const fetchCw1WhitelistAccount = async (
 }
 
 export const accountQueries = {
+  icaChannel: (options: Parameters<typeof fetchIcaChannel>[0]) =>
+    queryOptions({
+      queryKey: ['account', 'icaChannel', options],
+      retry: false,
+      queryFn: () => fetchIcaChannel(options),
+    }),
   /**
    * Fetch the list of accounts associated with the specified address.
    */
