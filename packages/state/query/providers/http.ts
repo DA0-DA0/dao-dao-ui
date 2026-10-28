@@ -35,7 +35,9 @@ const states = Object.fromEntries(
   }
 >
 
-/** Small shared scheduler. The deadline covers queueing, retries and response parsing.
+/** Small shared scheduler. The normal deadline covers queueing, retries and response parsing.
+ * Count-only requests have a bounded 120s queue budget plus a 3s request budget
+ * so overlapping periods cannot starve configured chains before an HTTP attempt.
  * No outer query retries should be enabled for these public providers.
  */
 export const fetchPublicJson = async <T = unknown>(
@@ -47,8 +49,8 @@ export const fetchPublicJson = async <T = unknown>(
   if (Date.now() < state.cooldown)
     throw new PublicHttpError('Provider cooldown', 429)
   const controller = new AbortController()
-  const deadline = Date.now() + (provider === 'indexer-stats' ? 3000 : 8000)
-  const timer = setTimeout(() => controller.abort(), deadline - Date.now())
+  let deadline = Date.now() + (provider === 'indexer-stats' ? 120_000 : 8000)
+  let timer = setTimeout(() => controller.abort(), deadline - Date.now())
   const signal = controller.signal
   const wait = (delay: number) =>
     new Promise<void>((resolve, reject) => {
@@ -86,9 +88,18 @@ export const fetchPublicJson = async <T = unknown>(
       throw new PublicHttpError('Provider cooldown', 429)
     state.active++
     acquired = true
-    state.nextStart = Date.now() + policies[provider].spacing
+    if (provider === 'indexer-stats') {
+      clearTimeout(timer)
+      deadline = Date.now() + 3000
+      timer = setTimeout(() => controller.abort(), 3000)
+    }
     const attempts = provider === 'indexer-stats' ? 1 : 2
     for (let attempt = 0; attempt < attempts; attempt++) {
+      while (Date.now() < state.nextStart)
+        await wait(state.nextStart - Date.now())
+      if (signal.aborted || Date.now() >= deadline)
+        throw new PublicHttpError('Provider deadline exceeded')
+      state.nextStart = Date.now() + policies[provider].spacing
       let response: Response
       try {
         response = await fetcher(url, { ...init, signal })

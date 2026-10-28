@@ -63,3 +63,70 @@ test('decimals mismatch and CW20 impostors have no price or network request', as
     ).toBeUndefined()
   expect(fetcher).not.toHaveBeenCalled()
 })
+
+test('missing Skip decimals fall through to CW20 metadata instead of inventing zero', async () => {
+  const { skipQueries } = await import('./skip')
+  const { cw20BaseQueries } = await import('./contracts/Cw20Base')
+  const q = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  })
+  const source = {
+    chainId: 'a',
+    type: TokenType.Cw20,
+    denomOrAddress: 'contract',
+  }
+  q.setQueryData(tokenQueries.source(source).queryKey, source)
+  q.setQueryData(skipQueries.asset(source).queryKey, {
+    chain_id: 'a',
+    denom: 'cw20:contract',
+    token_contract: 'contract',
+    is_cw20: true,
+    decimals: null,
+  } as any)
+  q.setQueryData(
+    cw20BaseQueries.tokenInfo({ chainId: 'a', contractAddress: 'contract' })
+      .queryKey,
+    { symbol: 'REAL', decimals: 6, name: 'Token', total_supply: '1' }
+  )
+  q.setQueryData(
+    tokenQueries.cw20LogoUrl({ chainId: 'a', address: 'contract' }).queryKey,
+    null
+  )
+  expect(await q.fetchQuery(tokenQueries.info(source))).toMatchObject({
+    symbol: 'REAL',
+    decimals: 6,
+  })
+})
+
+test('a provider outage is cached as unavailable rather than causing a token fan-out storm', async () => {
+  const q = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  })
+  q.setQueryData(tokenQueries.info(atom).queryKey, makeToken())
+  const fetcher = vi.fn(async () => Response.json({}, { status: 400 }))
+  vi.stubGlobal('fetch', fetcher)
+  for (let i = 0; i < 8; i++)
+    expect(
+      (await q.fetchQuery(tokenQueries.usdPrice(atom))).usdPrice
+    ).toBeUndefined()
+  expect(fetcher).toHaveBeenCalledTimes(1)
+})
+
+test('missing Skip origin fields do not disable local/CW20 source fallbacks', async () => {
+  const { skipQueries } = await import('./skip')
+  const source = {
+    chainId: 'a',
+    type: TokenType.Cw20,
+    denomOrAddress: 'contract',
+  }
+  const q = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  })
+  q.setQueryData(skipQueries.asset(source).queryKey, {
+    chain_id: 'a',
+    denom: 'cw20:contract',
+    is_cw20: true,
+    origin_denom: null,
+  } as any)
+  expect(await q.fetchQuery(tokenQueries.source(source))).toEqual(source)
+})

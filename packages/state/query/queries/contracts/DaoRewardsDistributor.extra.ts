@@ -21,10 +21,10 @@ import {
 } from '@dao-dao/types/contracts/DaoRewardsDistributor'
 import {
   deserializeTokenSource,
-  isFreshUsdPrice,
   getDaoRewardDistributors,
   getRewardDistributorSavedEmissionRateStorageItemKey,
   getRewardDistributorStorageItemKey,
+  isFreshUsdPrice,
   objectMatchesStructure,
   parseContractVersion,
   serializeTokenSource,

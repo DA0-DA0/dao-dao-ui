@@ -1,6 +1,9 @@
 import { afterEach, expect, test, vi } from 'vitest'
 
-import { subscribeUsdPriceRefresh } from './usdPriceRefresh'
+import {
+  refreshUsdPriceConsumers,
+  subscribeUsdPriceRefresh,
+} from './usdPriceRefresh'
 
 afterEach(() => vi.useRealTimers())
 test('uses one clock, schedules source expiry, refreshes on focus, and cleans up', async () => {
@@ -41,4 +44,17 @@ test('hidden pages make no polling requests and resume with revalidation', async
   target.dispatchEvent(new Event('visibilitychange'))
   expect(refresh).toHaveBeenCalledTimes(1)
   stop()
+})
+
+test('Recoil sees expiry immediately and sees newly invalidated results after completion', async () => {
+  let complete!: () => void
+  const invalidation = new Promise<void>((resolve) => {
+    complete = resolve
+  })
+  const clock = vi.fn()
+  const done = refreshUsdPriceConsumers(() => invalidation, clock)
+  expect(clock).toHaveBeenCalledTimes(1)
+  complete()
+  await done
+  expect(clock).toHaveBeenCalledTimes(2)
 })

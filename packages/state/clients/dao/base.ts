@@ -2,7 +2,6 @@ import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   Account,
-  UsdValuation,
   AnyChain,
   ContractVersion,
   DaoCardLazyData,
@@ -15,6 +14,7 @@ import {
   IQueryClient,
   IVotingModuleBase,
   ModuleId,
+  UsdValuation,
 } from '@dao-dao/types'
 import {
   TotalPowerAtHeightResponse,

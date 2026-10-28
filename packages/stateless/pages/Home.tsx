@@ -214,7 +214,7 @@ export const Home = ({
       {/* Chain governance DAOs */}
       {chainGovDaos && (
         <div className="flex flex-col items-center gap-4">
-          <div className="flex-row items-center xs:items-end flex gap-2 justify-between self-stretch">
+          <div className="xs:items-end flex-row items-center flex gap-2 justify-between self-stretch">
             <p className="title-text text-lg">{t('title.chainGovernance')}</p>
 
             <Button
@@ -223,7 +223,7 @@ export const Home = ({
               variant="none"
             >
               <Search
-                className="!text-icon-secondary !h-6 !w-6 xs:!h-5 xs:!w-5"
+                className="!text-icon-secondary xs:!h-5 xs:!w-5 !h-6 !w-6"
                 onClick={openSearch}
               />
               <p className="secondary-text xs:block hidden">
@@ -250,7 +250,7 @@ export const Home = ({
       {/* Featured DAOs */}
       {(featuredDaos.loading || featuredDaos.data.length > 0) && (
         <div className="flex flex-col items-center gap-4">
-          <div className="flex-row items-center xs:items-end flex gap-2 justify-between self-stretch">
+          <div className="xs:items-end flex-row items-center flex gap-2 justify-between self-stretch">
             <p className="title-text text-lg">{t('title.featuredDaos')}</p>
 
             <Button
@@ -259,7 +259,7 @@ export const Home = ({
               variant="none"
             >
               <Search
-                className="!text-icon-secondary !h-6 !w-6 xs:!h-5 xs:!w-5"
+                className="!text-icon-secondary xs:!h-5 xs:!w-5 !h-6 !w-6"
                 onClick={openSearch}
               />
               <p className="secondary-text xs:block hidden">

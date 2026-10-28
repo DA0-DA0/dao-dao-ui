@@ -12,7 +12,11 @@ export const UsdValuationDisplay = ({
   if ('loading' in value) return <span className="animate-pulse">...</span>
   if (
     value.amount === null ||
-    (value.timestamp !== null && Date.now() - value.timestamp > 300_000)
+    !Number.isFinite(value.amount) ||
+    (value.timestamp !== null &&
+      (!Number.isFinite(value.timestamp) ||
+        Date.now() - value.timestamp > 300_000 ||
+        value.timestamp - Date.now() > 30_000))
   )
     return <span>{t('info.usdEstimateUnavailable')}</span>
   return (

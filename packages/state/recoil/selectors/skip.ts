@@ -13,8 +13,8 @@ import {
 import { SKIP_API_BASE } from '@dao-dao/utils'
 
 import { fetchPublicJson } from '../../query/providers/http'
-import { skipQueries } from '../../query/queries/skip'
 import { selectSkipRecommendation } from '../../query/providers/skip'
+import { skipQueries } from '../../query/queries/skip'
 import { queryClientAtom } from '../atoms'
 
 export const skipChainSelector = selectorFamily<SkipChain | undefined, string>({

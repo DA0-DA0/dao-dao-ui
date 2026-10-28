@@ -1,4 +1,3 @@
-import { isFreshUsdPrice } from '@dao-dao/utils'
 import { Close, InfoOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useEffect, useState } from 'react'
@@ -22,8 +21,8 @@ import {
   RebalancerProjectorAsset,
   SegmentedControls,
   SelectInput,
-  SwitchCard,
   StatusCard,
+  SwitchCard,
   TokenInput,
   Tooltip,
   useSupportedChainContext,
@@ -42,6 +41,7 @@ import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceRebalanc
 import {
   formatPercentOf100,
   getNativeTokenForChainId,
+  isFreshUsdPrice,
   makeValidateAddress,
   validatePositive,
   validateRequired,
@@ -324,7 +324,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
           ))}
 
           {!isCreating && newValenceAccountFunds.length === 0 && (
-            <p className="-mt-1 text-xs italic text-text-tertiary">
+            <p className="text-text-tertiary -mt-1 text-xs italic">
               {t('info.none')}
             </p>
           )}
@@ -722,7 +722,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
         />
 
         {showAdvanced && (
-          <div className="-mt-3 flex flex-col gap-5 p-5 bg-background-tertiary rounded-md animate-fade-in">
+          <div className="bg-background-tertiary animate-fade-in -mt-3 flex flex-col gap-5 p-5 rounded-md">
             <div className="flex flex-col gap-2">
               <InputLabel name={t('form.trustee')} optional primary />
               <p className="body-text text-text-secondary -mt-1 text-sm">
@@ -847,8 +847,8 @@ export const ConfigureRebalancerComponent: ActionComponent<
                 )
             ) ? (
             <StatusCard
-              style="info"
               content={t('info.usdEstimateUnavailable')}
+              style="info"
             />
           ) : (
             <RebalancerProjector

@@ -1,21 +1,17 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { Event, IndexedTx } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
-import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
+import { noWait, selectorFamily, waitForNone } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  Account,
-  AccountType,
   GenericToken,
-  GenericTokenSource,
   LoadingTokens,
   TokenCardInfo,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
-  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
   loadableToLoadingData,
@@ -30,7 +26,6 @@ import {
 } from './chain'
 import {
   genericTokenBalancesSelector,
-  genericTokenSelector,
   tokenCardLazyInfoSelector,
 } from './token'
 

@@ -1,5 +1,3 @@
-import { UsdValuationDisplay } from '@dao-dao/stateless'
-import { isFreshUsdPrice, sumUsdEstimates } from '@dao-dao/utils'
 import { Publish } from '@mui/icons-material'
 import { ComponentType, useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -14,6 +12,7 @@ import {
   MarkdownRenderer,
   RangeInput,
   TokenAmountDisplay,
+  UsdValuationDisplay,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -25,7 +24,9 @@ import {
 } from '@dao-dao/types'
 import {
   formatDateTimeTz,
+  isFreshUsdPrice,
   makeValidateAddress,
+  sumUsdEstimates,
   transformIpfsUrlToHttpsIfNecessary,
   validateRequired,
 } from '@dao-dao/utils'
@@ -235,7 +236,7 @@ export const Rate = ({
             ))}
 
           <p className="title-text -mb-4">{t('title.yourSubmission')}</p>
-          <div className="flex flex-col gap-2 bg-background-tertiary rounded-md p-4">
+          <div className="bg-background-tertiary flex flex-col gap-2 rounded-md p-4">
             {status.contribution ? (
               <div className="flex flex-col gap-2">
                 <FormProvider {...submissionFormMethods}>
@@ -323,7 +324,7 @@ export const Rate = ({
                 return (
                   <div
                     key={contribution.id}
-                    className="flex flex-col rounded-md border border-border-primary bg-background-secondary"
+                    className="border-border-primary bg-background-secondary flex flex-col rounded-md border"
                   >
                     <div className="flex flex-col gap-2 p-4">
                       <EntityDisplay
@@ -345,7 +346,7 @@ export const Rate = ({
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2 border-t border-border-secondary py-4 px-6">
+                    <div className="border-border-secondary flex flex-col gap-2 border-t py-4 px-6">
                       <div className="mb-6 flex flex-row items-center gap-2">
                         <Checkbox
                           checked={allRatingsAbstain}
@@ -398,7 +399,7 @@ export const Rate = ({
 
                     {/* Projected compensation */}
                     {!allRatingsAbstain && (
-                      <div className="flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-4 border-t border-border-secondary py-4 px-6">
+                      <div className="border-border-secondary flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-4 border-t py-4 px-6">
                         <p className="link-text">
                           {t('title.projectedCompensation')}
                         </p>
@@ -460,7 +461,7 @@ export const Rate = ({
             </div>
 
             {status.rated && (
-              <p className="caption-text self-end text-right text-text-interactive-valid">
+              <p className="caption-text text-text-interactive-valid self-end text-right">
                 {t('form.ratingsSubmitted')}
               </p>
             )}
@@ -476,7 +477,7 @@ export const Rate = ({
             </Button>
           </form>
 
-          <div className="flex flex-col rounded-lg bg-background-tertiary p-6">
+          <div className="bg-background-tertiary flex flex-col rounded-lg p-6">
             <p className="title-text mb-2">{t('title.nominateContributor')}</p>
             <MarkdownRenderer
               markdown={t('info.nominateContributorDescription')}

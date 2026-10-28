@@ -339,6 +339,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
             DaoCard={DaoCard}
             chainGovDaos={chainGovDaos}
             featuredDaos={featuredDaos}
+            onStatsModeChange={setStatsMode}
             openSearch={openSearch}
             search={
               searchEnabled
@@ -355,7 +356,6 @@ export const Home: NextPage<StatefulHomeProps> = ({
             }
             stats={stats}
             statsMode={statsMode}
-            onStatsModeChange={setStatsMode}
           />
         </>
       )}

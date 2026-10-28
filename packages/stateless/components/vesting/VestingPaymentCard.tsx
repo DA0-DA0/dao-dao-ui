@@ -1,4 +1,3 @@
-import { isFreshUsdPrice } from '@dao-dao/utils'
 import {
   Add,
   Check,
@@ -27,6 +26,7 @@ import {
 import {
   abbreviateString,
   formatDateTimeTz,
+  isFreshUsdPrice,
   secondsToWdhms,
 } from '@dao-dao/utils'
 
@@ -287,7 +287,7 @@ export const VestingPaymentCard = ({
 
   return (
     <>
-      <div className="rounded-lg bg-background-tertiary">
+      <div className="bg-background-tertiary rounded-lg">
         <div className="relative p-6">
           <div className="flex flex-col items-center justify-center gap-4">
             {/* Image */}
@@ -336,7 +336,7 @@ export const VestingPaymentCard = ({
 
         {!!description && (
           <div
-            className="flex flex-col gap-2 border-t border-border-secondary py-4 px-6"
+            className="border-border-secondary flex flex-col gap-2 border-t py-4 px-6"
             ref={
               // Decide if description should be collapsible based on if text is
               // being truncated or not.
@@ -377,7 +377,7 @@ export const VestingPaymentCard = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
+        <div className="border-border-secondary flex flex-col gap-3 border-t py-4 px-6">
           <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">
               {endDate > now ? t('title.start') : t('info.startedAt')}
@@ -386,19 +386,19 @@ export const VestingPaymentCard = ({
             {/* leading-5 to match link-text's line-height. */}
             {endDate > now ? (
               <Tooltip title={formatDateTimeTz(startDate)}>
-                <p className="caption-text leading-5 text-text-body">
+                <p className="caption-text text-text-body leading-5">
                   <TimeAgo date={startDate} formatter={startTimeAgoFormatter} />
                 </p>
               </Tooltip>
             ) : (
-              <p className="caption-text leading-5 text-text-body">
+              <p className="caption-text text-text-body leading-5">
                 {formatDateTimeTz(startDate)}
               </p>
             )}
           </div>
 
           {canceled ? (
-            <p className="caption-text self-end text-right text-text-body">
+            <p className="caption-text text-text-body self-end text-right">
               {t('title.canceled')}
             </p>
           ) : (
@@ -412,12 +412,12 @@ export const VestingPaymentCard = ({
               {/* leading-5 to match link-text's line-height. */}
               {endDate > now ? (
                 <Tooltip title={formatDateTimeTz(endDate)}>
-                  <p className="caption-text leading-5 text-text-body">
+                  <p className="caption-text text-text-body leading-5">
                     <TimeAgo date={endDate} formatter={endTimeAgoFormatter} />
                   </p>
                 </Tooltip>
               ) : (
-                <p className="caption-text leading-5 text-text-body">
+                <p className="caption-text text-text-body leading-5">
                   {formatDateTimeTz(endDate)}
                 </p>
               )}
@@ -425,7 +425,7 @@ export const VestingPaymentCard = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
+        <div className="border-border-secondary flex flex-col gap-3 border-t py-4 px-6">
           {/* Show available balance to withdraw if it is nonzero OR if there is still a balance vesting. This ensures that it explicitly displays that there is no balance to withdraw when the vest is not yet over. There may not be any balance if all vested tokens are staked or still unstaking, and it might be confusing if this line remains hidden in that case. */}
           {(distributableAmount.isPositive() ||
             remainingBalanceVesting.isPositive()) && (
@@ -437,7 +437,7 @@ export const VestingPaymentCard = ({
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={distributableAmount}
-                  className="leading-5 text-text-body"
+                  className="text-text-body leading-5"
                   decimals={token.decimals}
                   symbol={token.symbol}
                 />
@@ -481,7 +481,7 @@ export const VestingPaymentCard = ({
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={remainingBalanceVesting}
-                  className="leading-5 text-text-body"
+                  className="text-text-body leading-5"
                   decimals={token.decimals}
                   symbol={token.symbol}
                 />
@@ -524,7 +524,7 @@ export const VestingPaymentCard = ({
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
                 amount={claimedAmount}
-                className="leading-5 text-text-body"
+                className="text-text-body leading-5"
                 decimals={token.decimals}
                 symbol={token.symbol}
               />
@@ -547,7 +547,7 @@ export const VestingPaymentCard = ({
         {!lazyInfo.loading &&
           (!!lazyInfo.data.stakingInfo?.stakes?.length ||
             !!lazyInfo.data.stakingInfo?.unstakingTasks?.length) && (
-            <div className="flex flex-col gap-2 border-t border-border-secondary px-6 py-4">
+            <div className="border-border-secondary flex flex-col gap-2 border-t px-6 py-4">
               <p className="link-text mb-1">{t('info.stakes')}</p>
 
               <div className="flex flex-row items-center justify-between gap-8">
@@ -555,7 +555,7 @@ export const VestingPaymentCard = ({
 
                 <TokenAmountDisplay
                   amount={lazyInfo.loading ? { loading: true } : totalStaked}
-                  className="caption-text text-right font-mono text-text-body"
+                  className="caption-text text-text-body text-right font-mono"
                   decimals={token.decimals}
                   symbol={token.symbol}
                 />
@@ -566,7 +566,7 @@ export const VestingPaymentCard = ({
 
                 <p
                   className={clsx(
-                    'caption-text text-right font-mono text-text-body',
+                    'caption-text text-text-body text-right font-mono',
                     lazyInfo.loading && 'animate-pulse'
                   )}
                 >
@@ -609,7 +609,7 @@ export const VestingPaymentCard = ({
                   className={clsx(
                     'caption-text text-right font-mono underline-offset-2',
                     unstakingBalance.isPositive() && 'text-text-body',
-                    lazyInfo.loading && 'animate-pulse !text-text-body'
+                    lazyInfo.loading && '!text-text-body animate-pulse'
                   )}
                   disabled={lazyInfo.loading}
                   onClick={() => setShowUnstakingTokens(true)}
@@ -634,7 +634,7 @@ export const VestingPaymentCard = ({
 
                 <TokenAmountDisplay
                   amount={lazyInfo.loading ? { loading: true } : pendingRewards}
-                  className="caption-text text-right font-mono text-text-body"
+                  className="caption-text text-text-body text-right font-mono"
                   decimals={token.decimals}
                   symbol={token.symbol}
                 />
@@ -655,7 +655,7 @@ export const VestingPaymentCard = ({
           )}
 
         {!canceled && (
-          <div className="border-t border-border-secondary px-6 pt-4 pb-6">
+          <div className="border-border-secondary border-t px-6 pt-4 pb-6">
             <VestingStepsLineGraph
               startTimestamp={startDate.getTime()}
               steps={steps}

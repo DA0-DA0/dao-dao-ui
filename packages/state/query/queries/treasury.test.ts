@@ -206,3 +206,29 @@ test('DAO valuation deduplicates accounts, keeps price coverage and uses no lega
   // Account discovery cannot prove absence of arbitrary unregistered CW20s.
   expect(mocks.balances).toHaveBeenCalledTimes(1)
 })
+
+test('fractional minimal-unit rewards keep precision until final valuation conversion', () => {
+  expect(
+    sumValuedHoldings([
+      { raw: '0.5', decimals: 6, usdPrice: 1, timestamp: Date.now() },
+    ]).amount
+  ).toBe(0.0000005)
+})
+
+test('pagination rejects repeated cursors rather than advertising truncated balances', async () => {
+  const { collectPages } = await import('./treasury')
+  const fetchPage = vi.fn(async () => ({
+    items: ['one'],
+    nextKey: new Uint8Array([1]),
+  }))
+  await expect(collectPages(fetchPage)).rejects.toThrow(
+    'Repeated valuation pagination'
+  )
+  expect(fetchPage).toHaveBeenCalledTimes(2)
+})
+
+test('non-finite source times are unavailable, not apparently complete estimates', () => {
+  expect(
+    sumValuedHoldings([{ raw: '1', decimals: 6, usdPrice: 1, timestamp: NaN }])
+  ).toMatchObject({ amount: null, status: 'unavailable' })
+})

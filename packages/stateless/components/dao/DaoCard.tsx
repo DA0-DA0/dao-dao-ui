@@ -1,4 +1,3 @@
-import { UsdValuationDisplay } from '../token/UsdValuationDisplay'
 import {
   AccountBalanceOutlined,
   CheckRounded,
@@ -15,6 +14,7 @@ import { formatDate } from '@dao-dao/utils'
 import { useDaoNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
+import { UsdValuationDisplay } from '../token/UsdValuationDisplay'
 import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
@@ -38,7 +38,7 @@ export const DaoCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary px-4 py-5 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus sm:py-7 sm:px-6',
+        'bg-background-secondary hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus relative flex h-[328px] w-full flex-col items-center justify-between rounded-md px-4 py-5 ring-1 ring-inset ring-transparent transition-all sm:py-7 sm:px-6',
         className
       )}
       href={getDaoPath(coreAddress)}
@@ -49,7 +49,7 @@ export const DaoCard = ({
       <div className="absolute top-0 left-0 flex w-full flex-row items-center justify-between p-2 sm:p-3">
         {showIsMember && isMember ? (
           <Tooltip title={t('info.youAreMember')}>
-            <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
+            <PersonRounded className="text-icon-secondary !h-4 !w-4" />
           </Tooltip>
         ) : (
           <div></div>
@@ -178,5 +178,5 @@ export const DaoCard = ({
 }
 
 export const DaoCardLoader = () => (
-  <div className="h-[328px] w-full animate-pulse rounded-md bg-background-secondary"></div>
+  <div className="bg-background-secondary h-[328px] w-full animate-pulse rounded-md"></div>
 )

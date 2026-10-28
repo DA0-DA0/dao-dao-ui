@@ -1,7 +1,6 @@
-import { UsdValuationDisplay } from '@dao-dao/stateless'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoCards, TokenAmountDisplay, useDao } from '@dao-dao/stateless'
+import { DaoInfoCards, UsdValuationDisplay, useDao } from '@dao-dao/stateless'
 
 import { useQueryLoadingData } from '../../hooks'
 

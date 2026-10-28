@@ -25,8 +25,8 @@ import { DaoRewardsDistributorClaimCard } from './DaoRewardsDistributorClaimCard
 test('missing USD rewards remain claimable and explicitly unavailable, not zero', () => {
   const markup = renderToStaticMarkup(
     <DaoRewardsDistributorClaimCard
-      onClaim={() => {}}
       claiming={false}
+      onClaim={() => {}}
       rewards={{
         loading: false,
         errored: false,

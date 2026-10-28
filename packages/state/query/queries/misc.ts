@@ -69,21 +69,39 @@ export const fetchHomePageStats = async (
   const chains = getSupportedChains().filter(
     (c) => !chainId || c.chainId === chainId
   )
-  const entries = await Promise.all(
-    metrics.map(async (metric) => {
-      const counts = await Promise.all(
-        chains.map(({ chainId }) =>
-          queryClient.fetchQuery(statsQueries.metric({ chainId, metric, mode }))
-        )
-      )
-      const responding = counts.filter((n): n is number => n !== null)
-      return {
-        metric,
-        count: responding.length ? responding.reduce((a, b) => a + b, 0) : null,
-        coverage: { attempted: chains.length, responding: responding.length },
+  // Start only four count jobs at a time. Starting every deadline before
+  // queueing would prevent later chains from receiving an HTTP attempt during
+  // an outage. The finite selected-period batch is never an SSR dependency.
+  const jobs = metrics.flatMap((metric) =>
+    chains.map(({ chainId }) => ({ metric, chainId }))
+  )
+  const results: { metric: (typeof metrics)[number]; count: number | null }[] =
+    new Array(jobs.length)
+  let next = 0
+  await Promise.all(
+    Array.from({ length: Math.min(4, jobs.length) }, async () => {
+      while (next < jobs.length) {
+        const index = next++
+        const { chainId, metric } = jobs[index]
+        results[index] = {
+          metric,
+          count: await queryClient.fetchQuery(
+            statsQueries.metric({ chainId, metric, mode })
+          ),
+        }
       }
     })
   )
+  const entries = metrics.map((metric) => {
+    const responding = results
+      .filter((r) => r.metric === metric)
+      .flatMap(({ count }) => (count === null ? [] : [count]))
+    return {
+      metric,
+      count: responding.length ? responding.reduce((a, b) => a + b, 0) : null,
+      coverage: { attempted: chains.length, responding: responding.length },
+    }
+  })
   const stats: DaoDaoIndexerChainStats | null = entries.every(
     (e) => e.count === null
   )

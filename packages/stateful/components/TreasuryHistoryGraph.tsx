@@ -14,7 +14,7 @@ export const TreasuryHistoryGraph = ({
   return (
     <div className={className}>
       {header}
-      <StatusCard style="info" content={t('info.treasuryHistoryUnavailable')} />
+      <StatusCard content={t('info.treasuryHistoryUnavailable')} style="info" />
     </div>
   )
 }

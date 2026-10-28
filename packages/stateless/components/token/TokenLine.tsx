@@ -1,4 +1,3 @@
-import { isFreshUsdPrice } from '@dao-dao/utils'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -8,6 +7,7 @@ import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
   getDisplayNameForChainId,
   getFallbackImage,
+  isFreshUsdPrice,
   shortenTokenSymbol,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
@@ -43,7 +43,7 @@ export const TokenLine = <T extends TokenCardInfo>(
     <>
       <div
         className={clsx(
-          'box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-2 px-3 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr] md:py-3 md:px-4',
+          'hover:bg-background-interactive-hover active:bg-background-interactive-pressed box-content grid h-8 cursor-pointer grid-cols-2 items-center gap-4 rounded-lg py-2 px-3 transition sm:grid-cols-[2fr_1fr_1fr] md:py-3 md:px-4',
           !transparentBackground && 'bg-background-tertiary'
         )}
         onClick={() => setCardVisible(true)}

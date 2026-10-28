@@ -1,8 +1,8 @@
 import { ComponentType } from 'react'
 
-import { UsdValuation } from '../token'
 import { DaoInfo } from '../dao'
 import { LoadingDataWithError } from '../misc'
+import { UsdValuation } from '../token'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.

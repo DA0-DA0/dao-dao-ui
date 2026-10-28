@@ -4,9 +4,9 @@ import { TokenType } from '@dao-dao/types'
 
 import {
   findPriceMarket,
+  freshQuote,
   parseCoinbaseQuote,
   parseKrakenQuote,
-  freshQuote,
 } from './prices'
 
 const now = Date.parse('2026-10-28T18:00:00Z')

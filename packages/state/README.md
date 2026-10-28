@@ -2,6 +2,9 @@
 
 State retrieval and management for the DAO DAO UI.
 
+See [direct data providers and migration coverage](../../docs/data-providers.md)
+for Skip, public USD markets, indexer counts, treasury coverage and ICA policies.
+
 ## Layout
 
 | Location                   | Summary                                                                                                                                  |

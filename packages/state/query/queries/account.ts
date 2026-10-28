@@ -16,13 +16,13 @@ import {
 } from '@dao-dao/types'
 import { ListItemsResponse } from '@dao-dao/types/contracts/DaoDaoCore'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
+import { PubKey as Secp256k1PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 import {
   IdentifiedChannel,
   Order,
 } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
-import { BaseAccount } from '@dao-dao/types/protobuf/codegen/cosmos/auth/v1beta1/auth'
-import { LegacyAminoPubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/multisig/keys'
-import { PubKey as Secp256k1PubKey } from '@dao-dao/types/protobuf/codegen/cosmos/crypto/secp256k1/keys'
 import {
   ContractName,
   ICA_CHAINS_TX_PREFIX,

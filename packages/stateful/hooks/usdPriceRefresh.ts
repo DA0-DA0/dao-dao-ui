@@ -55,3 +55,15 @@ export const subscribeUsdPriceRefresh = ({
     visibilityTarget.removeEventListener('visibilitychange', resume)
   }
 }
+
+/** Recoil has no query observer. Expire retained values now, then recompute
+ * after asynchronous consumer invalidation, not one polling interval later.
+ */
+export const refreshUsdPriceConsumers = async (
+  invalidate: () => Promise<void>,
+  refreshRecoil: () => void
+) => {
+  refreshRecoil()
+  await invalidate()
+  refreshRecoil()
+}

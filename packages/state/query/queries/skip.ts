@@ -4,16 +4,15 @@ import {
   AnyChain,
   GenericTokenSource,
   SkipAsset,
-  SkipChain,
   TokenType,
 } from '@dao-dao/types'
 import { convertSkipChainToAnyChain } from '@dao-dao/utils'
 
 import {
-  fetchSkipChains,
-  fetchSkipAssets,
-  fetchSkipRecommendations,
   RecommendationOptions,
+  fetchSkipAssets,
+  fetchSkipChains,
+  fetchSkipRecommendations,
   selectSkipRecommendation,
   skipChainSupportsPfm,
 } from '../providers/skip'

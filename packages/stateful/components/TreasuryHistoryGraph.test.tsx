@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { renderToStaticMarkup } from 'react-dom/server'
+
 import { expect, test, vi } from 'vitest'
 
 vi.mock('react-i18next', () => ({

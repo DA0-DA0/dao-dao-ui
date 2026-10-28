@@ -47,7 +47,7 @@ export const DaoRewardsDistributorClaimCard = ({
         className
       )}
     >
-      <div className="xs:items-center xs:flex-row flex flex-col gap-2 xs:justify-between">
+      <div className="xs:items-center xs:flex-row xs:justify-between flex flex-col gap-2">
         <div className="flex flex-col items-start">
           <div className="flex flex-row gap-3 items-center">
             <Payments
@@ -124,7 +124,7 @@ export const DaoRewardsDistributorClaimCard = ({
                   <div
                     key={token.denomOrAddress}
                     className={clsx(
-                      'flex flex-row pl-4 items-stretch border-border-secondary border-l-2',
+                      'border-border-secondary flex flex-row pl-4 items-stretch border-l-2',
                       // padding between above item's bottom border
                       index > 0 && 'pt-2',
                       // padding above first and below last items within
@@ -139,7 +139,7 @@ export const DaoRewardsDistributorClaimCard = ({
                         // bottom border between items, with padding that
                         // matches top padding in the item below it
                         index !== rewards.data.length - 1 &&
-                          'border-dashed border-b border-border-secondary pb-2'
+                          'border-border-secondary border-dashed border-b pb-2'
                       )}
                     >
                       <TokenAmountDisplay

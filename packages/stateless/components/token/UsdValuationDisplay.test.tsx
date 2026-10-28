@@ -42,3 +42,15 @@ test('distinguishes real zero, partial subtotal, and unavailable estimates', () 
     )
   ).not.toContain('$3')
 })
+
+test('malformed or future valuation timestamps cannot display a plausible subtotal', () => {
+  for (const timestamp of [Infinity, Date.now() + 31_000]) {
+    expect(
+      renderToStaticMarkup(
+        <UsdValuationDisplay
+          value={{ ...base, amount: 3, status: 'partial', timestamp }}
+        />
+      )
+    ).toContain('info.usdEstimateUnavailable')
+  }
+})

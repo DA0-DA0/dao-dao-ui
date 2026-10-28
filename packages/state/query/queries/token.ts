@@ -24,13 +24,12 @@ import {
 } from '@dao-dao/utils'
 
 import { findPriceMarket, freshQuote } from '../providers/prices'
-import { priceQueries } from './prices'
 import { hasSkipDecimals } from '../providers/skip'
-
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
 import { cw20BaseQueries } from './contracts'
 import { indexerQueries } from './indexer'
+import { priceQueries } from './prices'
 import { skipQueries } from './skip'
 
 /**
@@ -308,7 +307,12 @@ export const fetchTokenSource = async (
     )
     .catch(() => null)
 
-  if (skipAsset) {
+  if (
+    typeof skipAsset?.origin_chain_id === 'string' &&
+    skipAsset.origin_chain_id.length > 0 &&
+    typeof skipAsset.origin_denom === 'string' &&
+    skipAsset.origin_denom.length > 0
+  ) {
     const sourceType = skipAsset.origin_denom.startsWith('cw20:')
       ? TokenType.Cw20
       : TokenType.Native

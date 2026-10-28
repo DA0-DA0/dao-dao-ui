@@ -16,12 +16,12 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
-  isFreshUsdPrice,
   dateToExpiration,
   getChainForChainId,
   getChainForChainName,
   getIbcTransferInfoFromChannel,
   getNativeTokenForChainId,
+  isFreshUsdPrice,
   isValidWalletAddress,
 } from '@dao-dao/utils'
 

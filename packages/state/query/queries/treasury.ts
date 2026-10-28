@@ -12,9 +12,9 @@ import {
 } from '@dao-dao/types'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  chainIsIndexed,
   CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW20_ITEM_KEY_PREFIX,
+  chainIsIndexed,
   cosmosProtoRpcClientRouter,
   getNativeTokenForChainId,
   isNonexistentQueryError,
@@ -23,10 +23,10 @@ import {
 import { stargazeIndexerClient } from '../../graphql/stargaze/client'
 import { stargazeWalletTotalValueUsdQuery } from '../../graphql/stargaze/queries/wallet'
 import { accountQueries } from './account'
-import { tokenQueries } from './token'
-import { indexerQueries } from './indexer'
 import { cw20BaseQueries } from './contracts/Cw20Base'
 import { daoDaoCoreQueries } from './contracts/DaoDaoCore'
+import { indexerQueries } from './indexer'
+import { tokenQueries } from './token'
 
 export type Holding = GenericTokenSource & { raw: string }
 export type ValuedHolding = {
@@ -51,6 +51,7 @@ export const sumValuedHoldings = (
       !Number.isFinite(holding.usdPrice) ||
       holding.usdPrice < 0 ||
       holding.timestamp === undefined ||
+      !Number.isFinite(holding.timestamp) ||
       Date.now() - holding.timestamp > 300_000 ||
       holding.timestamp - Date.now() > 30_000
     ) {
@@ -58,10 +59,9 @@ export const sumValuedHoldings = (
       continue
     }
     amount = amount.plus(
-      HugeDecimal.from(holding.raw).toUsdValue(
-        holding.decimals,
-        holding.usdPrice
-      )
+      HugeDecimal.from(holding.raw)
+        .div(HugeDecimal.from(10).pow(holding.decimals))
+        .times(holding.usdPrice)
     )
     timestamp =
       timestamp === null

@@ -1,4 +1,3 @@
-import { UsdValuationDisplay } from '@dao-dao/stateless'
 import { DataObject, Send, WarningRounded } from '@mui/icons-material'
 import { useQueries } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
@@ -21,6 +20,7 @@ import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
   TxCrossChainRelayStatus,
+  UsdValuationDisplay,
   useDao,
 } from '@dao-dao/stateless'
 import {

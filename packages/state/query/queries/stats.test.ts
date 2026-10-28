@@ -60,3 +60,45 @@ test('caches metrics and requests only selected periods', async () => {
   )
   expect(fetcher).toHaveBeenCalledTimes(8)
 })
+
+test('every configured chain gets a count attempt even when early requests time out', async () => {
+  vi.useFakeTimers()
+  const fetcher = vi.fn(
+    (_url: string, init?: RequestInit) =>
+      new Promise<Response>((_resolve, reject) =>
+        init?.signal?.addEventListener('abort', () =>
+          reject(new Error('timeout'))
+        )
+      )
+  )
+  vi.stubGlobal('fetch', fetcher)
+  const result = q().fetchQuery(miscQueries.homePageStats({ mode: 'week' }))
+  await vi.advanceTimersByTimeAsync(6500)
+  expect((await result).week).toBeNull()
+  expect(fetcher).toHaveBeenCalledTimes(8)
+  vi.useRealTimers()
+})
+
+test('concurrent selected-period views still attempt every configured chain during an outage', async () => {
+  vi.useFakeTimers()
+  const fetcher = vi.fn(
+    (_url: string, init?: RequestInit) =>
+      new Promise<Response>((_resolve, reject) =>
+        init?.signal?.addEventListener('abort', () =>
+          reject(new Error('timeout'))
+        )
+      )
+  )
+  vi.stubGlobal('fetch', fetcher)
+  const results = Promise.all(
+    ['all', 'week'].map((mode) =>
+      q().fetchQuery(
+        miscQueries.homePageStats({ mode: mode as 'all' | 'week' })
+      )
+    )
+  )
+  await vi.advanceTimersByTimeAsync(25000)
+  await results
+  expect(fetcher).toHaveBeenCalledTimes(16)
+  vi.useRealTimers()
+})

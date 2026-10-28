@@ -1,7 +1,7 @@
 import { DaoSource } from '@dao-dao/types'
 
 // Public address configuration, not upstream implementation code. Provenance:
-// DA0-DA0/snapper b8f914b, src/query/queries/daodaoFeaturedDaos.ts (2026-10-28).
+// noahsaso/snapper b8f914b, src/query/queries/daodaoFeaturedDaos.ts (2026-10-28).
 export const FEATURED_DAOS: DaoSource[] = [
   {
     chainId: 'juno-1',

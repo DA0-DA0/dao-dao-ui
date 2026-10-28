@@ -2,7 +2,6 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import {
-  UsdValuation,
   ContractVersion,
   ContractVersionInfo,
   DaoDropdownInfo,
@@ -18,6 +17,7 @@ import {
   LazyDaoCardProps,
   StatefulProposalLineProps,
   SupportedChainIndexerMode,
+  UsdValuation,
 } from '@dao-dao/types'
 import {
   ProposalModuleWithInfo,
@@ -28,8 +28,8 @@ import {
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
-  FEATURED_DAOS,
   DAO_CORE_CONTRACT_NAMES,
+  FEATURED_DAOS,
   INACTIVE_DAO_NAMES,
   PerformanceContext,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
@@ -50,7 +50,6 @@ import {
 
 import { CwCoreV1QueryClient, DaoDaoCoreQueryClient } from '../../contracts'
 import { SearchDaoProposalsOptions, searchDaoProposals } from '../../indexer'
-import { fetchDaoValuation } from './treasury'
 import { accountQueries } from './account'
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
@@ -58,6 +57,7 @@ import { daoDaoCoreQueries } from './contracts/DaoDaoCore'
 import { votingModuleQueries } from './contracts/votingModule'
 import { indexerQueries } from './indexer'
 import { polytoneQueries } from './polytone'
+import { fetchDaoValuation } from './treasury'
 
 /**
  * Fetch DAO info.

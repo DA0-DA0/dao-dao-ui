@@ -4,7 +4,10 @@ import { useSetRecoilState } from 'recoil'
 import { refreshUsdPricesAtom } from '@dao-dao/state'
 import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
 
-import { subscribeUsdPriceRefresh } from './usdPriceRefresh'
+import {
+  refreshUsdPriceConsumers,
+  subscribeUsdPriceRefresh,
+} from './usdPriceRefresh'
 
 /** Shared by both apps. Only market leaves and their consumers are invalidated;
  * inactive data is not eagerly fetched, and chain/asset metadata is untouched.
@@ -34,8 +37,10 @@ export const useRefreshUsdPrices = () => {
           return expiries.length ? Math.min(...expiries) : undefined
         },
         refresh: () => {
-          void client.invalidateQueries({ queryKey: ['prices'] })
-          setClock((n) => n + 1)
+          void refreshUsdPriceConsumers(
+            () => client.invalidateQueries({ queryKey: ['prices'] }),
+            () => setClock((n) => n + 1)
+          )
         },
       }),
     [client, setClock]

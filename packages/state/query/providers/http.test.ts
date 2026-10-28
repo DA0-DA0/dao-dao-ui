@@ -58,10 +58,25 @@ test('bounds the entire deadline including queue wait and aborts', async () => {
   )
   const result = Promise.allSettled(
     Array.from({ length: 6 }, () =>
-      fetchPublicJson('indexer-stats', 'https://example.com', { fetcher })
+      fetchPublicJson('skip', 'https://example.com', { fetcher })
     )
   )
-  await vi.advanceTimersByTimeAsync(3100)
+  await vi.advanceTimersByTimeAsync(8100)
   expect((await result).every((r) => r.status === 'rejected')).toBe(true)
   expect(fetcher.mock.calls.length).toBeLessThanOrEqual(4)
+})
+
+test('retries also obey the Kraken one-start-per-second budget', async () => {
+  vi.useFakeTimers()
+  const starts: number[] = []
+  const fetcher = vi.fn(async () => {
+    starts.push(Date.now())
+    return starts.length === 1
+      ? Response.json({}, { status: 503 })
+      : Response.json({ ok: true })
+  })
+  const result = fetchPublicJson('kraken', 'https://example.com', { fetcher })
+  await vi.advanceTimersByTimeAsync(1100)
+  await result
+  expect(starts[1] - starts[0]).toBeGreaterThanOrEqual(1000)
 })
