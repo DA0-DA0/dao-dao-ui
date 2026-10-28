@@ -983,6 +983,10 @@
     }
   },
   "info": {
+    "treasuryHistoryUnavailable": "Historical treasury USD valuation is unavailable. Current holdings and operations remain available.",
+    "platformTvlUnavailable": "Platform-wide treasury USD valuation is unavailable. Individual treasury estimates remain available with limited price coverage.",
+    "usdEstimateUnavailable": "USD estimate unavailable",
+    "partialUsdEstimate": "Partial estimate; some assets are unpriced or balances are incomplete.",
     "abstainVote": "Abstain",
     "acceptSubDaoActionDescription": "Accept a pending SubDAO's ownership transfer request. Be sure that the SubDAO-to-be has already requested to join your DAO through the \"Become SubDAO\" action.",
     "acceptSubDaoActionOtherActionsAdded": "Other actions that are required to register a new SubDAO have been added to the proposal automatically.",

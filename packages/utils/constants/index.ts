@@ -6,3 +6,5 @@ export * from './env'
 export * from './layout'
 export * from './other'
 export * from './registry'
+
+export * from './featuredDaos'

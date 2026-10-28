@@ -28,6 +28,7 @@ import {
 } from '@dao-dao/types/contracts/DaoDaoCore'
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
+  FEATURED_DAOS,
   DAO_CORE_CONTRACT_NAMES,
   INACTIVE_DAO_NAMES,
   PerformanceContext,
@@ -1287,8 +1288,10 @@ export const daoQueries = {
    * Fetch featured DAOs.
    */
   listFeatured: () =>
-    indexerQueries.snapper<DaoSource[]>({
-      query: 'daodao-featured-daos',
+    queryOptions({
+      queryKey: ['dao', 'listFeatured'],
+      staleTime: Infinity,
+      queryFn: () => FEATURED_DAOS,
     }),
   /**
    * Fetch a DAO's TVL.

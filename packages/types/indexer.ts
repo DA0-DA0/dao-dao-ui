@@ -47,10 +47,14 @@ export type IndexerUpStatus = {
 }
 
 export type DaoDaoIndexerChainStats = {
-  daos: number
-  proposals: number
-  votes: number
-  uniqueVoters: number
+  daos: number | null
+  proposals: number | null
+  votes: number | null
+  uniqueVoters: number | null
+  coverage?: Record<
+    'daos' | 'proposals' | 'votes' | 'uniqueVoters',
+    { attempted: number; responding: number }
+  >
 }
 
 export type DaoDaoIndexerAllStats = {

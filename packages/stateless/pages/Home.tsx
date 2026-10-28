@@ -41,6 +41,8 @@ export type HomeProps = {
   /**
    * The stats.
    */
+  statsMode?: StatsMode
+  onStatsModeChange?: (mode: StatsMode) => void
   stats: DaoDaoIndexerAllStats
   /**
    * The DAO card to render.
@@ -95,10 +97,12 @@ export type HomeProps = {
   openSearch: () => void
 }
 
-type StatsMode = 'all' | 'month' | 'week'
+export type StatsMode = 'all' | 'month' | 'week'
 
 export const Home = ({
   stats,
+  statsMode: controlledStatsMode,
+  onStatsModeChange,
   DaoCard,
   chainGovDaos,
   featuredDaos,
@@ -107,7 +111,20 @@ export const Home = ({
 }: HomeProps) => {
   const { t } = useTranslation()
 
-  const [statsMode, setStatsMode] = useState<StatsMode>('all')
+  const [localStatsMode, setLocalStatsMode] = useState<StatsMode>('all')
+  const statsMode = controlledStatsMode ?? localStatsMode
+  const setStatsMode = onStatsModeChange ?? setLocalStatsMode
+  const count = (metric: 'daos' | 'proposals' | 'votes' | 'uniqueVoters') => {
+    const statsForMode = stats[statsMode]
+    const value = statsForMode?.[metric]
+    const coverage = statsForMode?.coverage?.[metric]
+    return value === null || value === undefined
+      ? 'N/A'
+      : value.toLocaleString() +
+          (coverage && coverage.responding < coverage.attempted
+            ? ` (partial: ${coverage.responding}/${coverage.attempted} chains)`
+            : '')
+  }
 
   return (
     <div
@@ -141,22 +158,22 @@ export const Home = ({
           {
             Icon: Public,
             label: t('title.daos'),
-            value: stats[statsMode]?.daos.toLocaleString() ?? 'N/A',
+            value: count('daos'),
           },
           {
             Icon: DescriptionOutlined,
             label: t('title.proposals'),
-            value: stats[statsMode]?.proposals.toLocaleString() ?? 'N/A',
+            value: count('proposals'),
           },
           {
             Icon: HowToVote,
             label: t('title.votesCast'),
-            value: stats[statsMode]?.votes.toLocaleString() ?? 'N/A',
+            value: count('votes'),
           },
           {
             Icon: PeopleOutlined,
             label: t('title.uniqueVoters'),
-            value: stats[statsMode]?.uniqueVoters.toLocaleString() ?? 'N/A',
+            value: count('uniqueVoters'),
           },
           // Only show TVL and chain count when all is selected.
           ...(statsMode === 'all'
@@ -164,7 +181,7 @@ export const Home = ({
                 {
                   Icon: LockOutlined,
                   label: t('title.tvl'),
-                  tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
+                  tooltip: t('info.platformTvlUnavailable'),
                   value:
                     stats.tvl !== null
                       ? '$' +

@@ -4,7 +4,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { miscQueries } from '@dao-dao/state'
+import { emptyHomePageStats } from '@dao-dao/state'
 import { Home, StatefulHomeProps } from '@dao-dao/stateful'
 import { AccountTabId } from '@dao-dao/types'
 import {
@@ -48,17 +48,8 @@ export const getStaticProps: GetStaticProps<StatefulHomeProps> = async ({
           : []),
       ].map((chainId) => getDaoInfoForChainId(chainId, []))
 
-  const [i18nProps, stats] = await Promise.all([
-    // Get i18n translations props.
-    serverSideTranslations(locale, ['translation']),
-
-    // Get home page stats.
-    queryClient.fetchQuery(
-      miscQueries.homePageStats({
-        chainId,
-      })
-    ),
-  ])
+  const i18nProps = await serverSideTranslations(locale, ['translation'])
+  const stats = emptyHomePageStats(chainId)
 
   return {
     props: {
