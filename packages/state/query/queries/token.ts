@@ -23,6 +23,8 @@ import {
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
+import { findPriceMarket, freshQuote } from '../providers/prices'
+import { priceQueries } from './prices'
 import { hasSkipDecimals } from '../providers/skip'
 
 import { chainQueries } from './chain'
@@ -489,35 +491,32 @@ export const fetchBitSongFantoken = async ({
 }
 
 /**
- * Fetch the USD price for a token from Snapper.
+ * Fetch an identity-validated public market estimate, when available.
  */
 export const fetchUsdPrice = async (
   queryClient: QueryClient,
   options: GenericTokenSource
 ): Promise<GenericTokenWithUsdPrice> => {
-  if (!MAINNET) {
-    throw new Error('USD prices are only available on mainnet')
-  }
-
   const token = await queryClient.fetchQuery(tokenQueries.info(options))
-
-  const usdPrice =
-    (await queryClient.fetchQuery(
-      indexerQueries.snapper({
-        query: 'token-price',
-        parameters: {
-          chainId: options.chainId,
-          denom: options.denomOrAddress,
-          cw20: (options.type === TokenType.Cw20).toString(),
-        },
-      })
-    )) ?? undefined
-
-  return {
-    token,
-    usdPrice,
-    timestamp: new Date(),
-  }
+  if (!MAINNET) return { token }
+  const market = findPriceMarket(token.source)
+  if (!market || market.decimals !== token.decimals) return { token }
+  let quote = market.coinbase
+    ? freshQuote(
+        await queryClient.fetchQuery(
+          priceQueries.market({ provider: 'coinbase', market: market.coinbase })
+        )
+      )
+    : null
+  if (!quote && market.kraken)
+    quote = freshQuote(
+      await queryClient.fetchQuery(
+        priceQueries.market({ provider: 'kraken', market: market.kraken })
+      )
+    )
+  return quote
+    ? { token, usdPrice: quote.usdPrice, timestamp: new Date(quote.updatedAt) }
+    : { token }
 }
 
 export const tokenQueries = {
@@ -568,6 +567,8 @@ export const tokenQueries = {
   usdPrice: (options: Parameters<typeof fetchUsdPrice>[1]) =>
     queryOptions({
       queryKey: ['token', 'usdPrice', options],
+      staleTime: 60_000,
+      retry: false,
       queryFn: (ctx) => fetchUsdPrice(ctx.client, options),
     }),
 }

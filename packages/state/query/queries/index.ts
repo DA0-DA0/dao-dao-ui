@@ -18,3 +18,5 @@ export * from './proposal'
 export * from './skip'
 export * from './token'
 export * from './wallet'
+
+export * from './prices'
