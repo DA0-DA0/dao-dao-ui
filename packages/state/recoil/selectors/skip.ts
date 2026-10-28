@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/types'
 import { SKIP_API_BASE } from '@dao-dao/utils'
 
+import { fetchPublicJson } from '../../query/providers/http'
 import { skipQueries } from '../../query/queries/skip'
 import { selectSkipRecommendation } from '../../query/providers/skip'
 import { queryClientAtom } from '../atoms'
@@ -119,27 +120,34 @@ export const skipRouteSelector = selectorFamily<
         | {
             code: number
             message: string
-          } = await (
-        await fetch(SKIP_API_BASE + '/v2/fungible/route', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            source_asset_chain_id: fromChainId,
-            source_asset_denom: sourceDenom,
-            dest_asset_chain_id: toChainId,
-            dest_asset_denom: asset.denom,
-            amount_in: HugeDecimal.from(amountIn).toString(),
-          }),
-        })
-      ).json()
+          } = await fetchPublicJson<
+        SkipRoute | { code: number; message: string }
+      >('skip', SKIP_API_BASE + '/v2/fungible/route', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source_asset_chain_id: fromChainId,
+          source_asset_denom: sourceDenom,
+          dest_asset_chain_id: toChainId,
+          dest_asset_denom: asset.denom,
+          amount_in: HugeDecimal.from(amountIn).toString(),
+        }),
+      })
 
+      if (!route || typeof route !== 'object')
+        throw new Error('Malformed Skip route')
       if ('code' in route && 'message' in route) {
         throw new Error(`Skip API error: ${route.message}`)
       }
 
-      if (route.does_swap) {
+      if (
+        route.does_swap !== false ||
+        !Array.isArray(route.chain_ids) ||
+        !route.chain_ids.length ||
+        !Number.isInteger(route.txs_required)
+      ) {
         throw new Error('Route requires a swap.')
       }
 
@@ -184,6 +192,8 @@ export const skipRouteMessageSelector = selectorFamily<
         })
       )
 
+      if (route.txs_required !== 1)
+        throw new Error('Route requires multiple transactions.')
       const addressList = [
         ...route.chain_ids
           .slice(0, -1)
@@ -206,34 +216,41 @@ export const skipRouteMessageSelector = selectorFamily<
         msgs: {
           multi_chain_msg: SkipMultiChainMsg
         }[]
-      } = await (
-        await fetch(SKIP_API_BASE + '/v2/fungible/msgs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            source_asset_chain_id: route.source_asset_chain_id,
-            source_asset_denom: route.source_asset_denom,
-            dest_asset_chain_id: route.dest_asset_chain_id,
-            dest_asset_denom: route.dest_asset_denom,
-            amount_in: route.amount_in,
-            amount_out: route.amount_out,
-            operations: route.operations,
-            estimated_amount_out: route.estimated_amount_out,
+      } = await fetchPublicJson<{
+        msgs: { multi_chain_msg: SkipMultiChainMsg }[]
+      }>('skip', SKIP_API_BASE + '/v2/fungible/msgs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source_asset_chain_id: route.source_asset_chain_id,
+          source_asset_denom: route.source_asset_denom,
+          dest_asset_chain_id: route.dest_asset_chain_id,
+          dest_asset_denom: route.dest_asset_denom,
+          amount_in: route.amount_in,
+          amount_out: route.amount_out,
+          operations: route.operations,
+          estimated_amount_out: route.estimated_amount_out,
 
-            addressList: addressList as string[],
-            slippage_tolerance_percent: '0',
-          }),
-        })
-      ).json()
+          addressList: addressList as string[],
+          slippage_tolerance_percent: '0',
+        }),
+      })
 
-      if (msgs.length !== 1) {
+      if (!Array.isArray(msgs) || msgs.length !== 1) {
         throw new Error('Route requires multiple messages.')
       }
 
       const msg = msgs[0]
-      if (!('multi_chain_msg' in msg)) {
+      if (
+        !msg?.multi_chain_msg ||
+        ![
+          '/ibc.applications.transfer.v1.MsgTransfer',
+          '/neutron.transfer.MsgTransfer',
+        ].includes(msg.multi_chain_msg.msg_type_url) ||
+        typeof msg.multi_chain_msg.msg !== 'string'
+      ) {
         throw new Error('Route requires invalid message type.')
       }
 

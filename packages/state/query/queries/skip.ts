@@ -96,7 +96,9 @@ export const fetchSkipChainPfmEnabled = async (
   queryClient: QueryClient,
   { chainId }: { chainId: string }
 ): Promise<boolean> => {
-  const chain = await queryClient.fetchQuery(skipQueries.chainRaw({ chainId }))
+  const chain = await queryClient
+    .fetchQuery(skipQueries.chainRaw({ chainId }))
+    .catch(() => null)
   return skipChainSupportsPfm(chain)
 }
 
