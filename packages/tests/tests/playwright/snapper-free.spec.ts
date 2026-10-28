@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from 'fs'
+import path from 'path'
+
 import { expect, test } from '@playwright/test'
 
 const dao = 'juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q'
@@ -49,4 +52,10 @@ test('read-only home and treasury never attempt legacy providers or broadcasts',
   expect(pageErrors).toEqual([])
   expect(legacyRequests).toEqual([])
   expect(broadcasts).toEqual([])
+  const serverLog = path.join(
+    process.env.SMOKE_ARTIFACT_DIR ||
+      path.resolve(__dirname, '../../../../test-results/snapper-free'),
+    `${testInfo.project.name}-legacy.log`
+  )
+  expect(existsSync(serverLog) ? readFileSync(serverLog, 'utf8') : '').toBe('')
 })
