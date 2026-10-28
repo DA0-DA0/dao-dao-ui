@@ -264,10 +264,25 @@ retire infrastructure. Independent review and a human merge are still required.
 - **Browser verification remains open.** The revised browser scenarios have
   not run to completion. Registered transfer scenarios still need execution;
   Valence remains component-tested rather than browser-demonstrated. The earlier
-  production-build cancellation was confirmed to coincide with a service upgrade; the diagnostic
-  prerequisite was retired. A subsequent ordinary build and browser retry also
+  production-build cancellation was confirmed to coincide with a service upgrade;
+  the diagnostic prerequisite was retired. A subsequent ordinary build and browser retry also
   lost their execution connections before terminal results; neither is a pass,
   and no cause is inferred for those later interruptions. Per explicit maintainer
   direction, no further local production builds are requested. This does not
   establish browser success or delivery approval; no deployment or platform
   change is authorized.
+
+### Maintainer validation direction (2026-10-28, 23:22 UTC)
+
+Following the interrupted runs, the maintainer explicitly directed stopping local
+browser retries and proceeding to independent review and PR preparation with the
+unverified execution and coverage gaps disclosed. Local production builds also
+remain stopped under the earlier direction. Absent local build/browser success
+is therefore not, by itself, a review/PR gate; it is **not a successful check**.
+
+The six registered scenarios per app remain unexecuted to completion; Valence
+coverage remains component-level rather than a whole-app browser demonstration.
+These limitations must remain visible in review evidence and the PR. Concrete
+code or fixture defects still require repair. Independent approval, normal
+provider checks and human merge remain required; no CI bypass, deployment or
+infrastructure change is authorized.
