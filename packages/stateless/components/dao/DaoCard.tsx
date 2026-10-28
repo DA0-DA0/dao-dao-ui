@@ -1,3 +1,4 @@
+import { UsdValuationDisplay } from '../token/UsdValuationDisplay'
 import {
   AccountBalanceOutlined,
   CheckRounded,
@@ -106,7 +107,9 @@ export const DaoCard = ({
         </p>
 
         {(lazyData.loading ||
-          (!lazyData.errored && lazyData.data.tokenWithBalance)) && (
+          (!lazyData.errored &&
+            (lazyData.data.tokenWithBalance ||
+              lazyData.data.usdValuation))) && (
           <div
             className={clsx(
               'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
@@ -115,27 +118,33 @@ export const DaoCard = ({
           >
             <AccountBalanceOutlined className="mr-1 !h-4 !w-4" />
 
-            <TokenAmountDisplay
-              amount={
-                lazyData.loading || !lazyData.data.tokenWithBalance
-                  ? { loading: true }
-                  : lazyData.data.tokenWithBalance.balance
-              }
-              {...(showingEstimatedUsdValue
-                ? {
-                    estimatedUsdValue: true,
-                  }
-                : {
-                    decimals:
-                      lazyData.loading || !lazyData.data.tokenWithBalance
-                        ? 0
-                        : lazyData.data.tokenWithBalance.decimals,
-                    symbol:
-                      lazyData.loading || !lazyData.data.tokenWithBalance
-                        ? ''
-                        : lazyData.data.tokenWithBalance.symbol,
-                  })}
-            />
+            {!lazyData.loading &&
+            !lazyData.errored &&
+            lazyData.data.usdValuation ? (
+              <UsdValuationDisplay value={lazyData.data.usdValuation} />
+            ) : (
+              <TokenAmountDisplay
+                amount={
+                  lazyData.loading || !lazyData.data.tokenWithBalance
+                    ? { loading: true }
+                    : lazyData.data.tokenWithBalance.balance
+                }
+                {...(showingEstimatedUsdValue
+                  ? {
+                      estimatedUsdValue: true,
+                    }
+                  : {
+                      decimals:
+                        lazyData.loading || !lazyData.data.tokenWithBalance
+                          ? 0
+                          : lazyData.data.tokenWithBalance.decimals,
+                      symbol:
+                        lazyData.loading || !lazyData.data.tokenWithBalance
+                          ? ''
+                          : lazyData.data.tokenWithBalance.symbol,
+                    })}
+              />
+            )}
 
             {showingEstimatedUsdValue && (
               <TooltipInfoIcon

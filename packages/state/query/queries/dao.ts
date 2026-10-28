@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import {
-  AmountWithTimestamp,
+  UsdValuation,
   ContractVersion,
   ContractVersionInfo,
   DaoDropdownInfo,
@@ -50,6 +50,7 @@ import {
 
 import { CwCoreV1QueryClient, DaoDaoCoreQueryClient } from '../../contracts'
 import { SearchDaoProposalsOptions, searchDaoProposals } from '../../indexer'
+import { fetchDaoValuation } from './treasury'
 import { accountQueries } from './account'
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
@@ -482,7 +483,7 @@ export const fetchChainSubDaoInfos = (
 export const fetchDaoTvl = async (
   queryClient: QueryClient,
   { chainId, coreAddress }: DaoSource
-): Promise<AmountWithTimestamp> => {
+): Promise<UsdValuation> => {
   // Native chain x/gov module.
   if (isConfiguredChainName(chainId, coreAddress)) {
     coreAddress =
@@ -491,22 +492,7 @@ export const fetchDaoTvl = async (
       COMMUNITY_POOL_ADDRESS_PLACEHOLDER
   }
 
-  const { total: amount } = (await queryClient.fetchQuery(
-    indexerQueries.snapper<{ total: number }>({
-      query: 'daodao-tvl',
-      parameters: {
-        chainId,
-        address: coreAddress,
-      },
-    })
-  )) || {
-    total: NaN,
-  }
-
-  return {
-    amount,
-    timestamp: Date.now(),
-  }
+  return fetchDaoValuation(queryClient, { chainId, coreAddress })
 }
 
 /**
@@ -1297,8 +1283,10 @@ export const daoQueries = {
    * Fetch a DAO's TVL.
    */
   tvl: (options: Parameters<typeof fetchDaoTvl>[1]) =>
-    queryOptions<AmountWithTimestamp>({
+    queryOptions<UsdValuation>({
       queryKey: ['dao', 'tvl', options],
+      staleTime: 60_000,
+      retry: false,
       queryFn: (ctx) => fetchDaoTvl(ctx.client, options),
     }),
   /**

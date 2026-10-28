@@ -280,3 +280,12 @@ export type WhiteWhalePool = {
   Price: string
   APR: number
 }
+
+/** Known current USD subtotal with explicit balance and market coverage. */
+export type UsdValuation = {
+  amount: number | null
+  status: 'complete' | 'partial' | 'unavailable'
+  timestamp: number | null
+  unpricedTokens: number
+  incompleteBalances: boolean
+}

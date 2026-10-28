@@ -1,3 +1,4 @@
+import { UsdValuationDisplay } from '@dao-dao/stateless'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfoCards, TokenAmountDisplay, useDao } from '@dao-dao/stateless'
@@ -9,8 +10,11 @@ export const GovInfoBar = () => {
 
   const dao = useDao()
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
-    amount: -1,
-    timestamp: Date.now(),
+    amount: null,
+    status: 'unavailable' as const,
+    timestamp: null,
+    unpricedTokens: 0,
+    incompleteBalances: true,
   })
 
   return (
@@ -20,16 +24,8 @@ export const GovInfoBar = () => {
           label: t('title.treasury'),
           tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           value: (
-            <TokenAmountDisplay
-              amount={
-                tvlLoading.loading ? { loading: true } : tvlLoading.data.amount
-              }
-              dateFetched={
-                tvlLoading.loading
-                  ? undefined
-                  : new Date(tvlLoading.data.timestamp)
-              }
-              estimatedUsdValue
+            <UsdValuationDisplay
+              value={tvlLoading.loading ? { loading: true } : tvlLoading.data}
             />
           ),
         },

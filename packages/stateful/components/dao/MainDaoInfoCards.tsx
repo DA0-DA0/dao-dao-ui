@@ -1,3 +1,4 @@
+import { UsdValuationDisplay } from '@dao-dao/stateless'
 import { DataObject, Send, WarningRounded } from '@mui/icons-material'
 import { useQueries } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
@@ -114,8 +115,11 @@ const InnerMainDaoInfoCards = () => {
   })
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
-    amount: -1,
-    timestamp: Date.now(),
+    amount: null,
+    status: 'unavailable' as const,
+    timestamp: null,
+    unpricedTokens: 0,
+    incompleteBalances: true,
   })
 
   // Get unique approvers from all proposal modules.
@@ -181,18 +185,8 @@ const InnerMainDaoInfoCards = () => {
             label: t('title.treasury'),
             tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
             value: (
-              <TokenAmountDisplay
-                amount={
-                  tvlLoading.loading
-                    ? { loading: true }
-                    : tvlLoading.data.amount
-                }
-                dateFetched={
-                  tvlLoading.loading
-                    ? undefined
-                    : new Date(tvlLoading.data.timestamp)
-                }
-                estimatedUsdValue
+              <UsdValuationDisplay
+                value={tvlLoading.loading ? { loading: true } : tvlLoading.data}
               />
             ),
           },

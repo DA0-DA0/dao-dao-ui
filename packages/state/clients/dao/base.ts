@@ -2,7 +2,7 @@ import { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 import {
   Account,
-  AmountWithTimestamp,
+  UsdValuation,
   AnyChain,
   ContractVersion,
   DaoCardLazyData,
@@ -246,18 +246,14 @@ export abstract class DaoBase implements IDaoBase {
    * Fetch the lazy data for the DAO card.
    */
   async getDaoCardLazyData(): Promise<DaoCardLazyData> {
-    const [{ amount: tvl }, proposalCount] = await Promise.all([
+    const [usdValuation, proposalCount] = await Promise.all([
       this.getTvl(),
       this.getProposalCount(),
     ])
 
     return {
       proposalCount,
-      tokenWithBalance: {
-        balance: tvl,
-        symbol: 'USD',
-        decimals: 2,
-      },
+      usdValuation,
     }
   }
 
@@ -269,7 +265,7 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Query options to fetch the TVL.
    */
-  get tvlQuery(): UndefinedInitialDataOptions<AmountWithTimestamp> {
+  get tvlQuery(): UndefinedInitialDataOptions<UsdValuation> {
     return daoQueries.tvl({
       chainId: this.chainId,
       coreAddress: this.coreAddress,
@@ -279,7 +275,7 @@ export abstract class DaoBase implements IDaoBase {
   /**
    * Fetch the TVL.
    */
-  getTvl(): Promise<AmountWithTimestamp> {
+  getTvl(): Promise<UsdValuation> {
     return this.queryClient.fetchQuery(this.tvlQuery)
   }
 }

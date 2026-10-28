@@ -10,7 +10,7 @@ import {
 import { DaoInfo, DaoSource } from '../dao'
 import { ContractVersion, Feature } from '../features'
 import { DaoModule, ModuleId } from '../modules'
-import { AmountWithTimestamp } from '../token'
+import { UsdValuation } from '../token'
 import { IProposalModuleBase } from './proposal-module'
 import { IVotingModuleBase } from './voting-module'
 
@@ -179,12 +179,12 @@ export interface IDaoBase {
    * Query options to fetch the TVL.
    */
   tvlQuery: Pick<
-    UndefinedInitialDataOptions<AmountWithTimestamp>,
+    UndefinedInitialDataOptions<UsdValuation>,
     'queryKey' | 'queryFn'
   >
 
   /**
    * Fetch the TVL.
    */
-  getTvl(): Promise<AmountWithTimestamp>
+  getTvl(): Promise<UsdValuation>
 }
