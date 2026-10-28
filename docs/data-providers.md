@@ -157,7 +157,7 @@ requests; no application imports that guard.
 | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Skip chain/asset/recommendation contracts, identity, dedup, negative-list caching                               | `state/query/queries/skip.test.ts`                                                                                                                               |
 | Shared Recoil queries, unknown PFM, swap/multi-tx/message rejection                                             | `state/recoil/selectors/skip.test.ts`                                                                                                                            |
-| Automatic failure → safe direct single-hop encoding, unsupported transfer rejection                             | `stateful/actions/core/actions/Spend/skip.test.ts`                                                                                                               |
+| Automatic failure → safe direct single-hop encoding, unsupported transfer rejection                             | `stateful/actions/core/actions/Spend/skip.test.ts`, `state/query/browserTransferFixtures.test.ts`                                                                |
 | Canonical market identity, decimals, malformed/zero/stale/future, Kraken seconds                                | `state/query/providers/prices.test.ts`                                                                                                                           |
 | IBC/native quote sharing, metadata fallback, unsupported identity, outage fan-out                               | `state/query/queries/token.test.ts`, `state/query/queries/token.testnet.test.ts`                                                                                 |
 | Absolute cache expiry, visible refresh/focus and cleanup                                                        | `state/recoil/selectors/token.test.ts`, `state/query/queries/prices.test.ts`, `stateful/hooks/usdPriceRefresh.test.ts`, `stateful/hooks/combinedRefresh.test.ts` |
@@ -182,6 +182,12 @@ SNAPPER_FREE_APP=sda pnpm --filter @dao-dao/tests exec playwright test --config 
 The test-only server preloader and browser routing record/deny legacy requests
 and block broadcasts. Production-build SSR can use the same guard via
 `NODE_OPTIONS=--require=<repo>/packages/tests/helpers/denyLegacyProviders.cjs`.
+
+Run one app at a time, with the test timeout below the enclosing command timeout.
+Playwright normally tears down its web-server and browser process groups. Abrupt
+runner cancellation can bypass that teardown; inspect processes belonging to the
+interrupted run before retrying, and stop only verified owned descendants. Do not
+start overlapping previews or use broad process-name cleanup.
 
 ### Results and limitations (2026-10-28)
 
@@ -228,27 +234,40 @@ retire infrastructure. Independent review and a human merge are still required.
   both real hooks with the real dependency client (React effect registration is
   stubbed): hidden/inactive price consumers stay quiet, and visible active quotes
   recover without fetching a fresh Skip asset list again.
-- Seven focused suites / **26 tests passed** after the repairs, including price
-  fixtures, automatic/direct Spend encoding, PFM rejection, and Valence rendering.
-  State/stateful and both-app type checks passed; changed-file lint passed.
+- Eight focused suites / **30 tests passed** after the repairs and transfer-fixture
+  extension, including price/transfer fixture contracts, automatic/direct Spend
+  encoding, PFM rejection, both refresh schedules, and Valence rendering.
+  State/stateful/stateless and both-app type checks passed; state types were
+  rechecked after adding the transfer fixtures. Changed-file lint passed.
   A full combined rerun lost its execution connection before its summary; it is
   **not** a verified full revised-suite pass. The earlier 116-test result remains
   historical evidence, not a substitute for current validation.
-- The browser harness now registers four scenarios per app: home/treasury and
-  fresh/stale/outage governance community-pool prices. Controlled read responses
+- The browser harness now registers six scenarios per app: home/treasury,
+  fresh/stale/outage governance community-pool prices, and automatic/outage
+  read-only transfer previews. Controlled read responses
   supply native ATOM, an origin-mapped IBC OSMO voucher, and an unsupported token;
   assertions retain token balances and distinguish unavailable USD. RPC fixtures
   use generated protobuf encoding and never fulfill writes or unknown RPC paths.
   Provider payload/schema tests pass; browser test listing and lint pass. These
   fixtures do not establish live provider CORS or external RPC availability.
+- Transfer scenarios prefill the real proposal form and read its encoded-message
+  editor after clicking Preview only, without connecting a wallet. A sentinel
+  memo distinguishes a successful automatic Skip message from the direct fallback
+  after a route outage. Fixture contract tests invoke the real Recoil route/message
+  selectors, preserve six-decimal token units and verify the registry channels;
+  other accounts, unknown RPC and broadcasts are not fulfilled. Browser execution
+  of these new scenarios remains outstanding.
 - A Valence component regression renders the real account display, token line
   and unavailable-history component with nonzero unpriced balances and preserved
   configuration links. Presentation wrappers are stubbed. This is a component
   test, **not** a successful Valence browser demonstration.
-- **Browser/build acceptance remains open.** The revised browser scenarios have
-  not run to completion. Browser transfer/Valence scenarios still need extension
-  and execution once compilation can complete. The latest isolated production
-  build again lost execution during optimized compilation before its supervised
-  timeout/exit/resource summary. No OOM, provider or timeout root cause has been
-  established. Read-only execution-path diagnostics are pending; no deployment,
-  platform change, validation waiver or delivery approval is implied.
+- **Browser verification remains open.** The revised browser scenarios have
+  not run to completion. Registered transfer scenarios still need execution;
+  Valence remains component-tested rather than browser-demonstrated. The earlier
+  production-build cancellation was confirmed to coincide with a service upgrade; the diagnostic
+  prerequisite was retired. A subsequent ordinary build and browser retry also
+  lost their execution connections before terminal results; neither is a pass,
+  and no cause is inferred for those later interruptions. Per explicit maintainer
+  direction, no further local production builds are requested. This does not
+  establish browser success or delivery approval; no deployment or platform
+  change is authorized.

@@ -7,16 +7,29 @@ import {
   PriceScenario,
   pricingFixtureResponse,
 } from '../../helpers/snapperFreePricing'
+import {
+  TransferScenario,
+  automaticFixtureMemo,
+  transferFixtureDao,
+  transferFixtureRecipient,
+  transferFixtureResponse,
+} from '../../helpers/snapperFreeTransfers'
 
 // These scenarios run the real app page and providers, substituting only public
 // read responses. The fixture is not an alternative app or a signing wallet.
 const test = base.extend<{
   priceScenario: PriceScenario | null
+  transferScenario: TransferScenario | null
   safeNetwork: void
 }>({
   priceScenario: [null, { option: true }],
+  transferScenario: [null, { option: true }],
   safeNetwork: [
-    async ({ page, context, priceScenario }, use, testInfo) => {
+    async (
+      { page, context, priceScenario, transferScenario },
+      use,
+      testInfo
+    ) => {
       const legacyRequests: string[] = []
       const broadcasts: string[] = []
       const pageErrors: string[] = []
@@ -48,7 +61,9 @@ const test = base.extend<{
           /* Not JSON. */
         }
         const fixture =
-          priceScenario && pricingFixtureResponse(url, body, priceScenario)
+          (priceScenario && pricingFixtureResponse(url, body, priceScenario)) ||
+          (transferScenario &&
+            transferFixtureResponse(url, body, transferScenario))
         if (fixture)
           return route.fulfill({
             status: fixture.status,
@@ -78,7 +93,7 @@ const test = base.extend<{
   ],
 })
 
-const dao = 'juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q'
+const dao = transferFixtureDao
 test('read-only home and treasury never attempt legacy providers or broadcasts', async ({
   page,
 }, testInfo) => {
@@ -126,5 +141,77 @@ for (const scenario of ['fresh', 'stale', 'outage'] as const)
           await expect(row).not.toContainText('$')
         }
       }
+    })
+  })
+
+for (const scenario of ['automatic', 'outage'] as const)
+  test.describe(`read-only transfer preview: ${scenario}`, () => {
+    test.use({ transferScenario: scenario })
+    test('encodes automatic routing or a safe direct fallback without a wallet', async ({
+      page,
+    }, testInfo) => {
+      const prefix = testInfo.project.name === 'sda' ? '' : '/dao'
+      const prefill = Buffer.from(
+        JSON.stringify({
+          id: 'DaoProposalSingle',
+          data: {
+            title: 'Read-only transfer verification',
+            description:
+              'Preview only: never connect, sign, simulate or submit.',
+            actionData: [
+              {
+                _id: '0',
+                actionKey: 'spend',
+                data: {
+                  fromChainId: 'juno-1',
+                  toChainId: 'osmosis-1',
+                  from: dao,
+                  to: transferFixtureRecipient,
+                  denom: 'ujuno',
+                  cw20: false,
+                  amount: '2',
+                },
+              },
+            ],
+          },
+        })
+      ).toString('base64')
+      await page.goto(
+        `${prefix}/${dao}/proposals/create?prefill=${encodeURIComponent(prefill)}`,
+        { waitUntil: 'domcontentloaded' }
+      )
+      // Preview is allowed without connecting. Never click the publish action.
+      await page.getByRole('button', { name: 'Preview', exact: true }).click()
+      await expect
+        .poll(async () =>
+          page.locator('.CodeMirror').evaluateAll((nodes) =>
+            nodes.map((node) => {
+              try {
+                // Read the real app's encoded-message editor, not a test-side encoder.
+                return JSON.parse(
+                  (
+                    node as HTMLElement & { CodeMirror: { getValue(): string } }
+                  ).CodeMirror.getValue()
+                )
+              } catch {
+                return null
+              }
+            })
+          )
+        )
+        .toContainEqual(
+          expect.objectContaining({
+            stargate: expect.objectContaining({
+              value: expect.objectContaining({
+                sourcePort: 'transfer',
+                sourceChannel: 'channel-0',
+                sender: dao,
+                receiver: transferFixtureRecipient,
+                token: { denom: 'ujuno', amount: '2000000' },
+                memo: scenario === 'automatic' ? automaticFixtureMemo : '',
+              }),
+            }),
+          })
+        )
     })
   })
