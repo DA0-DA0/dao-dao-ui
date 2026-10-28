@@ -69,17 +69,20 @@ export const fetchTokenInfo = async (
     return {
       chainId: asset.chain_id,
       type: asset.is_cw20 ? TokenType.Cw20 : TokenType.Native,
-      denomOrAddress: (asset.is_cw20 && asset.token_contract) || asset.denom,
+      // The exact matcher already verified this identity, including CW20
+      // assets whose optional token_contract is absent. Never return a cw20:
+      // denom where callers expect a contract address.
+      denomOrAddress,
       symbol: asset.recommended_symbol || asset.symbol || asset.denom,
       decimals: asset.decimals || 0,
       imageUrl: asset.logo_uri || getFallbackImage(denomOrAddress),
       source,
       snip20CodeHash:
-        isSecretNetwork(asset.chain_id) && asset.is_cw20 && asset.token_contract
+        isSecretNetwork(asset.chain_id) && asset.is_cw20
           ? await queryClient.fetchQuery(
               contractQueries.secretCodeHash({
                 chainId: asset.chain_id,
-                address: asset.token_contract,
+                address: denomOrAddress,
               })
             )
           : null,

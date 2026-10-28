@@ -130,3 +130,60 @@ test('missing Skip origin fields do not disable local/CW20 source fallbacks', as
   } as any)
   expect(await q.fetchQuery(tokenQueries.source(source))).toEqual(source)
 })
+
+test.each(['juno-1', 'secret-4'])(
+  'CW20 identity and code hash survive absent/null Skip contract metadata on %s',
+  async (chainId) => {
+    const { contractQueries } = await import('./contract')
+    for (const token_contract of [undefined, null]) {
+      const q = new QueryClient({
+        defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+      })
+      const denomOrAddress =
+        chainId === 'secret-4' ? 'secret1contract' : 'juno1contract'
+      const source = { chainId, type: TokenType.Cw20, denomOrAddress }
+      const asset = {
+        chain_id: chainId,
+        denom: 'cw20:' + denomOrAddress,
+        origin_chain_id: chainId,
+        origin_denom: 'cw20:' + denomOrAddress,
+        is_cw20: true,
+        token_contract,
+        decimals: 6,
+        symbol: 'TOKEN',
+      }
+      const fetcher = vi.fn(async () =>
+        Response.json({
+          chain_to_assets_map: {
+            [chainId]: {
+              assets: [
+                {
+                  ...asset,
+                  denom: denomOrAddress,
+                  is_cw20: false,
+                  symbol: 'IMPOSTOR',
+                },
+                asset,
+              ],
+            },
+          },
+        })
+      )
+      vi.stubGlobal('fetch', fetcher)
+      q.setQueryData(
+        contractQueries.secretCodeHash({ chainId, address: denomOrAddress })
+          .queryKey,
+        'verified-code-hash'
+      )
+      const token = await q.fetchQuery(tokenQueries.info(source))
+      expect(token).toMatchObject({
+        ...source,
+        symbol: 'TOKEN',
+        decimals: 6,
+        snip20CodeHash: chainId === 'secret-4' ? 'verified-code-hash' : null,
+      })
+      expect(fetcher).toHaveBeenCalledTimes(1)
+      q.clear()
+    }
+  }
+)
