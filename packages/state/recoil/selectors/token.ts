@@ -16,6 +16,7 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
+  isFreshUsdPrice,
   dateToExpiration,
   getChainForChainId,
   getChainForChainName,
@@ -25,7 +26,11 @@ import {
 } from '@dao-dao/utils'
 
 import { chainQueries, tokenQueries } from '../../query'
-import { queryClientAtom, refreshTokenCardLazyInfoAtom } from '../atoms'
+import {
+  queryClientAtom,
+  refreshTokenCardLazyInfoAtom,
+  refreshUsdPricesAtom,
+} from '../atoms'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
@@ -69,10 +74,16 @@ export const usdPriceSelector = selectorFamily<
         return
       }
 
+      get(refreshUsdPricesAtom)
       const queryClient = get(queryClientAtom)
-      return await queryClient
+      const quote = await queryClient
         .fetchQuery(tokenQueries.usdPrice(params))
         .catch(() => undefined)
+      return quote && isFreshUsdPrice(quote)
+        ? quote
+        : quote
+          ? { token: quote.token }
+          : undefined
     },
 })
 

@@ -1,3 +1,4 @@
+import { isFreshUsdPrice } from '@dao-dao/utils'
 import {
   Add,
   Check,
@@ -13,7 +14,6 @@ import { HugeDecimal } from '@dao-dao/math'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   getFallbackImage,
-  isNativeIbcUsdc,
   secondsToWdhms,
   shortenTokenSymbol,
   toAccessibleImageUrl,
@@ -228,8 +228,7 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  lazyInfo.data.usdUnitPrice?.usdPrice &&
+                {isFreshUsdPrice(lazyInfo.data.usdUnitPrice) &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
@@ -253,6 +252,13 @@ export const TokenCard = ({
             </div>
           )}
 
+          {!lazyInfo.loading &&
+            !isFreshUsdPrice(lazyInfo.data.usdUnitPrice) && (
+              <p className="caption-text text-right">
+                {t('info.usdEstimateUnavailable')}
+              </p>
+            )}
+
           {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
           {(lazyInfo.loading ||
             !lazyInfo.data.totalBalance.eq(unstakedBalance)) && (
@@ -268,8 +274,8 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice) &&
+                {(lazyInfo.loading ||
+                  isFreshUsdPrice(lazyInfo.data.usdUnitPrice)) &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
@@ -277,7 +283,7 @@ export const TokenCard = ({
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading ||
-                          !lazyInfo.data.usdUnitPrice?.usdPrice
+                          !isFreshUsdPrice(lazyInfo.data.usdUnitPrice)
                             ? { loading: true }
                             : unstakedBalance.toUsdValue(
                                 token.decimals,

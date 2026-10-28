@@ -1,3 +1,4 @@
+import { isFreshUsdPrice } from '@dao-dao/utils'
 import { Close, InfoOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useEffect, useState } from 'react'
@@ -22,6 +23,7 @@ import {
   SegmentedControls,
   SelectInput,
   SwitchCard,
+  StatusCard,
   TokenInput,
   Tooltip,
   useSupportedChainContext,
@@ -836,6 +838,18 @@ export const ConfigureRebalancerComponent: ActionComponent<
             <Loader />
           ) : prices.errored ? (
             <ErrorPage error={prices.error} />
+          ) : tokens.some(
+              ({ denom }) =>
+                !isFreshUsdPrice(
+                  prices.data.find(
+                    ({ token }) => token.denomOrAddress === denom
+                  )
+                )
+            ) ? (
+            <StatusCard
+              style="info"
+              content={t('info.usdEstimateUnavailable')}
+            />
           ) : (
             <RebalancerProjector
               assets={tokens.flatMap(

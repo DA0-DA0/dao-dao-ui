@@ -106,11 +106,11 @@ export type GenericTokenBalanceAndValue = {
   /**
    * USD value of total balance.
    */
-  usdValue: number
+  usdValue?: number
   /**
    * Timestamp of when the USD price was fetched.
    */
-  timestamp: Date
+  timestamp?: Date
 }
 
 export type GenericTokenBalanceWithOwner = GenericTokenBalance & {

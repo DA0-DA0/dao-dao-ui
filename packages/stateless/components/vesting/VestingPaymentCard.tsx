@@ -1,3 +1,4 @@
+import { isFreshUsdPrice } from '@dao-dao/utils'
 import {
   Add,
   Check,
@@ -26,7 +27,6 @@ import {
 import {
   abbreviateString,
   formatDateTimeTz,
-  isNativeIbcUsdc,
   secondsToWdhms,
 } from '@dao-dao/utils'
 
@@ -442,33 +442,32 @@ export const VestingPaymentCard = ({
                   symbol={token.symbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading ||
-                    lazyInfo.data.usdUnitPrice?.usdPrice) && (
-                    <div className="flex flex-row items-center gap-1">
-                      <TokenAmountDisplay
-                        amount={
-                          lazyInfo.loading ||
-                          !lazyInfo.data.usdUnitPrice?.usdPrice
-                            ? { loading: true }
-                            : distributableAmount
-                                .times(lazyInfo.data.usdUnitPrice.usdPrice)
-                                .toHumanReadableNumber(token.decimals)
-                        }
-                        dateFetched={
-                          lazyInfo.loading || !lazyInfo.data.usdUnitPrice
-                            ? undefined
-                            : lazyInfo.data.usdUnitPrice.timestamp
-                        }
-                        estimatedUsdValue
-                      />
+                {(lazyInfo.loading ||
+                  isFreshUsdPrice(lazyInfo.data.usdUnitPrice)) && (
+                  <div className="flex flex-row items-center gap-1">
+                    <TokenAmountDisplay
+                      amount={
+                        lazyInfo.loading ||
+                        !isFreshUsdPrice(lazyInfo.data.usdUnitPrice)
+                          ? { loading: true }
+                          : distributableAmount
+                              .times(lazyInfo.data.usdUnitPrice.usdPrice)
+                              .toHumanReadableNumber(token.decimals)
+                      }
+                      dateFetched={
+                        lazyInfo.loading || !lazyInfo.data.usdUnitPrice
+                          ? undefined
+                          : lazyInfo.data.usdUnitPrice.timestamp
+                      }
+                      estimatedUsdValue
+                    />
 
-                      <TooltipInfoIcon
-                        size="xs"
-                        title={t('info.estimatedUsdValueTooltip')}
-                      />
-                    </div>
-                  )}
+                    <TooltipInfoIcon
+                      size="xs"
+                      title={t('info.estimatedUsdValueTooltip')}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -487,33 +486,32 @@ export const VestingPaymentCard = ({
                   symbol={token.symbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading ||
-                    lazyInfo.data.usdUnitPrice?.usdPrice) && (
-                    <div className="flex flex-row items-center gap-1">
-                      <TokenAmountDisplay
-                        amount={
-                          lazyInfo.loading ||
-                          !lazyInfo.data.usdUnitPrice?.usdPrice
-                            ? { loading: true }
-                            : remainingBalanceVesting
-                                .times(lazyInfo.data.usdUnitPrice.usdPrice)
-                                .toHumanReadableNumber(token.decimals)
-                        }
-                        dateFetched={
-                          lazyInfo.loading || !lazyInfo.data.usdUnitPrice
-                            ? undefined
-                            : lazyInfo.data.usdUnitPrice.timestamp
-                        }
-                        estimatedUsdValue
-                      />
+                {(lazyInfo.loading ||
+                  isFreshUsdPrice(lazyInfo.data.usdUnitPrice)) && (
+                  <div className="flex flex-row items-center gap-1">
+                    <TokenAmountDisplay
+                      amount={
+                        lazyInfo.loading ||
+                        !isFreshUsdPrice(lazyInfo.data.usdUnitPrice)
+                          ? { loading: true }
+                          : remainingBalanceVesting
+                              .times(lazyInfo.data.usdUnitPrice.usdPrice)
+                              .toHumanReadableNumber(token.decimals)
+                      }
+                      dateFetched={
+                        lazyInfo.loading || !lazyInfo.data.usdUnitPrice
+                          ? undefined
+                          : lazyInfo.data.usdUnitPrice.timestamp
+                      }
+                      estimatedUsdValue
+                    />
 
-                      <TooltipInfoIcon
-                        size="xs"
-                        title={t('info.estimatedUsdValueTooltip')}
-                      />
-                    </div>
-                  )}
+                    <TooltipInfoIcon
+                      size="xs"
+                      title={t('info.estimatedUsdValueTooltip')}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}

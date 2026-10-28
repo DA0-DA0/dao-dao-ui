@@ -1,3 +1,4 @@
+import { isFreshUsdPrice } from '@dao-dao/utils'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -106,11 +107,11 @@ export const TokenLine = <T extends TokenCardInfo>(
         />
 
         {/* Only show on larger screen. */}
-        {lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice ? (
+        {lazyInfo.loading || isFreshUsdPrice(lazyInfo.data.usdUnitPrice) ? (
           <div className="hidden flex-row items-center justify-end sm:flex">
             <TokenAmountDisplay
               amount={
-                lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
+                lazyInfo.loading || !isFreshUsdPrice(lazyInfo.data.usdUnitPrice)
                   ? { loading: true }
                   : lazyInfo.data.totalBalance.toUsdValue(
                       token.decimals,
@@ -129,7 +130,9 @@ export const TokenLine = <T extends TokenCardInfo>(
             />
           </div>
         ) : (
-          <div className="hidden sm:block"></div>
+          <div className="caption-text hidden sm:block">
+            {t('info.usdEstimateUnavailable')}
+          </div>
         )}
       </div>
 

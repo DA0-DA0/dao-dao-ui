@@ -1,3 +1,5 @@
+import { UsdValuationDisplay } from '@dao-dao/stateless'
+import { isFreshUsdPrice, sumUsdEstimates } from '@dao-dao/utils'
 import { GavelRounded, Visibility, VisibilityOff } from '@mui/icons-material'
 import clsx from 'clsx'
 import {
@@ -462,15 +464,16 @@ export const InnerComplete = ({
                       }),
                       {} as Record<string, HugeDecimal>
                     )
-                  const totalUsdc = Object.entries(tokens)
-                    .map(([denomOrAddress, amount]) =>
-                      amount
-                        .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
-                        .toHumanReadableNumber(
-                          tokenMap[denomOrAddress]?.token.decimals ?? 0
-                        )
-                    )
-                    .reduce((acc, amount) => acc + amount, 0)
+                  const totalUsdc = sumUsdEstimates(
+                    Object.entries(tokens).map(([denomOrAddress, amount]) => {
+                      const quote = tokenMap[denomOrAddress]
+                      return isFreshUsdPrice(quote)
+                        ? amount
+                            .times(quote.usdPrice)
+                            .toHumanReadableNumber(quote.token.decimals)
+                        : undefined
+                    })
+                  )
 
                   return (
                     <Fragment key={id}>
@@ -533,12 +536,25 @@ export const InnerComplete = ({
                         )}
 
                         <div className="mt-2">
-                          <TokenAmountDisplay
-                            amount={totalUsdc}
-                            className="caption-text text-right"
-                            dateFetched={tokenPrices[0]?.timestamp}
-                            estimatedUsdValue
-                            prefix="= "
+                          <UsdValuationDisplay
+                            value={{
+                              amount: totalUsdc.amount,
+                              status:
+                                totalUsdc.amount === null
+                                  ? 'unavailable'
+                                  : totalUsdc.partial
+                                    ? 'partial'
+                                    : 'complete',
+                              timestamp: tokenPrices.length
+                                ? Math.min(
+                                    ...tokenPrices.flatMap((p) =>
+                                      p.timestamp ? [p.timestamp.getTime()] : []
+                                    )
+                                  )
+                                : null,
+                              unpricedTokens: 0,
+                              incompleteBalances: totalUsdc.partial,
+                            }}
                           />
                         </div>
                       </div>

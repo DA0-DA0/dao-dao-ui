@@ -95,3 +95,9 @@ export const refreshIndexerUpStatusAtom = atom({
   key: 'refreshIndexerUpStatus',
   default: 0,
 })
+
+// Shared market refresh/expiry clock, independent of balance/metadata refresh.
+export const refreshUsdPricesAtom = atom({
+  key: 'refreshUsdPrices',
+  default: 0,
+})

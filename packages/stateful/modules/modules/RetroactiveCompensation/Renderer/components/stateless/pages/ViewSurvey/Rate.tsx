@@ -1,3 +1,5 @@
+import { UsdValuationDisplay } from '@dao-dao/stateless'
+import { isFreshUsdPrice, sumUsdEstimates } from '@dao-dao/utils'
 import { Publish } from '@mui/icons-material'
 import { ComponentType, useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -288,15 +290,18 @@ export const Rate = ({
                     }),
                     {} as Record<string, HugeDecimal>
                   )
-                const projectedTotalUsdc = Object.entries(projectedTokens)
-                  .map(([denomOrAddress, amount]) =>
-                    amount
-                      .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
-                      .toHumanReadableNumber(
-                        tokenMap[denomOrAddress]?.token.decimals ?? 0
-                      )
+                const projectedTotalUsdc = sumUsdEstimates(
+                  Object.entries(projectedTokens).map(
+                    ([denomOrAddress, amount]) => {
+                      const quote = tokenMap[denomOrAddress]
+                      return isFreshUsdPrice(quote)
+                        ? amount
+                            .times(quote.usdPrice)
+                            .toHumanReadableNumber(quote.token.decimals)
+                        : undefined
+                    }
                   )
-                  .reduce((acc, amount) => acc + amount, 0)
+                )
 
                 const attributeRatingsFieldName =
                   `ratings.${contributionIndex}.attributes` as const
@@ -423,12 +428,27 @@ export const Rate = ({
                           )}
 
                           <div className="mt-1">
-                            <TokenAmountDisplay
-                              amount={projectedTotalUsdc}
-                              className="caption-text text-right"
-                              dateFetched={tokenPrices[0]?.timestamp}
-                              estimatedUsdValue
-                              prefix="= "
+                            <UsdValuationDisplay
+                              value={{
+                                amount: projectedTotalUsdc.amount,
+                                status:
+                                  projectedTotalUsdc.amount === null
+                                    ? 'unavailable'
+                                    : projectedTotalUsdc.partial
+                                      ? 'partial'
+                                      : 'complete',
+                                timestamp: tokenPrices.length
+                                  ? Math.min(
+                                      ...tokenPrices.flatMap((p) =>
+                                        p.timestamp
+                                          ? [p.timestamp.getTime()]
+                                          : []
+                                      )
+                                    )
+                                  : null,
+                                unpricedTokens: 0,
+                                incompleteBalances: projectedTotalUsdc.partial,
+                              }}
                             />
                           </div>
                         </div>
