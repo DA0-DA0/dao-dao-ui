@@ -153,20 +153,20 @@ requests; no application imports that guard.
 
 ## Regression coverage and verification
 
-| Requirement / old path                                                                                          | Deterministic coverage                                                                                                      |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Skip chain/asset/recommendation contracts, identity, dedup, negative-list caching                               | `state/query/queries/skip.test.ts`                                                                                          |
-| Shared Recoil queries, unknown PFM, swap/multi-tx/message rejection                                             | `state/recoil/selectors/skip.test.ts`                                                                                       |
-| Automatic failure → safe direct single-hop encoding, unsupported transfer rejection                             | `stateful/actions/core/actions/Spend/skip.test.ts`                                                                          |
-| Canonical market identity, decimals, malformed/zero/stale/future, Kraken seconds                                | `state/query/providers/prices.test.ts`                                                                                      |
-| IBC/native quote sharing, metadata fallback, unsupported identity, outage fan-out                               | `state/query/queries/token.test.ts`, `state/query/queries/token.testnet.test.ts`                                            |
-| Absolute cache expiry, visible refresh/focus and cleanup                                                        | `state/recoil/selectors/token.test.ts`, `state/query/queries/prices.test.ts`, `stateful/hooks/usdPriceRefresh.test.ts`      |
-| Current holdings, staking/unbonding/reward-only tokens, fractional pool, partial totals, account dedup, budgets | `state/query/queries/treasury.test.ts`                                                                                      |
-| Reward raw amounts/claim eligibility without USD, zero/partial/unavailable rendering                            | reward query/card tests, `stateless/components/token/UsdValuationDisplay.test.tsx`, `utils/usd.test.ts`                     |
-| Counts on None chains, partial/missing/zero, period/cache and timeout attempts                                  | `state/query/queries/stats.test.ts`                                                                                         |
-| Featured list and unavailable historical graph                                                                  | `state/query/queries/dao.test.ts`, `stateful/components/TreasuryHistoryGraph.test.tsx`                                      |
-| ICA address errors, channel pagination/conflicts/order and safe encoding                                        | `state/query/queries/account.test.ts`, `stateful/actions/core/actions/CreateIca/index.test.ts`                              |
-| No legacy transport, HTTP deadlines/retries/rate budget, no-real-broadcast guard                                | `state/query/noLegacyProviders.test.ts`, `state/query/providers/http.test.ts`, `tests/helpers/denyLegacyProviders.test.cjs` |
+| Requirement / old path                                                                                          | Deterministic coverage                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skip chain/asset/recommendation contracts, identity, dedup, negative-list caching                               | `state/query/queries/skip.test.ts`                                                                                                                               |
+| Shared Recoil queries, unknown PFM, swap/multi-tx/message rejection                                             | `state/recoil/selectors/skip.test.ts`                                                                                                                            |
+| Automatic failure → safe direct single-hop encoding, unsupported transfer rejection                             | `stateful/actions/core/actions/Spend/skip.test.ts`                                                                                                               |
+| Canonical market identity, decimals, malformed/zero/stale/future, Kraken seconds                                | `state/query/providers/prices.test.ts`                                                                                                                           |
+| IBC/native quote sharing, metadata fallback, unsupported identity, outage fan-out                               | `state/query/queries/token.test.ts`, `state/query/queries/token.testnet.test.ts`                                                                                 |
+| Absolute cache expiry, visible refresh/focus and cleanup                                                        | `state/recoil/selectors/token.test.ts`, `state/query/queries/prices.test.ts`, `stateful/hooks/usdPriceRefresh.test.ts`, `stateful/hooks/combinedRefresh.test.ts` |
+| Current holdings, staking/unbonding/reward-only tokens, fractional pool, partial totals, account dedup, budgets | `state/query/queries/treasury.test.ts`                                                                                                                           |
+| Reward raw amounts/claim eligibility without USD, zero/partial/unavailable rendering                            | reward query/card tests, `stateless/components/token/UsdValuationDisplay.test.tsx`, `utils/usd.test.ts`                                                          |
+| Counts on None chains, partial/missing/zero, period/cache and timeout attempts                                  | `state/query/queries/stats.test.ts`                                                                                                                              |
+| Featured list and unavailable historical graph                                                                  | `state/query/queries/dao.test.ts`, `stateful/components/TreasuryHistoryGraph.test.tsx`                                                                           |
+| ICA address errors, channel pagination/conflicts/order and safe encoding                                        | `state/query/queries/account.test.ts`, `stateful/actions/core/actions/CreateIca/index.test.ts`                                                                   |
+| No legacy transport, HTTP deadlines/retries/rate budget, no-real-broadcast guard                                | `state/query/noLegacyProviders.test.ts`, `state/query/providers/http.test.ts`, `tests/helpers/denyLegacyProviders.test.cjs`                                      |
 
 Paths in this table are relative to `packages/`. Unit tests use mocked public
 HTTP/RPC, not real transactions. Run the both-app smoke separately for bounded
@@ -185,7 +185,7 @@ and block broadcasts. Production-build SSR can use the same guard via
 
 ### Results and limitations (2026-10-28)
 
-- Final combined scoped run: **27 suites / 116 tests passed**. This includes
+- Pre-review combined scoped run: **27 suites / 116 tests passed**. This includes
   both initial regressions and follow-up self-review fixes for count queue
   starvation, retry start budgets, fractional minimal-unit valuation precision,
   non-finite/future timestamps, missing Skip origins and Recoil refresh completion.
@@ -215,3 +215,40 @@ and block broadcasts. Production-build SSR can use the same guard via
 
 These limitations are verification gaps, not permission to remove features or
 retire infrastructure. Independent review and a human merge are still required.
+
+### Review-repair checkpoint (2026-10-28)
+
+- CW20 metadata now returns the exact verified requested contract address even
+  when Skip omits or nulls `token_contract`. Secret code-hash lookup uses that
+  same address. Asset-fetch → token-info regressions cover both chains, absent
+  and null metadata, and native/CW20 identity separation.
+- The layout refresher no longer force-refetches price queries and their metadata
+  dependencies. Its block/indexer/gas responsibilities remain unchanged. Only
+  the StateProvider scheduler owns price refresh. A combined-effect test runs
+  both real hooks with the real dependency client (React effect registration is
+  stubbed): hidden/inactive price consumers stay quiet, and visible active quotes
+  recover without fetching a fresh Skip asset list again.
+- Seven focused suites / **26 tests passed** after the repairs, including price
+  fixtures, automatic/direct Spend encoding, PFM rejection, and Valence rendering.
+  State/stateful and both-app type checks passed; changed-file lint passed.
+  A full combined rerun lost its execution connection before its summary; it is
+  **not** a verified full revised-suite pass. The earlier 116-test result remains
+  historical evidence, not a substitute for current validation.
+- The browser harness now registers four scenarios per app: home/treasury and
+  fresh/stale/outage governance community-pool prices. Controlled read responses
+  supply native ATOM, an origin-mapped IBC OSMO voucher, and an unsupported token;
+  assertions retain token balances and distinguish unavailable USD. RPC fixtures
+  use generated protobuf encoding and never fulfill writes or unknown RPC paths.
+  Provider payload/schema tests pass; browser test listing and lint pass. These
+  fixtures do not establish live provider CORS or external RPC availability.
+- A Valence component regression renders the real account display, token line
+  and unavailable-history component with nonzero unpriced balances and preserved
+  configuration links. Presentation wrappers are stubbed. This is a component
+  test, **not** a successful Valence browser demonstration.
+- **Browser/build acceptance remains open.** The revised browser scenarios have
+  not run to completion. Browser transfer/Valence scenarios still need extension
+  and execution once compilation can complete. The latest isolated production
+  build again lost execution during optimized compilation before its supervised
+  timeout/exit/resource summary. No OOM, provider or timeout root cause has been
+  established. Read-only execution-path diagnostics are pending; no deployment,
+  platform change, validation waiver or delivery approval is implied.
