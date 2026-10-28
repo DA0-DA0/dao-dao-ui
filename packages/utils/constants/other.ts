@@ -127,7 +127,7 @@ export const CHAIN_GAS_MULTIPLIER = 2
 
 export const IPFS_GATEWAY_TEMPLATE = 'https://ipfs.daodao.zone/ipfs/PATH'
 
-export const SKIP_API_BASE = 'https://api.skip.money'
+export const SKIP_API_BASE = 'https://api.skip.build'
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']

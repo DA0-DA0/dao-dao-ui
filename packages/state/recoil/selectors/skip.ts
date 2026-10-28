@@ -12,21 +12,18 @@ import {
 } from '@dao-dao/types'
 import { SKIP_API_BASE } from '@dao-dao/utils'
 
-import { querySnapperSelector } from './indexer'
+import { skipQueries } from '../../query/queries/skip'
+import { selectSkipRecommendation } from '../../query/providers/skip'
+import { queryClientAtom } from '../atoms'
 
 export const skipChainSelector = selectorFamily<SkipChain | undefined, string>({
   key: 'skipChain',
   get:
     (chainId) =>
     ({ get }) =>
-      get(
-        querySnapperSelector({
-          query: 'skip-chain',
-          parameters: {
-            chainId,
-          },
-        })
-      ),
+      get(queryClientAtom)
+        .fetchQuery(skipQueries.chainRaw({ chainId }))
+        .then((chain) => chain ?? undefined),
 })
 
 /**
@@ -40,16 +37,9 @@ export const skipAssetSelector = selectorFamily<
   get:
     ({ chainId, type, denomOrAddress }) =>
     ({ get }) =>
-      get(
-        querySnapperSelector({
-          query: 'skip-asset',
-          parameters: {
-            chainId,
-            denom: denomOrAddress,
-            cw20: (type === TokenType.Cw20).toString(),
-          },
-        })
-      ),
+      get(queryClientAtom)
+        .fetchQuery(skipQueries.asset({ chainId, type, denomOrAddress }))
+        .catch(() => undefined),
 })
 
 export const skipRecommendedAssetsSelector = selectorFamily<
@@ -64,15 +54,8 @@ export const skipRecommendedAssetsSelector = selectorFamily<
   get:
     ({ fromChainId, denom, toChainId }) =>
     ({ get }) =>
-      get(
-        querySnapperSelector({
-          query: 'skip-recommended-assets',
-          parameters: {
-            sourceAssetChainId: fromChainId,
-            sourceAssetDenom: denom,
-            destChainId: toChainId,
-          },
-        })
+      get(queryClientAtom).fetchQuery(
+        skipQueries.recommendations({ fromChainId, denom, toChainId })
       ),
 })
 
@@ -96,11 +79,7 @@ export const skipRecommendedAssetSelector = selectorFamily<
         })
       )
 
-      const recommendation =
-        recommendations.find(({ reason }) => reason === 'BASE_TOKEN') ||
-        recommendations.find(({ reason }) => reason === 'MOST_LIQUID') ||
-        recommendations.find(({ reason }) => reason === 'DIRECT') ||
-        recommendations[0]
+      const recommendation = selectSkipRecommendation(recommendations)
 
       return recommendation
     },

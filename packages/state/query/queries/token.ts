@@ -23,6 +23,8 @@ import {
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
+import { hasSkipDecimals } from '../providers/skip'
+
 import { chainQueries } from './chain'
 import { contractQueries } from './contract'
 import { cw20BaseQueries } from './contracts'
@@ -62,7 +64,7 @@ export const fetchTokenInfo = async (
       .catch(() => null),
   ])
 
-  if (asset) {
+  if (hasSkipDecimals(asset)) {
     return {
       chainId: asset.chain_id,
       type: asset.is_cw20 ? TokenType.Cw20 : TokenType.Native,
@@ -89,7 +91,7 @@ export const fetchTokenInfo = async (
       .fetchQuery(skipQueries.asset(source))
       .catch(() => null)
 
-    if (sourceAsset) {
+    if (hasSkipDecimals(sourceAsset)) {
       return {
         chainId,
         type,
