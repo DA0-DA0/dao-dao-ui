@@ -109,9 +109,6 @@ export const ASTROPORT_PRICES_API =
 // Indexer
 export const INDEXER_URL = 'https://indexer.daodao.zone'
 
-// Snapper API
-export const SNAPPER_API_BASE = 'https://snapper.indexer.zone'
-
 // WebSockets API
 export const WEB_SOCKET_PUSHER_APP_KEY = 'daodao'
 export const WEB_SOCKET_PUSHER_HOST = 'ws.indexer.zone'

@@ -19,12 +19,10 @@ import {
 import {
   DaoProposalSearchResult,
   QueryIndexerOptions,
-  QuerySnapperOptions,
   SearchDaoProposalsOptions,
   isIndexerQuerySupported,
   queryIndexer,
   queryIndexerUpStatus,
-  querySnapper,
   searchDaoProposals,
 } from '../../indexer'
 import {
@@ -201,16 +199,6 @@ export const queryValidatorIndexerSelector = selectorFamily<
           ...params,
         })
       ),
-})
-
-export type QuerySnapperParams = QuerySnapperOptions & {
-  // Refresh by changing this value.
-  id?: number
-}
-
-export const querySnapperSelector = selectorFamily<any, QuerySnapperParams>({
-  key: 'querySnapper',
-  get: (options) => async () => await querySnapper(options),
 })
 
 /**

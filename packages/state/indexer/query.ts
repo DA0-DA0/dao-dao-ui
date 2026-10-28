@@ -21,8 +21,7 @@ export type QueryIndexerOptions = WithChainId<
       stepMs?: number
     }
     /**
-     * TTL in seconds to cache the query for. If set, will use Snapper to cache
-     * the indexer query.
+     * Legacy caller cache hint. Direct indexer requests do not use a proxy.
      */
     ttl?: number
     /**
@@ -89,21 +88,6 @@ export const queryIndexer = async <T = any>({
       }),
     }),
   })
-
-  // If TTL is set, use Snapper to cache the query.
-  // if (ttl) {
-  //   return await querySnapper({
-  //     query: 'daodao-indexer',
-  //     parameters: {
-  //       type,
-  //       formula,
-  //       chainId,
-  //       address,
-  //       args: params.toString() || undefined,
-  //       ttl,
-  //     },
-  //   })
-  // }
 
   const path = `/${chainId}/${type}/${address}/${formula}?${params.toString()}`
   const response = await fetch(INDEXER_URL + path, {
