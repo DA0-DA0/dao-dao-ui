@@ -95,6 +95,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - run: pnpm dapp build
+        env:
+          # Public ubuntu-latest runners have 16 GB RAM; leave room outside V8.
+          NODE_OPTIONS: --max-old-space-size=8192
 
   build-sda:
     name: Build SDA
@@ -111,3 +114,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - run: pnpm sda build
+        env:
+          # Public ubuntu-latest runners have 16 GB RAM; leave room outside V8.
+          NODE_OPTIONS: --max-old-space-size=8192

@@ -34,6 +34,9 @@ jobs:
         run: cp apps/dapp/.env.mainnet apps/dapp/.env.local
       - name: Build dApp
         run: pnpm dapp build
+        env:
+          # Public ubuntu-latest runners have 16 GB RAM; leave room outside V8.
+          NODE_OPTIONS: --max-old-space-size=8192
       - name: Run Playwright tests
         run: pnpm test:playwright
       - uses: actions/upload-artifact@v4
