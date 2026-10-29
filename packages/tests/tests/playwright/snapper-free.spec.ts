@@ -170,6 +170,9 @@ for (const scenario of ['automatic', 'outage'] as const)
                   denom: 'ujuno',
                   cw20: false,
                   amount: '2',
+                  // Prefill replaces action defaults, including the required
+                  // timeout. Without it, the real encoder receives NaN.
+                  ibcTimeout: { value: 1, units: 'weeks' },
                 },
               },
             ],

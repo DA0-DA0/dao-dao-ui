@@ -1,4 +1,4 @@
-import { Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
+import type { Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
 
 declare global {
   interface Window extends KeplrWindow {}
@@ -24,26 +24,19 @@ export const getKeplrFromWindow: () => Promise<
     return keplr
   }
 
+  // Read-only visitors need not have an extension installed. In particular,
+  // WalletProvider probes this to detect Keplr mobile web on every page load.
   if (document.readyState === 'complete') {
-    if (keplr) {
-      return keplr
-    } else {
-      throw new Error('Keplr not found')
-    }
+    return undefined
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const documentStateChange = (event: Event) => {
       if (
         event.target &&
         (event.target as Document).readyState === 'complete'
       ) {
-        const keplr = (window as KeplrWindow).keplr
-        if (keplr) {
-          resolve(keplr)
-        } else {
-          reject(new Error('Keplr not found'))
-        }
+        resolve((window as KeplrWindow).keplr)
         document.removeEventListener('readystatechange', documentStateChange)
       }
     }

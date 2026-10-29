@@ -1,5 +1,6 @@
 import { createHash } from 'crypto'
 
+import type { PfpkProfile } from '../../types/profile'
 import {
   QueryAllBalancesRequest,
   QueryAllBalancesResponse,
@@ -24,6 +25,28 @@ export const transferFixtureResponse = (
   body: any,
   scenario: TransferScenario
 ): { status: number; body: unknown } | undefined => {
+  // Only this synthetic (zero-byte) recipient's public profile is substituted.
+  // Supplying its name/image keeps unrelated optional Stargaze lookups out of
+  // the routing scenario; live Stargaze RPC CORS failures surface in WebKit.
+  if (
+    url.hostname === 'pfpk.daodao.zone' &&
+    url.pathname === '/bech32/0000000000000000000000000000000000000000'
+  ) {
+    const profile: PfpkProfile = {
+      uuid: 'read-only-recipient',
+      name: 'Read-only recipient',
+      nft: {
+        chainId: 'stargaze-1',
+        collectionAddress: 'read-only-fixture',
+        tokenId: '1',
+        imageUrl: '/favicon.ico',
+      },
+      chains: {},
+      createdAt: -1,
+      updatedAt: -1,
+    }
+    return { status: 200, body: profile }
+  }
   if (url.hostname === 'api.skip.build') {
     if (
       url.pathname === '/v2/fungible/assets' &&
