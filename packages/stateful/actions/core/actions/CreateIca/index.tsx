@@ -2,11 +2,7 @@ import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  accountQueries,
-  chainQueries,
-  indexerQueries,
-} from '@dao-dao/state/query'
+import { accountQueries, chainQueries } from '@dao-dao/state/query'
 import { ActionBase, ChainEmoji, useActionOptions } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -19,10 +15,7 @@ import {
 } from '@dao-dao/types'
 import { MsgRegisterInterchainAccount } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
 import { Metadata } from '@dao-dao/types/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
-import {
-  IdentifiedChannel,
-  Order,
-} from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
+import { Order } from '@dao-dao/types/protobuf/codegen/ibc/core/channel/v1/channel'
 import {
   ICA_CHAINS_TX_PREFIX,
   getChainForChainName,
@@ -163,25 +156,18 @@ export class CreateIcaAction extends ActionBase<CreateIcaData> {
     // ordering. You can't reopen an old channel for an existing ICA with a
     // different ordering, so we must use the same ordering.
     if (existingIcaAddress) {
-      const existingIcaChannel = await this.options.queryClient
-        .fetchQuery(
-          indexerQueries.snapper<IdentifiedChannel>({
-            query: 'ica-channel',
-            parameters: {
-              address: this.options.address,
-              srcChainId: this.options.chain.chainId,
-              destChainId: chainId,
-            },
-          })
+      const existingIcaChannel = await this.options.queryClient.fetchQuery(
+        accountQueries.icaChannel({
+          address: this.options.address,
+          srcChainId: this.options.chain.chainId,
+          destChainId: chainId,
+        })
+      )
+      if (!existingIcaChannel)
+        throw new Error(
+          'Cannot verify existing ICA channel ordering. Please retry when channel data is available.'
         )
-        .catch(() => null)
-
-      // If found, use the ordering from the existing channel. Otherwise just
-      // hope it works! The chain and simulation will error if the ordering is
-      // different.
-      if (existingIcaChannel) {
-        ordering = existingIcaChannel.ordering
-      }
+      ordering = existingIcaChannel.ordering
     }
 
     return [

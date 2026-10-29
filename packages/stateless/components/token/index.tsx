@@ -7,3 +7,5 @@ export * from './TokenLineHeader'
 export * from './UnstakingLine'
 export * from './UnstakingModal'
 export * from './UnstakingStatus'
+
+export * from './UsdValuationDisplay'

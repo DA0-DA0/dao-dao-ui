@@ -3,12 +3,12 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { DaoRewardsDistributorClaimCardProps } from '@dao-dao/types'
-import { getFallbackImage } from '@dao-dao/utils'
+import { getFallbackImage, sumUsdEstimates } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
 import { Collapsible } from '../Collapsible'
 import { ErrorPage } from '../error'
-import { TokenAmountDisplay } from '../token'
+import { TokenAmountDisplay, UsdValuationDisplay } from '../token'
 import { TooltipInfoIcon } from '../tooltip'
 
 export const DaoRewardsDistributorClaimCard = ({
@@ -25,11 +25,20 @@ export const DaoRewardsDistributorClaimCard = ({
     rewards.data.length > 0 &&
     rewards.data.some(({ balance }) => balance > 0)
 
-  const totalUsdValue = hasRewards
-    ? rewards.data.reduce((acc, { usdValue }) => acc + usdValue, 0)
-    : 0
-  // Just use the first timestamp.
-  const totalTimestamp = hasRewards ? rewards.data[0].timestamp : undefined
+  const values = !rewards.loading && !rewards.errored ? rewards.data : []
+  const total = sumUsdEstimates(
+    values
+      .filter(({ balance }) => balance > 0)
+      .map(({ usdValue, timestamp }) =>
+        timestamp && Date.now() - timestamp.getTime() <= 300_000
+          ? usdValue
+          : undefined
+      )
+  )
+  const timestamps = values.flatMap(({ timestamp, usdValue }) =>
+    timestamp && usdValue !== undefined ? [timestamp.getTime()] : []
+  )
+  const totalTimestamp = timestamps.length ? Math.min(...timestamps) : null
 
   return (
     <div
@@ -38,7 +47,7 @@ export const DaoRewardsDistributorClaimCard = ({
         className
       )}
     >
-      <div className="xs:items-center xs:flex-row flex flex-col gap-2 xs:justify-between">
+      <div className="xs:items-center xs:flex-row xs:justify-between flex flex-col gap-2">
         <div className="flex flex-col items-start">
           <div className="flex flex-row gap-3 items-center">
             <Payments
@@ -50,20 +59,23 @@ export const DaoRewardsDistributorClaimCard = ({
               )}
             />
 
-            <TokenAmountDisplay
-              amount={rewards.loading ? { loading: true } : totalUsdValue}
-              className={clsx(
-                'font-medium !text-lg',
-                hasRewards
-                  ? '!text-text-interactive-valid'
-                  : '!text-text-tertiary'
-              )}
-              dateFetched={totalTimestamp}
-              decimals={2}
-              hideSymbol
-              minAmount={0.01}
-              prefix="$"
-              showAllDecimals
+            <UsdValuationDisplay
+              value={
+                rewards.loading
+                  ? { loading: true }
+                  : {
+                      amount: total.amount,
+                      status:
+                        total.amount === null
+                          ? 'unavailable'
+                          : total.partial
+                            ? 'partial'
+                            : 'complete',
+                      timestamp: totalTimestamp,
+                      unpricedTokens: 0,
+                      incompleteBalances: total.partial,
+                    }
+              }
             />
           </div>
 
@@ -112,7 +124,7 @@ export const DaoRewardsDistributorClaimCard = ({
                   <div
                     key={token.denomOrAddress}
                     className={clsx(
-                      'flex flex-row pl-4 items-stretch border-border-secondary border-l-2',
+                      'border-border-secondary flex flex-row pl-4 items-stretch border-l-2',
                       // padding between above item's bottom border
                       index > 0 && 'pt-2',
                       // padding above first and below last items within
@@ -127,7 +139,7 @@ export const DaoRewardsDistributorClaimCard = ({
                         // bottom border between items, with padding that
                         // matches top padding in the item below it
                         index !== rewards.data.length - 1 &&
-                          'border-dashed border-b border-border-secondary pb-2'
+                          'border-border-secondary border-dashed border-b pb-2'
                       )}
                     >
                       <TokenAmountDisplay
@@ -145,21 +157,15 @@ export const DaoRewardsDistributorClaimCard = ({
                         suffixClassName="whitespace-pre text-text-tertiary"
                       />
 
-                      <TokenAmountDisplay
-                        amount={usdValue}
-                        className={clsx(
-                          '!text-sm',
-                          usdValue > 0
-                            ? '!text-text-interactive-valid'
-                            : '!text-text-tertiary'
-                        )}
-                        dateFetched={timestamp}
-                        decimals={2}
-                        hideSymbol
-                        minAmount={0.01}
-                        prefix="$"
-                        showAllDecimals
-                        wrapperClassName="shrink-0"
+                      <UsdValuationDisplay
+                        value={{
+                          amount: usdValue ?? null,
+                          timestamp: timestamp?.getTime() ?? null,
+                          status:
+                            usdValue === undefined ? 'unavailable' : 'complete',
+                          unpricedTokens: 0,
+                          incompleteBalances: false,
+                        }}
                       />
                     </div>
                   </div>

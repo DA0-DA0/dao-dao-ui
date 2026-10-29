@@ -31,7 +31,7 @@ export type SkipAsset = {
   symbol: string
   name: string
   logo_uri: string
-  decimals: number
+  decimals: number | null
   description: string
   coingecko_id?: string
   token_contract?: string

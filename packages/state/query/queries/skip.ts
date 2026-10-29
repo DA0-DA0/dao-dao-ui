@@ -4,12 +4,18 @@ import {
   AnyChain,
   GenericTokenSource,
   SkipAsset,
-  SkipChain,
   TokenType,
 } from '@dao-dao/types'
 import { convertSkipChainToAnyChain } from '@dao-dao/utils'
 
-import { indexerQueries } from './indexer'
+import {
+  RecommendationOptions,
+  fetchSkipAssets,
+  fetchSkipChains,
+  fetchSkipRecommendations,
+  selectSkipRecommendation,
+  skipChainSupportsPfm,
+} from '../providers/skip'
 
 /**
  * Fetch Skip chain.
@@ -22,14 +28,7 @@ export const fetchSkipChain = async (
     chainId: string
   }
 ): Promise<AnyChain> => {
-  const chain = await queryClient.fetchQuery(
-    indexerQueries.snapper<SkipChain>({
-      query: 'skip-chain',
-      parameters: {
-        chainId,
-      },
-    })
-  )
+  const chain = await queryClient.fetchQuery(skipQueries.chainRaw({ chainId }))
 
   if (!chain) {
     throw new Error('No Skip chain found')
@@ -45,15 +44,13 @@ export const fetchSkipAsset = async (
   queryClient: QueryClient,
   { type, chainId, denomOrAddress }: GenericTokenSource
 ): Promise<SkipAsset> => {
-  const asset = await queryClient.fetchQuery(
-    indexerQueries.snapper({
-      query: 'skip-asset',
-      parameters: {
-        chainId,
-        denom: denomOrAddress,
-        cw20: (type === TokenType.Cw20).toString(),
-      },
-    })
+  const assets = await queryClient.fetchQuery(skipQueries.assets({ chainId }))
+  const asset = assets?.find(
+    (asset) =>
+      (asset.is_cw20 ? TokenType.Cw20 : TokenType.Native) === type &&
+      (asset.is_cw20
+        ? asset.token_contract || asset.denom.replace(/^cw20:/, '')
+        : asset.denom) === denomOrAddress
   )
 
   if (!asset) {
@@ -78,17 +75,11 @@ export const fetchSkipRecommendedAsset = async (
     toChainId: string
   }
 ): Promise<SkipAsset> => {
-  const { asset } =
-    (await queryClient.fetchQuery(
-      indexerQueries.snapper({
-        query: 'skip-recommended-asset',
-        parameters: {
-          sourceAssetChainId: fromChainId,
-          sourceAssetDenom: denom,
-          destChainId: toChainId,
-        },
-      })
-    )) ?? {}
+  const asset = selectSkipRecommendation(
+    await queryClient.fetchQuery(
+      skipQueries.recommendations({ fromChainId, denom, toChainId })
+    )
+  )?.asset
 
   if (!asset) {
     throw new Error('No Skip recommended asset found')
@@ -104,20 +95,50 @@ export const fetchSkipChainPfmEnabled = async (
   queryClient: QueryClient,
   { chainId }: { chainId: string }
 ): Promise<boolean> => {
-  const chain = await fetchSkipChain(queryClient, { chainId })
-  return (
-    chain?.skipChain?.ibc_capabilities?.cosmos_pfm ??
-    chain?.skipChain?.pfm_enabled ??
-    false
-  )
+  const chain = await queryClient
+    .fetchQuery(skipQueries.chainRaw({ chainId }))
+    .catch(() => null)
+  return skipChainSupportsPfm(chain)
 }
 
 export const skipQueries = {
+  chains: () =>
+    queryOptions({
+      retry: false,
+      queryKey: ['skip', 'chains'],
+      queryFn: () => fetchSkipChains().catch(() => null),
+      staleTime: (q) => (q.state.data === null ? 30_000 : 300_000),
+    }),
+  chainRaw: ({ chainId }: { chainId: string }) =>
+    queryOptions({
+      retry: false,
+      queryKey: ['skip', 'chainRaw', chainId],
+      queryFn: async (ctx) => {
+        const chains = await ctx.client.fetchQuery(skipQueries.chains())
+        if (!chains) throw new Error('Skip chains unavailable')
+        return chains.find((chain) => chain.chain_id === chainId) || null
+      },
+    }),
+  assets: ({ chainId }: { chainId: string }) =>
+    queryOptions({
+      retry: false,
+      queryKey: ['skip', 'assets', chainId],
+      queryFn: () => fetchSkipAssets(chainId).catch(() => null),
+      staleTime: (q) => (q.state.data === null ? 30_000 : 3_600_000),
+    }),
+  recommendations: (options: RecommendationOptions) =>
+    queryOptions({
+      retry: false,
+      queryKey: ['skip', 'recommendations', options],
+      staleTime: 600_000,
+      queryFn: () => fetchSkipRecommendations(options),
+    }),
   /**
    * Fetch Skip chain.
    */
   chain: (options: Parameters<typeof fetchSkipChain>[1]) =>
     queryOptions({
+      retry: false,
       queryKey: ['skip', 'chain', options],
       queryFn: (ctx) => fetchSkipChain(ctx.client, options),
     }),
@@ -126,6 +147,7 @@ export const skipQueries = {
    */
   asset: (options: Parameters<typeof fetchSkipAsset>[1]) =>
     queryOptions({
+      retry: false,
       queryKey: ['skip', 'asset', options],
       queryFn: (ctx) => fetchSkipAsset(ctx.client, options),
     }),
@@ -136,6 +158,7 @@ export const skipQueries = {
     options: Parameters<typeof fetchSkipRecommendedAsset>[1]
   ) =>
     queryOptions({
+      retry: false,
       queryKey: ['skip', 'recommendedAsset', options],
       queryFn: (ctx) => fetchSkipRecommendedAsset(ctx.client, options),
     }),
@@ -158,6 +181,7 @@ export const skipQueries = {
    */
   chainPfmEnabled: (options: Parameters<typeof fetchSkipChainPfmEnabled>[1]) =>
     queryOptions({
+      retry: false,
       queryKey: ['skip', 'chainPfmEnabled', options],
       queryFn: (ctx) => fetchSkipChainPfmEnabled(ctx.client, options),
     }),

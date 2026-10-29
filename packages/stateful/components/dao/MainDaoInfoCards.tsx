@@ -20,6 +20,7 @@ import {
   DaoInfoCards as StatelessDaoInfoCards,
   TokenAmountDisplay,
   TxCrossChainRelayStatus,
+  UsdValuationDisplay,
   useDao,
 } from '@dao-dao/stateless'
 import {
@@ -114,8 +115,11 @@ const InnerMainDaoInfoCards = () => {
   })
 
   const tvlLoading = useQueryLoadingData(dao.tvlQuery, {
-    amount: -1,
-    timestamp: Date.now(),
+    amount: null,
+    status: 'unavailable' as const,
+    timestamp: null,
+    unpricedTokens: 0,
+    incompleteBalances: true,
   })
 
   // Get unique approvers from all proposal modules.
@@ -181,18 +185,8 @@ const InnerMainDaoInfoCards = () => {
             label: t('title.treasury'),
             tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
             value: (
-              <TokenAmountDisplay
-                amount={
-                  tvlLoading.loading
-                    ? { loading: true }
-                    : tvlLoading.data.amount
-                }
-                dateFetched={
-                  tvlLoading.loading
-                    ? undefined
-                    : new Date(tvlLoading.data.timestamp)
-                }
-                estimatedUsdValue
+              <UsdValuationDisplay
+                value={tvlLoading.loading ? { loading: true } : tvlLoading.data}
               />
             ),
           },

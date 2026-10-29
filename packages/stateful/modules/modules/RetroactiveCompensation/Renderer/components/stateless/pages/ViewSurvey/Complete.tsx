@@ -24,6 +24,7 @@ import {
   TextAreaInput,
   TextInput,
   TokenAmountDisplay,
+  UsdValuationDisplay,
 } from '@dao-dao/stateless'
 import {
   Entity,
@@ -35,7 +36,12 @@ import {
   StatefulProposalListProps,
 } from '@dao-dao/types'
 import { Boolean } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
-import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
+import {
+  decodedMessagesString,
+  isFreshUsdPrice,
+  sumUsdEstimates,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { CompleteRatings, SurveyWithMetadata } from '../../../../types'
 
@@ -271,7 +277,7 @@ export const InnerComplete = ({
             }}
           >
             {/* Row for titles, which are mostly rater names. */}
-            <p className="rounded-tl-md bg-background-primary p-4">
+            <p className="bg-background-primary rounded-tl-md p-4">
               {t('title.contributor')}
             </p>
             {completeRatings.ratings.map(({ rater }, ratingIndex) => (
@@ -279,7 +285,7 @@ export const InnerComplete = ({
                 key={rater.publicKey}
                 address={rater.address}
                 className={clsx(
-                  'justify-self-end border-l border-border-secondary bg-background-primary p-4',
+                  'border-border-secondary bg-background-primary justify-self-end border-l p-4',
                   ratingIndex === completeRatings.ratings.length - 1 &&
                     'rounded-tr-md'
                 )}
@@ -317,7 +323,7 @@ export const InnerComplete = ({
                           <div
                             key={rater.publicKey}
                             className={clsx(
-                              'flex flex-col items-end justify-center border-l border-border-secondary p-4',
+                              'border-border-secondary flex flex-col items-end justify-center border-l p-4',
                               backgroundClassName,
                               ratingIndex ===
                                 completeRatings.ratings.length - 1 &&
@@ -370,8 +376,8 @@ export const InnerComplete = ({
         {type === 'new' ? (
           <>
             {/* Proposal title and description. */}
-            <div className="rounded-lg bg-background-tertiary">
-              <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
+            <div className="bg-background-tertiary rounded-lg">
+              <div className="border-border-secondary flex flex-row items-center justify-between gap-6 border-b py-4 px-6">
                 <p className="primary-text text-text-body">{t('form.title')}</p>
 
                 <div className="flex grow flex-col">
@@ -425,18 +431,18 @@ export const InnerComplete = ({
               }}
             >
               {/* Row for titles, which are mostly attribute names. */}
-              <p className="rounded-tl-md bg-background-primary p-4">
+              <p className="bg-background-primary rounded-tl-md p-4">
                 {t('title.contributor')}
               </p>
               {survey.attributes.map(({ name }, attributeIndex) => (
                 <p
                   key={attributeIndex}
-                  className="border-l border-border-secondary bg-background-primary p-4 text-right"
+                  className="border-border-secondary bg-background-primary border-l p-4 text-right"
                 >
                   {name}
                 </p>
               ))}
-              <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-4 text-right">
+              <p className="border-border-secondary bg-background-primary rounded-tr-md border-l p-4 text-right">
                 {t('title.compensation')}
               </p>
 
@@ -462,15 +468,16 @@ export const InnerComplete = ({
                       }),
                       {} as Record<string, HugeDecimal>
                     )
-                  const totalUsdc = Object.entries(tokens)
-                    .map(([denomOrAddress, amount]) =>
-                      amount
-                        .times(tokenMap[denomOrAddress]?.usdPrice ?? 0)
-                        .toHumanReadableNumber(
-                          tokenMap[denomOrAddress]?.token.decimals ?? 0
-                        )
-                    )
-                    .reduce((acc, amount) => acc + amount, 0)
+                  const totalUsdc = sumUsdEstimates(
+                    Object.entries(tokens).map(([denomOrAddress, amount]) => {
+                      const quote = tokenMap[denomOrAddress]
+                      return isFreshUsdPrice(quote)
+                        ? amount
+                            .times(quote.usdPrice)
+                            .toHumanReadableNumber(quote.token.decimals)
+                        : undefined
+                    })
+                  )
 
                   return (
                     <Fragment key={id}>
@@ -491,7 +498,7 @@ export const InnerComplete = ({
                         <p
                           key={attributeIndex}
                           className={clsx(
-                            'flex flex-col items-end justify-center border-l border-border-secondary p-4 font-mono',
+                            'border-border-secondary flex flex-col items-end justify-center border-l p-4 font-mono',
                             backgroundClassName
                           )}
                         >
@@ -506,7 +513,7 @@ export const InnerComplete = ({
                       {/* Total compensation */}
                       <div
                         className={clsx(
-                          'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-4',
+                          'border-border-secondary flex flex-col items-end justify-center gap-1 border-l p-4',
                           backgroundClassName,
                           contributionIndex ===
                             completeRatings.contributions.length - 1 &&
@@ -533,12 +540,25 @@ export const InnerComplete = ({
                         )}
 
                         <div className="mt-2">
-                          <TokenAmountDisplay
-                            amount={totalUsdc}
-                            className="caption-text text-right"
-                            dateFetched={tokenPrices[0]?.timestamp}
-                            estimatedUsdValue
-                            prefix="= "
+                          <UsdValuationDisplay
+                            value={{
+                              amount: totalUsdc.amount,
+                              status:
+                                totalUsdc.amount === null
+                                  ? 'unavailable'
+                                  : totalUsdc.partial
+                                    ? 'partial'
+                                    : 'complete',
+                              timestamp: tokenPrices.length
+                                ? Math.min(
+                                    ...tokenPrices.flatMap((p) =>
+                                      p.timestamp ? [p.timestamp.getTime()] : []
+                                    )
+                                  )
+                                : null,
+                              unpricedTokens: 0,
+                              incompleteBalances: totalUsdc.partial,
+                            }}
                           />
                         </div>
                       </div>
@@ -576,7 +596,7 @@ export const InnerComplete = ({
             </div>
 
             {showPreview && (
-              <div className="mt-4 rounded-md border border-border-secondary p-6">
+              <div className="border-border-secondary mt-4 rounded-md border p-6">
                 <ProposalContentDisplay
                   EntityDisplay={EntityDisplay}
                   createdAt={new Date()}

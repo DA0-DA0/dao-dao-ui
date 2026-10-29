@@ -1,22 +1,17 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { Event, IndexedTx } from '@cosmjs/stargate'
 import uniq from 'lodash.uniq'
-import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
+import { noWait, selectorFamily, waitForNone } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
-  Account,
-  AccountType,
   GenericToken,
-  GenericTokenSource,
   LoadingTokens,
   TokenCardInfo,
-  TokenPriceHistoryRange,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
-  COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
   loadableToLoadingData,
@@ -29,10 +24,8 @@ import {
   cosmWasmClientForChainSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
-import { querySnapperSelector } from './indexer'
 import {
   genericTokenBalancesSelector,
-  genericTokenSelector,
   tokenCardLazyInfoSelector,
 } from './token'
 
@@ -324,121 +317,5 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 },
         }
       }, {} as LoadingTokens)
-    },
-})
-
-const ACCOUNT_FILTER_PROPERTIES = ['type', 'chainId', 'address'] as const
-
-export const treasuryValueHistorySelector = selectorFamily<
-  {
-    timestamps: Date[]
-    tokens: {
-      token: GenericToken
-      // Value at each timestamp.
-      values: (number | null)[]
-    }[]
-    // Total value at each timestamp.
-    totals: (number | null)[]
-  },
-  WithChainId<{
-    address: string
-    range: TokenPriceHistoryRange
-    filter?: {
-      // Filter by any of the account properties.
-      account?: Partial<
-        Pick<Account, (typeof ACCOUNT_FILTER_PROPERTIES)[number]>
-      >
-      // If defined, only show these tokens.
-      tokens?: GenericTokenSource[]
-    }
-  }>
->({
-  key: 'treasuryValueHistory',
-  get:
-    ({ chainId: nativeChainId, address, range, filter }) =>
-    ({ get }) => {
-      const isCommunityPool = address === COMMUNITY_POOL_ADDRESS_PLACEHOLDER
-
-      let allAccounts: Account[] = isCommunityPool
-        ? [
-            {
-              type: AccountType.Base,
-              chainId: nativeChainId,
-              address,
-            },
-          ]
-        : get(
-            accountsSelector({
-              chainId: nativeChainId,
-              address,
-            })
-          )
-
-      // Filter by account fields.
-      if (filter?.account) {
-        allAccounts = allAccounts.filter((account) =>
-          ACCOUNT_FILTER_PROPERTIES.every(
-            (key) =>
-              !filter.account ||
-              !(key in filter.account) ||
-              account[key] === filter.account[key]
-          )
-        )
-      }
-
-      // Value history for all accounts.
-      const { timestamps, assets, totals } = get(
-        querySnapperSelector({
-          query: 'daodao-many-value-history',
-          parameters: {
-            accounts: allAccounts.map(
-              ({ chainId, address }) => `${chainId}:${address}`
-            ),
-            range,
-            tokenFilter: filter?.tokens
-              ?.map(
-                ({ chainId, denomOrAddress }) => `${chainId}:${denomOrAddress}`
-              )
-              .join(','),
-          },
-        })
-      ) as {
-        timestamps: number[]
-        assets: {
-          origin: {
-            chainId: string
-            denom: string
-          }
-          // Value at each timestamp.
-          values: (number | null)[]
-        }[]
-        // Total value at each timestamp.
-        totals: (number | null)[]
-      }
-
-      const tokens = get(
-        waitForAll(
-          assets.map(({ origin: { chainId, denom } }) =>
-            genericTokenSelector({
-              type: denom.startsWith('cw20:')
-                ? TokenType.Cw20
-                : TokenType.Native,
-              chainId,
-              denomOrAddress: denom.startsWith('cw20:')
-                ? denom.slice(5)
-                : denom,
-            })
-          )
-        )
-      )
-
-      return {
-        timestamps: timestamps.map((timestamp) => new Date(timestamp)),
-        tokens: assets.map(({ values }, index) => ({
-          token: tokens[index],
-          values: values.map((value) => value ?? null),
-        })),
-        totals,
-      }
     },
 })

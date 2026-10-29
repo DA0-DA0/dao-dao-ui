@@ -24,6 +24,7 @@ import {
   getDaoRewardDistributors,
   getRewardDistributorSavedEmissionRateStorageItemKey,
   getRewardDistributorStorageItemKey,
+  isFreshUsdPrice,
   objectMatchesStructure,
   parseContractVersion,
   serializeTokenSource,
@@ -333,11 +334,7 @@ export const fetchPendingDaoRewards = async (
     uniqueTokenSources.map(
       async (source): Promise<GenericTokenBalanceAndValue> => {
         // These should already be cached from the distributions query.
-        const {
-          token,
-          usdPrice = 0,
-          timestamp = new Date(),
-        } = await queryClient
+        const { token, usdPrice, timestamp } = await queryClient
           .fetchQuery(tokenQueries.usdPrice(deserializeTokenSource(source)))
           // If failed to load price, just load token info with no price.
           .catch(
@@ -358,7 +355,9 @@ export const fetchPendingDaoRewards = async (
         )
 
         const balance = allPendingRewards.toHumanReadableNumber(token.decimals)
-        const usdValue = allPendingRewards.toUsdValue(token.decimals, usdPrice)
+        const usdValue = isFreshUsdPrice({ usdPrice, timestamp })
+          ? allPendingRewards.toUsdValue(token.decimals, usdPrice!)
+          : undefined
 
         return {
           token,

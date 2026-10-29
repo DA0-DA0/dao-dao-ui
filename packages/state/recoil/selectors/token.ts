@@ -4,13 +4,11 @@ import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 import { HugeDecimal } from '@dao-dao/math'
 import {
   Account,
-  AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
   GenericTokenSource,
   GenericTokenWithUsdPrice,
   TokenCardLazyInfo,
-  TokenPriceHistoryRange,
   TokenType,
   UnstakingTask,
   UnstakingTaskStatus,
@@ -23,11 +21,16 @@ import {
   getChainForChainName,
   getIbcTransferInfoFromChannel,
   getNativeTokenForChainId,
+  isFreshUsdPrice,
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
 import { chainQueries, tokenQueries } from '../../query'
-import { queryClientAtom, refreshTokenCardLazyInfoAtom } from '../atoms'
+import {
+  queryClientAtom,
+  refreshTokenCardLazyInfoAtom,
+  refreshUsdPricesAtom,
+} from '../atoms'
 import {
   denomMetadataSelector,
   ibcRpcClientForChainSelector,
@@ -42,7 +45,7 @@ import {
   DaoDaoCoreSelectors,
   DaoVotingTokenStakedSelectors,
 } from './contracts'
-import { queryGenericIndexerSelector, querySnapperSelector } from './indexer'
+import { queryGenericIndexerSelector } from './indexer'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
 
@@ -59,44 +62,6 @@ export const genericTokenSelector = selectorFamily<
     },
 })
 
-export const coinGeckoUsdPriceSelector = selectorFamily<
-  GenericTokenWithUsdPrice | undefined,
-  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
->({
-  key: 'coinGeckoUsdPrice',
-  get:
-    (params) =>
-    async ({ get }) => {
-      if (!MAINNET) {
-        return undefined
-      }
-
-      const token = get(genericTokenSelector(params))
-
-      // Resolve Skip asset to retrieve coingecko ID.
-      const asset = get(skipAssetSelector(params))
-      if (!asset?.coingecko_id) {
-        return
-      }
-      const usdPrice: number | undefined = get(
-        querySnapperSelector({
-          query: 'coingecko-price',
-          parameters: {
-            id: asset.coingecko_id,
-          },
-        })
-      )
-
-      return usdPrice !== undefined
-        ? {
-            token,
-            usdPrice,
-            timestamp: new Date(),
-          }
-        : undefined
-    },
-})
-
 export const usdPriceSelector = selectorFamily<
   GenericTokenWithUsdPrice | undefined,
   GenericTokenSource
@@ -109,10 +74,16 @@ export const usdPriceSelector = selectorFamily<
         return
       }
 
+      get(refreshUsdPricesAtom)
       const queryClient = get(queryClientAtom)
-      return await queryClient
+      const quote = await queryClient
         .fetchQuery(tokenQueries.usdPrice(params))
         .catch(() => undefined)
+      return quote && isFreshUsdPrice(quote)
+        ? quote
+        : quote
+          ? { token: quote.token }
+          : undefined
     },
 })
 
@@ -474,59 +445,6 @@ export const genericTokenSourceSelector = selectorFamily<
           sourceType === TokenType.Cw20
             ? sourceDenom.replace(/^cw20:/, '')
             : sourceDenom,
-      }
-    },
-})
-
-export const historicalUsdPriceSelector = selectorFamily<
-  AmountWithTimestamp[] | undefined,
-  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'> & {
-    range: TokenPriceHistoryRange
-  }
->({
-  key: 'historicalUsdPrice',
-  get:
-    ({ chainId, type, denomOrAddress, range }) =>
-    async ({ get }) => {
-      if (!MAINNET) {
-        return undefined
-      }
-
-      // Resolve Skip asset to retrieve coingecko ID.
-      const asset = get(
-        skipAssetSelector({
-          type,
-          chainId,
-          denomOrAddress,
-        })
-      )
-
-      if (!asset?.coingecko_id) {
-        return
-      }
-
-      try {
-        const prices: [number, number][] = get(
-          querySnapperSelector({
-            query: 'coingecko-price-history',
-            parameters: {
-              id: asset.coingecko_id,
-              range,
-            },
-          })
-        )
-
-        return prices.map(([timestamp, amount]) => ({
-          timestamp,
-          amount,
-        }))
-      } catch (err) {
-        // recoil's `get` throws a promise while loading
-        if (err instanceof Promise) {
-          throw err
-        }
-
-        return undefined
       }
     },
 })

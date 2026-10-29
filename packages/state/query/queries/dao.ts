@@ -2,7 +2,6 @@ import { QueryClient, queryOptions } from '@tanstack/react-query'
 import uniq from 'lodash.uniq'
 
 import {
-  AmountWithTimestamp,
   ContractVersion,
   ContractVersionInfo,
   DaoDropdownInfo,
@@ -18,6 +17,7 @@ import {
   LazyDaoCardProps,
   StatefulProposalLineProps,
   SupportedChainIndexerMode,
+  UsdValuation,
 } from '@dao-dao/types'
 import {
   ProposalModuleWithInfo,
@@ -29,6 +29,7 @@ import {
 import {
   COMMUNITY_POOL_ADDRESS_PLACEHOLDER,
   DAO_CORE_CONTRACT_NAMES,
+  FEATURED_DAOS,
   INACTIVE_DAO_NAMES,
   PerformanceContext,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
@@ -56,6 +57,7 @@ import { daoDaoCoreQueries } from './contracts/DaoDaoCore'
 import { votingModuleQueries } from './contracts/votingModule'
 import { indexerQueries } from './indexer'
 import { polytoneQueries } from './polytone'
+import { fetchDaoValuation } from './treasury'
 
 /**
  * Fetch DAO info.
@@ -481,7 +483,7 @@ export const fetchChainSubDaoInfos = (
 export const fetchDaoTvl = async (
   queryClient: QueryClient,
   { chainId, coreAddress }: DaoSource
-): Promise<AmountWithTimestamp> => {
+): Promise<UsdValuation> => {
   // Native chain x/gov module.
   if (isConfiguredChainName(chainId, coreAddress)) {
     coreAddress =
@@ -490,22 +492,7 @@ export const fetchDaoTvl = async (
       COMMUNITY_POOL_ADDRESS_PLACEHOLDER
   }
 
-  const { total: amount } = (await queryClient.fetchQuery(
-    indexerQueries.snapper<{ total: number }>({
-      query: 'daodao-tvl',
-      parameters: {
-        chainId,
-        address: coreAddress,
-      },
-    })
-  )) || {
-    total: NaN,
-  }
-
-  return {
-    amount,
-    timestamp: Date.now(),
-  }
+  return fetchDaoValuation(queryClient, { chainId, coreAddress })
 }
 
 /**
@@ -1287,15 +1274,19 @@ export const daoQueries = {
    * Fetch featured DAOs.
    */
   listFeatured: () =>
-    indexerQueries.snapper<DaoSource[]>({
-      query: 'daodao-featured-daos',
+    queryOptions({
+      queryKey: ['dao', 'listFeatured'],
+      staleTime: Infinity,
+      queryFn: () => FEATURED_DAOS,
     }),
   /**
    * Fetch a DAO's TVL.
    */
   tvl: (options: Parameters<typeof fetchDaoTvl>[1]) =>
-    queryOptions<AmountWithTimestamp>({
+    queryOptions<UsdValuation>({
       queryKey: ['dao', 'tvl', options],
+      staleTime: 60_000,
+      retry: false,
       queryFn: (ctx) => fetchDaoTvl(ctx.client, options),
     }),
   /**

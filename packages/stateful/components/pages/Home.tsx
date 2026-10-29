@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -250,8 +250,10 @@ export const Home: NextPage<StatefulHomeProps> = ({
             ),
           }
 
+  const [statsMode, setStatsMode] = useState<'all' | 'month' | 'week'>('all')
   const freshStats = useQueryLoadingDataWithError(
     miscQueries.homePageStats({
+      mode: statsMode,
       chainId,
     })
   )
@@ -337,6 +339,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
             DaoCard={DaoCard}
             chainGovDaos={chainGovDaos}
             featuredDaos={featuredDaos}
+            onStatsModeChange={setStatsMode}
             openSearch={openSearch}
             search={
               searchEnabled
@@ -352,6 +355,7 @@ export const Home: NextPage<StatefulHomeProps> = ({
                 : undefined
             }
             stats={stats}
+            statsMode={statsMode}
           />
         </>
       )}

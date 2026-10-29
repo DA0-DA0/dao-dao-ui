@@ -106,11 +106,11 @@ export type GenericTokenBalanceAndValue = {
   /**
    * USD value of total balance.
    */
-  usdValue: number
+  usdValue?: number
   /**
    * Timestamp of when the USD price was fetched.
    */
-  timestamp: Date
+  timestamp?: Date
 }
 
 export type GenericTokenBalanceWithOwner = GenericTokenBalance & {
@@ -279,4 +279,13 @@ export type WhiteWhalePool = {
   TVL: string
   Price: string
   APR: number
+}
+
+/** Known current USD subtotal with explicit balance and market coverage. */
+export type UsdValuation = {
+  amount: number | null
+  status: 'complete' | 'partial' | 'unavailable'
+  timestamp: number | null
+  unpricedTokens: number
+  incompleteBalances: boolean
 }

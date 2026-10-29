@@ -10,6 +10,8 @@ import {
 import { DehydratedStateWithDependencies } from '@dao-dao/types'
 import { makeDependencyTrackedQueryClient } from '@dao-dao/utils'
 
+import { useRefreshUsdPrices } from '../hooks/useRefreshUsdPrices'
+
 export type StateProviderProps = {
   /**
    * Children to render.
@@ -62,6 +64,7 @@ export const StateProvider = ({
 }
 
 const InnerStateProvider = ({ children }: { children: ReactNode }) => {
+  useRefreshUsdPrices()
   const queryClient = useDependencyTrackedQueryClient()
   const setQueryClient = useSetRecoilState(queryClientAtom)
   // Update Recoil atom when the query client changes.

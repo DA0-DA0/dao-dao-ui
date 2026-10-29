@@ -2,11 +2,13 @@ import { ComponentType } from 'react'
 
 import { DaoInfo } from '../dao'
 import { LoadingDataWithError } from '../misc'
+import { UsdValuation } from '../token'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
 export type DaoCardLazyData = {
   proposalCount: number
+  usdValuation?: UsdValuation
   /**
    * Show a token line, typically TVL.
    */

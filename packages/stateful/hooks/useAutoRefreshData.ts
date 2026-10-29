@@ -1,21 +1,16 @@
 import { useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import {
-  chainQueries,
-  indexerQueries,
-  tokenQueries,
-} from '@dao-dao/state/query'
+import { chainQueries, indexerQueries } from '@dao-dao/state/query'
 import { refreshIndexerUpStatusAtom } from '@dao-dao/state/recoil'
 import { useDependencyTrackedQueryClient } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
 
 /**
  * Refresh data every minute:
  * - block height
  * - indexer status
  * - dynamic gas prices
- * - prices
+ * Price refresh is owned solely by StateProvider/useRefreshUsdPrices.
  */
 export const useAutoRefreshData = () => {
   const setRefreshIndexerStatus = useSetRecoilState(refreshIndexerUpStatusAtom)
@@ -49,18 +44,6 @@ export const useAutoRefreshData = () => {
       queryClient.refetch(
         chainQueries
           .dynamicGasPrice({ chainId: '' })
-          // Remove the final parameter in the key (options) so we match the
-          // query key for all chains.
-          .queryKey.slice(0, -1)
-      )
-
-      queryClient.refetch(
-        tokenQueries
-          .usdPrice({
-            chainId: '',
-            type: TokenType.Native,
-            denomOrAddress: '',
-          })
           // Remove the final parameter in the key (options) so we match the
           // query key for all chains.
           .queryKey.slice(0, -1)

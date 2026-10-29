@@ -13,7 +13,7 @@ import { HugeDecimal } from '@dao-dao/math'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   getFallbackImage,
-  isNativeIbcUsdc,
+  isFreshUsdPrice,
   secondsToWdhms,
   shortenTokenSymbol,
   toAccessibleImageUrl,
@@ -136,7 +136,7 @@ export const TokenCard = ({
 
   return (
     <>
-      <div className="rounded-lg bg-background-tertiary">
+      <div className="bg-background-tertiary rounded-lg">
         <div className="relative p-5">
           <div className="flex flex-row gap-4 pr-5">
             <div className="relative">
@@ -152,7 +152,7 @@ export const TokenCard = ({
 
               {/* Crown */}
               {isGovernanceToken && (
-                <CrownIcon className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
+                <CrownIcon className="text-text-secondary absolute -top-4 -left-6 !h-8 !w-8 stroke-2" />
               )}
             </div>
 
@@ -176,7 +176,7 @@ export const TokenCard = ({
 
                 {color && (
                   <div
-                    className="h-2 w-2 shrink-0 animate-fade-in rounded-full"
+                    className="animate-fade-in h-2 w-2 shrink-0 rounded-full"
                     style={{
                       backgroundColor: color,
                     }}
@@ -211,7 +211,7 @@ export const TokenCard = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
+        <div className="border-border-secondary flex flex-col gap-3 border-t py-4 px-6">
           {/* Don't show if loading, because `unstakedBalance` will show below while loading instead. It will hide if the total loads and is the same. This prevents weird looking relayouts while also showing some balance while the total is loading. */}
           {!lazyInfo.loading && (
             <div className="flex flex-row items-start justify-between gap-8">
@@ -222,14 +222,13 @@ export const TokenCard = ({
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={lazyInfo.data.totalBalance}
-                  className="leading-5 text-text-body"
+                  className="text-text-body leading-5"
                   decimals={token.decimals}
                   showFullAmount
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  lazyInfo.data.usdUnitPrice?.usdPrice &&
+                {isFreshUsdPrice(lazyInfo.data.usdUnitPrice) &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
@@ -253,6 +252,13 @@ export const TokenCard = ({
             </div>
           )}
 
+          {!lazyInfo.loading &&
+            !isFreshUsdPrice(lazyInfo.data.usdUnitPrice) && (
+              <p className="caption-text text-right">
+                {t('info.usdEstimateUnavailable')}
+              </p>
+            )}
+
           {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
           {(lazyInfo.loading ||
             !lazyInfo.data.totalBalance.eq(unstakedBalance)) && (
@@ -262,14 +268,14 @@ export const TokenCard = ({
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={unstakedBalance}
-                  className="leading-5 text-text-body"
+                  className="text-text-body leading-5"
                   decimals={token.decimals}
                   showFullAmount
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice) &&
+                {(lazyInfo.loading ||
+                  isFreshUsdPrice(lazyInfo.data.usdUnitPrice)) &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
@@ -277,7 +283,7 @@ export const TokenCard = ({
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading ||
-                          !lazyInfo.data.usdUnitPrice?.usdPrice
+                          !isFreshUsdPrice(lazyInfo.data.usdUnitPrice)
                             ? { loading: true }
                             : unstakedBalance.toUsdValue(
                                 token.decimals,
@@ -304,7 +310,7 @@ export const TokenCard = ({
         </div>
 
         {hasStakingInfo && (
-          <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
+          <div className="border-border-secondary flex flex-col gap-2 border-t px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 
             <div className="flex flex-row items-center justify-between gap-8">
@@ -312,7 +318,7 @@ export const TokenCard = ({
 
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
-                className="caption-text text-right font-mono text-text-body"
+                className="caption-text text-text-body text-right font-mono"
                 decimals={token.decimals}
                 showFullAmount
                 symbol={tokenSymbol}
@@ -324,7 +330,7 @@ export const TokenCard = ({
 
               <p
                 className={clsx(
-                  'caption-text text-right font-mono text-text-body',
+                  'caption-text text-text-body text-right font-mono',
                   lazyInfo.loading && 'animate-pulse'
                 )}
               >
@@ -367,7 +373,7 @@ export const TokenCard = ({
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
                   totalUnstaking.isPositive() && 'text-text-body',
-                  lazyInfo.loading && 'animate-pulse !text-text-body'
+                  lazyInfo.loading && '!text-text-body animate-pulse'
                 )}
                 disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
@@ -393,7 +399,7 @@ export const TokenCard = ({
                 amount={
                   lazyInfo.loading ? { loading: true } : totalPendingRewards
                 }
-                className="caption-text text-right font-mono text-text-body"
+                className="caption-text text-text-body text-right font-mono"
                 decimals={token.decimals}
                 showFullAmount
                 symbol={tokenSymbol}
@@ -413,7 +419,7 @@ export const TokenCard = ({
           (!coreAddress ||
             lazyInfo.data.daosGoverned.length > 1 ||
             lazyInfo.data.daosGoverned[0].coreAddress !== coreAddress) && (
-            <div className="space-y-3 border-t border-border-secondary py-4 px-6">
+            <div className="border-border-secondary space-y-3 border-t py-4 px-6">
               <div className="flex flex-row items-center gap-1">
                 <p className="link-text">{t('title.daosGoverned')}</p>
 
