@@ -28,7 +28,10 @@ jobs:
         uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          # Pinned: lts/* now resolves to Node 26, on which Playwright 1.49.1's
+          # browser install hangs after downloading Chromium. Node 24 is the
+          # version used by the last green run.
+          node-version: '24'
           cache: pnpm
       - name: Install packages
         run: pnpm install
