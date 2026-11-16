@@ -6,7 +6,10 @@ import {
   ActionContextType,
 } from '@dao-dao/types/actions'
 import { DurationUnits } from '@dao-dao/types/units'
-import { decodeMessage } from '@dao-dao/utils'
+import {
+  decodeMessage,
+  getRewardDistributorStorageItemKey,
+} from '@dao-dao/utils'
 
 vi.mock('../../../../hooks', () => ({ useQueryLoadingDataWithError: vi.fn() }))
 vi.mock('../../../hooks', () => ({ useTokenBalances: vi.fn() }))
@@ -74,7 +77,7 @@ const makeAction = (supportsHooks: boolean) => {
         // An existing distributor, so encode skips instantiation.
         info: {
           items: {
-            'reward_distributor:1': DISTRIBUTOR,
+            [getRewardDistributorStorageItemKey('1')]: DISTRIBUTOR,
           },
         },
       },
