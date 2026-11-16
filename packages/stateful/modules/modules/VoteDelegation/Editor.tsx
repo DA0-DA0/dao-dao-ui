@@ -52,9 +52,18 @@ export const Editor = ({
     () => VOTE_DELEGATION_LABEL_PREFIX + ` (${Date.now()})`
   )
 
+  // Vote delegation relies on voting power change hooks, which some voting
+  // modules (such as dao-voting-native-staked) do not support.
+  const votingModuleSupportsHooks = dao.votingModule.supportsHooks
+
   const hasAddress = !!address
   const isInstantiating = !!extra.instantiateData
   useEffect(() => {
+    if (!votingModuleSupportsHooks) {
+      setInstantiating(false)
+      return
+    }
+
     const instantiate = async () => {
       setInstantiating(true)
       try {
@@ -125,6 +134,7 @@ export const Editor = ({
     dao.chainId,
     dao.coreAddress,
     dao.votingModule,
+    votingModuleSupportsHooks,
     isInstantiating,
     extra.updateDelegationConfig.validityBlocks,
     extra.updateDelegationConfig.vpCapPercent,
@@ -136,6 +146,20 @@ export const Editor = ({
     salt,
     label,
   ])
+
+  if (!votingModuleSupportsHooks) {
+    return (
+      <div className="flex flex-col items-start gap-4">
+        <p className="body-text max-w-prose break-words">
+          {t('info.voteDelegationExplanation')}
+        </p>
+
+        <p className="body-text max-w-prose break-words text-text-interactive-error">
+          {t('error.votingModuleVoteDelegationUnsupported')}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col items-start gap-4">
