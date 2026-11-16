@@ -595,7 +595,8 @@
     "unsupportedChains_other": "Unsupported chains: {{chains}}.",
     "unsupportedValenceChain": "Valence accounts are not supported on this chain.",
     "unsupportedWallet": "{{name}} does not support this action. Please try a different wallet.",
-    "v1DaoFeatureUnsupported": "{{name}} is on V1 and does not support {{feature}}."
+    "v1DaoFeatureUnsupported": "{{name}} is on V1 and does not support {{feature}}.",
+    "votingModuleRewardDistributionsUnsupported": "This DAO's voting module does not support reward distributions. To create a reward distribution, the DAO must first migrate its voting module to the token-staked voting module (dao-voting-token-staked)."
   },
   "form": {
     "acceptSubDaoAddressInputLabel": "SubDAO to accept",

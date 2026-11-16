@@ -107,6 +107,16 @@ export abstract class VotingModuleBase<Dao extends IDaoBase = IDaoBase>
   >
 
   /**
+   * Whether or not this voting module supports voting power change hooks via
+   * `getHookCaller` and `getHooks`. Features that depend on hooks, such as
+   * reward distributions, must not be used if this is false. Voting modules
+   * without hook support should override this.
+   */
+  get supportsHooks(): boolean {
+    return true
+  }
+
+  /**
    * Fetch the contract responsible for voting power change hooks. This may be
    * the voting module itself if it handles staking directly, or an underlying
    * contract that manages voting power, such as cw4-group or cw20-stake.

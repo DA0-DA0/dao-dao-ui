@@ -57,6 +57,10 @@ export class NeutronVotingRegistryVotingModule extends VotingModuleBase<CwDao> {
     })
   }
 
+  get supportsHooks(): boolean {
+    return false
+  }
+
   getHookCaller(): string {
     throw new Error('Not implemented')
   }
