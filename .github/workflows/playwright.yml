@@ -17,7 +17,11 @@ env:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest now resolves to ubuntu-26.04, whose apt repos lack
+    # the system packages (e.g. libicu74, libvpx9) that the pinned Playwright
+    # version installs via `playwright install --with-deps`. Revisit when
+    # Playwright is upgraded to a release that supports ubuntu-26.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -35,7 +39,7 @@ jobs:
       - name: Build dApp
         run: pnpm dapp build
         env:
-          # Public ubuntu-latest runners have 16 GB RAM; leave room outside V8.
+          # Public ubuntu-24.04 runners have 16 GB RAM; leave room outside V8.
           NODE_OPTIONS: --max-old-space-size=8192
       - name: Run Playwright tests
         run: pnpm test:playwright
