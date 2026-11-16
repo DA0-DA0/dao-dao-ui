@@ -94,6 +94,15 @@ export class NativeStakedVotingModule extends VotingModuleBase<CwDao> {
     }
   }
 
+  /**
+   * No released version of dao-voting-native-staked supports voting power
+   * change hooks. DAOs must migrate to dao-voting-token-staked to use features
+   * that depend on hooks, such as reward distributions.
+   */
+  get supportsHooks(): boolean {
+    return false
+  }
+
   getHookCaller(): string {
     return this.address
   }

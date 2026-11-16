@@ -117,7 +117,29 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     this.manageStorageItemsAction = new ManageStorageItemsAction(this.options)
   }
 
+  /**
+   * Reward distributions rely on voting power change hooks from the voting
+   * module, so they cannot be created for DAOs whose voting module does not
+   * support hooks (such as dao-voting-native-staked). Throw a clear, translated
+   * error in that case so the action is disabled with an explanation instead of
+   * failing later with an unrelated error.
+   */
+  private assertVotingModuleSupportsHooks() {
+    if (
+      this.options.context.type === ActionContextType.Dao &&
+      !this.options.context.dao.votingModule.supportsHooks
+    ) {
+      throw new Error(
+        this.options.t('error.votingModuleRewardDistributionsUnsupported')
+      )
+    }
+  }
+
   async setup() {
+    // Prevents the action from being selected in the action library, which
+    // shows this error as the reason.
+    this.assertVotingModuleSupportsHooks()
+
     await Promise.all([
       this.instantiate2Action.setup(),
       this.manageStorageItemsAction.setup(),
@@ -154,6 +176,7 @@ export class CreateRewardDistributionAction extends ActionBase<CreateRewardDistr
     if (this.options.chainContext.type !== ActionChainContextType.Supported) {
       throw new Error('Unsupported chain')
     }
+    this.assertVotingModuleSupportsHooks()
 
     const votingModule = this.options.context.dao.votingModule
     const hookCaller = await votingModule.getHookCaller()
