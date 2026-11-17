@@ -1,6 +1,7 @@
 import { HugeDecimal } from '@dao-dao/math'
 import {
   ActionContextType,
+  ActionOptions,
   Module,
   VoteDelegationModuleData,
 } from '@dao-dao/types'
@@ -23,6 +24,25 @@ export type VoteDelegationModuleExtraData = {
   instantiateData?: Instantiate2Data
 }
 
+/**
+ * Vote delegation relies on voting power change hooks from the voting module,
+ * so it cannot be enabled for DAOs whose voting module does not support hooks
+ * (such as dao-voting-native-staked). Throw a clear, translated error in that
+ * case instead of failing with an unrelated error or encoding a hook message
+ * that the voting module cannot execute.
+ */
+const assertVotingModuleSupportsVoteDelegation = ({
+  t,
+  context,
+}: Pick<ActionOptions, 't' | 'context'>) => {
+  if (
+    context.type === ActionContextType.Dao &&
+    !context.dao.votingModule.supportsHooks
+  ) {
+    throw new Error(t('error.votingModuleVoteDelegationUnsupported'))
+  }
+}
+
 export const VOTE_DELEGATION_SALT_PREFIX = 'vote_delegation_'
 export const VOTE_DELEGATION_LABEL_PREFIX = 'DAO DAO Vote Delegation'
 
@@ -43,6 +63,8 @@ export const editAction: Module<
     if (options.context.type !== ActionContextType.Dao) {
       throw new Error('Invalid context')
     }
+    assertVotingModuleSupportsVoteDelegation(options)
+
     const { dao } = options.context
 
     const hookCaller = await dao.votingModule.getHookCaller()
@@ -106,7 +128,17 @@ export const editAction: Module<
     }
     const { dao } = options.context
 
-    const hookCaller = await dao.votingModule.getHookCaller()
+    // Voting modules without hook support may throw when getting the hook
+    // caller. In that case, still match the hook message by structure so that
+    // existing proposals continue to render.
+    let hookCaller: string | undefined
+    try {
+      hookCaller = await dao.votingModule.getHookCaller()
+    } catch (err) {
+      if (dao.votingModule.supportsHooks) {
+        throw err
+      }
+    }
 
     const instantiate2Action = new Instantiate2Action(options)
     const updateDelegationConfigAction = new UpdateDelegationConfigAction(
@@ -143,7 +175,8 @@ export const editAction: Module<
           },
         },
       }) &&
-      messages[1].decodedMessage.wasm.execute.contract_addr === hookCaller &&
+      (hookCaller === undefined ||
+        messages[1].decodedMessage.wasm.execute.contract_addr === hookCaller) &&
       messages[1].decodedMessage.wasm.execute.msg.add_hook.addr === address
     if (!secondIsVotingModule) {
       return false
